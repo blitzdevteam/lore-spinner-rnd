@@ -12,7 +12,9 @@ use App\Jobs\Event\EventExtractorJob;
 use App\Jobs\Story\StoryOpeningGeneratorJob;
 use App\Jobs\Story\SystemPromptGeneratorJob;
 use App\Models\Category;
+use App\Models\Chapter;
 use App\Models\Creator;
+use App\Models\Game;
 use App\Models\Story;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -22,16 +24,15 @@ use Smalot\PdfParser\Parser;
 use Throwable;
 
 /**
- * Safely add a single new story without touching any existing data.
+ * Wipe every existing story and seed a single new one from scratch.
  *
- * - Skips if the story is already published
- * - Attaches story cover from database/stories/covers/{slug}.png if present
- * - Attaches chapter covers from database/stories/covers/chapters/{slug}-ch{N}.png if present
- * - Never clears any media on existing stories
+ * - Removes ALL stories (with chapters, events, games, prompts, media)
+ * - Creates the creator if missing
+ * - Converts PDF → TXT if no .txt exists
+ * - Runs the full extraction pipeline (chapters → events → system prompt → opening)
+ * - Attaches covers from database/stories/covers/ if present
  *
  * Usage: php artisan db:seed --class=AddSingleStorySeeder --force
- *
- * To add a different story, update getStoryConfig() with the new story's data.
  */
 final class AddSingleStorySeeder extends Seeder
 {
@@ -45,6 +46,8 @@ final class AddSingleStorySeeder extends Seeder
         config(['queue.default' => 'sync']);
 
         try {
+            $this->removeAllStories();
+
             $config = $this->getStoryConfig();
             $this->processStory($config);
         } finally {
@@ -52,41 +55,49 @@ final class AddSingleStorySeeder extends Seeder
         }
     }
 
-    private function processStory(array $config): void
+    private function removeAllStories(): void
     {
-        $existing = Story::where('title', $config['title'])->first();
+        $stories = Story::all();
 
-        if ($existing && $existing->status === StoryStatusEnum::PUBLISHED) {
-            $this->command->info("Already published: {$config['title']}");
-            $this->attachMissingImages($existing, $config['slug']);
+        if ($stories->isEmpty()) {
+            $this->command->info('No existing stories to remove.');
 
             return;
         }
 
-        if ($existing) {
-            $staleMinutes = $existing->updated_at->diffInMinutes(now());
+        $this->command->info("Removing {$stories->count()} existing stories...");
 
-            if ($staleMinutes < 30) {
-                $this->command->info("In progress: {$config['title']} (updated {$staleMinutes}m ago) — skipping.");
-
-                return;
+        foreach ($stories as $story) {
+            foreach ($story->games as $game) {
+                $game->prompts()->delete();
             }
+            $story->games()->delete();
+            $story->comments()->delete();
 
-            $this->command->warn("Removing stale attempt: {$config['title']}");
-            $existing->events()->delete();
-            $existing->chapters()->delete();
-            $existing->clearMediaCollection('script');
-            $existing->clearMediaCollection('cover');
-            $existing->delete();
+            foreach ($story->chapters as $chapter) {
+                $chapter->events()->delete();
+                $chapter->clearMediaCollection('cover');
+            }
+            $story->chapters()->delete();
+
+            $story->clearMediaCollection('script');
+            $story->clearMediaCollection('cover');
+            $story->clearMediaCollection('gallery');
+            $story->delete();
+
+            $this->command->info("  Removed: {$story->title}");
         }
+    }
 
+    private function processStory(array $config): void
+    {
         $scriptPath = database_path('stories/' . $config['script']);
 
         if (! File::exists($scriptPath) && isset($config['source_pdf'])) {
             $pdfPath = database_path('stories/' . $config['source_pdf']);
 
             if (File::exists($pdfPath)) {
-                $this->command->info("Converting PDF → TXT...");
+                $this->command->info('Converting PDF → TXT...');
                 $this->convertPdf($pdfPath, $scriptPath);
             }
         }
@@ -192,9 +203,6 @@ final class AddSingleStorySeeder extends Seeder
         return $creator;
     }
 
-    /**
-     * Attach story cover and chapter covers from repo files — only if missing.
-     */
     private function attachMissingImages(Story $story, string $slug): void
     {
         if (! $story->getFirstMedia('cover')) {
@@ -205,12 +213,12 @@ final class AddSingleStorySeeder extends Seeder
                     ->preservingOriginal()
                     ->usingFileName('cover-' . $slug . '.png')
                     ->toMediaCollection('cover', 'public');
-                $this->command->info("Story cover attached.");
+                $this->command->info('Story cover attached.');
             } else {
                 $this->command->warn("No story cover found at: covers/{$slug}.png");
             }
         } else {
-            $this->command->info("Story cover already exists — skipped.");
+            $this->command->info('Story cover already exists — skipped.');
         }
 
         foreach ($story->chapters()->orderBy('position')->get() as $chapter) {
@@ -268,17 +276,16 @@ final class AddSingleStorySeeder extends Seeder
     }
 
     // ── Story configuration ─────────────────────────────────────────
-    // Update this method to add a different story.
 
     private function getStoryConfig(): array
     {
         return [
-            'title' => 'The Wonderful Wizard of Oz',
-            'slug' => 'the-wonderful-wizard-of-oz',
+            'title' => "Alice's Adventures in Wonderland",
+            'slug' => 'alices-adventures-in-wonderland',
             'category' => 'Fantasy Adventure',
-            'script' => 'THE WONDERFUL WIZARD OF OZ_script.txt',
-            'source_pdf' => 'The Wonderful Wizard of Oz.pdf',
-            'teaser' => 'Swept from Kansas by a cyclone into the magical Land of Oz, a young girl and her unlikely companions must journey to the Emerald City and confront a powerful witch to find their way home.',
+            'script' => "Alice's Adventures in Wonderland_script.txt",
+            'source_pdf' => "RnD/Alice's Adventures in Wonderland.pdf",
+            'teaser' => 'A curious girl tumbles down a rabbit hole into a fantastical underground world where nothing is quite what it seems, and every encounter grows curiouser and curiouser.',
             'rating' => StoryRatingEnum::EVERYONE->value,
             'creator' => [
                 'first_name' => 'The Classics, Unbound',
