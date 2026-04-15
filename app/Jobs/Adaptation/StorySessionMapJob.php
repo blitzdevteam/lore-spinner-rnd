@@ -79,6 +79,9 @@ final class StorySessionMapJob implements ShouldQueue
             $sessionMap = $response->toArray();
 
             DB::transaction(function () use ($sessionMap, $adaptation): void {
+                $adaptation->sessionAdaptations()->delete();
+                $this->story->events()->update(['session_number' => null]);
+
                 $adaptation->update([
                     'story_session_map' => $sessionMap,
                     'adaptation_status' => AdaptationStatusEnum::ADAPTING_SESSIONS,
