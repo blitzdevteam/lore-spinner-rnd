@@ -124,6 +124,7 @@ final class GameController extends Controller
             ],
             'nextEvents' => $nextEvents,
             'sessionAdaptation' => $sessionAdaptation,
+            'isSessionStart' => true,
         ])->render();
 
         try {

@@ -230,6 +230,23 @@ This scene is part of a pre-designed interactive session. You are the director a
 
 SESSION: {{ $sessionAdaptation->session_number }}
 
+@if(!empty($isSessionStart) && !empty($sessionAdaptation->entry_point_diagnosis))
+@php $entryPoint = $sessionAdaptation->entry_point_diagnosis; @endphp
+--- SESSION COLD OPEN GUIDANCE ---
+This is the OPENING of this session. The following cold open defines the tone, sensory texture, and emotional direction for your first response. Use it as your creative brief --- match its energy, pacing, and atmospheric intent --- but generate your own narration in your voice and HTML format. Do not copy it verbatim.
+
+COLD OPEN DIRECTION:
+{{ $entryPoint['cold_open'] ?? '' }}
+
+EMOTIONAL PROMISE: {{ $entryPoint['emotional_promise'] ?? '' }}
+
+@if(!empty($entryPoint['format_specific_cut']['must_reintroduce']))
+CUT MATERIAL TO REINTRODUCE:
+The following information was cut from before this starting point but is essential context. Weave it naturally into your narration through action, dialogue, or environmental detail --- never as exposition dump:
+{{ $entryPoint['format_specific_cut']['must_reintroduce'] }}
+@endif
+@endif
+
 @if(!empty($sessionAdaptation->session_architecture))
 @php $arch = $sessionAdaptation->session_architecture; @endphp
 --- CURRENT SESSION BEAT MAP ---

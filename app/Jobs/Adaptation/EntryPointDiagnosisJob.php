@@ -6,10 +6,12 @@ namespace App\Jobs\Adaptation;
 
 use App\Ai\Agents\Adaptation\EntryPointDiagnosisAgent;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
+use App\Models\Event;
 use App\Models\SessionAdaptation;
 use App\Models\Story;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use RuntimeException;
 use Throwable;
 
 final class EntryPointDiagnosisJob implements ShouldQueue
@@ -36,6 +38,17 @@ final class EntryPointDiagnosisJob implements ShouldQueue
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::ENTRY_POINT_DIAGNOSIS]);
 
+            $sessionEvents = $this->story->events()
+                ->where('events.session_number', $this->sessionNumber)
+                ->orderBy('events.position')
+                ->get(['events.id', 'events.position', 'events.title', 'events.objectives']);
+
+            if ($sessionEvents->isEmpty()) {
+                throw new RuntimeException(
+                    "No events found for story {$this->story->id} session {$this->sessionNumber}"
+                );
+            }
+
             $scriptContent = file_get_contents($this->story->getFirstMediaPath('script'));
             $sessionSourcePages = mb_substr($scriptContent, 0, 16000);
 
@@ -45,10 +58,24 @@ final class EntryPointDiagnosisJob implements ShouldQueue
                     'ipAudit' => $adaptation->ip_audit,
                     'sessionNumber' => $this->sessionNumber,
                     'sessionSourcePages' => $sessionSourcePages,
+                    'sessionEvents' => $sessionEvents->map(fn (Event $ev) => [
+                        'position' => $ev->position,
+                        'title' => $ev->title,
+                        'objectives' => $ev->objectives,
+                    ])->all(),
                 ])->render()
             );
 
-            $session->update(['entry_point_diagnosis' => $response->toArray()]);
+            $result = $response->toArray();
+
+            $startPos = $result['start_event_position'] ?? null;
+            $startEvent = $sessionEvents->firstWhere('position', $startPos)
+                ?? $sessionEvents->first();
+
+            $result['start_event_id'] = $startEvent->id;
+            $result['start_event_position'] = $startEvent->position;
+
+            $session->update(['entry_point_diagnosis' => $result]);
         } catch (Throwable $throwable) {
             $session->update(['session_status' => SessionAdaptationStatusEnum::FAILED]);
             throw $throwable;

@@ -6,5 +6,11 @@ PHASE 1 AUDIT RESULT:
 
 SESSION NUMBER: {{ $sessionNumber }}
 
+EVENTS IN THIS SESSION (use these positions to identify your cut point):
+@foreach($sessionEvents as $ev)
+- Position {{ $ev['position'] }}: {{ $ev['title'] }}@if(!empty($ev['objectives'])) — {{ $ev['objectives'] }}@endif
+
+@endforeach
+
 SOURCE PAGES FOR THIS SESSION:
 {{ $sessionSourcePages }}

@@ -35,4 +35,8 @@ TASK 4 — EMOTIONAL PROMISE STATEMENT
 
 In one sentence, state the emotional promise: "The emotional promise of this cold open is: [NOUN]. A user arrives feeling [ADJECTIVE] and wanting to [VERB]."
 
-Return all four tasks as structured JSON matching the required schema.
+TASK 5 — START EVENT POSITION
+
+Using the events list provided, identify which event position number corresponds to your cut point. This is the event where the session should begin. All events before this position are cut. Return the integer event position as start_event_position.
+
+Return all five tasks as structured JSON matching the required schema.

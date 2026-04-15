@@ -98,7 +98,7 @@ Implement a 9-phase (0-8) Adaptation Layer as a production pipeline that convert
 - All existing enums (StoryStatusEnum, ChapterStatusEnum)
 - All existing jobs (ChapterExtractorJob, EventExtractorJob, etc.)
 - All existing migration files
-- Core runtime flow: turn loop, advance logic, 5-turn cap, fallback responses
+- Core runtime flow: turn loop, 5-turn cap, fallback responses
 - `PromptController.generateNarration()`, `buildConversationHistory()`, `findNextEvent()`, `getPreviousEvents()`, `getNextEvents()` — zero modifications
 
 ---
@@ -116,6 +116,47 @@ Implement a 9-phase (0-8) Adaptation Layer as a production pipeline that convert
 - Stories created before the adaptation layer have no `StoryAdaptation` row, no `session_number` on events, and no runtime state on games. All null. Runtime behaves exactly as before.
 - The `@if(!empty($sessionAdaptation) && ...)` gate in the narration template means old stories never see adaptation instructions.
 - Existing games in progress are unaffected — their events have `session_number = null`.
+
+---
+
+## Entry Point Runtime Wiring (April 15, 2026)
+
+### Problem Solved
+
+Phase 3 (Entry Point Diagnosis) produced editorial analysis identifying where each session's dramatic energy begins, but runtime ignored it completely. Games always started at event 1. Session transitions used the next sequential event. The adaptation was narrative guidance, not executable state.
+
+### What Changed
+
+**Pipeline — Phase 3 now produces a machine-usable start marker:**
+
+- `EntryPointDiagnosisAgent` schema — Added `start_event_position` (integer) field so the AI outputs the event position of the cut point.
+- `entry-point-diagnosis/prompt.blade.php` — Now includes the session's events list (positions, titles, objectives) so the AI can reference concrete positions.
+- `entry-point-diagnosis/system-prompt.blade.php` — Added Task 5 instructing the AI to identify the start event position from the events list.
+- `EntryPointDiagnosisJob` — After the AI returns `start_event_position`, resolves it to a concrete `start_event_id` (database primary key) by querying `$this->story->events()` scoped to the session. Falls back to the first event in the session if the position is invalid. Fails loudly if the session has no events. Stores both `start_event_position` (debug/AI-facing) and `start_event_id` (runtime source of truth) in the `entry_point_diagnosis` JSON.
+
+**Runtime — Games now start at the designed cut point:**
+
+- `CreateGameAction` — When a completed adaptation exists for Session 1, uses `start_event_id` from `entry_point_diagnosis` instead of the first event. Verifies the resolved event belongs to the correct story and session before trusting it. Null-safe fallback to current behavior.
+- `GameController::generateFirstNarration()` — Passes `isSessionStart = true` to the narration Blade template so the cold open guidance block fires on the first narration.
+- `PromptController::store()` — When `findNextEvent()` returns an event in a different session, applies the next session's entry point cut via `applySessionTransitionCut()`. Updates `current_session_number` in the same write path as `current_event_id`.
+- `PromptController::renderSystemPrompt()` — Computes `$isSessionStart` by checking both `$currentEvent->id === start_event_id` AND `$turnCount === 0`. Passes it to the Blade template.
+- `narration/system-prompt.blade.php` — Added "SESSION COLD OPEN GUIDANCE" block inside the adaptation gate. Fires only when `$isSessionStart` is true. Injects `cold_open` as a creative brief (tone/energy direction, not literal text), `emotional_promise`, and `must_reintroduce` guidance for cut material.
+
+### Source of Truth Rule
+
+`start_event_id` is the runtime source of truth. `start_event_position` is an AI-facing helper and debug field only. Every runtime code path trusts the resolved ID directly via `Event::find()`. No runtime path re-derives the cut from text or re-queries by position.
+
+### Safety Guards
+
+- All runtime paths verify the resolved event belongs to the expected story and session before trusting it (story ownership + session membership check).
+- Empty session events cause `EntryPointDiagnosisJob` to fail loudly with `RuntimeException`.
+- Session transitions update `current_session_number` atomically alongside `current_event_id` so consequence delivery never operates against a stale session number.
+- Skipped events between session boundaries and `start_event_id` are architecturally cut — they do not exist from the runtime's perspective.
+- All code paths fall back to current behavior when `start_event_id` is null (unadapted stories, stories adapted before this change).
+
+### Re-adaptation Required
+
+Stories already adapted need to be re-run through the pipeline to populate `start_event_position` and `start_event_id`. The existing "Re-run Adaptation" button in Filament handles this. No migration needed — the new fields are stored inside the existing `entry_point_diagnosis` JSON column.
 
 ---
 

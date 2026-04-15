@@ -54,6 +54,11 @@ class EntryPointDiagnosisAgent implements Agent, HasStructuredOutput
                 ->required()
                 ->title('Emotional Promise')
                 ->description('One sentence: "The emotional promise of this cold open is: [NOUN]. A user arrives feeling [ADJECTIVE] and wanting to [VERB]."'),
+            'start_event_position' => $schema
+                ->integer()
+                ->required()
+                ->title('Start Event Position')
+                ->description('The integer event position number where this session should begin. All events before this position within the session are cut. Must be one of the event positions listed in the session events provided.'),
         ];
     }
 }

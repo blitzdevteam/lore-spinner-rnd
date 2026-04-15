@@ -62,7 +62,16 @@ final class PromptController extends Controller
             $nextEvent = $this->findNextEvent($currentEvent, $game->story_id);
 
             if ($nextEvent) {
-                $game->update(['current_event_id' => $nextEvent->id]);
+                $gameUpdate = ['current_event_id' => $nextEvent->id];
+
+                if ($nextEvent->session_number !== null
+                    && $nextEvent->session_number !== $currentEvent->session_number) {
+                    $nextEvent = $this->applySessionTransitionCut($nextEvent, $game);
+                    $gameUpdate['current_event_id'] = $nextEvent->id;
+                    $gameUpdate['current_session_number'] = $nextEvent->session_number;
+                }
+
+                $game->update($gameUpdate);
             }
         }
 
@@ -75,6 +84,31 @@ final class PromptController extends Controller
         ]);
 
         return back();
+    }
+
+    private function applySessionTransitionCut(Event $nextEvent, Game $game): Event
+    {
+        $nextSessionAdaptation = SessionAdaptation::query()
+            ->whereHas('storyAdaptation', fn ($q) => $q->where('story_id', $game->story_id))
+            ->where('session_number', $nextEvent->session_number)
+            ->where('session_status', SessionAdaptationStatusEnum::COMPLETED)
+            ->first();
+
+        $startEventId = $nextSessionAdaptation?->entry_point_diagnosis['start_event_id'] ?? null;
+
+        if ($startEventId === null) {
+            return $nextEvent;
+        }
+
+        $cutAdjusted = Event::find($startEventId);
+
+        if ($cutAdjusted
+            && $cutAdjusted->session_number === $nextEvent->session_number
+            && $cutAdjusted->chapter->story_id === $game->story_id) {
+            return $cutAdjusted;
+        }
+
+        return $nextEvent;
     }
 
     private function findNextEvent(Event $currentEvent, int|string $storyId): ?Event
@@ -121,6 +155,13 @@ final class PromptController extends Controller
             }
         }
 
+        $isSessionStart = false;
+
+        if ($sessionAdaptation?->entry_point_diagnosis) {
+            $isSessionStart = $currentEvent->id === ($sessionAdaptation->entry_point_diagnosis['start_event_id'] ?? null)
+                && $turnCount === 0;
+        }
+
         return view('ai.agents.narration.system-prompt', [
             'characterName' => $storyData['character_name'] ?? null,
             'worldRules' => $storyData['world_rules'] ?? [],
@@ -136,6 +177,7 @@ final class PromptController extends Controller
             'nextEvents' => $this->getNextEvents($currentEvent, 2),
             'turnCount' => $turnCount,
             'sessionAdaptation' => $sessionAdaptation,
+            'isSessionStart' => $isSessionStart,
         ])->render();
     }
 
