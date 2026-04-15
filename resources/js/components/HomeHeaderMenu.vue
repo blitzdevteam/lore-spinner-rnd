@@ -2,7 +2,7 @@
 import { index } from '@/wayfinder/routes';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, House, LucideIcon } from 'lucide-vue-next';
+import { BookOpen, House, LucideIcon, Mic } from 'lucide-vue-next';
 
 const menu: {
     title: string;
@@ -18,6 +18,11 @@ const menu: {
         title: 'Library',
         link: storiesIndex().url,
         icon: BookOpen,
+    },
+    {
+        title: 'Voice Lab',
+        link: '/user/voice-lab',
+        icon: Mic,
     },
 ];
 
