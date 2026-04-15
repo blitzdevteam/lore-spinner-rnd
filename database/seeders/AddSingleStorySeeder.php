@@ -14,7 +14,6 @@ use App\Jobs\Story\SystemPromptGeneratorJob;
 use App\Models\Category;
 use App\Models\Chapter;
 use App\Models\Creator;
-use App\Models\Game;
 use App\Models\Story;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -24,13 +23,14 @@ use Smalot\PdfParser\Parser;
 use Throwable;
 
 /**
- * Wipe every existing story and seed a single new one from scratch.
+ * Seed a single story from scratch.
  *
- * - Removes ALL stories (with chapters, events, games, prompts, media)
  * - Creates the creator if missing
  * - Converts PDF → TXT if no .txt exists
  * - Runs the full extraction pipeline (chapters → events → system prompt → opening)
  * - Attaches covers from database/stories/covers/ if present
+ *
+ * To wipe existing stories first, run: php artisan stories:wipe
  *
  * Usage: php artisan db:seed --class=AddSingleStorySeeder --force
  */
@@ -46,46 +46,10 @@ final class AddSingleStorySeeder extends Seeder
         config(['queue.default' => 'sync']);
 
         try {
-            $this->removeAllStories();
-
             $config = $this->getStoryConfig();
             $this->processStory($config);
         } finally {
             config(['queue.default' => $previousQueue]);
-        }
-    }
-
-    private function removeAllStories(): void
-    {
-        $stories = Story::all();
-
-        if ($stories->isEmpty()) {
-            $this->command->info('No existing stories to remove.');
-
-            return;
-        }
-
-        $this->command->info("Removing {$stories->count()} existing stories...");
-
-        foreach ($stories as $story) {
-            foreach ($story->games as $game) {
-                $game->prompts()->delete();
-            }
-            $story->games()->delete();
-            $story->comments()->delete();
-
-            foreach ($story->chapters as $chapter) {
-                $chapter->events()->delete();
-                $chapter->clearMediaCollection('cover');
-            }
-            $story->chapters()->delete();
-
-            $story->clearMediaCollection('script');
-            $story->clearMediaCollection('cover');
-            $story->clearMediaCollection('gallery');
-            $story->delete();
-
-            $this->command->info("  Removed: {$story->title}");
         }
     }
 
@@ -119,7 +83,7 @@ final class AddSingleStorySeeder extends Seeder
             'title' => $config['title'],
             'slug' => Str::slug($config['title']),
             'teaser' => $config['teaser'],
-            'opening' => null,
+            'opening' => $config['opening'] ?? null,
             'status' => StoryStatusEnum::AWAITING_EXTRACTING_CHAPTERS_REQUEST->value,
             'rating' => $config['rating'],
             'published_at' => now(),
@@ -154,8 +118,12 @@ final class AddSingleStorySeeder extends Seeder
         $this->command->info('Generating system prompt...');
         $this->withRetry(fn () => SystemPromptGeneratorJob::dispatchSync($story));
 
-        $this->command->info('Generating cinematic opening...');
-        $this->withRetry(fn () => StoryOpeningGeneratorJob::dispatchSync($story->fresh()));
+        if ($story->opening) {
+            $this->command->info('Opening provided — skipping AI generation.');
+        } else {
+            $this->command->info('Generating cinematic opening...');
+            $this->withRetry(fn () => StoryOpeningGeneratorJob::dispatchSync($story->fresh()));
+        }
 
         $story->update(['status' => StoryStatusEnum::PUBLISHED->value]);
         $this->command->info('Published!');
@@ -287,6 +255,57 @@ final class AddSingleStorySeeder extends Seeder
             'source_pdf' => "RnD/Alice's Adventures in Wonderland.pdf",
             'teaser' => 'A curious girl tumbles down a rabbit hole into a fantastical underground world where nothing is quite what it seems, and every encounter grows curiouser and curiouser.',
             'rating' => StoryRatingEnum::EVERYONE->value,
+            'opening' => <<<'MD'
+                # Alice's Adventures in Wonderland.
+
+                *A summer afternoon.*
+                *A riverbank. A book with no pictures.*
+                *The particular boredom of a day*
+                *that feels like it will never become anything.*
+
+                ---
+
+                **You are Alice.**
+
+                Curious in the way that's gotten you into trouble before.
+                Brave in the way you don't quite know yet.
+                A girl who follows her curiosity
+                without once stopping to ask if she should.
+
+                ---
+
+                Then — *a rabbit.*
+
+                White. Pink eyes. A waistcoat.
+                A pocket watch it actually checks.
+                The words — spoken aloud, to no one —
+
+                > *"Oh dear. I shall be late."*
+
+                Any sensible person would have let it go.
+                You are not, at this particular moment,
+                feeling very sensible.
+
+                ---
+
+                Down here, nothing follows the rules
+                you were taught.
+                Things grow when they shouldn't.
+                Shrink without warning.
+                Speak when they have no business speaking.
+
+                **Wonderland doesn't care how sensible you are.**
+                It only cares how far
+                you're willing to fall.
+
+                ---
+
+                *This is the moment, Alice.*
+                *The one that splits everything*
+                *into before and after.*
+
+                > **"Curiouser and curiouser."**
+                MD,
             'creator' => [
                 'first_name' => 'The Classics, Unbound',
                 'last_name' => '',

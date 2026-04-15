@@ -13,8 +13,9 @@ use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Support\Icons\Heroicon;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class ViewStory extends ViewRecord
 {
@@ -74,6 +75,87 @@ final class ViewStory extends ViewRecord
                         AdaptationStatusEnum::COMPLETED,
                         AdaptationStatusEnum::PARTIAL_COMPLETION,
                     ])),
+
+            Action::make('export-adaptation-json')
+                ->label('Export JSON')
+                ->action(function (Story $story): StreamedResponse {
+                    $adaptation = $story->adaptation->load('sessionAdaptations');
+                    $slug = $story->slug ?? 'story-' . $story->id;
+
+                    $data = [
+                        'story' => ['id' => $story->id, 'title' => $story->title, 'slug' => $slug],
+                        'exported_at' => now()->toIso8601String(),
+                        'adaptation_status' => $adaptation->adaptation_status->value,
+                        'story_wide' => [
+                            'format_detection' => $adaptation->format_detection,
+                            'ip_audit' => $adaptation->ip_audit,
+                            'story_session_map' => $adaptation->story_session_map,
+                        ],
+                        'sessions' => $adaptation->sessionAdaptations->sortBy('session_number')->map(fn ($s) => [
+                            'session_number' => $s->session_number,
+                            'session_status' => $s->session_status->value,
+                            'entry_point_diagnosis' => $s->entry_point_diagnosis,
+                            'session_architecture' => $s->session_architecture,
+                            'session_choice_design' => $s->session_choice_design,
+                            'choice_consequence_map' => $s->choice_consequence_map,
+                            'session_close_design' => $s->session_close_design,
+                            'editorial_verification' => $s->editorial_verification,
+                        ])->values()->toArray(),
+                    ];
+
+                    $filename = "adaptation-{$slug}-" . now()->format('Y-m-d_His') . '.json';
+
+                    return response()->streamDownload(function () use ($data) {
+                        echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                    }, $filename, ['Content-Type' => 'application/json']);
+                })
+                ->color(Color::Gray)
+                ->icon(Heroicon::ArrowDownTray)
+                ->visible(fn (Story $story): bool => $story->adaptation !== null),
+
+            Action::make('export-adaptation-csv')
+                ->label('Export CSV')
+                ->action(function (Story $story): StreamedResponse {
+                    $adaptation = $story->adaptation->load('sessionAdaptations');
+                    $slug = $story->slug ?? 'story-' . $story->id;
+                    $filename = "adaptation-{$slug}-" . now()->format('Y-m-d_His') . '.csv';
+
+                    return response()->streamDownload(function () use ($adaptation) {
+                        $handle = fopen('php://output', 'w');
+
+                        fputcsv($handle, ['story_status', 'format_detection', 'ip_audit', 'story_session_map']);
+                        fputcsv($handle, [
+                            $adaptation->adaptation_status->value,
+                            $adaptation->format_detection ? 'done' : 'pending',
+                            $adaptation->ip_audit ? 'done' : 'pending',
+                            $adaptation->story_session_map ? 'done' : 'pending',
+                        ]);
+                        fputcsv($handle, []);
+                        fputcsv($handle, [
+                            'session_number', 'session_status', 'entry_point', 'architecture',
+                            'choice_design', 'consequence_map', 'session_close', 'editorial', 'updated_at',
+                        ]);
+
+                        foreach ($adaptation->sessionAdaptations->sortBy('session_number') as $s) {
+                            fputcsv($handle, [
+                                $s->session_number,
+                                $s->session_status->value,
+                                $s->entry_point_diagnosis ? 'done' : 'pending',
+                                $s->session_architecture ? 'done' : 'pending',
+                                $s->session_choice_design ? 'done' : 'pending',
+                                $s->choice_consequence_map ? 'done' : 'pending',
+                                $s->session_close_design ? 'done' : 'pending',
+                                $s->editorial_verification ? 'done' : 'pending',
+                                $s->updated_at?->toDateTimeString(),
+                            ]);
+                        }
+
+                        fclose($handle);
+                    }, $filename, ['Content-Type' => 'text/csv']);
+                })
+                ->color(Color::Gray)
+                ->icon(Heroicon::TableCells)
+                ->visible(fn (Story $story): bool => $story->adaptation !== null),
 
             EditAction::make(),
         ];
