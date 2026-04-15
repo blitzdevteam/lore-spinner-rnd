@@ -16,6 +16,11 @@ use Illuminate\Support\Carbon;
  * @property int $story_id
  * @property int $user_id
  * @property int $current_event_id
+ * @property int|null $current_session_number
+ * @property string|null $current_beat_type
+ * @property array|null $branching_choices_taken
+ * @property array|null $tracked_dimensions
+ * @property array|null $branch_resolution_log
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Story $story
@@ -30,6 +35,16 @@ final class Game extends Model
     protected $guarded = [
         'id', 'created_at', 'updated_at',
     ];
+
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'branching_choices_taken' => 'json',
+            'tracked_dimensions' => 'json',
+            'branch_resolution_log' => 'json',
+        ];
+    }
 
     /**
      * @return BelongsTo<Story, $this>

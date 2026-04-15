@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -44,6 +45,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property-read int|null $events_count
  * @property-read Collection<int, Game> $games
  * @property-read int|null $games_count
+ * @property-read StoryAdaptation|null $adaptation
  */
 final class Story extends Model implements HasMedia
 {
@@ -121,6 +123,14 @@ final class Story extends Model implements HasMedia
     public function games(): HasMany
     {
         return $this->hasMany(Game::class);
+    }
+
+    /**
+     * @return HasOne<StoryAdaptation, $this>
+     */
+    public function adaptation(): HasOne
+    {
+        return $this->hasOne(StoryAdaptation::class);
     }
 
     /**

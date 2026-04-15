@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property int $chapter_id
  * @property string $name
  * @property array<string> $attributes
+ * @property int|null $session_number
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Chapter $chapter
@@ -49,5 +50,21 @@ final class Event extends Model
     public function prompts(): HasMany
     {
         return $this->hasMany(Prompt::class);
+    }
+
+    /**
+     * Convenience helper for non-hot-path contexts (Filament, debugging, seeders).
+     * Production runtime controllers must use the explicit inline query with readiness gate.
+     */
+    public function sessionAdaptation(): ?SessionAdaptation
+    {
+        if ($this->session_number === null) {
+            return null;
+        }
+
+        return SessionAdaptation::query()
+            ->whereHas('storyAdaptation', fn ($q) => $q->where('story_id', $this->chapter->story_id))
+            ->where('session_number', $this->session_number)
+            ->first();
     }
 }
