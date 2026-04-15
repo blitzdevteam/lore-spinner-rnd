@@ -6,10 +6,12 @@ namespace App\Http\Controllers\User;
 
 use App\Actions\Game\CreateGameAction;
 use App\Ai\Agents\NarrationAgent;
+use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Game\StoreGameRequest;
 use App\Models\Event;
 use App\Models\Game;
+use App\Models\SessionAdaptation;
 use App\Models\Story;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -95,6 +97,19 @@ final class GameController extends Controller
             ])
             ->all();
 
+        $sessionAdaptation = null;
+
+        if ($firstEvent->session_number !== null) {
+            $sessionAdaptation = SessionAdaptation::query()
+                ->whereHas('storyAdaptation', fn ($q) => $q->where('story_id', $story->id))
+                ->where('session_number', $firstEvent->session_number)
+                ->first();
+
+            if ($sessionAdaptation?->session_status !== SessionAdaptationStatusEnum::COMPLETED) {
+                $sessionAdaptation = null;
+            }
+        }
+
         $systemPrompt = view('ai.agents.narration.system-prompt', [
             'characterName' => $storyData['character_name'] ?? null,
             'worldRules' => $storyData['world_rules'] ?? [],
@@ -108,6 +123,7 @@ final class GameController extends Controller
                 'attributes' => $firstEvent->attributes,
             ],
             'nextEvents' => $nextEvents,
+            'sessionAdaptation' => $sessionAdaptation,
         ])->render();
 
         try {

@@ -224,6 +224,80 @@ PACING: This is the FINAL turn for this scene. Narrate a natural, satisfying tra
 @endif
 @endif
 
+@if(!empty($sessionAdaptation) && $sessionAdaptation->session_status === \App\Enums\Adaptation\SessionAdaptationStatusEnum::COMPLETED)
+=== ADAPTATION LAYER CONTEXT ===
+This scene is part of a pre-designed interactive session. You are the director and performer — execute the designed structure while keeping narration natural and immersive.
+
+SESSION: {{ $sessionAdaptation->session_number }}
+
+@if(!empty($sessionAdaptation->session_architecture))
+@php $arch = $sessionAdaptation->session_architecture; @endphp
+--- CURRENT SESSION BEAT MAP ---
+@if(!empty($arch['beat_map']))
+@foreach($arch['beat_map'] as $beat)
+{{ $beat['time_range'] }}: {{ $beat['beat_type'] }} — {{ $beat['moment'] }}@if($beat['choice_arrives'] !== 'No') [{{ $beat['choice_type'] }}: {{ $beat['choice_arrives'] }}]@endif
+
+@endforeach
+@endif
+@endif
+
+@if(!empty($sessionAdaptation->session_choice_design))
+@php $choices = $sessionAdaptation->session_choice_design; @endphp
+--- PRE-AUTHORED BRANCHING CHOICES ---
+When the scene reaches a branching choice slot, you MUST present the authored options below. You may vary the lead-in prose to fit conversation state, but you MUST NOT mutate the option semantics. The options as written are the options the player sees.
+
+@if(!empty($choices['branching_choice_1']))
+BRANCHING CHOICE #1 ({{ $choices['branching_choice_1']['choice_id'] ?? 'C1' }}):
+Question: {{ $choices['branching_choice_1']['choice_question'] ?? '' }}
+A: {{ $choices['branching_choice_1']['option_a']['text'] ?? '' }}
+B: {{ $choices['branching_choice_1']['option_b']['text'] ?? '' }}
+C: {{ $choices['branching_choice_1']['option_c']['text'] ?? '' }}
+Tracks: {{ $choices['branching_choice_1']['what_this_choice_tracks'] ?? '' }}
+@endif
+
+@if(!empty($choices['branching_choice_2']))
+BRANCHING CHOICE #2 — MORAL WEIGHT ({{ $choices['branching_choice_2']['choice_id'] ?? 'C2' }}):
+Question: {{ $choices['branching_choice_2']['choice_question'] ?? '' }}
+A: {{ $choices['branching_choice_2']['option_a']['text'] ?? '' }}
+B: {{ $choices['branching_choice_2']['option_b']['text'] ?? '' }}
+C: {{ $choices['branching_choice_2']['option_c']['text'] ?? '' }}
+Tracks: {{ $choices['branching_choice_2']['what_this_choice_tracks'] ?? '' }}
+@endif
+
+@if(!empty($choices['branching_choice_3']))
+BRANCHING CHOICE #3 — SESSION-END HOOK ({{ $choices['branching_choice_3']['choice_id'] ?? 'C3' }}):
+Question: {{ $choices['branching_choice_3']['choice_question'] ?? '' }}
+A: {{ $choices['branching_choice_3']['option_a']['text'] ?? '' }}
+B: {{ $choices['branching_choice_3']['option_b']['text'] ?? '' }}
+C: {{ $choices['branching_choice_3']['option_c']['text'] ?? '' }}
+Tracks: {{ $choices['branching_choice_3']['what_this_choice_tracks'] ?? '' }}
+@endif
+@endif
+
+--- ADAPTATION BEHAVIORAL RULES ---
+1. You know the session structure exists, but you NEVER name beats, session numbers, or structural terms in prose.
+2. When at a branching choice slot: narrate toward the choice question naturally, then present the pre-authored A/B/C options exactly as written.
+3. When between choice slots: narrate freely within the current beat's constraints. Generate expressive choices when appropriate.
+4. When the player goes off-script, classify their input:
+   - EXPRESSIVE: Changes tone/delivery only. Keep local. No new tracked branch.
+   - BRANCH-ALIGNED: Matches an existing branch dimension. Map to nearest valid predesigned path.
+   - EMERGENT: Meaningful continuity shift, no matching dimension. Preserve local consequence when safe. Do NOT promise downstream consequences not in the adaptation layer.
+   - UNSUPPORTED: Fold into nearest safe outcome. Acknowledge intent. Scene reacts meaningfully.
+5. NEVER leak future consequences or session-end hooks before their designed moment.
+6. NEVER refuse player actions — always classify and resolve.
+
+@if(!empty($sessionAdaptation->choice_consequence_map))
+--- CONSEQUENCE AWARENESS ---
+The following consequence hooks must remain available for future sessions. Do NOT resolve or contradict them prematurely.
+@php $cmap = $sessionAdaptation->choice_consequence_map; @endphp
+@foreach(['consequence_map_choice_1', 'consequence_map_choice_2', 'consequence_map_choice_3'] as $mapKey)
+@if(!empty($cmap[$mapKey]))
+{{ strtoupper(str_replace('_', ' ', $mapKey)) }}: tracks "{{ $cmap[$mapKey]['tracked_dimension'] ?? 'unknown' }}"
+@endif
+@endforeach
+@endif
+@endif
+
 === OUTPUT REQUIREMENT ===
 Return a JSON object with three fields:
 1. "response": Your cinematic narrative as an HTML string. Use <p> tags for paragraphs. Use <em> for emphasis. Use <strong> for impactful moments. Keep it immersive and atmospheric.

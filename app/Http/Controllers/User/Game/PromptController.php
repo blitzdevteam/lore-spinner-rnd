@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\User\Game;
 
 use App\Ai\Agents\NarrationAgent;
+use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Game\Prompt\StorePromptRequest;
 use App\Models\Chapter;
 use App\Models\Event;
 use App\Models\Game;
+use App\Models\SessionAdaptation;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
@@ -106,6 +108,19 @@ final class PromptController extends Controller
     ): string {
         $storyData = $story->system_prompt ?? [];
 
+        $sessionAdaptation = null;
+
+        if ($currentEvent->session_number !== null) {
+            $sessionAdaptation = SessionAdaptation::query()
+                ->whereHas('storyAdaptation', fn ($q) => $q->where('story_id', $story->id))
+                ->where('session_number', $currentEvent->session_number)
+                ->first();
+
+            if ($sessionAdaptation?->session_status !== SessionAdaptationStatusEnum::COMPLETED) {
+                $sessionAdaptation = null;
+            }
+        }
+
         return view('ai.agents.narration.system-prompt', [
             'characterName' => $storyData['character_name'] ?? null,
             'worldRules' => $storyData['world_rules'] ?? [],
@@ -120,6 +135,7 @@ final class PromptController extends Controller
             ],
             'nextEvents' => $this->getNextEvents($currentEvent, 2),
             'turnCount' => $turnCount,
+            'sessionAdaptation' => $sessionAdaptation,
         ])->render();
     }
 
