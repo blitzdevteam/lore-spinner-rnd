@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Creator\Resources\Stories\Schemas;
 
+use App\Enums\Adaptation\AdaptationStatusEnum;
 use App\Enums\Story\StoryRatingEnum;
 use App\Enums\Story\StoryStatusEnum;
 use App\Models\Story;
@@ -71,6 +72,35 @@ final class StoryInfolist
                             ->placeholder('-')
                             ->columnSpan(2),
                     ]),
+                Section::make()
+                    ->columnSpanFull()
+                    ->columns(2)
+                    ->heading('Adaptation')
+                    ->description('Interactive adaptation pipeline status')
+                    ->schema([
+                        TextEntry::make('adaptation.adaptation_status')
+                            ->label('Adaptation Status')
+                            ->badge()
+                            ->color(fn (?AdaptationStatusEnum $state): string => $state?->getSeverity() ?? 'gray')
+                            ->placeholder('Not started'),
+                        TextEntry::make('adaptation.sessionAdaptations')
+                            ->label('Session Progress')
+                            ->formatStateUsing(function ($state, Story $record) {
+                                $adaptation = $record->adaptation;
+                                if (! $adaptation) {
+                                    return 'No adaptation data';
+                                }
+                                $sessions = $adaptation->sessionAdaptations;
+                                if ($sessions->isEmpty()) {
+                                    return 'No sessions yet';
+                                }
+                                $completed = $sessions->where('session_status', \App\Enums\Adaptation\SessionAdaptationStatusEnum::COMPLETED)->count();
+
+                                return "{$completed}/{$sessions->count()} sessions completed";
+                            })
+                            ->placeholder('No sessions'),
+                    ])
+                    ->visible(fn (Story $record): bool => $record->adaptation !== null),
                 Section::make()
                     ->columnSpanFull()
                     ->columns(2)

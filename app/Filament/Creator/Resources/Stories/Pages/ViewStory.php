@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Creator\Resources\Stories\Pages;
 
+use App\Enums\Adaptation\AdaptationStatusEnum;
 use App\Enums\Story\StoryStatusEnum;
 use App\Filament\Creator\Resources\Stories\StoryResource;
+use App\Jobs\Adaptation\RunAdaptationPipelineJob;
 use App\Models\Story;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -45,6 +47,33 @@ final class ViewStory extends ViewRecord
                         ->columnSpan(2),
                 ])
                 ->visible(fn (Story $story): bool => $story->canMarkAsPublished()),
+
+            Action::make('run-adaptation')
+                ->label('Run Adaptation')
+                ->action(function (Story $story): void {
+                    RunAdaptationPipelineJob::dispatch($story);
+                })
+                ->color(Color::Blue)
+                ->icon(Heroicon::Sparkles)
+                ->requiresConfirmation()
+                ->modalDescription('This will run the full adaptation pipeline for this story. The process runs in the background.')
+                ->visible(fn (Story $story): bool => $story->chapters()->exists()
+                    && (! $story->adaptation || $story->adaptation->adaptation_status === AdaptationStatusEnum::FAILED)),
+
+            Action::make('rerun-adaptation')
+                ->label('Re-run Adaptation')
+                ->action(function (Story $story): void {
+                    RunAdaptationPipelineJob::dispatch($story, force: true);
+                })
+                ->color(Color::Orange)
+                ->icon(Heroicon::ArrowPath)
+                ->requiresConfirmation()
+                ->modalDescription('This will reset and re-run the full adaptation pipeline. All existing adaptation data will be replaced.')
+                ->visible(fn (Story $story): bool => $story->adaptation
+                    && in_array($story->adaptation->adaptation_status, [
+                        AdaptationStatusEnum::COMPLETED,
+                        AdaptationStatusEnum::PARTIAL_COMPLETION,
+                    ])),
 
             EditAction::make(),
         ];

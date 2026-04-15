@@ -6,6 +6,7 @@ namespace App\Filament\Creator\Resources\Stories\Pages;
 
 use App\Enums\Story\StoryStatusEnum;
 use App\Filament\Creator\Resources\Stories\StoryResource;
+use App\Jobs\Adaptation\RunAdaptationPipelineJob;
 use App\Jobs\Chapter\ChapterExtractorJob;
 use App\Jobs\Story\StoryCoverGeneratorJob;
 use App\Jobs\Story\StoryOpeningGeneratorJob;
@@ -43,6 +44,8 @@ final class CreateStory extends CreateRecord
             SystemPromptGeneratorJob::dispatch($story);
             StoryCoverGeneratorJob::dispatch($story);
             StoryOpeningGeneratorJob::dispatch($story)->delay(now()->addMinutes(5));
+
+            RunAdaptationPipelineJob::dispatch($story)->delay(now()->addMinutes(2));
         } else {
             $story->update([
                 'status' => StoryStatusEnum::DRAFT,
