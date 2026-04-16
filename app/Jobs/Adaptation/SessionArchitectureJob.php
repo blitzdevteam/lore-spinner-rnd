@@ -35,7 +35,7 @@ final class SessionArchitectureJob implements ShouldQueue
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::SESSION_ARCHITECTURE]);
 
-            $scriptContent = file_get_contents($this->story->getFirstMediaPath('script'));
+            $scriptContent = $this->story->getScriptContent();
             $sessionSourcePages = mb_substr($scriptContent, 0, 16000);
 
             $response = (new SessionArchitectureAgent)->prompt(

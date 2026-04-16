@@ -37,7 +37,7 @@ final class SessionCloseJob implements ShouldQueue
 
             $choiceDesign = $session->session_choice_design;
             $consequenceMap = $session->choice_consequence_map;
-            $scriptContent = file_get_contents($this->story->getFirstMediaPath('script'));
+            $scriptContent = $this->story->getScriptContent();
 
             $sessionAllocation = collect($adaptation->story_session_map['session_allocation'] ?? [])
                 ->firstWhere('session_number', $this->sessionNumber);

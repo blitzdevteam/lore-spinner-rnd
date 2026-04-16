@@ -39,7 +39,7 @@ final class IpAuditJob implements ShouldQueue
                 'adaptation_status' => AdaptationStatusEnum::IP_AUDIT,
             ]);
 
-            $scriptContent = file_get_contents($this->story->getFirstMediaPath('script'));
+            $scriptContent = $this->story->getScriptContent();
             $totalLength = mb_strlen($scriptContent);
             $pageSize = 8000;
 

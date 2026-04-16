@@ -178,6 +178,28 @@ final class Story extends Model implements HasMedia
     }
 
     /**
+     * Read the full script text, falling back to reconstructed event content
+     * when the media file is unavailable (e.g. ephemeral Cloud filesystems).
+     */
+    public function getScriptContent(): string
+    {
+        $path = $this->getFirstMediaPath('script');
+
+        if ($path && file_exists($path)) {
+            return file_get_contents($path);
+        }
+
+        return $this->chapters()
+            ->orderBy('position')
+            ->with(['events' => fn ($q) => $q->orderBy('position')])
+            ->get()
+            ->flatMap(fn (Chapter $chapter) => $chapter->events->map(
+                fn (Event $event) => "## {$chapter->title} — {$event->title}\n\n{$event->content}"
+            ))
+            ->implode("\n\n---\n\n");
+    }
+
+    /**
      * @return bool
      */
     public function canMarkAsPublished(): bool

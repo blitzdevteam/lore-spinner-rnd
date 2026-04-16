@@ -37,7 +37,7 @@ final class ChoiceDesignJob implements ShouldQueue
             $session->update(['session_status' => SessionAdaptationStatusEnum::CHOICE_DESIGN]);
 
             $ipAudit = $adaptation->ip_audit;
-            $scriptContent = file_get_contents($this->story->getFirstMediaPath('script'));
+            $scriptContent = $this->story->getScriptContent();
 
             $response = (new ChoiceDesignAgent)->prompt(
                 view('ai.agents.adaptation.choice-design.prompt', [

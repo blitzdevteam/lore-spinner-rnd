@@ -39,7 +39,7 @@ final class FormatDetectionJob implements ShouldQueue
                 'adaptation_status' => AdaptationStatusEnum::FORMAT_DETECTION,
             ]);
 
-            $scriptContent = file_get_contents($this->story->getFirstMediaPath('script'));
+            $scriptContent = $this->story->getScriptContent();
             $excerpt = mb_substr($scriptContent, 0, 8000);
 
             $response = (new FormatDetectionAgent)->prompt(

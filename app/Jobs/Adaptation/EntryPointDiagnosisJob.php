@@ -49,7 +49,7 @@ final class EntryPointDiagnosisJob implements ShouldQueue
                 );
             }
 
-            $scriptContent = file_get_contents($this->story->getFirstMediaPath('script'));
+            $scriptContent = $this->story->getScriptContent();
             $sessionSourcePages = mb_substr($scriptContent, 0, 16000);
 
             $response = (new EntryPointDiagnosisAgent)->prompt(
