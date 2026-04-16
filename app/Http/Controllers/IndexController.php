@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Creator;
+use App\Models\Game;
 use App\Models\Story;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Response;
 
 final class IndexController extends Controller
@@ -13,6 +15,29 @@ final class IndexController extends Controller
     public function __invoke(): Response
     {
         return inertia('Index', [
+            'featuredStory' => fn () => Story::query()
+                ->with([
+                    'category:id,title',
+                    'creator:id,first_name,last_name',
+                    'media',
+                ])
+                ->where('slug', 'alices-adventures-in-wonderland')
+                ->published()
+                ->first()
+                ?->toResource(),
+            'lastGame' => fn () => Auth::check()
+                ? Game::query()
+                    ->where('user_id', Auth::id())
+                    ->with([
+                        'story' => fn ($q) => $q->with(['media', 'category:id,title', 'creator:id,first_name,last_name']),
+                        'currentEvent:id,title,position',
+                        'currentEvent.chapter:id,position,title',
+                    ])
+                    ->withCount('prompts')
+                    ->latest('updated_at')
+                    ->first()
+                    ?->toResource()
+                : null,
             'creators' => fn () => Creator::query()
                 ->select([
                     'id', 'username', 'first_name', 'last_name', 'avatar', 'bio',

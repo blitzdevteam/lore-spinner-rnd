@@ -6,19 +6,25 @@ import BaseCreatorCard from '@/components/BaseCreatorCard.vue';
 import BaseLogo from '@/components/BaseLogo.vue';
 import BaseStoryCard from '@/components/BaseStoryCard.vue';
 import CommunitySignup from '@/components/CommunitySignup.vue';
+import ContinueStories from '@/components/ContinueStories.vue';
 import FrequentlyAskedQuestion from '@/components/FrequentlyAskedQuestion.vue';
+import HeroBanner from '@/components/HeroBanner.vue';
 import HomeLayout from '@/layouts/HomeLayout.vue';
-import { CreatorInterface, StoryInterface } from '@/types';
+import { CreatorInterface, GameInterface, StoryInterface } from '@/types';
 import { show } from '@/wayfinder/routes/stories';
 import { router } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 const props = withDefaults(
     defineProps<{
+        featuredStory?: StoryInterface | null;
+        lastGame?: GameInterface | null;
         creators?: CreatorInterface[];
         stories?: StoryInterface[];
     }>(),
     {
+        featuredStory: null,
+        lastGame: null,
         creators: () => [],
         stories: () => [],
     },
@@ -75,7 +81,12 @@ onBeforeUnmount(() => {
 
 <template>
     <HomeLayout>
+        <!-- Netflix-style Editor's Choice Banner -->
+        <HeroBanner v-if="featuredStory" :story="featuredStory" />
+
+        <!-- Fallback: original banner when no featured story -->
         <div
+            v-else
             class="grid h-64 place-items-center bg-cover md:h-108"
             :style="{ background: `url(${BannerImage}) center center no-repeat`, backgroundSize: 'cover' }"
         >
@@ -86,6 +97,9 @@ onBeforeUnmount(() => {
                 </div>
             </div>
         </div>
+
+        <!-- Continue Stories — only shown when user has an active game -->
+        <ContinueStories v-if="lastGame" :game="lastGame" />
 
         <div class="py-10 md:py-18">
             <div class="container">
