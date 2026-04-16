@@ -8,6 +8,7 @@ use App\Models\Creator;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Prism\Prism\Facades\Prism;
 use Throwable;
 
@@ -67,12 +68,17 @@ final class CreatorAvatarGeneratorJob implements ShouldQueue
                 return;
             }
 
-            $this->creator
+            $media = $this->creator
                 ->addMediaFromBase64($image->base64)
                 ->usingFileName("avatar-{$this->creator->id}.png")
                 ->toMediaCollection('avatar');
 
-            Log::info("CreatorAvatarGeneratorJob: Generated avatar for creator [{$this->creator->id}] — \"{$this->creator->full_name}\".");
+            if (! Storage::disk($media->disk)->exists($media->getPathRelativeToRoot())) {
+                $media->delete();
+                throw new \RuntimeException("CreatorAvatarGeneratorJob: File not found on disk [{$media->disk}] after save — config may be stale. Retrying.");
+            }
+
+            Log::info("CreatorAvatarGeneratorJob: Generated avatar for creator [{$this->creator->id}] on disk [{$media->disk}] — \"{$this->creator->full_name}\".");
         } catch (Throwable $throwable) {
             Log::error("CreatorAvatarGeneratorJob: Failed for creator [{$this->creator->id}]: {$throwable->getMessage()}");
 

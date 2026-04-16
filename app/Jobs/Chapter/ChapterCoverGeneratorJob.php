@@ -8,6 +8,7 @@ use App\Models\Chapter;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Prism\Prism\Facades\Prism;
 use Throwable;
 
@@ -63,12 +64,17 @@ final class ChapterCoverGeneratorJob implements ShouldQueue
             return;
         }
 
-        $this->chapter
+        $media = $this->chapter
             ->addMediaFromBase64($image->base64)
             ->usingFileName("chapter-cover-{$this->chapter->id}.png")
             ->toMediaCollection('cover');
 
-        Log::info("ChapterCoverGeneratorJob: Generated cover for chapter [{$this->chapter->id}] — \"{$this->chapter->title}\".");
+        if (! Storage::disk($media->disk)->exists($media->getPathRelativeToRoot())) {
+            $media->delete();
+            throw new \RuntimeException("ChapterCoverGeneratorJob: File not found on disk [{$media->disk}] after save — config may be stale. Retrying.");
+        }
+
+        Log::info("ChapterCoverGeneratorJob: Generated cover for chapter [{$this->chapter->id}] on disk [{$media->disk}] — \"{$this->chapter->title}\".");
     }
 
     private function generateImage(string $prompt): ?\Prism\Prism\ValueObjects\GeneratedImage

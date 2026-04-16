@@ -8,6 +8,7 @@ use App\Models\Story;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Prism\Prism\Facades\Prism;
 use Throwable;
 
@@ -61,12 +62,17 @@ final class StoryBannerGeneratorJob implements ShouldQueue
                 return;
             }
 
-            $this->story
+            $media = $this->story
                 ->addMediaFromBase64($image->base64)
                 ->usingFileName("banner-{$this->story->id}.png")
                 ->toMediaCollection('banner');
 
-            Log::info("StoryBannerGeneratorJob: Generated banner for story [{$this->story->id}] — \"{$this->story->title}\".");
+            if (! Storage::disk($media->disk)->exists($media->getPathRelativeToRoot())) {
+                $media->delete();
+                throw new \RuntimeException("StoryBannerGeneratorJob: File not found on disk [{$media->disk}] after save — config may be stale. Retrying.");
+            }
+
+            Log::info("StoryBannerGeneratorJob: Generated banner for story [{$this->story->id}] on disk [{$media->disk}] — \"{$this->story->title}\".");
         } catch (Throwable $throwable) {
             Log::error("StoryBannerGeneratorJob: Failed for story [{$this->story->id}]: {$throwable->getMessage()}");
 
