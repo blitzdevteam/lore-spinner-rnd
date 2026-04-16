@@ -255,57 +255,7 @@ final class AddSingleStorySeeder extends Seeder
             'source_pdf' => "RnD/Alice's Adventures in Wonderland.pdf",
             'teaser' => 'A curious girl tumbles down a rabbit hole into a fantastical underground world where nothing is quite what it seems, and every encounter grows curiouser and curiouser.',
             'rating' => StoryRatingEnum::EVERYONE->value,
-            'opening' => <<<'MD'
-                # Alice's Adventures in Wonderland.
-
-                *A summer afternoon.*
-                *A riverbank. A book with no pictures.*
-                *The particular boredom of a day*
-                *that feels like it will never become anything.*
-
-                ---
-
-                **You are Alice.**
-
-                Curious in the way that's gotten you into trouble before.
-                Brave in the way you don't quite know yet.
-                A girl who follows her curiosity
-                without once stopping to ask if she should.
-
-                ---
-
-                Then — *a rabbit.*
-
-                White. Pink eyes. A waistcoat.
-                A pocket watch it actually checks.
-                The words — spoken aloud, to no one —
-
-                > *"Oh dear. I shall be late."*
-
-                Any sensible person would have let it go.
-                You are not, at this particular moment,
-                feeling very sensible.
-
-                ---
-
-                Down here, nothing follows the rules
-                you were taught.
-                Things grow when they shouldn't.
-                Shrink without warning.
-                Speak when they have no business speaking.
-
-                **Wonderland doesn't care how sensible you are.**
-                It only cares how far
-                you're willing to fall.
-
-                ---
-
-                *This is the moment, Alice.*
-                *The one that splits everything*
-                *into before and after.*
-
-                > **"Curiouser and curiouser."**
-                MD,
+            'opening' => '<strong>Alice\'s Adventures<br>in Wonderland.</strong><br><br><em>A summer afternoon.</em><br><em>A riverbank. A book with no pictures.</em><br><em>The particular boredom of a day</em><br><em>that feels like it will never become anything.</em><br><br><strong>You are Alice.</strong><br><br>Curious in the way that\'s gotten you into trouble before.<br>Brave in the way you don\'t quite know yet.<br>A girl who follows her curiosity<br>without once stopping to ask if she should.<br><br>Then — <em>a rabbit.</em><br><br>White. Pink eyes. A waistcoat.<br>A pocket watch it actually checks.<br>The words — spoken aloud, to no one —<br><br><em>"Oh dear. I shall be late."</em><br><br>Any sensible person would have let it go.<br>You are not, at this particular moment,<br>feeling very sensible.<br><br>Down here, nothing follows the rules<br>you were taught.<br>Things grow when they shouldn\'t.<br>Shrink without warning.<br>Speak when they have no business speaking.<br><br><strong>Wonderland doesn\'t care how sensible you are.</strong><br>It only cares how far<br>you\'re willing to fall.<br><br><em>This is the moment, Alice.</em><br><em>The one that splits everything</em><br><em>into before and after.</em><br><br><strong>"Curiouser and curiouser."</strong>',
             'creator' => [
                 'first_name' => 'The Classics, Unbound',
                 'last_name' => '',

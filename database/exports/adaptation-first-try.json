@@ -1,0 +1,1673 @@
+{
+    "story": {
+        "id": 1,
+        "title": "Alice's Adventures in Wonderland",
+        "slug": "alices-adventures-in-wonderland"
+    },
+    "exported_at": "2026-04-16T16:30:36+00:00",
+    "adaptation_status": "adapting-sessions",
+    "story_wide": {
+        "format_detection": {
+            "detected_format": "NOVEL",
+            "evidence": "Page 1 is written in continuous prose paragraphs with narration and embedded dialogue in quotation marks (e.g., “and what is the use of a book,” thought Alice). There are no screenplay sluglines (INT.\/EXT.), no all-caps character cues above dialogue, and no transitions like CUT TO\/FADE IN—only section-style headings.",
+            "narrative_tense": "Third person limited",
+            "protagonist_name": "Alice",
+            "genre_signals": [
+                "Talking anthropomorphic animal (the White Rabbit speaks and carries a watch\/waistcoat-pocket)",
+                "Surreal portal\/otherworld descent (falling down a rabbit-hole into a deep well and strange hall)",
+                "Whimsical, logic-bending internal commentary and impossible objects (e.g., cupboards in the well, “DRINK ME” bottle label)"
+            ],
+            "estimated_reading_time_per_page": "~2 min\/page",
+            "total_estimated_source_duration": "~10 min for 5 pages",
+            "estimated_session_count": 1
+        },
+        "ip_audit": {
+            "licensing_friction": {
+                "score": 1,
+                "evidence": "The provided sections do not state the work’s copyright\/public-domain status or any adaptation permissions. There is no rights-holder, license grant, or usage restriction language included in the excerpt, so adaptation rights are unclear from the supplied text alone. Because Phase 1 requires using only these sections, this must be treated as likely gatekept\/unknown."
+            },
+            "latent_choice_architecture": {
+                "score": 3,
+                "evidence": "The text repeatedly presents natural threshold moments with clear options and immediate consequences: Alice chooses to pursue the Rabbit (“burning with curiosity, she ran across the field after it”) and then commits to a point-of-no-return (“down went Alice after it, never once considering how in the world she was to get out again”). The hall sequence is explicitly puzzle-like with multiple doors and tools (“There were doors all round the hall, but they were all locked… a tiny golden key… behind it was a little door… it fitted!”). The midpoint includes an overt navigation fork offered by a character (“In that direction… lives a Hatter… in that direction… lives a March Hare. Visit either you like”)."
+            },
+            "bounded_agency": {
+                "score": 3,
+                "evidence": "Alice’s core identity is stable across scenes: curious, literal-minded, and socially rule-aware, even while adapting to absurdity. She consistently asserts manners and logic (“Then it wasn’t very civil of you to offer it,” “You should learn not to make personal remarks… it’s very rude,” “It proves nothing of the sort!”). User choices can vary how she expresses that core (polite vs indignant vs defiant) without changing who she is."
+            },
+            "emotional_range": {
+                "score": 3,
+                "evidence": "Wonder\/curiosity dominates early (“burning with curiosity”), but the excerpt also contains fear\/uncertainty (“wondering how she was ever to get out again”), comedy\/absurdity (“Do cats eat bats? Do bats eat cats?”; “a grin without a cat!”), social irritation\/indignation (“No room! No room!” \/ “There’s plenty of room!”), and open confrontation\/anger in the trial (“Stuff and nonsense!”; “I won’t!”). The closing adds tenderness\/nostalgia in the sister’s reflective dream (“simple and loving heart of her childhood… simple sorrows… simple joys”)."
+            },
+            "recognizability": {
+                "score": 1,
+                "evidence": "The excerpt does not provide any in-text evidence about the IP’s fame, audience awareness, or brand recognition; it is presented only as “SOURCE TEXT UPLOADED.” Since we cannot rely on external cultural knowledge per instructions, recognizability cannot be credited from these sections alone. Therefore it must be treated as unknown\/unsupported by the provided text."
+            },
+            "replayability_hook": {
+                "score": 3,
+                "evidence": "The world repeatedly behaves like a logic-bending option-space where different routes and interpretations are explicitly validated: “That depends a good deal on where you want to get to,” and “Then it doesn’t matter which way you go.” The setting is filled with modular encounters (locked doors, keys, size-changing implication, directional forks to Hatter vs March Hare) that naturally support multiple paths and replays. Even the ending frames events as a ‘dream’ containing many discrete set-pieces the sister re-experiences in montage, suggesting a revisitable sequence of episodes (“once more the White Rabbit hurried by… once more the rattle of the teacups…”)."
+            },
+            "total_score": 14,
+            "verdict": "AMBER",
+            "lowest_scoring_criterion": "Licensing Friction",
+            "editorial_mitigation": "Before Phase 2, secure and document adaptation rights in a single source-of-truth brief: confirm public-domain status or obtain a license that explicitly covers interactive adaptation, derivative dialogue, character\/setting use, and distribution territories\/platforms. If licensing cannot be clarified quickly, develop a parallel ‘Wonderland-adjacent’ original reskin that preserves the excerpt’s functional ingredients (a curiosity-driven protagonist, door\/key puzzle hall, a guide offering a directional fork, and an absurd trial) while replacing all protected names\/phrases; this keeps production unblocked while legal status is resolved."
+        },
+        "story_session_map": {
+            "confirmed_session_count": 7,
+            "session_allocation": [
+                {
+                    "session_number": 1,
+                    "chapters_covered": "Chapter 1",
+                    "event_range": "1-8",
+                    "primary_dramatic_question": "Does Alice commit to the Rabbit-hole chase—and once inside, can she gain control of her size and access the garden?",
+                    "emotional_register": "Curiosity → disorientation → urgent problem-solving wonder"
+                },
+                {
+                    "session_number": 2,
+                    "chapters_covered": "Chapter 2 (pool + shore) + early Chapter 3 (Caterpillar arrival)",
+                    "event_range": "9-21",
+                    "primary_dramatic_question": "Can Alice survive the consequences of her own changes and social missteps long enough to find a stable way forward?",
+                    "emotional_register": "Panic\/tears → communal absurdity → escalating peril (Rabbit’s house)"
+                },
+                {
+                    "session_number": 3,
+                    "chapters_covered": "Chapter 2 (Rabbit house end) + Chapter 3",
+                    "event_range": "22-31",
+                    "primary_dramatic_question": "Will Alice accept a new set of rules for herself—using change deliberately rather than being changed by the world?",
+                    "emotional_register": "Cornered → self-reliant → identity-friction into agency"
+                },
+                {
+                    "session_number": 4,
+                    "chapters_covered": "Chapter 4",
+                    "event_range": "32-38",
+                    "primary_dramatic_question": "After reaching the garden, which social logic will Alice adopt to navigate power and madness—Cat’s cynicism, Hatter’s chaos, or her own manners?",
+                    "emotional_register": "Relief (garden) → grotesque comedy (kitchen) → ominous direction-setting"
+                },
+                {
+                    "session_number": 5,
+                    "chapters_covered": "Chapter 5",
+                    "event_range": "39-47",
+                    "primary_dramatic_question": "Can Alice keep her head—literally and socially—inside the Queen’s courtly violence and the croquet farce?",
+                    "emotional_register": "Wonder → intimidation → rebellious indignation"
+                },
+                {
+                    "session_number": 6,
+                    "chapters_covered": "Chapter 6",
+                    "event_range": "48-58",
+                    "primary_dramatic_question": "Will Alice engage with Wonderland’s ‘lessons’ (Mock Turtle\/Gryphon) or resist being absorbed—especially when summoned to judgment?",
+                    "emotional_register": "Threat-fatigue → melancholy\/absurd pageantry → accelerating dread (trial call)"
+                },
+                {
+                    "session_number": 7,
+                    "chapters_covered": "Chapter 7",
+                    "event_range": "59-69",
+                    "primary_dramatic_question": "In the trial’s nonsense, does Alice comply, perform, or openly defy—knowing any stance could collapse the world?",
+                    "emotional_register": "Procedural comedy → moral outrage → cathartic rupture → tenderness (waking frame)"
+                }
+            ],
+            "arc_progression": [
+                {
+                    "session_number": 1,
+                    "opens_with": "N\/A",
+                    "primary_dramatic_question": "Does Alice commit to the Rabbit-hole chase—and once inside, can she gain control of her size and access the garden?",
+                    "emotional_register_shift": "Idle curiosity → high-velocity pursuit → vertigo wonder"
+                },
+                {
+                    "session_number": 2,
+                    "opens_with": "Alice’s size-control failure strands her and produces the tear-pool.",
+                    "primary_dramatic_question": "Can Alice survive the consequences of her own changes and social missteps long enough to find a stable way forward?",
+                    "emotional_register_shift": "Wonder → embarrassment\/panic → slapstick ‘community’ → siege tension"
+                },
+                {
+                    "session_number": 3,
+                    "opens_with": "The siege at the Rabbit’s house forces a breakout into the wood.",
+                    "primary_dramatic_question": "Will Alice accept a new set of rules for herself—using change deliberately rather than being changed by the world?",
+                    "emotional_register_shift": "Threat → reset calm → existential irritation → empowered experimentation"
+                },
+                {
+                    "session_number": 4,
+                    "opens_with": "Armed with mushroom knowledge, Alice re-approaches society (house\/kitchen) with tools, not luck.",
+                    "primary_dramatic_question": "After reaching the garden, which social logic will Alice adopt to navigate power and madness—Cat’s cynicism, Hatter’s chaos, or her own manners?",
+                    "emotional_register_shift": "Agency → grotesque comedy → eerie guidance → chosen direction"
+                },
+                {
+                    "session_number": 5,
+                    "opens_with": "Alice steps into the Queen’s domain where etiquette is weaponized.",
+                    "primary_dramatic_question": "Can Alice keep her head—literally and socially—inside the Queen’s courtly violence and the croquet farce?",
+                    "emotional_register_shift": "Social playfulness → coercion → simmering defiance"
+                },
+                {
+                    "session_number": 6,
+                    "opens_with": "After surviving croquet politics, Alice is redirected toward ‘history’ and ‘lessons’ under escort.",
+                    "primary_dramatic_question": "Will Alice engage with Wonderland’s ‘lessons’ (Mock Turtle\/Gryphon) or resist being absorbed—especially when summoned to judgment?",
+                    "emotional_register_shift": "Adrenaline → melancholy spectacle → looming accountability"
+                },
+                {
+                    "session_number": 7,
+                    "opens_with": "The summons becomes a courtroom where language itself is the trap.",
+                    "primary_dramatic_question": "In the trial’s nonsense, does Alice comply, perform, or openly defy—knowing any stance could collapse the world?",
+                    "emotional_register_shift": "Absurd order → righteous anger → reality-break catharsis → soft landing"
+                }
+            ],
+            "branch_opportunities": [
+                {
+                    "session_number": 1,
+                    "event_position": 1,
+                    "event_title": "Alice notices the White Rabbit",
+                    "choice_dimension": "curiosity_vs_caution",
+                    "downstream_payoff_session": 7,
+                    "payoff_event": "Verses debated and trial erupts"
+                },
+                {
+                    "session_number": 1,
+                    "event_position": 4,
+                    "event_title": "Alice finds key and unlocks small door",
+                    "choice_dimension": "methodical_vs_impulsive",
+                    "downstream_payoff_session": 4,
+                    "payoff_event": "Alice returns to hall and reaches garden"
+                },
+                {
+                    "session_number": 1,
+                    "event_position": 6,
+                    "event_title": "Alice finds bottle and drinks it",
+                    "choice_dimension": "risk_tolerance_vs_self_preservation",
+                    "downstream_payoff_session": 2,
+                    "payoff_event": "Alice hits roof and cries"
+                },
+                {
+                    "session_number": 2,
+                    "event_position": 10,
+                    "event_title": "Alice meets Mouse in the pool",
+                    "choice_dimension": "empathy_vs_self_focus",
+                    "downstream_payoff_session": 2,
+                    "payoff_event": "Dinah talk scares birds away"
+                },
+                {
+                    "session_number": 2,
+                    "event_position": 16,
+                    "event_title": "Rabbit mistakes Alice and orders errand",
+                    "choice_dimension": "compliance_vs_defiance",
+                    "downstream_payoff_session": 5,
+                    "payoff_event": "Queen arrives and questions Alice"
+                },
+                {
+                    "session_number": 2,
+                    "event_position": 18,
+                    "event_title": "Alice drinks bottle and grows huge",
+                    "choice_dimension": "risk_tolerance_vs_self_preservation",
+                    "downstream_payoff_session": 3,
+                    "payoff_event": "Alice breaks mushroom and changes size"
+                },
+                {
+                    "session_number": 3,
+                    "event_position": 25,
+                    "event_title": "Alice searches food and sees caterpillar",
+                    "choice_dimension": "politeness_vs_assertiveness",
+                    "downstream_payoff_session": 3,
+                    "payoff_event": "Alice and Caterpillar argue about identity"
+                },
+                {
+                    "session_number": 3,
+                    "event_position": 28,
+                    "event_title": "Alice and Caterpillar argue about identity",
+                    "choice_dimension": "identity_stability_vs_adaptation",
+                    "downstream_payoff_session": 7,
+                    "payoff_event": "Alice is called as witness"
+                },
+                {
+                    "session_number": 3,
+                    "event_position": 31,
+                    "event_title": "Alice breaks mushroom and changes size",
+                    "choice_dimension": "control_vs_surrender",
+                    "downstream_payoff_session": 4,
+                    "payoff_event": "Alice returns to hall and reaches garden"
+                },
+                {
+                    "session_number": 4,
+                    "event_position": 33,
+                    "event_title": "Smoky kitchen with Duchess and cook",
+                    "choice_dimension": "conflict_style_confront_vs_deescalate",
+                    "downstream_payoff_session": 6,
+                    "payoff_event": "Duchess presses morals and threatens experiment"
+                },
+                {
+                    "session_number": 4,
+                    "event_position": 34,
+                    "event_title": "Alice carries baby outside and it changes",
+                    "choice_dimension": "responsibility_vs_escape",
+                    "downstream_payoff_session": 6,
+                    "payoff_event": "Duchess links arms and walks with Alice"
+                },
+                {
+                    "session_number": 4,
+                    "event_position": 35,
+                    "event_title": "Alice talks with Cheshire Cat",
+                    "choice_dimension": "trust_vs_caution",
+                    "downstream_payoff_session": 5,
+                    "payoff_event": "Cheshire Cat appears and talks"
+                },
+                {
+                    "session_number": 5,
+                    "event_position": 39,
+                    "event_title": "Gardeners paint roses and argue",
+                    "choice_dimension": "justice_vs_self_preservation",
+                    "downstream_payoff_session": 5,
+                    "payoff_event": "Gardeners sentenced and hidden"
+                },
+                {
+                    "session_number": 5,
+                    "event_position": 42,
+                    "event_title": "Alice joins procession and hears whisper",
+                    "choice_dimension": "loyalty_vs_pragmatism",
+                    "downstream_payoff_session": 6,
+                    "payoff_event": "Queen asks about Mock Turtle and leads Alice"
+                },
+                {
+                    "session_number": 5,
+                    "event_position": 45,
+                    "event_title": "Cheshire Cat appears and talks",
+                    "choice_dimension": "authority_deference_vs_personal_integrity",
+                    "downstream_payoff_session": 7,
+                    "payoff_event": "Rule Forty-two dispute in court"
+                },
+                {
+                    "session_number": 6,
+                    "event_position": 50,
+                    "event_title": "Queen orders Gryphon to escort Alice",
+                    "choice_dimension": "compliance_vs_defiance",
+                    "downstream_payoff_session": 7,
+                    "payoff_event": "Court assembles for tart trial"
+                },
+                {
+                    "session_number": 6,
+                    "event_position": 52,
+                    "event_title": "They approach Mock Turtle and meet him",
+                    "choice_dimension": "empathy_vs_skepticism",
+                    "downstream_payoff_session": 7,
+                    "payoff_event": "First witness Hatter is questioned"
+                },
+                {
+                    "session_number": 6,
+                    "event_position": 58,
+                    "event_title": "Cry of trial interrupts and Gryphon flees",
+                    "choice_dimension": "duty_vs_self_direction",
+                    "downstream_payoff_session": 7,
+                    "payoff_event": "Alice is called as witness"
+                },
+                {
+                    "session_number": 7,
+                    "event_position": 59,
+                    "event_title": "Court assembles for tart trial",
+                    "choice_dimension": "authority_deference_vs_personal_integrity",
+                    "downstream_payoff_session": 7,
+                    "payoff_event": "Verses debated and trial erupts"
+                },
+                {
+                    "session_number": 7,
+                    "event_position": 61,
+                    "event_title": "First witness Hatter is questioned",
+                    "choice_dimension": "truth_vs_performance",
+                    "downstream_payoff_session": 7,
+                    "payoff_event": "A paper of verses is presented"
+                },
+                {
+                    "session_number": 7,
+                    "event_position": 64,
+                    "event_title": "Alice is called as witness",
+                    "choice_dimension": "identity_stability_vs_adaptation",
+                    "downstream_payoff_session": 7,
+                    "payoff_event": "Rule Forty-two dispute in court"
+                }
+            ],
+            "cross_session_payoff_plan": [
+                {
+                    "choice_reference": "S1E1 (Alice notices the White Rabbit)",
+                    "what_it_tracks": "curiosity_vs_caution baseline: does the player ‘chase’ uncertainty or resist it",
+                    "echo_session": 2,
+                    "payoff_session": 7,
+                    "payoff_description": "Echo in Session 2 when Alice chooses whether to lean into strange social contact (Mouse\/shore group) vs withdraw; payoff in Session 7 as the player is more\/less willing to openly reject the court’s nonsense, culminating in how forcefully they push back during the Rule Forty-two dispute and the eruption."
+                },
+                {
+                    "choice_reference": "S1E6 (Alice finds bottle and drinks it)",
+                    "what_it_tracks": "risk_tolerance_vs_self_preservation in the face of labeled-but-unknown tools",
+                    "echo_session": 3,
+                    "payoff_session": 4,
+                    "payoff_description": "Echo in Session 3 with mushroom-side experimentation (careful calibration vs reckless swings); payoff in Session 4 as the garden re-entry and subsequent social scenes reflect whether Alice arrives composed (controlled sizing) or volatile (size mishaps), changing access, tone, and leverage."
+                },
+                {
+                    "choice_reference": "S2E16 (Rabbit mistakes Alice and orders errand)",
+                    "what_it_tracks": "compliance_vs_defiance when authority misidentifies and commands",
+                    "echo_session": 5,
+                    "payoff_session": 7,
+                    "payoff_description": "Echo in Session 5 during Queen-facing moments (how quickly the player yields vs challenges); payoff in Session 7 as the player’s stance toward courtroom procedure shifts: cooperate with ‘rules,’ strategically play along, or refuse—affecting how the court reacts before the final breakdown."
+                },
+                {
+                    "choice_reference": "S5E39 (Gardeners paint roses and argue)",
+                    "what_it_tracks": "justice_vs_self_preservation: intervene to protect the vulnerable vs stay uninvolved",
+                    "echo_session": 5,
+                    "payoff_session": 6,
+                    "payoff_description": "Echo immediately in hiding the gardeners (or not), then payoff in Session 6 as Alice’s relationship to the Queen’s casual executions reframes the Mock Turtle\/Gryphon segment: either a needed refuge from cruelty or a guilty detour from responsibility."
+                }
+            ],
+            "branch_dimensions": [
+                {
+                    "dimension_name": "curiosity_vs_caution",
+                    "description": "Whether Alice pursues the unknown (chasing, probing, asking) or prioritizes safety and restraint when reality becomes unstable.",
+                    "possible_paths": {
+                        "option_a": "You wedge the jar into the next cupboard you pass, refusing to let your fall end by hurting someone else.",
+                        "option_b": "You keep the jar clutched to your chest like proof this is real, determined to bring something back from the impossible.",
+                        "option_c": "You hold the jar and simply watch the shelves go by, conserving your movements until you understand what the fall is doing."
+                    },
+                    "session_introduced": 1,
+                    "choice_id": "S2_C1"
+                },
+                {
+                    "dimension_name": "risk_tolerance_vs_self_preservation",
+                    "description": "How readily Alice uses uncertain tools (drink\/eat\/experiment) versus seeking certainty, delay, or safer alternatives.",
+                    "possible_paths": {
+                        "option_a": "You drink from the bottle now, because the only way out of this hall is through the world’s strange tools.",
+                        "option_b": "You taste only a careful drop and wait to see what happens before you commit to more.",
+                        "option_c": "You set the bottle down untouched and search the hall for another solution that doesn’t ask you to swallow the unknown."
+                    },
+                    "session_introduced": 1,
+                    "choice_id": "S1_C2"
+                },
+                {
+                    "dimension_name": "compliance_vs_defiance",
+                    "description": "Whether Alice follows imposed instructions and social scripts or resists, refuses, and asserts her own direction under pressure.",
+                    "possible_paths": {
+                        "option_a": "You call after him in the same polite register, because if you follow the script maybe someone will finally answer you.",
+                        "option_b": "You raise your voice and demand he stop, because being treated like a mistake makes you want to become a problem.",
+                        "option_c": "You let him go and watch where he disappears, because information is safer than pleading with a creature that panics."
+                    },
+                    "session_introduced": 1,
+                    "choice_id": "S2_C2"
+                },
+                {
+                    "dimension_name": "authority_deference_vs_personal_integrity",
+                    "description": "How much Alice yields to status and ‘rules’ (Queen\/King\/court) versus holding to fairness, logic, and self-respect."
+                },
+                {
+                    "dimension_name": "identity_stability_vs_adaptation",
+                    "description": "Whether Alice insists on a coherent self-definition despite changes or flexibly redefines herself to fit shifting contexts.",
+                    "possible_paths": {
+                        "option_a": "You cling to being Alice and rehearse your proper introduction, because a steady name is the only raft you trust.",
+                        "option_b": "You decide you’ll become whatever this place requires, because survival matters more than consistency.",
+                        "option_c": "You refuse to choose yet and keep testing your memory, because you won’t perform a self you can’t verify."
+                    },
+                    "session_introduced": 2,
+                    "choice_id": "S2_C3"
+                },
+                {
+                    "dimension_name": "justice_vs_self_preservation",
+                    "description": "Whether Alice takes interpersonal risks to protect others (gardeners, witnesses) or avoids entanglement to keep herself safe."
+                },
+                {
+                    "dimension_name": "compliance_vs_defiance(how_alice_responds_to_hostile_authority_and_a_crowd_trying_to_force_her_out).",
+                    "description": "compliance_vs_defiance (how Alice responds to hostile authority and a crowd trying to force her out).",
+                    "possible_paths": {
+                        "option_a": "You call out in your politest voice and ask for a fair way to leave without anyone getting hurt.",
+                        "option_b": "You shout back that you won’t be burned out like an animal and they can try you if they dare.",
+                        "option_c": "You say nothing and listen for footsteps, tools, and gaps in their shouting to map your safest opening."
+                    },
+                    "origin": "phase_5",
+                    "session_introduced": 3,
+                    "choice_id": "S3_C1"
+                },
+                {
+                    "dimension_name": "identity_stability_vs_adaptation(how_alice_defines‘self’_under_pressure,_with_payoff_in_session7_when_she_is_called_as_witness).",
+                    "description": "identity_stability_vs_adaptation (how Alice defines ‘self’ under pressure, with payoff in Session 7 when she is called as witness).",
+                    "possible_paths": {
+                        "option_a": "You insist you are Alice, exactly, and you hold to the rules and memories that make that name mean something.",
+                        "option_b": "You admit you’ll become whatever you need to become here, because staying alive matters more than staying consistent.",
+                        "option_c": "You refuse to declare an answer you don’t trust and ask for proof of who you are before you perform it."
+                    },
+                    "origin": "phase_5",
+                    "session_introduced": 3,
+                    "choice_id": "S3_C2"
+                },
+                {
+                    "dimension_name": "control_vs_surrender(how_alice_uses_deliberate_size-control_to_approach_the_next_social_space_in_session4).",
+                    "description": "control_vs_surrender (how Alice uses deliberate size-control to approach the next social space in Session 4).",
+                    "possible_paths": {
+                        "option_a": "You head back toward the hall and the garden, choosing to re-enter ‘society’ with control instead of luck.",
+                        "option_b": "You go toward the nearest house-smoke, choosing contact and information even if it means walking into someone else’s domain.",
+                        "option_c": "You move deeper into the wood and wait, choosing solitude long enough to practice control where no one can watch you fail."
+                    },
+                    "origin": "phase_5",
+                    "session_introduced": 3,
+                    "choice_id": "S3_C3"
+                }
+            ]
+        }
+    },
+    "sessions": [
+        {
+            "session_number": 1,
+            "session_status": "completed",
+            "entry_point_diagnosis": {
+                "editorial_diagnosis": "Stakes do not land within the first 60 seconds in the current opening because the text begins in low-energy domestic idleness (heat, boredom, daisy-chain consideration, commentary about pictureless books). A new user can’t yet feel a concrete problem, threat, or point-of-no-return—only mild dissatisfaction.\n\nThe first moment where the answer becomes YES is when the White Rabbit demonstrates impossible behavior (talking + pulling out a watch) and Alice physically commits—she springs up and runs. That paragraph contains: (1) an anomaly (a rabbit with a watch), (2) a ticking-clock implication (“I shall be late!”), (3) immediate action (she chases), and (4) a visible objective (catch\/see where it goes). This is the earliest true dramatic ignition because it converts mood into motion and implies consequences if she hesitates.\n\nTherefore, everything before that paragraph should be cut. It’s not bad prose; it’s simply passive orientation that delays the user’s first felt stake. The cut preserves Alice’s core trait (curiosity) but demonstrates it through action instead of explanation.\n\nKey world\/character elements lost in the cut that must be reintroduced via action\/sensory beats in the cold open: the hot, sleepy day; Alice’s boredom\/restlessness; the sister\/book context (only if needed later—minimize); and that this ‘field\/bank\/hedge’ is an ordinary place that makes the Rabbit’s watch feel impossible.",
+                "format_specific_cut": {
+                    "cut_point": "Chapter 1 \/ Prologue and the Descent — Alice notices the White Rabbit: paragraph beginning “There was nothing so very remarkable in that; … but when the Rabbit actually took a watch out of its waistcoat-pocket…”",
+                    "original_before_cut": "2 paragraphs before cut (the bank-side boredom + daisy-chain consideration).",
+                    "cut_eliminates": "Domestic setup, weather\/comfort description, internal musing about books and daisies (low-stakes character preface).",
+                    "must_reintroduce": "Alice’s baseline normalcy and restlessness (hot day, bored body), and the mundane setting that makes the Rabbit’s watch\/anxiety feel like a rupture."
+                },
+                "cold_open": "Heat shimmers off the grass and the air tastes like dust and crushed clover. You push yourself up from the bank before you’ve even decided to—because something white flashes past your knees.\n\nA Rabbit. Pink-eyed. Close enough that you hear its breath.\n\nIt mutters, panicked, “Oh dear! Oh dear! I shall be late!” and—impossible—hooks a paw into a waistcoat-pocket. Metal glints. A watch. It checks the time like it matters.\n\nYour curiosity doesn’t ask permission. You break into a run, skirts snagging at your ankles, heart thumping with the thrill of catching the world doing something it shouldn’t.\n\nThe Rabbit darts under the hedge and vanishes into a dark, round hole.\n\nYou skid to the edge, peer down into the cool black, and your next step decides whether this is a story you watch… or one you fall into.",
+                "emotional_promise": "The emotional promise of this cold open is: pursuit. A user arrives feeling restless and wanting to chase the impossible before it gets away.",
+                "start_event_position": 1,
+                "start_event_id": 80
+            },
+            "session_architecture": {
+                "beat_identification": {
+                    "setup": {
+                        "source_moment": "Chapter 1 — paragraph beginning: “...but when the Rabbit actually took a watch out of its waistcoat-pocket...” through “...see it pop down a large rabbit-hole under the hedge.” (Alice ignites into pursuit; the hole is the point-of-no-return threshold).",
+                        "why_it_qualifies": "This is the first true dramatic ignition: an impossible anomaly (talking rabbit + watch), a ticking-clock pressure (“I shall be late”), and immediate action with a clear objective (catch\/see where it goes). It supports a cold open cut-in and delivers the first BRANCHING choice within 0–3 minutes: commit to the chase\/entry vs hesitate.",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "escalation": {
+                        "source_moment": "“In another moment down went Alice after it...” through the hall discovery: “...she found herself in a long, low hall... doors all round the hall, but they were all locked;” then the key\/door\/garden glimpse: “...the loveliest garden you ever saw... but she could not even get her head through the doorway.”",
+                        "why_it_qualifies": "Goal becomes visible: get into the garden (a concrete ‘safe\/beautiful’ destination). Obstacle becomes clear: Alice’s body\/size and the locked architecture (key out of reach; door too small). Stakes compound from ‘chase’ to ‘trapped in a system’ with an achievable-seeming solution (find a way to fit).",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "breath": {
+                        "source_moment": "During the fall and\/or early hall absurdity: the “ORANGE MARMALADE” jar (empty) and Alice’s silly ‘Latitude\/Longitude’ showing-off; plus the physical comedy of “fancy curtseying as you’re falling through the air!”",
+                        "why_it_qualifies": "Wonder\/absurd humor lands as a deliberate release before the more emotionally heavy identity\/tears material. It’s a reward beat: the world is playful, not only threatening—inviting the player to enjoy the nonsense (collectible-like jar, wordplay, impossible etiquette).",
+                        "editorial_intervention": "Moderate"
+                    },
+                    "twist": {
+                        "source_moment": "The ‘DRINK ME’ sequence: Alice’s safety-rule reasoning (“see whether it’s marked ‘poison’ or not”) → she drinks → shrinks to ten inches → realizes she forgot the key and cannot reach it → sits and cries.",
+                        "why_it_qualifies": "Moral-weight choice with no correct answer: use an unknown tool to pursue the garden (risk) vs refuse and remain trapped (stagnation). Even ‘wise’ caution doesn’t guarantee safety or success; the consequence is ironic (success at shrinking creates a new failure: key inaccessible). This reframes Wonderland as a place where prudence and impulse both carry costs.",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "resolution": {
+                        "source_moment": "Alice finds the ‘EAT ME’ cake: “either way I’ll get into the garden, and I don’t care which happens!” → she eats → grows huge (“Good-bye, feet!”) → hits the roof and cries → the White Rabbit returns; Alice attempts to ask for help; Rabbit flees; Alice takes the fan\/gloves and begins the identity spiral (“Who in the world am I?”).",
+                        "why_it_qualifies": "Primary arc ‘resolves’ in the sense that Alice has now fully committed to the new rule-set: she will use Wonderland’s labeled tools to force progress (drink\/eat), even as it destabilizes her. Seed for next session is planted strongly: the tear-pool, the Rabbit’s dropped items (fan\/gloves), and the identity crisis that will drive the social-misstep survival question in Session 2.",
+                        "editorial_intervention": "Moderate"
+                    }
+                },
+                "beat_map": [
+                    {
+                        "time_range": "0:00-1:30",
+                        "moment": "Cold open on the Rabbit’s impossibility (watch + “I shall be late!”) and it vanishing into the rabbit-hole.",
+                        "beat_type": "SETUP",
+                        "choice_type": "none",
+                        "choice_arrives": "NO"
+                    },
+                    {
+                        "time_range": "1:30-3:00",
+                        "moment": "Threshold at the hole: Alice at the edge, deciding whether to commit to the chase into the unknown.",
+                        "beat_type": "SETUP",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "3:00-6:30",
+                        "moment": "The fall: darkness, cupboards\/bookshelves, empty marmalade jar, ‘Latitude\/Longitude,’ curtsey joke; landing safe; immediate pursuit resumes into the lamp-lit hall.",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "6:30-8:00",
+                        "moment": "Hall problem crystallizes: all doors locked; glass table; tiny key; the curtained small door appears; the key fits.",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "8:00-10:00",
+                        "moment": "Reward\/wonder: Alice kneels and glimpses the ‘loveliest garden’—bright flowers, cool fountains—so close it hurts.",
+                        "beat_type": "BREATH",
+                        "choice_type": "none",
+                        "choice_arrives": "NO"
+                    },
+                    {
+                        "time_range": "10:00-12:30",
+                        "moment": "Back to the table; the bottle appears (‘which certainly was not here before’) labeled DRINK ME; Alice debates poison\/rules.",
+                        "beat_type": "TWIST",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "12:30-15:30",
+                        "moment": "Consequence: shrinking works; then the key is unreachable; slippery table leg; exhaustion; Alice cries—problem deepens.",
+                        "beat_type": "TWIST",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "15:30-18:00",
+                        "moment": "The cake in the glass box: EAT ME; Alice frames it as a forced gamble (‘either way I’ll get into the garden’).",
+                        "beat_type": "RESOLUTION",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "18:00-20:30",
+                        "moment": "Growth spiral: ‘Good-bye, feet!’ then roof impact; she grabs the key but can’t fit; renewed crying creates the tear-pool.",
+                        "beat_type": "RESOLUTION",
+                        "choice_type": "none",
+                        "choice_arrives": "NO"
+                    },
+                    {
+                        "time_range": "20:30-22:00",
+                        "moment": "Rabbit returns in livery with fan\/gloves; Alice chooses how to approach (ask for help vs hide\/observe). Rabbit flees; she’s left with the items and the question ‘Who in the world am I?’",
+                        "beat_type": "RESOLUTION",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES"
+                    }
+                ],
+                "next_session_awareness": {
+                    "seed_for_next_session": "Plant the tear-pool + Rabbit’s dropped fan\/gloves + Alice’s identity wobble. These set up Session 2’s survival-through-consequences loop: she will be physically endangered by her own size changes, socially destabilized, and pulled into unwanted contact (Mouse\/pool community; Rabbit authority misread later).",
+                    "connects_to_next_dramatic_question": "YES"
+                }
+            },
+            "session_choice_design": {
+                "branching_choice_1": {
+                    "choice_id": "S1_C1",
+                    "source_moment": "Chapter 1 — paragraph beginning: “...but when the Rabbit actually took a watch out of its waistcoat-pocket...” through “...see it pop down a large rabbit-hole under the hedge.” (threshold at the hole).",
+                    "what_this_choice_tracks": "curiosity_vs_caution",
+                    "narrative_setup": "The white rabbit flashes a watch from its waistcoat-pocket and mutters that it will be late, as if time itself is chasing it. It darts under the hedge and vanishes into a rabbit-hole that looks too small to matter and too wrong to ignore. The grass at the edge bends toward the dark like it’s breathing. Your next step decides whether this is a story you watch or a story you enter.",
+                    "choice_question": "At the lip of the rabbit-hole, what do you do?",
+                    "option_a": {
+                        "text": "You drop to your knees and go in after the Rabbit without giving yourself time to bargain with fear.",
+                        "downstream_effect": "*You commit hard to pursuit, and the story will remember you as someone who chooses motion over safety.*"
+                    },
+                    "option_b": {
+                        "text": "You circle the hedge and study the hole for a safer way down before you risk your body to it.",
+                        "downstream_effect": "*You enter, but with caution first, and the story will remember you as someone who tries to make the impossible legible before acting.*"
+                    },
+                    "option_c": {
+                        "text": "You wait at the edge and listen for the Rabbit’s footsteps to confirm what’s real before you follow.",
+                        "downstream_effect": "*You lose a heartbeat of time and certainty, and the story will remember you as someone who needs proof before committing.*"
+                    },
+                    "all_paths_arrive_at": "Gravity takes you: the rabbit-hole becomes a deep well and you begin to fall past cupboards and shelves."
+                },
+                "expressive_choices": [
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "During the fall: cupboards\/bookshelves, the empty “ORANGE MARMALADE” jar, and Alice’s self-talk about Latitude\/Longitude.",
+                        "narrative_lead_in": "You’re falling slowly enough to think, which is almost worse than falling fast. Cupboards slide by like polite furniture pretending this is normal, and a jar labelled “ORANGE MARMALADE” drifts into your hands—empty, of course. Your thoughts start scrambling for something ordinary to hold onto.",
+                        "choice_question": "What do you do with the marmalade jar as you fall?",
+                        "option_a": {
+                            "text": "You tuck the jar carefully into a cupboard as if tidiness might keep the world from getting worse.",
+                            "downstream_effect": "The narration leans into your rule-following composure, marking you as someone who clings to manners even mid-disaster."
+                        },
+                        "option_b": {
+                            "text": "You keep the jar with you, because proof matters when reality starts lying.",
+                            "downstream_effect": "The narration frames you as a collector of evidence, and the jar becomes a small, stubborn token of “this happened.”"
+                        },
+                        "option_c": {
+                            "text": "You pause and simply watch the shelves slide past, letting the jar go because you need to understand before you manage.",
+                            "downstream_effect": "The narration slows into observation-first wonder, emphasizing attention over control."
+                        },
+                        "all_paths_arrive_at": "You continue falling, talking to yourself to fill the dark until you land on a heap of sticks and dry leaves."
+                    },
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "Hall discovery: locked doors, glass table, tiny key, curtain, and the small door that the key fits.",
+                        "narrative_lead_in": "The hall is long, low, and lit by lamps that make everything look staged. Doors ring the walls—every one locked—until a glass table offers a tiny golden key and, behind a curtain, a little door that seems made for a different kind of person. The key fits with a satisfying click that feels like permission.",
+                        "choice_question": "With the key in hand, how do you move through the hall?",
+                        "option_a": {
+                            "text": "You test the key on every nearby lock anyway, refusing to trust the first neat answer you’re offered.",
+                            "downstream_effect": "The narration highlights your skepticism and persistence, turning the hall into a puzzle you intend to solve, not a trap you accept."
+                        },
+                        "option_b": {
+                            "text": "You go straight to the curtained door and open it, because the smallest exit is still an exit.",
+                            "downstream_effect": "The narration sharpens into goal-focus, emphasizing your willingness to commit to the clearest path."
+                        },
+                        "option_c": {
+                            "text": "You stand back and watch the hall for a moment, as if it might reveal what it wants from you.",
+                            "downstream_effect": "The narration tilts eerie and attentive, suggesting the room itself is a character you’re learning to read."
+                        },
+                        "all_paths_arrive_at": "You kneel and glimpse the bright garden beyond the small passage, close enough to ache and impossible to enter at your current size."
+                    },
+                    {
+                        "beat": "BREATH",
+                        "source_moment": "Reward\/wonder beat: the ‘loveliest garden’ glimpse—bright flowers, cool fountains—so close it hurts.",
+                        "narrative_lead_in": "The garden looks like a promise someone left open on purpose: bright flowers, cool fountains, air that seems easier to breathe. For a moment, the hall’s locked geometry stops being a threat and becomes a frame around something purely beautiful. You’re still stuck, but you’re stuck in front of wonder.",
+                        "choice_question": "How do you let yourself feel the garden from the wrong side of the door?",
+                        "option_a": {
+                            "text": "You press your face close and memorize every color, as if you can carry the garden with you until you earn it.",
+                            "downstream_effect": "The narration becomes lush and sensory, rewarding your choice to savor beauty even under pressure."
+                        },
+                        "option_b": {
+                            "text": "You whisper a promise to yourself that you will get in, because longing is only useful if it turns into action.",
+                            "downstream_effect": "The narration turns determined and forward-driving, converting wonder into fuel."
+                        },
+                        "option_c": {
+                            "text": "You stay still and simply watch the fountains play, letting the moment be a pause instead of a problem.",
+                            "downstream_effect": "The narration softens into calm acceptance, granting a deliberate breath before the next gamble."
+                        },
+                        "all_paths_arrive_at": "You pull back from the door and return to the glass table, where something new waits that was not there before."
+                    }
+                ],
+                "branching_choice_2": {
+                    "choice_id": "S1_C2",
+                    "source_moment": "The ‘DRINK ME’ sequence: bottle appears on the table (“which certainly was not here before”), Alice checks for poison, then decides what to do.",
+                    "values_in_tension": [
+                        "risk-taking for progress",
+                        "self-preservation through caution",
+                        "trust in labels\/rules versus distrust of appearances"
+                    ],
+                    "what_this_choice_tracks": "risk_tolerance_vs_self_preservation",
+                    "narrative_setup": "Back at the glass table, a bottle stands where nothing stood before, wearing a neat paper collar that says DRINK ME in beautiful print. You know the stories about children who ignore simple rules and pay for it, and you also know the garden is right there, waiting behind a door your body cannot fit. The bottle is an invitation and a threat, and it is very proud of being both.",
+                    "choice_question": "What do you do with the bottle labeled DRINK ME?",
+                    "option_a": {
+                        "text": "You drink from the bottle now, because the only way out of this hall is through the world’s strange tools.",
+                        "downstream_effect": "*You embrace the gamble, and the story will track you as someone who spends safety to buy momentum.*"
+                    },
+                    "option_b": {
+                        "text": "You taste only a careful drop and wait to see what happens before you commit to more.",
+                        "downstream_effect": "*You choose controlled experimentation, and the story will track you as someone who manages risk rather than denying it.*"
+                    },
+                    "option_c": {
+                        "text": "You set the bottle down untouched and search the hall for another solution that doesn’t ask you to swallow the unknown.",
+                        "downstream_effect": "*You refuse the gamble for now, and the story will track you as someone who prioritizes self-preservation even if it costs time and opportunity.*"
+                    },
+                    "moral_weight_confirmation": "Each option trades a different kind of harm: bodily danger, lost time, or surrendering control to a world that may punish any choice.",
+                    "talkability_test": "Players can argue for hours about whether courage here is drinking, restraint is refusing, or wisdom is controlled testing—because Wonderland punishes all three in different ways."
+                },
+                "branching_choice_3": {
+                    "choice_id": "S1_C3",
+                    "source_moment": "White Rabbit returns in livery with fan\/gloves; Alice, huge and desperate, chooses how to approach; Rabbit flees and drops items; identity spiral begins.",
+                    "what_this_choice_tracks": "compliance_vs_defiance",
+                    "narrative_setup": "You are too big for the hall now, wedged under the roof with tears pooling around you, when pattering footsteps return. The Rabbit appears dressed like someone’s servant, muttering about the Duchess, carrying gloves and a fan as if errands are the only law that matters. It is the first person-shaped thing you’ve seen since the fall, and it might be help—or it might be authority that expects you to play a role you don’t understand.",
+                    "choice_question": "As the Rabbit comes near, how do you choose to meet it?",
+                    "option_a": {
+                        "text": "You call out politely and ask for help as if you are supposed to be here and the Rabbit is supposed to answer.",
+                        "next_session_opens": "You clutch the dropped fan and gloves like a lifeline and try to use them the way a proper person would, even as your body and identity start slipping."
+                    },
+                    "option_b": {
+                        "text": "You try to speak firmly and stop the Rabbit, demanding it look at you and explain what this place expects.",
+                        "next_session_opens": "With the Rabbit gone, the fan and gloves feel less like gifts and more like props, and your next move becomes whether to adopt a role or reject it as your size begins to shift again."
+                    },
+                    "option_c": {
+                        "text": "You stay silent and watch the Rabbit pass, choosing information over contact before you risk being mistaken for someone else.",
+                        "next_session_opens": "You take the abandoned items after it flees anyway, and the session opens on you weighing whether to use them to blend into Wonderland’s scripts or to keep yourself separate."
+                    }
+                }
+            },
+            "choice_consequence_map": {
+                "consequence_map_choice_1": {
+                    "tracked_dimension": "curiosity_vs_caution",
+                    "path_a": {
+                        "immediate_effect": "You fling yourself into the rabbit-hole fast enough to scrape your palms; as you start falling, you snatch at the first passing wall-shelf and end up clutching a labeled jar of ORANGE MARMALADE that is (cruelly) empty.",
+                        "current_session_echo": "Because you entered at speed, the fall feels like a chase: you keep scanning for the Rabbit below and talk yourself into acting before thinking (you reach for the tiny golden key the instant you spot it on the glass table).",
+                        "next_session_payoff": "Session 2, Pool of Tears: when you realize the entire pool is your own crying, you blurt a furious, breathless line—“I did all that just to get in!”—and it spooks the Mouse into a sharp, suspicious look before it agrees to swim alongside you.",
+                        "later_session_legacy": "Session 7, Rule Forty-two dispute: when the King cites a rule to silence you, you answer without waiting to be recognized—“Stuff and nonsense!”—and the narration explicitly tags it as the same ‘jump first’ instinct that threw you into the hole."
+                    },
+                    "path_b": {
+                        "immediate_effect": "You probe the hedge and find the hole’s rim is slick clay; you tear a strip from your pinafore hem to grip it, then slide in more controlled—starting the fall with your hands braced and your breathing counted.",
+                        "current_session_echo": "You keep treating Wonderland like a solvable mechanism: you linger on the key’s teeth and the lock’s shape, and when you find the DRINK ME bottle you repeat the ‘poison’ checklist out loud before deciding.",
+                        "next_session_payoff": "Session 2, shore after the Caucus-race: when everyone is shivering and demanding prizes, you take charge of distribution by producing the only ‘dry’ thing you have—a neatly folded handkerchief strip from your torn hem—and the Dodo declares it ‘the best thing to begin with,’ cementing you as the practical one.",
+                        "later_session_legacy": "Session 4, re-entry to the hall: the narrative calls back to your ‘counted breathing’ as you calibrate your size at the door—hands steady on the mushroom piece, refusing to panic—making the garden access feel earned by method, not luck."
+                    },
+                    "path_c": {
+                        "immediate_effect": "You kneel and listen; the Rabbit’s muttering fades, and the silence convinces you more than sound—then the ground gives slightly under your weight and you drop in a half-second late, catching your elbow on the rim.",
+                        "current_session_echo": "You keep pausing to verify reality: during the fall you stop reaching for shelves and simply watch them pass; in the hall you hesitate at the tiny door longer, pressing your eye to the keyhole as if the garden might be a trick.",
+                        "next_session_payoff": "Session 2, meeting the Mouse: you open with a cautious, overly-literal question—“Will you tell me, please, which way I ought to go from here?”—and the Mouse snaps back about being ‘a mouse’ (not a guide), setting a more brittle social tone than the other paths.",
+                        "later_session_legacy": "Session 6, Gryphon escort to the Mock Turtle: when the Gryphon barks orders, you comply outwardly but narratively note every exit, every guard position, every ‘safe distance’—a recurring ‘observe first’ stance that later lets you spot the court’s procedural traps faster in Session 7."
+                    }
+                },
+                "consequence_map_choice_2": {
+                    "tracked_dimension": "risk_tolerance_vs_self_preservation",
+                    "path_a": {
+                        "immediate_effect": "You drink a proper swallow; within seconds your feet lift as if the floor has been yanked away, and you shrink fast enough that the golden key skitters out of reach across the glass tabletop.",
+                        "current_session_echo": "You treat every new object as a lever: you immediately grab the DRINK ME bottle again when you find yourself too small, and you don’t waste time arguing with yourself about ‘ought’—you prioritize getting through the little door even if it means more transformation.",
+                        "next_session_payoff": "Session 2 opening, roof-and-tears: after later overcorrecting and growing huge, your first clear thought is a bitter self-indictment—“Why did I ever drink it?”—and the narration explicitly frames the pool of tears as the price of buying momentum with your body.",
+                        "later_session_legacy": "Session 3, mushroom lesson: you take the Caterpillar’s ‘one side will make you grow’ instruction as permission to push harder; you bite a larger chunk first, triggering a dramatic neck-stretch moment that becomes your signature ‘go big’ approach to change."
+                    },
+                    "path_b": {
+                        "immediate_effect": "You touch a single drop to your tongue; you shrink only a little—enough to make the room subtly taller—then you stop, watching your hands like they belong to someone else.",
+                        "current_session_echo": "You become a calibrator: you measure yourself against the table leg, the door handle, the key’s size; the hall turns into a lab, and later choices lean toward incremental adjustments (small sips, small bites, frequent checks).",
+                        "next_session_payoff": "Session 2 opening, roof-and-tears: when you later grow too big, you don’t collapse straight into sobbing; you try a controlled remedy first—fanning yourself with the Rabbit’s dropped fan in a deliberate rhythm—only breaking down when the effect proves unreliable.",
+                        "later_session_legacy": "Session 4, reaching the garden: your ‘calibration habit’ pays off as a playable micro-sequence where you take two tiny mushroom nibbles to hit the door’s exact height, earning a clean, composed entrance that changes how the garden creatures address you (less ‘monster,’ more ‘visitor’)."
+                    },
+                    "path_c": {
+                        "immediate_effect": "You set the bottle down untouched and sweep the hall: you crawl under the table, pat the wall panels, and find nothing—until your gaze returns and the bottle’s label seems to stare back, smug and unchanged.",
+                        "current_session_echo": "The hall becomes a trap you refuse to feed: you spend the rest of Session 1 in delay-and-search mode, which makes the eventual ‘no other way’ moment sharper—when you finally do drink (or are forced into change), it feels like surrendering a principle.",
+                        "next_session_payoff": "Session 2 opening, roof-and-tears: the narration twists the knife with a specific memory—your hand hovering over the bottle and pulling back—right before you realize you’re stranded by size; you say, aloud, “I tried not to,” and it lands as a lonely line in an empty hall before the tears start.",
+                        "later_session_legacy": "Session 5, Queen’s etiquette-as-weapon: when the Queen demands immediate compliance, your earlier refusal pattern resurfaces as a distinct option to stall—asking for clarification of the ‘rule’—which later influences how quickly the court turns hostile to you in Session 7."
+                    }
+                },
+                "consequence_map_choice_3": {
+                    "tracked_dimension": "compliance_vs_defiance",
+                    "path_a": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Session 2 opens with you trying to ‘be proper’ despite being enormous: you address the empty hall as if it were a drawing room, then pick up the Rabbit’s dropped gloves and fan and attempt to put one glove on a finger the size of a bolster.",
+                        "next_session_payoff": "A named beat early in Session 2: you fan yourself politely—little, quick strokes—and the narration rewards the choice by giving you a moment of control as your body begins to shrink just enough for you to slide one arm free of the doorframe, as if manners briefly function like magic.",
+                        "later_session_legacy": "Session 7, courtroom posture: you instinctively wait to be called, speak in complete sentences, and try to follow procedure—making the eventual break (“You’re nothing but a pack of cards!”) feel like a hard-won collapse of compliance rather than a default attitude."
+                    },
+                    "path_b": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Session 2 opens on your voice filling the hall after the Rabbit flees: you clutch the fan like a baton, furious at being ignored, and the first thing you do is test whether shouting changes anything—calling after the Rabbit’s retreating footsteps until your throat hurts.",
+                        "next_session_payoff": "A named beat early in Session 2: your anger gets a concrete result—the Rabbit’s distant ‘Oh my ears and whiskers!’ stutters and stops for a half-second—confirming you can affect Wonderland’s ‘authorities,’ even if only by startling them.",
+                        "later_session_legacy": "Session 5, first Queen-facing moment: when the Queen barks ‘Off with her head!’ at someone else, you’re more likely to answer back immediately; Session 7 then frames your Rule Forty-two dispute as consistent escalation—defiance practiced, not discovered."
+                    },
+                    "path_c": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Session 2 opens with you in watch-and-map mode: you stay quiet, pick up the dropped gloves and fan, and listen—counting footsteps, noting the direction the Rabbit fled, and watching how your tears spread across the tiles like a tide chart.",
+                        "next_session_payoff": "A named beat early in Session 2: because you were listening, you notice the first ‘splash’ before you see it—the tear-pool reaches the table leg and makes a tiny wave—giving you a one-step head start to scramble onto the table before the hall fully floods.",
+                        "later_session_legacy": "Session 6, Gryphon escort: you treat the Gryphon’s bluster as noise and track the real information (paths, exits, who actually has power), which later gives you a distinct ‘quietly strategic’ way of surviving the court’s nonsense in Session 7—less shouting, more precise contradiction."
+                    }
+                },
+                "validation_results": {
+                    "specificity": "PASS",
+                    "asymmetry": "PASS",
+                    "payability": "PASS"
+                }
+            },
+            "session_close_design": {
+                "resolution_prose": "Your voice—small against all that vaulted lamp-lit space—lands and trembles anyway: “If you please, sir—”\n\nFor a heartbeat the White Rabbit is close enough that you can see the stitch-work on his livery and the pink shine at the rim of his eye. His whiskers quiver. Then he starts as if you’ve struck him. The fan and the white kid gloves slip from his paws and patter onto the tiles beside your tear-pool with a soft, absurd finality.\n\nHe vanishes into the dark passage at a frantic skitter, muttering about the Duchess as though your enormous body is only a draft he can outrun.\n\nHeat presses at your cheeks. You reach down—careful, clumsy—and the fan’s painted ribs click under your fingers. The gloves are cool and too delicate, a servant’s neatness abandoned at your feet. When you lift the fan and draw it through the air, the breeze is real on your wet skin, and with it comes a sharper, stranger thought: if the world expects you to be someone, you can choose how much you’ll play along.",
+                "hook_transition": "For one quiet second, the little breeze you make feels like control.\n\nThen the hall answers back: your tears creep outward with a slow, glassy sound, and somewhere in the darkness the Rabbit’s footsteps fade—still fast, still obeying some other clock.",
+                "session_end_choice": {
+                    "choice_question": "With the Rabbit gone and its dropped fan and gloves in your hands, what do you do next—who do you decide to be in this hall?",
+                    "option_a": {
+                        "text": "You call out politely and ask for help as if you are supposed to be here and the Rabbit is supposed to answer.",
+                        "next_session_opens": "You clutch the dropped fan and gloves like a lifeline and try to use them the way a proper person would, even as your body and identity start slipping."
+                    },
+                    "option_b": {
+                        "text": "You try to speak firmly and stop the Rabbit, demanding it look at you and explain what this place expects.",
+                        "next_session_opens": "With the Rabbit gone, the fan and gloves feel less like gifts and more like props, and your next move becomes whether to adopt a role or reject it as your size begins to shift again."
+                    },
+                    "option_c": {
+                        "text": "You stay silent and watch the Rabbit pass, choosing information over contact before you risk being mistaken for someone else.",
+                        "next_session_opens": "You take the abandoned items after it flees anyway, and the session opens on you weighing whether to use them to blend into Wonderland’s scripts or to keep yourself separate."
+                    },
+                    "final_line": "Hold the fan a moment longer, feel the thin ribs click, and decide how you want the world to answer you."
+                },
+                "stickiness_audit": {
+                    "payoff_test": "PASS",
+                    "return_driver_test": "PASS",
+                    "overnight_test": "PASS"
+                }
+            },
+            "editorial_verification": {
+                "question_results": {
+                    "entry_point": {
+                        "verdict": "PASS",
+                        "detail": "The session starts at the first true ignition: the Rabbit’s impossible behavior (talking + watch) and Alice’s immediate pursuit. All low-energy preamble is cut, aligning with Law #1 (entry point is a cut)."
+                    },
+                    "emotional_promise": {
+                        "verdict": "PASS",
+                        "detail": "The first paragraph promises restless pursuit of the impossible (heat shimmer → white flash → panicked Rabbit with a watch). The emotional contract is clear: chase, wonder, and urgency."
+                    },
+                    "first_choice_timing": {
+                        "verdict": "PASS",
+                        "detail": "Branching Choice 1 (at the rabbit-hole threshold) arrives in the 1:30–3:00 window and is clearly within 300 words of the cold open as written\/described."
+                    },
+                    "consequential_choices": {
+                        "verdict": "REVISE",
+                        "detail": "Branching Choice 2 (DRINK ME) is not genuinely consequential in its current architecture because the session’s Phase 7 resolution beat still proceeds through the canonical shrink-then-key-unreachable consequence regardless of option, and Path C explicitly says the player delays but then ‘finally does drink (or is forced into change).’ That collapses the branch into a flavor\/tempo variation rather than an outcome-bearing divergence. By contrast, Choice 1 and Choice 3 have clear mapped echoes\/payoffs across sessions."
+                    },
+                    "stakes_within_60_seconds": {
+                        "verdict": "PASS",
+                        "detail": "Within the opening moments the user gets: an anomaly (talking Rabbit), a ticking-clock cue (‘I shall be late!’), and a vanishing target (rabbit-hole). The implied stake is immediate: act now or lose the impossible."
+                    },
+                    "early_decision_visible_later": {
+                        "verdict": "PASS",
+                        "detail": "Choice 1 has explicit current-session echoes (pace\/impulsivity in the fall and hall) and concrete next-session and later-session payoffs (Mouse tone; Rule Forty-two dispute). The session is designed to surface that early stance again later."
+                    },
+                    "breath_beat": {
+                        "verdict": "PASS",
+                        "detail": "A deliberate reward\/wonder beat lands at 8:00–10:00 (garden glimpse) and earlier absurdity during the fall supports the release. This satisfies the required breath window."
+                    },
+                    "moral_gray_area": {
+                        "verdict": "PASS",
+                        "detail": "Choice 2 (DRINK ME) is framed as a no-right-answer trade: bodily danger vs lost time vs surrendering control. The moral\/values tension is explicit and arguable."
+                    },
+                    "exit_emotional_state": {
+                        "verdict": "PASS",
+                        "detail": "The session ends on the player’s unresolved self-defining decision (how to meet the Rabbit \/ who to be), with the tear-pool creeping and the Rabbit’s clock-driven flight lingering. The carried-out state is anticipation, not closure or confusion."
+                    },
+                    "talkability": {
+                        "verdict": "PASS",
+                        "detail": "Both the DRINK ME decision and the final ‘how do you meet authority\/help?’ decision are immediately discussable. A friend would naturally ask what you did at the hole, whether you drank, and how you handled the Rabbit."
+                    }
+                },
+                "total_passed": 9,
+                "production_status": "RED",
+                "revision_instructions": [
+                    {
+                        "question": "Q4 — Consequential Choices",
+                        "phase": "Phase 6 (Consequence Maps) + Phase 7 (Session Close \/ Resolution routing)",
+                        "instruction": "Make S1_C2 produce a distinct, non-collapsing in-session outcome that changes at least one later beat before S1_C3 (not just narration). Concretely: (1) If Option A (full drink): keep current shrink-fast → key unreachable → tears. (2) If Option B (drop): shrink partially → you can reach the key but still can’t fit the door; this changes the cake beat into a different problem (e.g., you already hold the key when you later grow, altering the Rabbit-return staging and what items you can grab). (3) If Option C (refuse): do NOT force drinking; instead, trigger an alternate escalation cost (time passes, hall ‘responds’—e.g., the Rabbit returns earlier and mistakes you for staff, or the cake appears but the bottle vanishes), so the player arrives at S1_C3 with a materially different state variable (key possession \/ size band \/ Rabbit proximity \/ tear-pool size). Update the beat map and resolution prose routing to reflect these divergent states, and ensure each path has a unique Session 2 opening hook tied to that state."
+                    }
+                ]
+            },
+            "updated_at": "2026-04-16T16:21:07+00:00"
+        },
+        {
+            "session_number": 2,
+            "session_status": "completed",
+            "entry_point_diagnosis": {
+                "editorial_diagnosis": "The first 60 seconds of the provided pages are dominated by low-stakes comfort and explanation: Alice is bored on a bank, considers making a daisy-chain, and we’re told it’s a hot day and she’s sleepy. Even when the White Rabbit appears, the narration reassures us it’s “not very remarkable” and spends time justifying why Alice isn’t shocked. A new user can’t yet feel urgent stakes—nothing is threatened, no goal is concrete, and the protagonist is still in passive observation mode.\n\nDramatic energy becomes YES the moment Alice commits to a point-of-no-return: “In another moment down went Alice after it, never once considering how in the world she was to get out again.” Here, the stakes are instantly legible (you might not get out), the motion is irreversible (falling), and the player’s core driver (curiosity overriding caution) is demonstrated through action rather than described. Starting here also aligns with Lorespinner’s retention need: immediate peril + momentum, with the first branching choice naturally arriving as the player decides how to behave while falling (grab\/observe\/call out), rather than waiting through pastoral setup.\n\nWhat’s cut: the bank scene, the sister\/book complaint, the daisy-chain consideration, and the initial “Rabbit is odd but not that odd” rationalization. These are charming in prose but function as passive runway in an interactive session.\n\nWhat must be reintroduced through action in the cold open: (1) you are a childlike, rule-aware thinker who talks herself through problems; (2) the inciting anomaly is a dressed White Rabbit with a watch; (3) your motivation is curiosity strong enough to override exit-planning; (4) the setting shift from ordinary outdoors to an impossible rabbit-hole\/well.",
+                "format_specific_cut": {
+                    "cut_point": "Section: “Prologue and the Descent — Alice falls down the well” — opening sentence (“In another moment down went Alice after it…”)",
+                    "original_before_cut": "1 section (~3 paragraphs): the entire “Alice notices the White Rabbit” bank setup up to the rabbit-hole entry",
+                    "cut_eliminates": "Pastoral setup, character mood framing (bored\/sleepy), explanatory narration that normalizes the weird, and pre-inciting context with no immediate consequence",
+                    "must_reintroduce": "Alice was following a White Rabbit with pink eyes, a waistcoat-pocket and a watch; she chose to chase; her curiosity-over-caution trait; the contrast between ordinary day and sudden impossibility"
+                },
+                "cold_open": "Warm air turns cold on your cheeks as you drop—skirts fluttering, hair lifting, the smell of dry earth and old wood rushing up past your nose.\n\nYou have just thrown yourself down a rabbit-hole after a White Rabbit in gloves with a watch, and only now does the thought arrive: how, exactly, do you get out again?\n\nThe darkness widens into a well. You twist your body to slow the fall, fingers scraping at the wall for anything—anything—to catch. Your nails find smooth plank, then a shelf. Jars. Books. Pegs with pictures swinging as you brush them.\n\nA label flashes by at eye level: ORANGE MARMALADE. You snatch the jar, feel it light—empty—and your stomach drops harder than your body. You can’t throw it; what if someone is below?\n\nYou hug it to your chest, hunting for a cupboard to shove it into before the next shelf tears it from your hands.",
+                "emotional_promise": "The emotional promise of this cold open is: vertigo. A user arrives feeling curious and wanting to seize control before the fall decides everything.",
+                "start_event_position": 15,
+                "start_event_id": 77
+            },
+            "session_architecture": {
+                "beat_identification": {
+                    "setup": {
+                        "source_moment": "Cold open at: “In another moment down went Alice after it, never once considering how in the world she was to get out again.” Alice is already falling; she scrapes past shelves, grabs the ORANGE MARMALADE jar, and has to decide what to do with it while still in freefall.",
+                        "why_it_qualifies": "Immediate irreversible jeopardy (can’t easily climb out; uncontrolled fall). The player understands the core driver (curiosity overriding caution) through action. It also naturally supports a first BRANCHING choice within ~300 words: how Alice tries to survive\/behave during the fall (grab\/slow\/observe\/call out), which can track curiosity_vs_caution and set tone for later social risk-taking.",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "escalation": {
+                        "source_moment": "Alice lands, sprints after the Rabbit into the lamp-lit hall, finds all doors locked, discovers the tiny golden key, unlocks the 15-inch door, and glimpses the garden she can’t fit into.",
+                        "why_it_qualifies": "Visible goal becomes concrete: get into the garden (and\/or get out of the hall). Clear obstacle: she’s the wrong size; the environment is a puzzle-box of locked exits. Stakes compound from ‘falling’ to ‘trapped with a tantalizing exit.’",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "breath": {
+                        "source_moment": "Absurd, playful internal monologue during size-change: “Good-bye, feet!” plus the imagined shipping address for boots to her own feet (“Alice’s Right Foot, Esq., Hearthrug, near the Fender…”).",
+                        "why_it_qualifies": "This is pure Carrollian comic relief and wonder—language-play and bodily absurdity—landing as a reward beat after the tense puzzle\/size mechanics. It also re-centers Alice’s childlike imagination before the next pressure spike.",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "twist": {
+                        "source_moment": "After growing huge and creating the tear-pool, the White Rabbit returns muttering about the Duchess; Alice tries to ask for help (“If you please, sir—”) and the Rabbit panics, drops gloves\/fan, and flees. Alice then takes the items and begins the identity spiral: “Who in the world am I? Ah, that’s the great puzzle!” and tests her knowledge (math\/geography wrong).",
+                        "why_it_qualifies": "Moral-weight moment with no correct answer: does Alice pursue connection\/aid by submitting to the Rabbit’s social frame (polite, small, non-threatening), or assert herself\/act independently even if it deepens isolation? Either path costs something: dignity\/safety vs agency\/alienation. The identity crisis reframes the session’s problem from ‘size’ to ‘self’—a twist in what the player is really managing.",
+                        "editorial_intervention": "Moderate"
+                    },
+                    "resolution": {
+                        "source_moment": "Alice ends this segment holding the Rabbit’s fan and gloves, shrinking again as she fans herself while trying to determine if she’s been ‘changed for Mabel’ and attempting a recitation (“How doth the little—”).",
+                        "why_it_qualifies": "Primary arc ‘resolves’ in the sense that the initial hall-puzzle attempt has definitively failed and transformed into a new situation: tears + dropped items + identity instability. The seed for next session is planted: the tear-pool and Alice’s compromised self-confidence set up Session 2’s next dramatic question (survive consequences of changes + social missteps) and the upcoming communal absurdity (Mouse\/pool\/shore). Session-end should be the player’s unresolved decision about how to present herself to the next creature she meets in the pool (reach out vs withdraw; truth vs performance).",
+                        "editorial_intervention": "Moderate"
+                    }
+                },
+                "beat_map": [
+                    {
+                        "time_range": "0:00-2:30",
+                        "moment": "Cold open: Alice is already falling down the well; shelves\/maps\/pegs whip past; she snatches the ORANGE MARMALADE jar and must decide what to do with it while still dropping.",
+                        "beat_type": "SETUP",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES — Choice 1: how do you handle the fall? (e.g., Claw for shelves to slow down \/ Focus on spotting the bottom \/ Call out for the Rabbit \/ Secure the jar and prioritize not harming anyone below)."
+                    },
+                    {
+                        "time_range": "2:30-6:30",
+                        "moment": "Landing on sticks\/leaves; immediate chase; the Rabbit vanishes; lamp-lit hall with locked doors; Alice tries door after door; discovers glass table + tiny golden key; finds hidden curtain door; key fits.",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "none",
+                        "choice_arrives": "no"
+                    },
+                    {
+                        "time_range": "6:30-8:30",
+                        "moment": "Alice kneels and glimpses the garden; longing crystallizes the goal; she returns to table and finds bottle labeled DRINK ME; she debates poison rules and decides what to do.",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES — Choice 2: drink now \/ test cautiously (sip, inspect, delay) \/ refuse and search for another method. (Tracks risk_tolerance_vs_self_preservation; consequence planned: timing\/degree of size change and composure.)"
+                    },
+                    {
+                        "time_range": "8:30-10:00",
+                        "moment": "Size-change wonder + comedy: telescope shrinking; candle-flame speculation; then later the ‘Good-bye, feet!’ bit and boot-shipping nonsense as her body becomes absurdly unmanageable.",
+                        "beat_type": "BREATH",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES — Expressive: what do you do with the absurdity? (Laugh it off \/ narrate it like a lesson \/ get angry at your own body)."
+                    },
+                    {
+                        "time_range": "10:00-13:30",
+                        "moment": "Practical failure: she’s the right size but forgot the key; can’t climb the glass table; cries; finds cake labeled EAT ME and commits to ‘either way I’ll get into the garden.’",
+                        "beat_type": "TWIST",
+                        "choice_type": "none",
+                        "choice_arrives": "no"
+                    },
+                    {
+                        "time_range": "13:30-16:30",
+                        "moment": "After cake: she grows huge, hits the roof, grabs the key, but still can’t fit; collapses into gallons of tears, forming a pool in the hall.",
+                        "beat_type": "TWIST",
+                        "choice_type": "none",
+                        "choice_arrives": "no"
+                    },
+                    {
+                        "time_range": "16:30-18:30",
+                        "moment": "The White Rabbit returns (Duchess pressure); Alice, desperate, tries to ask for help; Rabbit panics and flees, dropping gloves and fan; Alice picks them up and fans herself.",
+                        "beat_type": "TWIST",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES — Choice 3 (moral-weight): after being rejected, do you (A) pursue the Rabbit anyway (chase authority), (B) stay and stabilize yourself\/your size and prepare to face whoever comes next, or (C) retreat into self-testing\/‘Who am I?’ and try to regain identity through rules\/recitation. No option is ‘correct’; each trades agency, safety, and social connection differently."
+                    },
+                    {
+                        "time_range": "18:30-22:00",
+                        "moment": "Resolution into new status quo: Alice’s identity spiral (Ada\/Mabel; wrong math\/geography; begins a recitation) while the tear-pool remains as the immediate environment she’ll have to deal with next session.",
+                        "beat_type": "RESOLUTION",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES — Expressive end-cap to color next session: how do you frame what’s happening? (I’m failing \/ The world is cheating \/ I can adapt if I find the rules)."
+                    }
+                ],
+                "next_session_awareness": {
+                    "seed_for_next_session": "The tear-pool + Alice’s destabilized self-concept + the dropped fan\/gloves (a ‘misdelivered errand’ vibe) set up the next encounters in the pool (Mouse\/others) where social missteps and survival consequences collide.",
+                    "connects_to_next_dramatic_question": "YES"
+                }
+            },
+            "session_choice_design": {
+                "branching_choice_1": {
+                    "choice_id": "S2_C1",
+                    "source_moment": "Cold open: Alice is already falling; shelves and cupboards whip past; she has the empty ORANGE MARMALADE jar in hand and must decide what to do with it mid-fall.",
+                    "what_this_choice_tracks": "curiosity_vs_caution",
+                    "narrative_setup": "You are already in freefall, hair and pinafore floating as the well’s shelves blur past like a library in a storm. The jar marked ORANGE MARMALADE is light and empty in your hand, but it is still a hard thing to drop on whatever may be below. There is no time to plan a landing—only time to choose what kind of girl you are while you fall.",
+                    "choice_question": "What do you do with the marmalade jar as the well swallows you?",
+                    "option_a": {
+                        "text": "You wedge the jar into the next cupboard you pass, refusing to let your fall end by hurting someone else.",
+                        "downstream_effect": "*You stabilize your grip and start scanning the walls for anything useful, anchoring your courage in careful, considerate action.*"
+                    },
+                    "option_b": {
+                        "text": "You keep the jar clutched to your chest like proof this is real, determined to bring something back from the impossible.",
+                        "downstream_effect": "*You commit to the experience over safety, and your attention shifts to what else you can grab before the dark ends.*"
+                    },
+                    "option_c": {
+                        "text": "You hold the jar and simply watch the shelves go by, conserving your movements until you understand what the fall is doing.",
+                        "downstream_effect": "*You go quiet and observant, letting the well reveal its rules before you spend your fear on action.*"
+                    },
+                    "all_paths_arrive_at": "The fall continues—down, down, down—until the thump of sticks and leaves ends it and the lamp-lit hall waits ahead."
+                },
+                "expressive_choices": [
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "In the lamp-lit hall, Alice tries door after door, finds the glass table and tiny golden key, then discovers the hidden 15-inch door and glimpses the garden beyond.",
+                        "narrative_lead_in": "The hall is a ring of locked promises, each door a refusal. When the tiny key finally fits, you kneel and see the garden—bright flowers and cool fountains—so close it hurts. Your body is the only thing that doesn’t belong.",
+                        "choice_question": "How do you react to the garden you can’t fit into?",
+                        "option_a": {
+                            "text": "You press your face to the gap and let yourself want it, because longing is the only map you have.",
+                            "downstream_effect": "Your narration leans lyrical and hungry, turning the garden into a personal vow rather than a mere exit."
+                        },
+                        "option_b": {
+                            "text": "You pull back and inventory the hall like a puzzle-box, because wanting something doesn’t open doors.",
+                            "downstream_effect": "Your narration becomes crisp and practical, emphasizing objects, distances, and possible mechanisms over emotion."
+                        },
+                        "option_c": {
+                            "text": "You stay kneeling and listen, because if this place has inhabitants, the garden might not be safe at all.",
+                            "downstream_effect": "Your narration grows wary and sensory, heightening small sounds and the feeling of being watched."
+                        },
+                        "all_paths_arrive_at": "You return to the glass table, where a bottle labeled DRINK ME waits as if it has been placed for you."
+                    },
+                    {
+                        "beat": "BREATH",
+                        "source_moment": "Comic wonder during size-change: shrinking like a telescope, candle-flame speculation, and the 'Good-bye, feet!' boot-shipping nonsense as her body becomes absurd.",
+                        "narrative_lead_in": "Your body obeys a rule no one taught you, stretching or shrinking with the casual certainty of a joke. Your feet drift away like they belong to someone else, and your mind scrambles to make manners out of nonsense. The world is unbearable—so you make it speakable.",
+                        "choice_question": "What do you do with the absurdity of your own changing body?",
+                        "option_a": {
+                            "text": "You laugh at yourself and narrate it like a story you’ll tell later, because humor keeps fear from swallowing you.",
+                            "downstream_effect": "The tone turns bright and buoyant, making the impossible feel briefly friendly."
+                        },
+                        "option_b": {
+                            "text": "You lecture yourself through it, because if you can name rules then you can pretend you’re in control.",
+                            "downstream_effect": "The tone becomes mock-sensible and schoolroom-sharp, turning wonder into a checklist."
+                        },
+                        "option_c": {
+                            "text": "You go quiet and let the strangeness happen, because reacting only makes you feel more ridiculous.",
+                            "downstream_effect": "The tone becomes hushed and inward, letting the comedy sit beside a thin thread of dread."
+                        },
+                        "all_paths_arrive_at": "The practical problem returns: the key is out of reach, the table is slippery, and tears come faster than solutions."
+                    },
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "After shrinking and forgetting the key, Alice cries, finds the cake labeled EAT ME, and commits to 'either way I’ll get into the garden.'",
+                        "narrative_lead_in": "You are small enough to fit the door and still too small to reach the key, trapped by your own success. Under the table sits a little glass box with a cake that speaks in currants: EAT ME. The hall offers you another tool with no guarantee it won’t make everything worse.",
+                        "choice_question": "Before you act, what do you do with the feeling that you’re being tested?",
+                        "option_a": {
+                            "text": "You scold yourself into motion, because tears don’t change locks and you refuse to be helpless.",
+                            "downstream_effect": "The voice turns stern and self-commanding, framing the next actions as discipline rather than desperation."
+                        },
+                        "option_b": {
+                            "text": "You forgive yourself for crying, because anyone would break under this much wrongness.",
+                            "downstream_effect": "The voice turns tender and human, making the hall feel less like a punishment and more like a trial."
+                        },
+                        "option_c": {
+                            "text": "You pause and watch the room, because the safest move is understanding what it wants from you.",
+                            "downstream_effect": "The voice turns investigative, emphasizing patterns and timing over immediate emotion."
+                        },
+                        "all_paths_arrive_at": "You commit to the cake’s gamble, and the consequences of size come roaring back—too large, too loud, too late."
+                    }
+                ],
+                "branching_choice_2": {
+                    "choice_id": "S2_C2",
+                    "source_moment": "The White Rabbit returns muttering about the Duchess; Alice tries to ask for help; the Rabbit panics, drops gloves and fan, and flees into the darkness.",
+                    "values_in_tension": [
+                        "connection",
+                        "self-respect",
+                        "safety"
+                    ],
+                    "what_this_choice_tracks": "compliance_vs_defiance",
+                    "narrative_setup": "The patter of feet returns, and with it the only other living certainty you’ve seen in this place: the White Rabbit, dressed and hurried and important. You try to speak—polite, desperate—and he recoils as if your voice is an offense, dropping his gloves and fan like he’s shedding blame. He vanishes into the dark, leaving you with his things and your own heat and humiliation.",
+                    "choice_question": "How do you respond to the Rabbit’s fear of you?",
+                    "option_a": {
+                        "text": "You call after him in the same polite register, because if you follow the script maybe someone will finally answer you.",
+                        "downstream_effect": "*You double down on manners and deference, and your next encounters will read you as someone trying to belong—even when it costs you leverage.*"
+                    },
+                    "option_b": {
+                        "text": "You raise your voice and demand he stop, because being treated like a mistake makes you want to become a problem.",
+                        "downstream_effect": "*You assert yourself against authority, and your next encounters will carry the heat of confrontation—gaining agency while raising the risk of backlash.*"
+                    },
+                    "option_c": {
+                        "text": "You let him go and watch where he disappears, because information is safer than pleading with a creature that panics.",
+                        "downstream_effect": "*You choose restraint and observation, and your next encounters will begin from caution—more prepared, but more isolated.*"
+                    },
+                    "moral_weight_confirmation": "Each option sacrifices something real: politeness risks erasing you, defiance risks punishment, and silence risks loneliness.",
+                    "talkability_test": "Players can argue for all three: “Manners are a survival tool,” “You can’t let authority misname you,” or “Chasing approval is how you get trapped.”"
+                },
+                "branching_choice_3": {
+                    "choice_id": "S2_C3",
+                    "source_moment": "Alice holds the Rabbit’s fan and gloves, begins shrinking again while fanning herself, and spirals into 'Who in the world am I?' as the tear-pool surrounds her.",
+                    "what_this_choice_tracks": "identity_stability_vs_adaptation",
+                    "narrative_setup": "The fan moves the hot air, and with each flutter your body answers with another shift, smaller and smaller, as if you are being edited mid-sentence. The pool of your own tears waits to receive you, and the hall feels suddenly enormous—too much world for one uncertain name. You can feel an encounter coming, but you can’t decide what face to meet it with.",
+                    "choice_question": "As you shrink toward the tear-pool, who do you decide to be when the next creature notices you?",
+                    "option_a": {
+                        "text": "You cling to being Alice and rehearse your proper introduction, because a steady name is the only raft you trust.",
+                        "next_session_opens": "You hit the water trying to keep composure, then surface determined to speak first—introducing yourself to the nearest swimmer with practiced politeness."
+                    },
+                    "option_b": {
+                        "text": "You decide you’ll become whatever this place requires, because survival matters more than consistency.",
+                        "next_session_opens": "You surface quietly and study the other swimmers, ready to mirror their language and customs before you reveal anything about yourself."
+                    },
+                    "option_c": {
+                        "text": "You refuse to choose yet and keep testing your memory, because you won’t perform a self you can’t verify.",
+                        "next_session_opens": "You surface distracted and half-reciting, and the first creature to approach you catches you mid-proof—forcing you to respond while you still don’t feel real."
+                    }
+                }
+            },
+            "choice_consequence_map": {
+                "consequence_map_choice_1": {
+                    "tracked_dimension": "curiosity_vs_caution",
+                    "path_a": {
+                        "immediate_effect": "Alice rams the ORANGE MARMALADE jar into a passing cupboard; the jar catches with a sharp ceramic clink and her fingers scrape on a shelf-bracket, leaving her palm stinging as she keeps falling empty-handed.",
+                        "current_session_echo": "Because she let the jar go, she later hesitates before using the White Rabbit’s fan; she tests one cautious flutter first, narrating to herself that she’s “not going to do anything rash,” which slows the shrinking beat and makes the hall feel even more watchful.",
+                        "next_session_payoff": "Session 3 opening at the Rabbit’s house: when the Rabbit’s servants shove the pebble-stones through the window (“It was all made of little cakes”), Alice refuses to eat the first one immediately; she holds it up, sniffs it, and says, “I won’t be the cause of another accident,” delaying the growth by a beat and changing the timing of the first arm-in-the-window gag.",
+                        "later_session_legacy": "Session 5, Queen’s procession: when the Queen barks “Off with her head!” at a minor offender, Alice’s internal line explicitly recalls the jar choice—“I wouldn’t even drop a jar on a stranger”—and she steps half a pace forward before catching herself, establishing her as someone whose caution is ethical, not fearful."
+                    },
+                    "path_b": {
+                        "immediate_effect": "Alice keeps the jar clutched to her chest; when she hits the heap of sticks and leaves, the jar thumps against her ribs and survives, and she immediately checks it like a trophy—proof she can carry something out of the impossible.",
+                        "current_session_echo": "She uses the jar as a comfort-object and measuring tool: when the Rabbit drops the gloves and fan, she compares their size to the jar’s mouth, turning the scene into a tactile inventory (jar, gloves, fan) that pushes her toward grabbing and using Wonderland objects faster—even when it’s risky.",
+                        "next_session_payoff": "Early Session 3 (post-pool, pre-house chaos): on the shore, during the ‘Caucus-race’ aftermath, Alice produces the marmalade jar to ‘offer’ something useful; the Lory peers into it and deadpans, “It’s empty,” turning Alice’s souvenir into a public joke that still validates the player’s impulse to bring proof.",
+                        "later_session_legacy": "Session 7 trial: when evidence is presented as nonsense (the paper of verses), Alice’s thought explicitly links back—“I kept an empty jar as evidence; Wonderland keeps empty words”—and she is quicker to call out the court’s ‘proof’ as performative."
+                    },
+                    "path_c": {
+                        "immediate_effect": "Alice keeps the jar but goes limp and observant; she rotates slightly in the fall and notices one shelf labeled ‘MAPS’ and another labeled ‘MARMALADE’ flashing past—two labels that don’t match their contents—before the leaves break her landing.",
+                        "current_session_echo": "Her restraint makes her more pattern-driven: after the Rabbit flees, she doesn’t immediately chase or plead; she studies the corridor’s acoustics and the direction of his footfalls, and when she fans herself, she watches the fan’s effect like an experiment rather than a panic-response.",
+                        "next_session_payoff": "Session 3, inside the Rabbit’s house sequence: when she grows too large and her arm wedges in the window, she remembers the ‘labels don’t match’ observation and says, aloud, “Names aren’t instructions,” right before refusing the first shouted suggestion from outside—changing the dialogue cadence and giving the player a distinct ‘rule-reading’ posture in the siege.",
+                        "later_session_legacy": "N\/A"
+                    }
+                },
+                "consequence_map_choice_2": {
+                    "tracked_dimension": "compliance_vs_defiance",
+                    "path_a": {
+                        "immediate_effect": "Alice calls after the Rabbit with exaggerated politeness—“Sir! If you please!”—and the darkness answers with only his retreating mutter; the dropped gloves and fan remain on the floor like a failed audition for belonging.",
+                        "current_session_echo": "Her deference carries into the tear-pool beat: when she later addresses the Mouse, she opens with a formal, careful greeting (“O Mouse, do you know the way out of this pool?”), which makes the Mouse’s offense at her talk of Dinah land harder—her politeness becomes the very thing that misfires.",
+                        "next_session_payoff": "Session 5, Queen arrival and questioning: when the Queen fixes Alice with “Who are you?” Alice reflexively answers in the same ‘proper introduction’ register—name first, then courtesy—giving the Queen an opening to steamroll her with etiquette-as-weapon before Alice can recover.",
+                        "later_session_legacy": "Session 7 courtroom: during the Rule Forty-two dispute, Alice initially tries to argue ‘within procedure’ (“If there’s a rule, it ought to be written down properly”), which delays her open rupture by one exchange and makes the eventual break feel like a snapped restraint."
+                    },
+                    "path_b": {
+                        "immediate_effect": "Alice shouts after the Rabbit—“Stop!”—and her voice cracks off the corridor walls; in response, the Rabbit’s pace audibly accelerates, and a door slams somewhere ahead, cutting off pursuit and leaving her holding his gloves and fan like confiscated property.",
+                        "current_session_echo": "That heat bleeds forward: when she begins shrinking again, she fans herself with irritation rather than comfort, and her internal monologue shifts from ‘What will become of me?’ to ‘I won’t be treated as a mistake,’ making the tear-pool feel less like pure panic and more like anger at being handled.",
+                        "next_session_payoff": "Session 5, Queen arrival: when the Queen snaps at someone (“Off with his head!”), Alice’s earlier ‘become a problem’ stance pays off as a specific beat—she blurts, “You can’t just—” and is physically hushed by a courtier, creating a tangible backlash consequence (public silencing) that the compliant path doesn’t trigger.",
+                        "later_session_legacy": "Session 7 trial: when the King reads the nonsensical verses, Alice interrupts earlier and more directly (“That proves nothing!”) and the court reacts with immediate hostility—cards rustle, jurors crane—setting up a more aggressive escalation into the final eruption."
+                    },
+                    "path_c": {
+                        "immediate_effect": "Alice lets the Rabbit go and tracks his exit; she kneels, touches the dust where his feet skidded, and notes the exact doorway he vanished through—left-hand arch, third shadow—before picking up the gloves and fan.",
+                        "current_session_echo": "Her information-first posture changes the pool\/shore social rhythm: she speaks less, watches more, and when the Mouse begins the ‘dry’ plan, she’s already scanning the bank for the largest rock and the nearest ‘ring’ space—making her feel prepared but socially distant.",
+                        "next_session_payoff": "Session 5, Queen questioning: Alice recognizes the same ‘left-hand arch \/ third shadow’ doorway motif in the palace approach (a repeated architectural rhyme) and realizes she’s being herded; she chooses a specific physical move—stepping to the side of the procession line to see who blocks her—gaining a moment of tactical clarity that the other paths don’t get.",
+                        "later_session_legacy": "N\/A"
+                    }
+                },
+                "consequence_map_choice_3": {
+                    "tracked_dimension": "identity_stability_vs_adaptation",
+                    "path_a": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Alice hits the tear-pool still rehearsing: she surfaces sputtering, smooths wet hair back, and forces the words out first—“If you please, I am Alice”—to the nearest swimmer (the Mouse), as if a correct introduction can stabilize the water around her.",
+                        "next_session_payoff": "Mid-Session 3, Caterpillar confrontation: when the Caterpillar demands “Who are you?” the game explicitly mirrors the earlier self-declaration; Alice repeats the same structure—name, then justification—and the Caterpillar’s unblinking “I don’t see” lands as a direct challenge to the player’s chosen raft, validating the drama of clinging to ‘Alice.’",
+                        "later_session_legacy": "Session 7, called as witness: when the King\/Queen press her identity, Alice insists on her name as standing (“I’m Alice—so I can speak”), which fuels the Rule Forty-two dispute as a fight over whether ‘Alice’ counts as a person in this court."
+                    },
+                    "path_b": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Alice surfaces quietly and does not introduce herself; she watches how the Mouse holds its whiskers above water, copies its distance, and only speaks after matching the group’s rhythm—mirroring language before offering any personal detail.",
+                        "next_session_payoff": "Session 3, Caterpillar scene: when asked “Who are you?” Alice answers with situational truth instead of a name (“Small at the moment,” “Not sure yet”), and the Caterpillar’s approval is partial—he continues the conversation rather than dismissing her—validating adaptation as a survival tactic that buys access to ‘rules’ (mushroom knowledge).",
+                        "later_session_legacy": "Session 7 witness stand: Alice strategically ‘code-switches’—answering the court in their terms long enough to expose contradictions—creating a distinct play experience where she weaponizes adaptation before the final refusal."
+                    },
+                    "path_c": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Alice surfaces mid-recitation—trying to prove herself by memory (“How doth the little—”)—and the first creature to approach (the Mouse) catches her in the broken verse; she has to respond while still sounding unreal, half-poem, half-girl.",
+                        "next_session_payoff": "Session 3, Caterpillar identity argument: when pressed, Alice demands verification (“What do you mean, who am I? How would I tell?”) and the Caterpillar’s slow, needling questions become a direct payoff to her refusal to perform an unverified self—making the scene feel like an interrogation she invited.",
+                        "later_session_legacy": "Session 7 trial: when ‘evidence’ appears as a paper of verses, Alice is uniquely primed to attack the logic of proof-by-rhyme; she recognizes the trap because she has personally tried (and failed) to use verse as identity-proof, sharpening her dismantling of the court’s nonsense."
+                    }
+                },
+                "validation_results": {
+                    "specificity": "PASS",
+                    "asymmetry": "PASS",
+                    "payability": "PASS"
+                }
+            },
+            "session_close_design": {
+                "resolution_prose": "The fan’s paper ribs tick against your fingers—tick, tick—and the hot air you push away seems to take pieces of you with it. Your sleeves loosen. Your shoes go suddenly heavy, as if they belong to someone taller. The hall stretches upward into lamp-lit distance, and the pool of your own tears—salt, warm, and absurdly deep for something you made by crying—waits at your feet like a small, private sea.\n\nYou try the sums again, the capitals again, and each answer slips sideways. Names you know—Ada, Mabel—float up like labels on jars, none of them fitting the mouth of you. The fan keeps fluttering. You keep shrinking. The gloves hang from your wrist like borrowed manners.\n\nAt last your toes meet the tear-water. Cold climbs your ankles. You don’t stop; you can’t. The surface takes you with a soft, swallowing sound, and the world becomes ripples and lamplight broken into a thousand bright coins.",
+                "hook_transition": "For one breath, you simply bob there, listening to your own small splashes and the distant drip of the hall. Then something else moves in the water nearby—steady, purposeful strokes—and a whiskered face turns toward you as if it has been expecting you to appear.",
+                "session_end_choice": {
+                    "choice_question": "As you shrink toward the tear-pool, who do you decide to be when the next creature notices you?",
+                    "option_a": {
+                        "text": "You cling to being Alice and rehearse your proper introduction, because a steady name is the only raft you trust.",
+                        "next_session_opens": "You hit the water trying to keep composure, then surface determined to speak first—introducing yourself to the nearest swimmer with practiced politeness."
+                    },
+                    "option_b": {
+                        "text": "You decide you’ll become whatever this place requires, because survival matters more than consistency.",
+                        "next_session_opens": "You surface quietly and study the other swimmers, ready to mirror their language and customs before you reveal anything about yourself."
+                    },
+                    "option_c": {
+                        "text": "You refuse to choose yet and keep testing your memory, because you won’t perform a self you can’t verify.",
+                        "next_session_opens": "You surface distracted and half-reciting, and the first creature to approach you catches you mid-proof—forcing you to respond while you still don’t feel real."
+                    },
+                    "final_line": "The water rocks you gently, and you decide what name—if any—you let rise with you."
+                },
+                "stickiness_audit": {
+                    "payoff_test": "PASS",
+                    "return_driver_test": "PASS",
+                    "overnight_test": "PASS"
+                }
+            },
+            "editorial_verification": {
+                "question_results": {
+                    "entry_point": {
+                        "verdict": "PASS",
+                        "detail": "The session starts at the first point-of-no-return with immediate jeopardy (Alice already falling; \"how do you get out again?\"). All low-stakes bank setup is correctly cut per Law #1."
+                    },
+                    "emotional_promise": {
+                        "verdict": "PASS",
+                        "detail": "First paragraph promises vertigo + urgent agency (control before the fall decides everything). The sensory drop and immediate self-questioning deliver that promise."
+                    },
+                    "first_choice_timing": {
+                        "verdict": "PASS",
+                        "detail": "Branching Choice 1 (marmalade jar) is embedded in the cold open and clearly arrives within the first ~300 words of the experience."
+                    },
+                    "consequential_choices": {
+                        "verdict": "REVISE",
+                        "detail": "Branching Choice 2 is inconsistent across the session design: in the beat map it is the DRINK ME decision at 6:30–8:30, but in the choice design it is the Rabbit-rejection response (compliance\/defiance\/observe), and the consequence map is written for the Rabbit-rejection version. As written, the session either (a) has 4 branching choices (violating the 3-choice architecture) or (b) has an un-mapped branching choice (DRINK ME) with no verified downstream plan. This fails Phase 6\/Story Session Map verification for “all three branching choices are genuinely consequential.”"
+                    },
+                    "stakes_within_60_seconds": {
+                        "verdict": "PASS",
+                        "detail": "Within the opening moments the user understands: uncontrolled fall, potential injury\/death, and the added ethical stake of not dropping a hard object on someone below."
+                    },
+                    "early_decision_visible_later": {
+                        "verdict": "PASS",
+                        "detail": "Choice 1 (jar handling) has a defined current-session echo (fan usage hesitation vs inventorying vs experimentation posture) plus mapped next-session and later-session legacies."
+                    },
+                    "breath_beat": {
+                        "verdict": "PASS",
+                        "detail": "A deliberate reward beat lands at 8:30–10:00 with Carrollian absurdity (“Good-bye, feet!” \/ boot-shipping), with an expressive choice to texture tone."
+                    },
+                    "moral_gray_area": {
+                        "verdict": "PASS",
+                        "detail": "Rabbit-rejection response (polite compliance vs assertive defiance vs silent observation) is a genuine no-right-answer trade among connection, self-respect, and safety, with credible costs on each path."
+                    },
+                    "exit_emotional_state": {
+                        "verdict": "PASS",
+                        "detail": "Session ends on the player’s unresolved identity-presentation decision as the Mouse approaches—clear ANTICIPATION driven by self-definition and imminent social contact."
+                    },
+                    "talkability": {
+                        "verdict": "PASS",
+                        "detail": "The end choice (“who do you decide to be?”) and the Rabbit response choice both invite immediate comparison and argument; a friend would naturally ask what stance you took."
+                    }
+                },
+                "total_passed": 9,
+                "production_status": "AMBER",
+                "revision_instructions": [
+                    {
+                        "question": "Q4 — Consequential Choices",
+                        "phase": "Phase 5 (Session Architecture) + Phase 6 (Choice\/Consequence Map) + Story Session Map alignment",
+                        "instruction": "Resolve the Branching Choice 2 conflict by selecting ONE canonical set of three branching choices for Session 2 and making all artifacts match. Either: (A) Keep DRINK ME as Branching Choice 2—then write its full Phase 6 consequence map (current-session echo + Session 3\/4\/7 payoffs) and update Story Session Map choice references accordingly; OR (B) Remove DRINK ME as a branching choice (convert it to expressive or deterministic), keep Rabbit-rejection as Branching Choice 2, and update the beat map timestamps\/labels so only three branching choices exist (Jar \/ Rabbit response \/ Session-end identity). Ensure each of the three has explicit downstream consequences verified in the cross-session payoff plan."
+                    }
+                ]
+            },
+            "updated_at": "2026-04-16T16:21:23+00:00"
+        },
+        {
+            "session_number": 3,
+            "session_status": "completed",
+            "entry_point_diagnosis": {
+                "editorial_diagnosis": "For Session 3, the dramatic energy in the provided pages doesn’t live in the prologue material (bank → rabbit → fall → hall puzzle → drink\/eat → grow\/cry). Paragraph-by-paragraph, a new user can’t feel *immediate* stakes inside the first 60 seconds because the text is dominated by: (1) idle setup (boredom on the bank), (2) whimsical observation (the fall’s cupboards, geography jokes), and (3) slow-burn puzzle discovery (key\/door\/bottle\/cake) whose consequences are delayed. Even when Alice cries or changes size, the scene reads as reactive and interior rather than a present-tense threat with a clear pressure.\n\nThe first moment in this session’s actual event list where the stakes are instantly legible is Position 22: an external attack (pebbles to the face) and an imminent escalation (Rabbit threatening fire). A new user immediately understands: you are trapped, people outside are trying to force you out or hurt you, and the situation is about to get worse. That’s the earliest “YES” moment for felt stakes within 60 seconds, so everything before it should be cut for retention.\n\nWhat gets lost in the cut is mostly charming but non-urgent material: how you got here (Rabbit-hole), the size-change mechanics being introduced, and why Alice is in the Rabbit’s house at all. Those must be reintroduced through action\/implication in the cold open (e.g., your body doesn’t fit the room; you’ve been changing size; you’re mistaken for someone else; you need to escape into the wood).",
+                "format_specific_cut": {
+                    "cut_point": "Session 3, Event Position 22 — “Rabbit threatens fire; Alice threatens Dinah — A shower of little pebbles comes in through the window…”",
+                    "original_before_cut": "All pre-session material shown in the provided pages (bank\/prologue, descent, hall\/key\/door\/bottle\/cake, growth\/tears\/identity monologue) — effectively the entirety of Chapter 1 and early Chapter 2 material preceding the Rabbit-house siege; 0 of this session’s listed events (22-25) occur before the cut.",
+                    "cut_eliminates": "Backstory + whimsical travelogue (the fall), extended puzzle setup (key\/door\/bottle\/cake), and long interior monologue\/wordplay (identity arithmetic, geography).",
+                    "must_reintroduce": "1) Alice is trapped inside a house because her size is wrong for the space; 2) size-changing via eating\/drinking is an established, risky tool; 3) the outside crowd is led by the White Rabbit and is treating Alice as an intruder\/servant; 4) the immediate goal after escape is ‘get out alive’ and reach relative safety (the wood), plus the lingering need for food\/means to control size."
+                },
+                "cold_open": "Pebbles rattle against the windowpane like hail, sharp as teeth. One clips your cheek; grit and chalky dust bloom on your tongue.\n\nYou press your shoulder harder into the cramped room, trying to make yourself smaller by sheer stubbornness, but the walls don’t give and neither do you. Outside, voices rise—panicked, bossy, too many of them—and one thin, furious voice cuts through: the Rabbit.\n\n“Fetch a ladder! And—set it alight if she won’t come out!”\n\nFire. In a house you can barely breathe in.\n\nAnother volley of pebbles spits through the glass. You snatch one out of the air and stare at it, willing it to be only a stone, only a bruise. Your hands shake anyway.\n\nIf they burn you out, you won’t fit through the door. If you stay, you’ll choke.\n\nYou swallow, tasting dust, and decide what you do next.",
+                "emotional_promise": "The emotional promise of this cold open is: escape. A user arrives feeling cornered and wanting to seize control.",
+                "start_event_position": 22,
+                "start_event_id": 30
+            },
+            "session_architecture": {
+                "beat_identification": {
+                    "setup": {
+                        "source_moment": "Session 3 Event Position 22 (from Phase 3 cut): the Rabbit-house siege begins — “A shower of little pebbles comes in through the window… ‘set it alight if she won’t come out!’” (external attack + threat of fire while Alice is trapped by her size).",
+                        "why_it_qualifies": "Immediate, legible danger within seconds: Alice is physically trapped, being actively assaulted, and faces an escalating threat (burned\/smoked out). This is the earliest “felt stakes” moment and supports a cold open where the first BRANCHING choice can arrive inside 300 words.",
+                        "editorial_intervention": "Moderate"
+                    },
+                    "escalation": {
+                        "source_moment": "Continuation of the Rabbit-house siege (still Event Position 22 into 23\/24): pebbles start turning into little cakes; the crowd’s tactics intensify; Alice realizes she can use the thrown items to change her size and force an exit, but doing so is risky and could worsen the entrapment.",
+                        "why_it_qualifies": "Visible goal becomes concrete: escape the burning\/assaulted house into the wood. Clear obstacle: Alice’s size mismatch plus the crowd outside controlling the exits and escalating to fire. Stakes compound because every ‘solution’ (eat\/drink\/force) can backfire into a worse body-state or provoke harsher retaliation.",
+                        "editorial_intervention": "Moderate"
+                    },
+                    "breath": {
+                        "source_moment": "Post-breakout reset in the wood (Event Position 25 lead-in): Alice is briefly alone and can observe the absurdity of her situation (body as a ‘tool’), with a small wonder beat as she spots the Caterpillar on a mushroom amid uncanny calm.",
+                        "why_it_qualifies": "A deliberate release after the siege: quiet, strange beauty, and a moment of ‘Wonderland-as-ecosystem’ (mushroom, smoke, stillness) that rewards the player between minutes 8–10. It also re-centers the theme of control over change without immediate threat.",
+                        "editorial_intervention": "Heavy"
+                    },
+                    "twist": {
+                        "source_moment": "Event Position 28: Alice and the Caterpillar argue about identity (“Who are you?” \/ Alice can’t answer cleanly; the Caterpillar challenges her self-definition while offering a path to size-control via the mushroom).",
+                        "why_it_qualifies": "Moral-weight, no-correct-answer moment: does Alice preserve a stable ‘proper’ self (insist on manners\/continuity) or adapt and accept that she is becoming someone new to survive here? Either stance costs something (integrity vs flexibility) and will color how she navigates later authority (Session 7 witness\/court).",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "resolution": {
+                        "source_moment": "Event Position 31: Alice breaks the mushroom and changes size deliberately (experimenting with sides to calibrate). She secures a practical method to proceed, but must decide how to use it next.",
+                        "why_it_qualifies": "Primary arc resolves: from being changed *by* the world (siege\/forced reactions) to changing *herself* with intent—gaining a tool for agency. Seed for next session: she can now re-approach ‘society’ (hall\/garden\/kitchen) with chosen size and chosen social posture, setting up Session 4’s question about which social logic she adopts.",
+                        "editorial_intervention": "Moderate"
+                    }
+                },
+                "beat_map": [
+                    {
+                        "time_range": "0:00-2:30",
+                        "moment": "Cold open inside the Rabbit’s house: pebbles through the window; Rabbit threatens to burn the house; Alice is wedged by her size and can’t fit the door.",
+                        "beat_type": "SETUP",
+                        "choice_type": "none",
+                        "choice_arrives": "NO"
+                    },
+                    {
+                        "time_range": "2:30-3:00",
+                        "moment": "Alice commits to an immediate tactic under threat (use the window, negotiate, or force a size-change).",
+                        "beat_type": "SETUP",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "3:00-6:30",
+                        "moment": "Siege escalates: the crowd coordinates; objects thrown in; Alice’s chosen tactic produces consequences (more attention, more danger, or a risky opening).",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "none",
+                        "choice_arrives": "NO"
+                    },
+                    {
+                        "time_range": "6:30-7:30",
+                        "moment": "Expressive texture: Alice’s inner narration frames the absurd logic of ‘being the wrong size’ as a solvable problem; player selects tone (fear, anger, dark humor).",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "7:30-8:30",
+                        "moment": "Breakout attempt: Alice uses a thrown cake\/food (or refuses and tries brute force) to shift size enough to escape; the outside crowd reacts.",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "8:30-10:00",
+                        "moment": "BREATH: sudden quiet in the wood. Strange calm. Alice notices the Caterpillar on a mushroom—wonder beat and a ‘reward’ of new information: there may be a *method* to size-control.",
+                        "beat_type": "BREATH",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "10:00-13:30",
+                        "moment": "Caterpillar encounter begins: cryptic questions, smoke, impatience. Alice tries to explain herself; the Caterpillar presses: “Who are you?”",
+                        "beat_type": "TWIST",
+                        "choice_type": "none",
+                        "choice_arrives": "NO"
+                    },
+                    {
+                        "time_range": "13:30-15:00",
+                        "moment": "Identity stance crystallizes in dialogue: insist on continuity\/manners vs admit flux and adaptiveness (how Alice defines ‘self’ under pressure).",
+                        "beat_type": "TWIST",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "15:00-17:00",
+                        "moment": "Aftermath of the stance: the Caterpillar’s guidance lands differently; Alice learns the mushroom’s two-sided effect and prepares to test it.",
+                        "beat_type": "TWIST",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES"
+                    },
+                    {
+                        "time_range": "17:00-20:30",
+                        "moment": "Resolution through experimentation: Alice breaks mushroom pieces, calibrates size (success with complications), gaining a repeatable tool rather than a one-off accident.",
+                        "beat_type": "RESOLUTION",
+                        "choice_type": "none",
+                        "choice_arrives": "NO"
+                    },
+                    {
+                        "time_range": "20:30-22:00",
+                        "moment": "Session-end retention choice (unresolved decision owned by player): now that Alice can choose her size, where does she go next—back toward the hall\/garden and ‘society,’ deeper into the wood, or toward the nearest house\/smoke?",
+                        "beat_type": "RESOLUTION",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES"
+                    }
+                ],
+                "next_session_awareness": {
+                    "seed_for_next_session": "Alice now possesses a controllable size-change method (mushroom calibration) and must choose a direction back toward social spaces; this directly sets up Session 4’s ‘re-approach society with tools, not luck’ and the question of which social logic she adopts (cynicism\/chaos\/manners).",
+                    "connects_to_next_dramatic_question": "YES"
+                }
+            },
+            "session_choice_design": {
+                "branching_choice_1": {
+                    "choice_id": "S3_C1",
+                    "source_moment": "Session 3 Event Position 22 (Rabbit-house siege begins): pebbles through the window; threat to set the house alight while Alice is trapped by her size.",
+                    "what_this_choice_tracks": "compliance_vs_defiance (how Alice responds to hostile authority and a crowd trying to force her out).",
+                    "narrative_setup": "Pebbles rattle through the window and sting your arms where you can reach them; outside, a chorus of small voices swells with excitement at having you trapped. The Rabbit’s voice cuts through—high, panicked, and cruelly practical—ordering them to smoke you out if you won’t come. Your body is wedged in the room like a misplaced piece of furniture, and the door is a joke you can’t fit through. The next thing you do will teach them whether you’re prey, guest, or problem.",
+                    "choice_question": "How do you answer the siege—right now?",
+                    "option_a": {
+                        "text": "You call out in your politest voice and ask for a fair way to leave without anyone getting hurt.",
+                        "downstream_effect": "*The crowd hesitates just long enough for you to hear their plan forming, and the Rabbit starts issuing sharper, more humiliating orders.*"
+                    },
+                    "option_b": {
+                        "text": "You shout back that you won’t be burned out like an animal and they can try you if they dare.",
+                        "downstream_effect": "*The outside turns instantly vindictive, and the first real signs of fire-making begin as they scramble for tinder and torches.*"
+                    },
+                    "option_c": {
+                        "text": "You say nothing and listen for footsteps, tools, and gaps in their shouting to map your safest opening.",
+                        "downstream_effect": "*You pick up crucial details—where they’re clustered, what they’re carrying, and which side of the house is least watched—at the cost of letting their courage grow.*"
+                    },
+                    "all_paths_arrive_at": "The siege intensifies: more objects are thrown in, the crowd coordinates, and Alice realizes the thrown pebbles are changing into little cakes that might alter her size."
+                },
+                "expressive_choices": [
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "Siege escalates (Event Position 22 into 23\/24): objects thrown in; Alice frames the absurd logic of being the wrong size as a solvable problem.",
+                        "narrative_lead_in": "The room shakes with every impact, and the air tastes like dust and someone else’s impatience. You can’t make your body smaller by wishing, but you can still choose what story you tell yourself about this—what kind of girl is trapped in a ridiculous house while strangers debate arson.",
+                        "choice_question": "What do you let your mind sound like as the danger climbs?",
+                        "option_a": {
+                            "text": "You let fear speak plainly and count each breath like it might be rationed.",
+                            "downstream_effect": "Your narration tightens into sensory detail—heat, splinters, the scrape of pebbles—making every new threat feel immediate and close."
+                        },
+                        "option_b": {
+                            "text": "You let anger take the wheel and decide you’re done being handled like a mistake.",
+                            "downstream_effect": "Your inner voice sharpens into judgments and vows, turning each thrown object into an insult you intend to answer."
+                        },
+                        "option_c": {
+                            "text": "You treat it like a dreadful joke and cling to dark humor because it keeps you moving.",
+                            "downstream_effect": "The prose tilts wry and brisk, making the siege feel absurdly procedural—like nonsense rules you can exploit."
+                        },
+                        "all_paths_arrive_at": "A pebble lands near your hand and, before your eyes, becomes a tiny cake with the same smug certainty as the hall’s labels."
+                    },
+                    {
+                        "beat": "BREATH",
+                        "source_moment": "Post-breakout reset in the wood (Event Position 25 lead-in): sudden quiet; Caterpillar on a mushroom; wonder beat and new information about size-control.",
+                        "narrative_lead_in": "You stumble into the wood and the world abruptly forgets to chase you; leaves close behind like a door. The air is cooler here, threaded with a thin ribbon of smoke that doesn’t smell like fire so much as thought. On a mushroom sits a Caterpillar, unhurried, as if sieges are a common weather.",
+                        "choice_question": "How do you approach the Caterpillar in this strange calm?",
+                        "option_a": {
+                            "text": "You offer a small, careful greeting as though manners might still be a kind of shelter.",
+                            "downstream_effect": "The moment leans delicate and ceremonial, emphasizing Alice’s rule-aware steadiness amid the uncanny quiet."
+                        },
+                        "option_b": {
+                            "text": "You step closer without asking permission because you need answers more than approval.",
+                            "downstream_effect": "The tone becomes bold and forward, framing the Caterpillar as an obstacle you intend to engage, not a curiosity to admire."
+                        },
+                        "option_c": {
+                            "text": "You hang back and watch the smoke and the mushroom first, letting the scene explain itself.",
+                            "downstream_effect": "Wonder and detail take over—texture of bark, curl of smoke—making the calm feel like a puzzle with instructions hidden in plain sight."
+                        },
+                        "all_paths_arrive_at": "The Caterpillar finally acknowledges you with a slow look and a question that lands like a trap: “Who are you?”"
+                    },
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "Breakout attempt (Event Position 24): a thrown cake\/food offers a risky size-shift; the outside crowd reacts.",
+                        "narrative_lead_in": "The tiny cake sits in your palm like a dare; it smells harmless, which in this place means nothing at all. Outside, they chant and scrape and strike—preparing either to drag you out or drive you out with smoke. If you change size at the wrong moment, you could wedge yourself worse, or burst free into hands that want you gone.",
+                        "choice_question": "What do you do with the cake they’ve thrown you?",
+                        "option_a": {
+                            "text": "You eat the cake now and commit to changing your body as the fastest way to escape.",
+                            "downstream_effect": "You shift size abruptly and gain a violent opening—either slipping free or forcing the house to give—while the crowd surges to seize the moment."
+                        },
+                        "option_b": {
+                            "text": "You break off the smallest bite and wait for the first sign of what it does before taking more.",
+                            "downstream_effect": "Your change comes in cautious increments, buying you control but costing you time as the threat of smoke and fire grows nearer."
+                        },
+                        "option_c": {
+                            "text": "You refuse to eat it and try to free yourself by leverage, furniture, and brute persistence.",
+                            "downstream_effect": "You avoid the unknown tool entirely, but the struggle is loud and slow, provoking the outside to escalate toward fire with less hesitation."
+                        },
+                        "all_paths_arrive_at": "You manage a breakout into the wood—shaken, alive, and newly aware that Wonderland keeps offering ‘solutions’ that rewrite your body."
+                    }
+                ],
+                "branching_choice_2": {
+                    "choice_id": "S3_C2",
+                    "source_moment": "Event Position 28: Caterpillar presses “Who are you?” and challenges Alice’s self-definition while implying the mushroom can control size.",
+                    "values_in_tension": [
+                        "integrity (a coherent self you can answer for)",
+                        "survival (adapting fast enough to stay safe)",
+                        "truthfulness (refusing to claim certainty you don’t feel)"
+                    ],
+                    "what_this_choice_tracks": "identity_stability_vs_adaptation (how Alice defines ‘self’ under pressure, with payoff in Session 7 when she is called as witness).",
+                    "narrative_setup": "The Caterpillar’s question doesn’t sound curious; it sounds like a demand for a password. You can feel how much of your day has been spent changing—shrinking, growing, being misnamed, being threatened—until your own name feels slippery in your mouth. The mushroom beneath him promises a kind of control, but his stare suggests control has a price: you must decide what you are before you decide what you can do.",
+                    "choice_question": "When the Caterpillar asks “Who are you?”, what do you commit to saying?",
+                    "option_a": {
+                        "text": "You insist you are Alice, exactly, and you hold to the rules and memories that make that name mean something.",
+                        "downstream_effect": "*The Caterpillar needles you for contradictions, and your path forward emphasizes preserving a ‘proper’ self even when it makes Wonderland resist you.*"
+                    },
+                    "option_b": {
+                        "text": "You admit you’ll become whatever you need to become here, because staying alive matters more than staying consistent.",
+                        "downstream_effect": "*The Caterpillar treats you as teachable in a colder way, and your path forward emphasizes adaptation and opportunism even when it costs you dignity.*"
+                    },
+                    "option_c": {
+                        "text": "You refuse to declare an answer you don’t trust and ask for proof of who you are before you perform it.",
+                        "downstream_effect": "*The Caterpillar grows impatient but intrigued, and your path forward emphasizes skepticism and verification, slowing trust but strengthening your sense of agency.*"
+                    },
+                    "moral_weight_confirmation": "Each option protects something real—selfhood, survival, or honesty—while sacrificing another, with no choice guaranteeing safety or virtue.",
+                    "talkability_test": "Players can argue for hours about whether ‘being Alice’ is an anchor, a luxury, or a lie when your body and social role keep changing."
+                },
+                "branching_choice_3": {
+                    "choice_id": "S3_C3",
+                    "source_moment": "Event Position 31: Alice breaks the mushroom and calibrates her size deliberately; she now must decide how to use that tool next.",
+                    "what_this_choice_tracks": "control_vs_surrender (how Alice uses deliberate size-control to approach the next social space in Session 4).",
+                    "narrative_setup": "You snap the mushroom cleanly and keep a piece in each hand, left and right like two different futures. A careful nibble makes your body answer you—finally, a lever you can pull on purpose. The wood is quiet, but not empty; somewhere ahead are doors, people, rules, kitchens, gardens, and the kind of trouble that wears manners like armor.",
+                    "choice_question": "With size-control in your hands, where do you choose to go next?",
+                    "option_a": {
+                        "text": "You head back toward the hall and the garden, choosing to re-enter ‘society’ with control instead of luck.",
+                        "next_session_opens": "Session 4 opens with Alice approaching the hall\/garden threshold, using the mushroom to arrive at a deliberate, socially strategic size."
+                    },
+                    "option_b": {
+                        "text": "You go toward the nearest house-smoke, choosing contact and information even if it means walking into someone else’s domain.",
+                        "next_session_opens": "Session 4 opens at the edge of the Duchess’s smoky kitchen territory, with Alice deciding what size is safest before she’s seen."
+                    },
+                    "option_c": {
+                        "text": "You move deeper into the wood and wait, choosing solitude long enough to practice control where no one can watch you fail.",
+                        "next_session_opens": "Session 4 opens with Alice alone, running deliberate mushroom tests until a new presence interrupts—forcing her to use control under observation."
+                    }
+                }
+            },
+            "choice_consequence_map": {
+                "consequence_map_choice_1": {
+                    "tracked_dimension": "compliance_vs_defiance (how Alice responds to hostile authority and a crowd trying to force her out).",
+                    "path_a": {
+                        "immediate_effect": "Alice calls out, \"If you please—I'd like to go out without hurting anybody.\" Outside, the Rabbit snaps back with humiliating logistics: \"Then take her out by the chimney!\" and orders Bill the Lizard up onto the roof.",
+                        "current_session_echo": "Because Alice tried to be \"fair,\" the crowd treats her like a problem to be managed: they argue over procedure (chimney vs door) and you get clear audio cues of their plan forming—Bill’s scrambling, the ladder scraping, and the Rabbit’s anxious, officious tone—framing Alice as the one still trying to keep things civil in an uncivil siege.",
+                        "next_session_payoff": "Session 4, when Alice reaches the hall\/garden threshold and meets the Gardeners (Cards) at the rose-tree, she opens with the same practiced politeness—\"Would you tell me, please, why you are painting those roses?\"—and the Gardeners respond with a wary, procedural deference instead of immediate panic, buying her a clean first exchange before the Queen’s procession arrives.",
+                        "later_session_legacy": "Session 5, first face-to-face with the Queen: Alice’s instinctive \"Please, your Majesty—\" register triggers the Queen’s contemptuous \"Who is this?\" \/ \"How should I know?\" dynamic, and the King’s habit of \"considering\" her words is slightly more pronounced—she is treated as an odd but rule-speaking petitioner rather than a pure nuisance."
+                    },
+                    "path_b": {
+                        "immediate_effect": "Alice shouts back, \"I won't be burned out!\" The outside turns vindictive: you hear flint struck, someone yells for \"straw!\" and the Rabbit orders, \"Set it alight!\"—smoke begins to curl in through the lower cracks.",
+                        "current_session_echo": "The rest of Session 3 is colored by escalation and retaliation: the crowd stops debating procedure and starts acting; thrown pebbles come faster, and when Alice discovers the pebbles are turning into little cakes, the moment lands as a desperate countermeasure against a real fire threat rather than a curious tool—size-control is born under duress.",
+                        "next_session_payoff": "Session 4, at the Duchess’s kitchen edge, the Cook’s pepper-choke and flying cookware read as a continuation of \"they’ll hurt you if you give them an inch\"—Alice’s first line is sharper (\"There’s certainly too much pepper in that soup!\") and the Duchess clocks her as \"impertinent,\" accelerating the kitchen’s hostility and pushing Alice into the baby-rescue beat sooner.",
+                        "later_session_legacy": "Session 7, during the Rule Forty-two dispute (\"All persons more than a mile high to leave the court\"), Alice’s defiance has a direct rhetorical callback: she’s more likely to answer with the same \"try me\" energy—\"I won't go. Besides, that's not a regular rule\"—and the court’s reaction spikes faster toward \"Off with her head!\" chaos."
+                    },
+                    "path_c": {
+                        "immediate_effect": "Alice stays silent and listens: she picks out the ladder’s placement on the left wall, Bill the Lizard’s reluctant muttering, and the Rabbit’s position by the door giving orders—she times her movement to the moment the crowd’s chanting swells and their footsteps cluster away from the back window.",
+                        "current_session_echo": "Session 3 takes on a stealth\/problem-solving texture: Alice’s discovery that pebbles become cakes is framed as an observed pattern (sound → bounce → change) rather than a lucky accident; she experiments with one cake first, watching for effect, making the mushroom lesson with the Caterpillar feel like the payoff to her listening discipline.",
+                        "next_session_payoff": "Session 4, when Alice navigates the hall\/garden approach, she explicitly uses the same listening tactic before stepping into any social space: she pauses at the garden entrance to eavesdrop on the Gardeners’ whispered panic about the white roses—\"If the Queen was to find it out, we should all have our heads cut off\"—which lets the player enter the scene already knowing the stakes and choose how to speak to them.",
+                        "later_session_legacy": "Session 6, when escorted by the Gryphon toward the Mock Turtle and the distant cry of \"The trial's beginning!\" cuts across the shore, this path primes Alice to catch the procedural details in the noise (\"first witness\" \/ \"tarts\" \/ \"summons\")—giving her a specific advantage in Session 7 when she recognizes court rhythms and interruptions sooner."
+                    }
+                },
+                "consequence_map_choice_2": {
+                    "tracked_dimension": "identity_stability_vs_adaptation (how Alice defines ‘self’ under pressure, with payoff in Session 7 when she is called as witness).",
+                    "path_a": {
+                        "immediate_effect": "Alice insists, \"I’m Alice.\" The Caterpillar immediately needles her with contradictions—\"Explain yourself\"—and forces a humiliating proof attempt: she recites \"You are old, Father William\" and the words come out wrong, making her \"proper\" anchor visibly fail in front of him.",
+                        "current_session_echo": "The remainder of Session 3 is colored by Alice clinging to rules and names even as they betray her: she treats the mushroom like a proper instrument (measured bites, verbal self-instructions like a lesson), and the Caterpillar’s cold \"Keep your temper\" lands as an authority figure policing her for wanting coherence.",
+                        "next_session_payoff": "Session 7, when Alice is called as witness and asked who she is \/ why she’s there, she answers with a firm, formal self-definition—\"I’m a little girl\" \/ \"Alice\"—and when the court tries to redefine her via Rule Forty-two, she argues from consistency: \"That’s not a regular rule\" and \"I’m not a mile high,\" turning identity into a legalistic stance.",
+                        "later_session_legacy": "During the final rupture of Session 7 (cards rising, logic collapsing), this path makes the wake-up tenderness sharper: Alice’s last line before waking leans toward \"You’re nothing but a pack of cards\" as a declaration of stable reality—she reasserts a coherent world-model rather than merely escaping danger."
+                    },
+                    "path_b": {
+                        "immediate_effect": "Alice admits, \"I’ll be whatever I need to be.\" The Caterpillar responds with colder instruction: he demonstrates the mushroom’s two-sided effect (one side makes you grow, the other shrink) like training a tool-user, not respecting a person—he ends with a curt directive: \"One side will make you grow taller, and the other side will make you grow shorter.\"",
+                        "current_session_echo": "Session 3 becomes tactical and slightly dehumanizing: Alice treats her own body as adjustable equipment; she breaks the mushroom and runs rapid calibrations (bite, check, bite again) with less moral hesitation, and the scene’s tone tilts toward survival pragmatism—\"dignity\" is something she spends to get control.",
+                        "next_session_payoff": "Session 7 witness stand: when questioned, Alice answers in a way that fits the room rather than her inner certainty—she mirrors court language (\"I think I can remember\" \/ \"I don’t know\" strategically), and when the King pushes nonsense evidence (the verses), she pivots into whatever role helps her survive the moment (helpful witness, confused child, or sharp logician) depending on pressure, making the court temporarily unsure how to pin her down.",
+                        "later_session_legacy": "Session 5–7 power navigation: this path makes Alice more willing to \"play along\" with etiquette as camouflage—she participates in court forms longer before snapping, which delays open conflict and shifts the catharsis later: the eruption happens after a longer stretch of performative compliance."
+                    },
+                    "path_c": {
+                        "immediate_effect": "Alice refuses to declare certainty: \"I can’t explain myself… because I’m not myself, you see.\" She asks for proof\/criteria, and the Caterpillar—impatient but intrigued—tests her with a verification trap: he demands the poem recitation anyway, then judges her errors as evidence she’s unreliable, not merely changed.",
+                        "current_session_echo": "Session 3 takes on an investigative, agency-forward tone: Alice treats the mushroom knowledge as a hypothesis to test (left vs right, small bites, observed thresholds), and her dialogue with the Caterpillar stays argumentative in a controlled way—less about \"being proper\" and more about refusing to accept definitions without evidence.",
+                        "next_session_payoff": "Session 7 witness stand: when the King\/Queen assert a rule or interpret the verses, Alice explicitly challenges the epistemology—\"That proves nothing of the sort!\"—and asks procedural questions (\"Where’s the jury?\" \/ \"What do you mean by that?\") that expose the court’s lack of standards, turning her skepticism into the engine that accelerates the Rule Forty-two dispute.",
+                        "later_session_legacy": "Session 6 (Mock Turtle lessons) reframes: Alice’s skepticism makes her less absorbable by Wonderland’s sentimental schooling—she listens, but keeps asking clarifying questions that puncture the pageantry, so when the trial summons hits, she is already in a \"show me the rules\" posture that carries cleanly into the courtroom meltdown."
+                    }
+                },
+                "consequence_map_choice_3": {
+                    "tracked_dimension": "control_vs_surrender (how Alice uses deliberate size-control to approach the next social space in Session 4).",
+                    "path_a": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Session 4 opens in the long hall: Alice stands at the little door with the garden visible beyond, deliberately nibbling the mushroom to hit a precise \"door-fit\" height; the key is in hand, and she rehearses a composed entrance before stepping through.",
+                        "next_session_payoff": "Named payoff moment: Alice enters the garden without a size mishap and immediately clocks the three Gardeners painting the roses; she gets to choose her first line from a position of composure (e.g., \"How curious!\" \/ \"Why are you doing that?\") and the Gardeners don’t scatter—she has social leverage because she arrived controlled.",
+                        "later_session_legacy": "Session 5 croquet: controlled sizing becomes a remembered tool—when the Queen’s game turns chaotic, Alice’s internal narration references that she has \"managed being the right size before\" and she is more willing to stand her ground physically among the Cards rather than feeling perpetually at the mercy of her body."
+                    },
+                    "path_b": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Session 4 opens at the hedge-line near the Duchess’s house: smoke rolls out, pepper stings the air, and Alice pauses behind a tree trunk, mushroom in hand, choosing a \"not-noticeable\" size before she crosses into someone else’s domain.",
+                        "next_session_payoff": "Named payoff moment: the kitchen reveal lands as a controlled infiltration—Alice shrinks slightly to slip past the worst of the thrown pans, witnessing the Cook’s pepper-bombing and the Duchess’s lullaby without immediately becoming the center of attention; she gets an extra beat of information (the baby’s frantic sneezing, the Duchess’s violent rocking) before deciding whether to intervene.",
+                        "later_session_legacy": "Session 6 Duchess reappearance (arm-in-arm moralizing): this path makes the Duchess treat Alice as someone who \"came to her\"—she claims a proprietary familiarity (\"You found your way to my house before\") which changes the flavor of her later moral harassment from random to personal."
+                    },
+                    "path_c": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Session 4 opens deeper in the wood: Alice has laid out a little \"test course\"—a stump mark for height, a low branch for head clearance—and she runs deliberate mushroom trials (tiny bite, measure, adjust) until a shadow falls across her practice space.",
+                        "next_session_payoff": "Named payoff moment: the interruption is the Cheshire Cat’s first appearance in this route—its grin arriving mid-test; it comments on her \"practicing\" and offers direction choices (Hatter vs March Hare vs Queen) while she is literally mid-calibration, forcing her to demonstrate control under observation rather than in private.",
+                        "later_session_legacy": "Session 5 Cheshire Cat interventions: because Alice met the Cat earlier and in private, the Cat later speaks to her with a more conspiratorial tone during the Queen\/croquet chaos—its advice feels like a continuing mentorship thread rather than a sudden, public heckle."
+                    }
+                },
+                "validation_results": {
+                    "specificity": "PASS",
+                    "asymmetry": "PASS",
+                    "payability": "PASS"
+                }
+            },
+            "session_close_design": {
+                "resolution_prose": "The mushroom snaps with a clean, damp crack, and the two halves sit in your palms like warm bread. You take the smallest, most careful nibble—barely a taste—and your body answers immediately, not with a lurch but with a measured, obedient shift, as if you’ve finally found the dial you’ve been groping for since the bottle and the cake.\n\nYou test it again: a bite, a breath, a pause. The world resettles around you—lamp-light through leaves, the sweet-sour smell of crushed grass, the soft grit of earth under your shoes—while you remain, for once, the one doing the changing instead of the one being changed.\n\nThe panic that used to arrive first doesn’t. In its place comes a quiet, practical thought: you can choose your size the way you choose your words.\n\nAhead, the wood is not empty at all. It is full of thresholds—doors and smoke and voices—and you are holding the rule for how you meet them.",
+                "hook_transition": "For a single moment, you just stand there and enjoy the strange relief of being able to stop when you want to stop. Then a faint draft moves the leaves, carrying with it two different promises at once: the cool, floral damp of a garden somewhere, and a sharp ribbon of peppery smoke.",
+                "session_end_choice": {
+                    "choice_question": "With size-control in your hands, where do you choose to go next?",
+                    "option_a": {
+                        "text": "You head back toward the hall and the garden, choosing to re-enter ‘society’ with control instead of luck.",
+                        "next_session_opens": "Session 4 opens with Alice approaching the hall\/garden threshold, using the mushroom to arrive at a deliberate, socially strategic size."
+                    },
+                    "option_b": {
+                        "text": "You go toward the nearest house-smoke, choosing contact and information even if it means walking into someone else’s domain.",
+                        "next_session_opens": "Session 4 opens at the edge of the Duchess’s smoky kitchen territory, with Alice deciding what size is safest before she’s seen."
+                    },
+                    "option_c": {
+                        "text": "You move deeper into the wood and wait, choosing solitude long enough to practice control where no one can watch you fail.",
+                        "next_session_opens": "Session 4 opens with Alice alone, running deliberate mushroom tests until a new presence interrupts—forcing her to use control under observation."
+                    },
+                    "final_line": "You turn the two pieces over in your hands, and decide what kind of change you’re going to make next."
+                },
+                "stickiness_audit": {
+                    "payoff_test": "PASS",
+                    "return_driver_test": "PASS",
+                    "overnight_test": "PASS"
+                }
+            },
+            "editorial_verification": {
+                "question_results": {
+                    "entry_point": {
+                        "verdict": "PASS",
+                        "detail": "The session correctly starts at the first moment of legible external pressure: the Rabbit-house siege (Event Position 22) with pebbles and an explicit fire threat. This is the earliest point where danger, confinement, and urgency are instantly readable, and everything prior has been cut per Law #1."
+                    },
+                    "emotional_promise": {
+                        "verdict": "PASS",
+                        "detail": "The first paragraph promises immediate survival-driven agency: you are cornered, under attack, and must act to escape. The tone is claustrophobic and urgent, delivering the stated promise of “escape \/ seize control.”"
+                    },
+                    "first_choice_timing": {
+                        "verdict": "PASS",
+                        "detail": "Branching Choice 1 arrives at ~2:30–3:00 in the beat map, and the cold open prose is short enough that the first meaningful branching decision is reachable within 300 words."
+                    },
+                    "consequential_choices": {
+                        "verdict": "REVISE",
+                        "detail": "Only two true branching choices are defined as branching (S3_C1 and S3_C2). The third session-end choice (S3_C3) is structurally a branching choice (it determines Session 4 opening), but the beat map labels it as EXPRESSIVE, creating an architecture mismatch and risking implementation as non-branching. Additionally, the current-session consequence for S3_C1 is mostly tonal\/pressure modulation; it needs at least one concrete, visible in-session state change (not just flavor) to meet the “genuinely consequential” bar."
+                    },
+                    "stakes_within_60_seconds": {
+                        "verdict": "PASS",
+                        "detail": "Within the first minute: projectiles are injuring Alice, she is physically trapped by size, and the Rabbit explicitly threatens to burn\/smoke her out. Goal (escape) and threat (fire\/asphyxiation\/assault) are immediately clear."
+                    },
+                    "early_decision_visible_later": {
+                        "verdict": "PASS",
+                        "detail": "S3_C1 (compliance\/defiance\/listen) visibly changes the siege texture and escalation framing in-session (procedure vs vindictive fire-making vs stealth\/problem-solving), and it has explicit mapped payoffs in Session 4\/5\/6\/7. S3_C2 also has clear Session 7 witness-stand payoff."
+                    },
+                    "breath_beat": {
+                        "verdict": "PASS",
+                        "detail": "A deliberate breath beat is placed at 8:30–10:00 in the wood with wonder\/calm and the Caterpillar reveal, satisfying the Schell reward window and providing a tonal release after the siege."
+                    },
+                    "moral_gray_area": {
+                        "verdict": "PASS",
+                        "detail": "S3_C2 (“Who are you?”) is a genuine moral\/values tension (integrity vs survival vs epistemic honesty) with no correct answer and meaningful downstream identity consequences."
+                    },
+                    "exit_emotional_state": {
+                        "verdict": "PASS",
+                        "detail": "The session ends on an owned, unresolved decision (direction to go next with size-control), producing anticipation. The resolution prose grants agency (a tool) without closing the forward question of where\/what kind of society she re-enters."
+                    },
+                    "talkability": {
+                        "verdict": "PASS",
+                        "detail": "The identity stance choice (S3_C2) and the direction choice (S3_C3) are inherently discussable (“Did you insist you were Alice or adapt?” \/ “Did you go back to society, into smoke, or deeper into the wood?”), prompting immediate comparison."
+                    }
+                },
+                "total_passed": 9,
+                "production_status": "AMBER",
+                "revision_instructions": [
+                    {
+                        "question": "Q4 — Consequential Choices",
+                        "phase": "Phase 5 (Session Choice Design) + Phase 4 (Session Architecture \/ Beat Map labeling)",
+                        "instruction": "Make S3_C3 explicitly a BRANCHING session-end choice in the beat map (not EXPRESSIVE), and ensure the implementation treats it as the third branching choice that routes Session 4 openings. Then strengthen S3_C1’s in-session consequence with one concrete, trackable state change per option (e.g., A: Bill-the-chimney plan becomes available info; B: smoke timer starts earlier \/ visibility drops; C: you gain a ‘layout intel’ flag that unlocks a safer breakout beat), so each option produces a visible mechanical\/narrative difference before convergence."
+                    }
+                ]
+            },
+            "updated_at": "2026-04-16T16:21:39+00:00"
+        },
+        {
+            "session_number": 4,
+            "session_status": "failed",
+            "entry_point_diagnosis": null,
+            "session_architecture": null,
+            "session_choice_design": null,
+            "choice_consequence_map": null,
+            "session_close_design": null,
+            "editorial_verification": null,
+            "updated_at": "2026-04-16T16:17:43+00:00"
+        },
+        {
+            "session_number": 5,
+            "session_status": "failed",
+            "entry_point_diagnosis": null,
+            "session_architecture": null,
+            "session_choice_design": null,
+            "choice_consequence_map": null,
+            "session_close_design": null,
+            "editorial_verification": null,
+            "updated_at": "2026-04-16T16:17:43+00:00"
+        },
+        {
+            "session_number": 6,
+            "session_status": "failed",
+            "entry_point_diagnosis": null,
+            "session_architecture": null,
+            "session_choice_design": null,
+            "choice_consequence_map": null,
+            "session_close_design": null,
+            "editorial_verification": null,
+            "updated_at": "2026-04-16T16:17:43+00:00"
+        },
+        {
+            "session_number": 7,
+            "session_status": "failed",
+            "entry_point_diagnosis": null,
+            "session_architecture": null,
+            "session_choice_design": null,
+            "choice_consequence_map": null,
+            "session_close_design": null,
+            "editorial_verification": null,
+            "updated_at": "2026-04-16T16:17:43+00:00"
+        }
+    ]
+}

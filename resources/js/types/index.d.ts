@@ -45,6 +45,7 @@ export interface StoryInterface {
     published_at: string | null;
     updated_at: string | null;
     cover: string;
+    banner: string;
 
     // Relations
     category?: CategoryInterface;

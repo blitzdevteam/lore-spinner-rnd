@@ -9,7 +9,8 @@ const props = defineProps<{
     story: StoryInterface;
 }>();
 
-const hasCover = computed(() => !!props.story?.cover);
+const heroImage = computed(() => props.story?.banner || props.story?.cover || '');
+const hasImage = computed(() => !!heroImage.value);
 const storyUrl = computed(() => show(props.story.slug).url);
 </script>
 
@@ -17,8 +18,8 @@ const storyUrl = computed(() => show(props.story.slug).url);
     <section class="hero-banner relative overflow-hidden">
         <div class="absolute inset-0">
             <img
-                v-if="hasCover"
-                :src="story.cover"
+                v-if="hasImage"
+                :src="heroImage"
                 :alt="story.title"
                 class="h-full w-full object-cover object-[50%_20%]"
             />

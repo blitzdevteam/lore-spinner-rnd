@@ -98,15 +98,15 @@ final class ChapterCoverGeneratorJob implements ShouldQueue
         $category = $this->chapter->story?->category?->title ?? 'Fantasy';
 
         return <<<PROMPT
-        Create a cinematic, atmospheric scene illustration for a chapter called "{$chapterTitle}" in a {$category} story called "{$storyTitle}".
+        Create a vintage storybook scene illustration for a chapter called "{$chapterTitle}" in a {$category} story called "{$storyTitle}".
 
         STYLE REQUIREMENTS:
-        - Dark, moody atmosphere with deep blacks and rich shadows
-        - Accent lighting using teal/cyan (#54f4da) and warm golden highlights
-        - Cinematic composition with dramatic depth of field
-        - Fantasy/sci-fi aesthetic blending magical and technological elements
-        - Painterly digital art style — NOT photorealistic, NOT cartoonish
-        - Evocative and mysterious mood
+        - Flat vector illustration, minimal shading
+        - Limited harmonious color palette, soft gradient background glow
+        - Strong silhouettes, simple shapes
+        - Retro editorial illustration style, 1960s poster aesthetic
+        - Nostalgic and magical mood, clean storytelling design
+        - High clarity, visually striking composition
         - No text, no letters, no words, no titles, no watermarks
         - No UI elements, no borders, no frames
         - Square composition (1:1 aspect ratio) suitable as a chapter thumbnail
@@ -126,7 +126,7 @@ final class ChapterCoverGeneratorJob implements ShouldQueue
         $toneAndStyle = mb_substr($storySystemPromptData['tone_and_style'] ?? '', 0, 300);
 
         return <<<PROMPT
-        Create a cinematic, atmospheric scene illustration for a chapter in an interactive story.
+        Create a vintage storybook scene illustration for a chapter in an interactive story.
 
         STORY: "{$storyTitle}" — {$storyTeaser}
         CHAPTER: "{$chapterTitle}"
@@ -136,12 +136,16 @@ final class ChapterCoverGeneratorJob implements ShouldQueue
         TONE: {$toneAndStyle}
 
         STYLE REQUIREMENTS:
-        - Dark, moody atmosphere with deep blacks and rich shadows
-        - Accent lighting using teal/cyan (#54f4da) and warm golden highlights
-        - Cinematic composition with dramatic depth of field
-        - Fantasy/sci-fi aesthetic blending magical and technological elements
-        - Painterly digital art style — NOT photorealistic, NOT cartoonish
-        - Evocative scene that captures the chapter's mood and setting
+        - Vintage storybook illustration, centered composition
+        - An iconic scene that captures this chapter's key moment
+        - Characters posed in a symbolic and visually clear way
+        - Environment reflecting the chapter setting
+        - Flat vector illustration, minimal shading
+        - Limited harmonious color palette, soft gradient background glow
+        - Strong silhouettes, simple shapes
+        - Retro editorial illustration style, 1960s poster aesthetic
+        - Nostalgic and magical mood, clean storytelling design
+        - High clarity, visually striking composition
         - No text, no letters, no words, no titles, no watermarks
         - No UI elements, no borders, no frames
         - Square composition (1:1 aspect ratio) suitable as a chapter thumbnail

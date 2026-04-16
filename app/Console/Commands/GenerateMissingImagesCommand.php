@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\Chapter\ChapterCoverGeneratorJob;
 use App\Jobs\Creator\CreatorAvatarGeneratorJob;
+use App\Jobs\Story\StoryBannerGeneratorJob;
 use App\Jobs\Story\StoryCoverGeneratorJob;
 use App\Models\Chapter;
 use App\Models\Creator;
@@ -16,6 +17,7 @@ final class GenerateMissingImagesCommand extends Command
 {
     protected $signature = 'images:generate-missing
                             {--stories : Only generate story covers}
+                            {--banners : Only generate story banners}
                             {--chapters : Only generate chapter covers}
                             {--creators : Only generate creator avatars}';
 
@@ -23,10 +25,14 @@ final class GenerateMissingImagesCommand extends Command
 
     public function handle(): int
     {
-        $generateAll = ! $this->option('stories') && ! $this->option('chapters') && ! $this->option('creators');
+        $generateAll = ! $this->option('stories') && ! $this->option('banners') && ! $this->option('chapters') && ! $this->option('creators');
 
         if ($generateAll || $this->option('stories')) {
             $this->generateStoryCovers();
+        }
+
+        if ($generateAll || $this->option('banners')) {
+            $this->generateStoryBanners();
         }
 
         if ($generateAll || $this->option('chapters')) {
@@ -55,6 +61,22 @@ final class GenerateMissingImagesCommand extends Command
         $stories->each(function (Story $story): void {
             StoryCoverGeneratorJob::dispatch($story);
             $this->line("  → Dispatched cover generation for: {$story->title}");
+        });
+    }
+
+    private function generateStoryBanners(): void
+    {
+        $stories = Story::query()
+            ->whereDoesntHave('media', function ($query) {
+                $query->where('collection_name', 'banner');
+            })
+            ->get();
+
+        $this->info("Found {$stories->count()} stories without banners.");
+
+        $stories->each(function (Story $story): void {
+            StoryBannerGeneratorJob::dispatch($story);
+            $this->line("  → Dispatched banner generation for: {$story->title}");
         });
     }
 

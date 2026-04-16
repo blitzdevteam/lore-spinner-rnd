@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Prism\Prism\Facades\Prism;
 use Throwable;
 
-final class StoryCoverGeneratorJob implements ShouldQueue
+final class StoryBannerGeneratorJob implements ShouldQueue
 {
     use Queueable;
 
@@ -21,9 +21,6 @@ final class StoryCoverGeneratorJob implements ShouldQueue
 
     public int $backoff = 60;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(
         private Story $story,
     ) {
@@ -31,16 +28,13 @@ final class StoryCoverGeneratorJob implements ShouldQueue
     }
 
     /**
-     * Execute the job.
-     *
      * @throws Throwable
      */
     public function handle(): void
     {
         try {
-            // Skip if cover already exists
-            if ($this->story->getFirstMediaUrl('cover')) {
-                Log::info("StoryCoverGeneratorJob: Cover already exists for story [{$this->story->id}], skipping.");
+            if ($this->story->getFirstMediaUrl('banner')) {
+                Log::info("StoryBannerGeneratorJob: Banner already exists for story [{$this->story->id}], skipping.");
 
                 return;
             }
@@ -62,27 +56,24 @@ final class StoryCoverGeneratorJob implements ShouldQueue
             $image = $response->firstImage();
 
             if (! $image || ! $image->base64) {
-                Log::warning("StoryCoverGeneratorJob: No image generated for story [{$this->story->id}].");
+                Log::warning("StoryBannerGeneratorJob: No image generated for story [{$this->story->id}].");
 
                 return;
             }
 
             $this->story
                 ->addMediaFromBase64($image->base64)
-                ->usingFileName("cover-{$this->story->id}.png")
-                ->toMediaCollection('cover');
+                ->usingFileName("banner-{$this->story->id}.png")
+                ->toMediaCollection('banner');
 
-            Log::info("StoryCoverGeneratorJob: Generated cover for story [{$this->story->id}] — \"{$this->story->title}\".");
+            Log::info("StoryBannerGeneratorJob: Generated banner for story [{$this->story->id}] — \"{$this->story->title}\".");
         } catch (Throwable $throwable) {
-            Log::error("StoryCoverGeneratorJob: Failed for story [{$this->story->id}]: {$throwable->getMessage()}");
+            Log::error("StoryBannerGeneratorJob: Failed for story [{$this->story->id}]: {$throwable->getMessage()}");
 
             throw $throwable;
         }
     }
 
-    /**
-     * Build the image generation prompt based on story metadata.
-     */
     private function buildPrompt(): string
     {
         $title = $this->story->title;
@@ -93,7 +84,7 @@ final class StoryCoverGeneratorJob implements ShouldQueue
         $toneAndStyle = $systemPromptData['tone_and_style'] ?? '';
 
         return <<<PROMPT
-        Create a vintage storybook cover illustration for an interactive story.
+        Create a wide cinematic banner illustration for an interactive story homepage hero section.
 
         STORY TITLE: "{$title}"
         GENRE/CATEGORY: {$category}
@@ -101,21 +92,19 @@ final class StoryCoverGeneratorJob implements ShouldQueue
         TONE: {$toneAndStyle}
 
         STYLE REQUIREMENTS:
-        - Vintage storybook cover illustration, centered composition
-        - An iconic scene that represents the essence of the story
-        - Main characters posed in a symbolic and visually clear way
-        - Environment reflecting the story world
+        - Vintage storybook illustration, wide panoramic composition
+        - An iconic wide scene that represents the essence of the story
+        - Main characters posed in a symbolic and visually clear way, placed off-center left to leave space for text overlay on the right
+        - Environment reflecting the story world, expansive and atmospheric
         - Flat vector illustration, minimal shading
         - Limited harmonious color palette, soft gradient background glow
         - Strong silhouettes, simple shapes
         - Retro editorial illustration style, 1960s poster aesthetic
-        - Decorative frame elements, symmetrical layout
         - Nostalgic and magical mood, clean storytelling design
-        - Cover art, bold integrated title typography
         - High clarity, visually striking composition
-        - Landscape orientation, suitable as a wide cover image
+        - Wide landscape orientation suitable as a cinematic hero banner
         - No text, no letters, no words, no titles, no watermarks
-        - No UI elements
+        - No UI elements, no borders, no frames
         PROMPT;
     }
 }

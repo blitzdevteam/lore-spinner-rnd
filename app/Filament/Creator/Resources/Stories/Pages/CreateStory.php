@@ -8,6 +8,7 @@ use App\Enums\Story\StoryStatusEnum;
 use App\Filament\Creator\Resources\Stories\StoryResource;
 use App\Jobs\Adaptation\RunAdaptationPipelineJob;
 use App\Jobs\Chapter\ChapterExtractorJob;
+use App\Jobs\Story\StoryBannerGeneratorJob;
 use App\Jobs\Story\StoryCoverGeneratorJob;
 use App\Jobs\Story\StoryOpeningGeneratorJob;
 use App\Jobs\Story\SystemPromptGeneratorJob;
@@ -43,6 +44,7 @@ final class CreateStory extends CreateRecord
             ChapterExtractorJob::dispatch($story);
             SystemPromptGeneratorJob::dispatch($story);
             StoryCoverGeneratorJob::dispatch($story);
+            StoryBannerGeneratorJob::dispatch($story);
             StoryOpeningGeneratorJob::dispatch($story)->delay(now()->addMinutes(5));
 
             RunAdaptationPipelineJob::dispatch($story)->delay(now()->addMinutes(2));
@@ -52,6 +54,7 @@ final class CreateStory extends CreateRecord
             ]);
 
             StoryCoverGeneratorJob::dispatch($story);
+            StoryBannerGeneratorJob::dispatch($story);
         }
 
         return $story;

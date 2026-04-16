@@ -32,6 +32,7 @@ class StoryResource extends BaseResource
             'published_at' => $this->published_at,
             'updated_at' => $this->updated_at,
             'cover' => $this->getFirstMediaUrl('cover'),
+            'banner' => $this->getFirstMediaUrl('banner'),
 
             // Relations
             'category' => CategoryResource::make($this->whenLoaded('category')),

@@ -80,6 +80,12 @@ final class Story extends Model implements HasMedia
             ->useDisk('public');
 
         $this
+            ->addMediaCollection('banner')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png'])
+            ->singleFile()
+            ->useDisk('public');
+
+        $this
             ->addMediaCollection('gallery')
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
             ->useDisk('public');

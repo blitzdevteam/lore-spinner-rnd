@@ -74,8 +74,8 @@ onUnmounted(() => {
     <div class="relative flex h-svh flex-col items-center overflow-hidden bg-gray-950" @click="!isComplete && skipToEnd()">
         <BaseBackgroundGradient />
 
-        <div class="opening-scroll-container relative z-10 flex-1 overflow-y-auto px-6 pt-24 pb-8 md:px-12">
-            <div class="mx-auto max-w-2xl">
+        <div class="opening-scroll-container relative z-10 flex-1 overflow-y-auto px-6 pt-24 pb-8 md:px-16" style="-ms-overflow-style: none; scrollbar-width: none;">
+            <div class="mx-auto max-w-2xl md:max-w-4xl">
                 <div class="opening-narration text-base font-light leading-relaxed text-white/95 md:text-lg">
                     <TransitionGroup name="line-reveal">
                         <span
@@ -163,5 +163,9 @@ onUnmounted(() => {
 
 .line-segment {
     display: inline;
+}
+
+.opening-scroll-container::-webkit-scrollbar {
+    display: none;
 }
 </style>
