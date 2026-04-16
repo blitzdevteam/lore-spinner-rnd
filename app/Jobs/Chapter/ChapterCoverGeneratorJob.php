@@ -7,6 +7,7 @@ namespace App\Jobs\Chapter;
 use App\Models\Chapter;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Prism\Prism\Facades\Prism;
@@ -16,11 +17,20 @@ final class ChapterCoverGeneratorJob implements ShouldQueue
 {
     use Queueable;
 
-    public int $tries = 3;
+    public int $tries = 6;
 
     public int $timeout = 300;
 
-    public int $backoff = 60;
+    public array $backoff = [30, 60, 120, 180, 300];
+
+    /** @return array<int, object> */
+    public function middleware(): array
+    {
+        return [
+            (new ThrottlesExceptions(maxAttempts: 2, retryAfterMinutes: 2))
+                ->byJob(),
+        ];
+    }
 
     /**
      * Create a new job instance.
