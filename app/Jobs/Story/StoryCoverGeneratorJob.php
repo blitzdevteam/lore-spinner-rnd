@@ -48,17 +48,24 @@ final class StoryCoverGeneratorJob implements ShouldQueue
 
             $prompt = $this->buildPrompt();
 
-            $response = Prism::image()
-                ->using('openai', 'gpt-image-1')
+            $provider = env('IMAGE_PROVIDER', 'openai');
+            $model = env('IMAGE_MODEL', 'gpt-image-1.5');
+
+            $builder = Prism::image()
+                ->using($provider, $model)
                 ->withPrompt($prompt)
-                ->withClientOptions(['timeout' => 120, 'connect_timeout' => 30])
-                ->withProviderOptions([
+                ->withClientOptions(['timeout' => 120, 'connect_timeout' => 30]);
+
+            if ($provider === 'openai') {
+                $builder->withProviderOptions([
                     'size' => '1536x1024',
                     'quality' => 'high',
                     'output_format' => 'png',
                     'background' => 'auto',
-                ])
-                ->generate();
+                ]);
+            }
+
+            $response = $builder->generate();
 
             $image = $response->firstImage();
 

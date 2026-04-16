@@ -79,17 +79,24 @@ final class ChapterCoverGeneratorJob implements ShouldQueue
 
     private function generateImage(string $prompt): ?\Prism\Prism\ValueObjects\GeneratedImage
     {
-        $response = Prism::image()
-            ->using('openai', 'gpt-image-1')
+        $provider = env('IMAGE_PROVIDER', 'openai');
+        $model = env('IMAGE_MODEL', 'gpt-image-1.5');
+
+        $builder = Prism::image()
+            ->using($provider, $model)
             ->withPrompt($prompt)
-            ->withClientOptions(['timeout' => 120, 'connect_timeout' => 30])
-            ->withProviderOptions([
+            ->withClientOptions(['timeout' => 120, 'connect_timeout' => 30]);
+
+        if ($provider === 'openai') {
+            $builder->withProviderOptions([
                 'size' => '1024x1024',
                 'quality' => 'low',
                 'output_format' => 'png',
                 'background' => 'auto',
-            ])
-            ->generate();
+            ]);
+        }
+
+        $response = $builder->generate();
 
         return $response->firstImage();
     }
