@@ -15,6 +15,8 @@ use Illuminate\Console\Command;
 
 final class GenerateMissingImagesCommand extends Command
 {
+    private const DELAY_BETWEEN_JOBS_SECONDS = 15;
+
     protected $signature = 'images:generate-missing
                             {--stories : Only generate story covers}
                             {--banners : Only generate story banners}
@@ -22,6 +24,8 @@ final class GenerateMissingImagesCommand extends Command
                             {--creators : Only generate creator avatars}';
 
     protected $description = 'Dispatch AI image generation jobs for stories, chapters, and creators that are missing images.';
+
+    private int $delayCounter = 0;
 
     public function handle(): int
     {
@@ -43,9 +47,18 @@ final class GenerateMissingImagesCommand extends Command
             $this->generateCreatorAvatars();
         }
 
-        $this->info('All image generation jobs dispatched. Run your queue worker to process them.');
+        $totalDelay = $this->delayCounter * self::DELAY_BETWEEN_JOBS_SECONDS;
+        $this->info("All image generation jobs dispatched ({$this->delayCounter} jobs, staggered over ~{$totalDelay}s). Run your queue worker to process them.");
 
         return self::SUCCESS;
+    }
+
+    private function dispatchWithDelay(object $job, string $label): void
+    {
+        $delay = $this->delayCounter * self::DELAY_BETWEEN_JOBS_SECONDS;
+        dispatch($job)->delay(now()->addSeconds($delay));
+        $this->line("  → [{$delay}s delay] {$label}");
+        $this->delayCounter++;
     }
 
     private function generateStoryCovers(): void
@@ -59,8 +72,10 @@ final class GenerateMissingImagesCommand extends Command
         $this->info("Found {$stories->count()} stories without covers.");
 
         $stories->each(function (Story $story): void {
-            StoryCoverGeneratorJob::dispatch($story);
-            $this->line("  → Dispatched cover generation for: {$story->title}");
+            $this->dispatchWithDelay(
+                new StoryCoverGeneratorJob($story),
+                "Cover for: {$story->title}",
+            );
         });
     }
 
@@ -75,8 +90,10 @@ final class GenerateMissingImagesCommand extends Command
         $this->info("Found {$stories->count()} stories without banners.");
 
         $stories->each(function (Story $story): void {
-            StoryBannerGeneratorJob::dispatch($story);
-            $this->line("  → Dispatched banner generation for: {$story->title}");
+            $this->dispatchWithDelay(
+                new StoryBannerGeneratorJob($story),
+                "Banner for: {$story->title}",
+            );
         });
     }
 
@@ -92,8 +109,10 @@ final class GenerateMissingImagesCommand extends Command
         $this->info("Found {$chapters->count()} chapters without covers.");
 
         $chapters->each(function (Chapter $chapter): void {
-            ChapterCoverGeneratorJob::dispatch($chapter);
-            $this->line("  → Dispatched cover generation for: Ch{$chapter->position} — {$chapter->title} ({$chapter->story?->title})");
+            $this->dispatchWithDelay(
+                new ChapterCoverGeneratorJob($chapter),
+                "Cover for: Ch{$chapter->position} — {$chapter->title} ({$chapter->story?->title})",
+            );
         });
     }
 
@@ -108,8 +127,10 @@ final class GenerateMissingImagesCommand extends Command
         $this->info("Found {$creators->count()} creators without avatars.");
 
         $creators->each(function (Creator $creator): void {
-            CreatorAvatarGeneratorJob::dispatch($creator);
-            $this->line("  → Dispatched avatar generation for: {$creator->full_name}");
+            $this->dispatchWithDelay(
+                new CreatorAvatarGeneratorJob($creator),
+                "Avatar for: {$creator->full_name}",
+            );
         });
     }
 }
