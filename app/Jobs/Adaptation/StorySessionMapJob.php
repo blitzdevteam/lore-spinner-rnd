@@ -109,13 +109,17 @@ final class StorySessionMapJob implements ShouldQueue
                     }
                 }
 
-                $unassigned = $this->story->events()
-                    ->whereNull('events.session_number')
-                    ->orderBy('events.position')
-                    ->pluck('events.id');
+                $emptySessions = $sessionNumbers->filter(function ($num) {
+                    return $this->story->events()
+                        ->where('events.session_number', $num)
+                        ->count() === 0;
+                });
 
-                if ($unassigned->isNotEmpty()) {
-                    $chunks = $unassigned->split($sessionNumbers->count());
+                if ($emptySessions->isNotEmpty()) {
+                    $this->story->events()->update(['session_number' => null]);
+
+                    $allEventIds = $allEvents->pluck('id');
+                    $chunks = $allEventIds->split($sessionNumbers->count());
 
                     foreach ($chunks as $i => $chunk) {
                         if ($chunk->isNotEmpty() && $sessionNumbers->has($i)) {
