@@ -30,6 +30,7 @@ export function useVoiceLab() {
     const state = ref<VoiceLabState>('idle');
     const audioLevel = ref(0);
     const errorMessage = ref<string | null>(null);
+    const choices = ref<string[]>([]);
 
     let mediaRecorder: MediaRecorder | null = null;
     let audioChunks: Blob[] = [];
@@ -222,8 +223,9 @@ export function useVoiceLab() {
                             return;
                         }
 
-                        const audioResponse = await getAiResponse(text);
-                        await playResponse(audioResponse);
+                        const result = await getAiResponse(text);
+                        choices.value = result.choices;
+                        await playResponse(result.audio);
                     } catch (err) {
                         setError(err instanceof Error ? err.message : 'Something went wrong');
                     }
@@ -256,7 +258,7 @@ export function useVoiceLab() {
         return data.text ?? '';
     }
 
-    async function getAiResponse(message: string): Promise<Blob> {
+    async function getAiResponse(message: string): Promise<{ audio: Blob; choices: string[] }> {
         const response = await fetch('/user/voice-lab/respond', {
             method: 'POST',
             credentials: 'same-origin',
@@ -266,7 +268,15 @@ export function useVoiceLab() {
 
         if (!response.ok) throw new Error('AI response failed');
 
-        return await response.blob();
+        let parsedChoices: string[] = [];
+        try {
+            const raw = response.headers.get('X-VoiceLab-Choices');
+            if (raw) parsedChoices = JSON.parse(raw);
+        } catch {
+            /* header absent or malformed — non-fatal */
+        }
+
+        return { audio: await response.blob(), choices: parsedChoices };
     }
 
     async function playResponse(audioBlob: Blob): Promise<void> {
@@ -314,6 +324,21 @@ export function useVoiceLab() {
         });
     }
 
+    async function sendChoice(choice: string): Promise<void> {
+        if (state.value !== 'idle') return;
+
+        choices.value = [];
+        state.value = 'thinking';
+
+        try {
+            const result = await getAiResponse(choice);
+            choices.value = result.choices;
+            await playResponse(result.audio);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Something went wrong');
+        }
+    }
+
     async function clearHistory(): Promise<void> {
         await fetch('/user/voice-lab/history', {
             method: 'DELETE',
@@ -340,8 +365,10 @@ export function useVoiceLab() {
         state,
         audioLevel,
         errorMessage,
+        choices,
         isActive,
         activate,
+        sendChoice,
         clearHistory,
         cleanup,
     };

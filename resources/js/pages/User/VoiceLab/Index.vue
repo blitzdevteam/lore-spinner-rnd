@@ -4,7 +4,7 @@ import VoiceLabOrb from '@/components/VoiceLabOrb.vue';
 import { useVoiceLab } from '@/composables/useVoiceLab';
 import { router } from '@inertiajs/vue3';
 
-const { state, audioLevel, errorMessage, activate, clearHistory } = useVoiceLab();
+const { state, audioLevel, errorMessage, choices, activate, sendChoice, clearHistory } = useVoiceLab();
 
 const handleBack = () => {
     if (window.history.length > 1) {
@@ -86,6 +86,24 @@ const handleClearHistory = async () => {
                 </Transition>
             </div>
         </template>
+        <template #controls>
+            <TransitionGroup
+                name="choice-pop"
+                tag="div"
+                class="flex flex-col gap-2"
+            >
+                <button
+                    v-for="(choice, i) in choices"
+                    :key="choice"
+                    :disabled="state !== 'idle'"
+                    class="w-full rounded-xl border border-gray-700/60 bg-gray-900/70 px-4 py-3 text-left text-sm text-gray-200 backdrop-blur transition-all hover:border-primary-500/50 hover:bg-gray-800/70 hover:text-white disabled:pointer-events-none disabled:opacity-40"
+                    :style="{ transitionDelay: `${i * 60}ms` }"
+                    @click="sendChoice(choice)"
+                >
+                    {{ choice }}
+                </button>
+            </TransitionGroup>
+        </template>
     </VoiceLabLayout>
 </template>
 
@@ -98,5 +116,27 @@ const handleClearHistory = async () => {
 .label-fade-enter-from,
 .label-fade-leave-to {
     opacity: 0;
+}
+
+.choice-pop-enter-active {
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.choice-pop-leave-active {
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+}
+
+.choice-pop-enter-from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+}
+
+.choice-pop-leave-to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
 }
 </style>
