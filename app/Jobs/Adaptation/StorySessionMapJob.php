@@ -124,10 +124,13 @@ final class StorySessionMapJob implements ShouldQueue
                 ];
             }
 
+            $storyId = $this->story->id;
+
             $batch = Bus::batch($sessionChains)
                 ->onQueue('adaptation')
-                ->finally(function () {
-                    AdaptationStatusReconciliationJob::dispatch($this->story)->onQueue('adaptation');
+                ->finally(function () use ($storyId) {
+                    $story = Story::findOrFail($storyId);
+                    AdaptationStatusReconciliationJob::dispatch($story)->onQueue('adaptation');
                 })
                 ->dispatch();
         } catch (Throwable $throwable) {
