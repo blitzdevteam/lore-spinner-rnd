@@ -124,9 +124,7 @@ final class StorySessionMapJob implements ShouldQueue
                 ];
             }
 
-            $batch = Bus::batch(
-                collect($sessionChains)->map(fn ($chain) => Bus::chain($chain)->onQueue('adaptation'))
-            )
+            $batch = Bus::batch($sessionChains)
                 ->onQueue('adaptation')
                 ->finally(function () {
                     AdaptationStatusReconciliationJob::dispatch($this->story)->onQueue('adaptation');

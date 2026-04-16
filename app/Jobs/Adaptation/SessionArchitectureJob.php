@@ -8,12 +8,13 @@ use App\Ai\Agents\Adaptation\SessionArchitectureAgent;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Models\Story;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Batchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Throwable;
 
 final class SessionArchitectureJob implements ShouldQueue
 {
-    use Queueable;
+    use Batchable, Queueable;
 
     public int $tries = 3;
     public int $timeout = 420;

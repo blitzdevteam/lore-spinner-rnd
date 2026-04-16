@@ -10,13 +10,14 @@ use App\Models\Event;
 use App\Models\SessionAdaptation;
 use App\Models\Story;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Batchable;
 use Illuminate\Foundation\Queue\Queueable;
 use RuntimeException;
 use Throwable;
 
 final class EntryPointDiagnosisJob implements ShouldQueue
 {
-    use Queueable;
+    use Batchable, Queueable;
 
     public int $tries = 3;
     public int $timeout = 300;
