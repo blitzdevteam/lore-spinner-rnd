@@ -27,8 +27,7 @@ final class CreatorAvatarGeneratorJob implements ShouldQueue
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptions(maxAttempts: 2, retryAfterMinutes: 2))
-                ->byJob(),
+            (new ThrottlesExceptions(2, 2))->byJob(),
         ];
     }
 
