@@ -1,4 +1,4 @@
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 7 — Session Close and Retention Hook (Session ' . $sessionNumber . ')'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 7 — Session Close and Retention Hook'])
 
 === PHASE 7: SESSION CLOSE AND RETENTION HOOK ===
 

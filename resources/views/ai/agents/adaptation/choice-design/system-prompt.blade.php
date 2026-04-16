@@ -1,4 +1,4 @@
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 5 — Choice Design (Session ' . $sessionNumber . ')'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 5 — Choice Design'])
 
 === PHASE 5: CHOICE DESIGN ===
 

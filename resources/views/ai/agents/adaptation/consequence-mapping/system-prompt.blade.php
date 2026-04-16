@@ -1,4 +1,4 @@
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 6 — Downstream Consequence Mapping (Session ' . $sessionNumber . ')'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 6 — Downstream Consequence Mapping'])
 
 === PHASE 6: DOWNSTREAM CONSEQUENCE MAPPING ===
 

@@ -1,4 +1,4 @@
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 3 — Entry Point Diagnosis (Session ' . $sessionNumber . ')'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 3 — Entry Point Diagnosis'])
 
 === PHASE 3: ENTRY POINT DIAGNOSIS ===
 

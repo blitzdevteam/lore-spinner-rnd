@@ -91,6 +91,11 @@ final class StorySessionMapJob implements ShouldQueue
                     ->orderBy('events.position')
                     ->get(['events.id', 'events.position']);
 
+                $sessionNumbers = collect($sessionMap['session_allocation'])
+                    ->pluck('session_number')
+                    ->sort()
+                    ->values();
+
                 foreach ($sessionMap['session_allocation'] as $session) {
                     $range = $this->parseEventRange($session['event_range']);
                     $eventIds = $allEvents
@@ -102,9 +107,28 @@ final class StorySessionMapJob implements ShouldQueue
                             'session_number' => $session['session_number'],
                         ]);
                     }
+                }
 
+                $unassigned = $this->story->events()
+                    ->whereNull('events.session_number')
+                    ->orderBy('events.position')
+                    ->pluck('events.id');
+
+                if ($unassigned->isNotEmpty()) {
+                    $chunks = $unassigned->split($sessionNumbers->count());
+
+                    foreach ($chunks as $i => $chunk) {
+                        if ($chunk->isNotEmpty() && $sessionNumbers->has($i)) {
+                            Event::whereIn('id', $chunk)->update([
+                                'session_number' => $sessionNumbers[$i],
+                            ]);
+                        }
+                    }
+                }
+
+                foreach ($sessionNumbers as $num) {
                     $adaptation->sessionAdaptations()->create([
-                        'session_number' => $session['session_number'],
+                        'session_number' => $num,
                         'session_status' => SessionAdaptationStatusEnum::PENDING,
                     ]);
                 }

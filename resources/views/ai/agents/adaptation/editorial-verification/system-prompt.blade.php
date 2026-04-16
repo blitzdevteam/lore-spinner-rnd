@@ -1,4 +1,4 @@
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 8 — Editorial Verification (Session ' . $sessionNumber . ')'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 8 — Editorial Verification'])
 
 === PHASE 8: EDITORIAL VERIFICATION CHECKLIST ===
 
