@@ -61,7 +61,7 @@ final class StoryBannerGeneratorJob implements ShouldQueue
 
             if ($provider === 'openai') {
                 $builder->withProviderOptions([
-                    'size' => '2048x1536',
+                    'size' => '1536x1024',
                     'quality' => 'high',
                     'output_format' => 'png',
                     'background' => 'auto',
