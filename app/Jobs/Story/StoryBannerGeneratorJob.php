@@ -113,10 +113,15 @@ final class StoryBannerGeneratorJob implements ShouldQueue
         SYNOPSIS: {$teaser}
         TONE: {$toneAndStyle}
 
+        COMPOSITION — CRITICAL:
+        - The LEFT 40% of the image must be mostly empty, atmospheric, with soft gradients or subtle environmental details only — this area will have a dark text overlay on top of it
+        - All main characters, key objects, and focal action must be placed in the RIGHT 60% of the image
+        - Transition from open/atmospheric on the left to detailed/busy on the right
+
         STYLE REQUIREMENTS:
         - Vintage storybook illustration, wide panoramic composition
         - An iconic wide scene that represents the essence of the story
-        - Main characters posed in a symbolic and visually clear way, placed off-center left to leave space for text overlay on the right
+        - Characters posed in a symbolic and visually clear way on the right side
         - Environment reflecting the story world, expansive and atmospheric
         - Flat vector illustration, minimal shading
         - Limited harmonious color palette, soft gradient background glow
