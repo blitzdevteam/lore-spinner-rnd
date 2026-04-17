@@ -80,6 +80,7 @@ final class Creator extends Authenticatable implements FilamentUser, HasMedia, H
         $this->addMediaCollection('avatar')
             ->acceptsMimeTypes(['image/jpeg', 'image/png'])
             ->singleFile()
+            ->useDisk('public')
             ->useFallbackUrl(Storage::disk('public')->url('avatar/'.str((string) $this->id)->substr(0, 1).'.png'));
     }
 
