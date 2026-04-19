@@ -6,13 +6,22 @@ import { renderToString } from 'vue/server-renderer';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+const voiceLabPages = import.meta.glob<DefineComponent>('./voice-lab/pages/**/*.vue');
+const mainPages = import.meta.glob<DefineComponent>('./pages/**/*.vue');
+
 createServer(
     (page) =>
         createInertiaApp({
             page,
             render: renderToString,
             title: (title) => (title ? `${title} - ${appName}` : appName),
-            resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
+            resolve: (name) => {
+                if (name.startsWith('VoiceLab/')) {
+                    const file = name.replace('VoiceLab/', '');
+                    return resolvePageComponent(`./voice-lab/pages/${file}.vue`, voiceLabPages);
+                }
+                return resolvePageComponent(`./pages/${name}.vue`, mainPages);
+            },
             setup: ({ App, props, plugin }) => createSSRApp({ render: () => h(App, props) }).use(plugin),
         }),
     { cluster: true },

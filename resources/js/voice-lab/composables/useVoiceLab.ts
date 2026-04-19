@@ -245,7 +245,7 @@ export function useVoiceLab() {
         const formData = new FormData();
         formData.append('audio', audioBlob, `recording.${ext}`);
 
-        const response = await fetch('/user/games/transcribe', {
+        const response = await fetch('/user/voice-lab/transcribe', {
             method: 'POST',
             credentials: 'same-origin',
             headers: makeHeaders(),

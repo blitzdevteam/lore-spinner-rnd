@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import VoiceLabLayout from '@/layouts/VoiceLabLayout.vue';
-import VoiceLabOrb from '@/components/VoiceLabOrb.vue';
-import { useVoiceLab } from '@/composables/useVoiceLab';
+import VoiceLabLayout from '../layouts/VoiceLabLayout.vue';
+import VoiceLabOrb from '../components/VoiceLabOrb.vue';
+import { useVoiceLab } from '../composables/useVoiceLab';
 import { router } from '@inertiajs/vue3';
 
 const { state, audioLevel, errorMessage, choices, activate, sendChoice, clearHistory } = useVoiceLab();

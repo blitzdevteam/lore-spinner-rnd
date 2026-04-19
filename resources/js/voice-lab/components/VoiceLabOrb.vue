@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import orbDefaultSrc from '@/assets/orb/Mask group.png';
+import orbDefaultSrc from '../assets/orb/Mask group.png';
 
 const props = withDefaults(
     defineProps<{

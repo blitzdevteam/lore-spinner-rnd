@@ -33,13 +33,21 @@ import Inplace from 'primevue/inplace';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+const voiceLabPages = import.meta.glob<DefineComponent>('./voice-lab/pages/**/*.vue');
+const mainPages = import.meta.glob<DefineComponent>('./pages/**/*.vue');
+
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
-    resolve: (name) =>
-        resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')).then((module: any) => {
+    resolve: (name) => {
+        if (name.startsWith('VoiceLab/')) {
+            const file = name.replace('VoiceLab/', '');
+            return resolvePageComponent(`./voice-lab/pages/${file}.vue`, voiceLabPages);
+        }
+        return resolvePageComponent(`./pages/${name}.vue`, mainPages).then((module: any) => {
             module.default.layout = module.default.layout || AppLayout;
             return module;
-        }),
+        });
+    },
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)

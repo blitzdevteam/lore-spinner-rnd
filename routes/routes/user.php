@@ -60,13 +60,6 @@ Route::prefix('user')->name('user.')->group(function (): void {
             Route::post('games/transcribe', User\Game\TranscribeController::class)
                 ->name('games.transcribe');
 
-            Route::get('voice-lab', [User\VoiceLabController::class, 'index'])
-                ->name('voice-lab.index');
-
-            Route::post('voice-lab/respond', User\VoiceLab\RespondController::class)
-                ->name('voice-lab.respond');
-
-            Route::delete('voice-lab/history', [User\VoiceLabController::class, 'clearHistory'])
-                ->name('voice-lab.clear-history');
+            require __DIR__.'/voice-lab.php';
         });
 });
