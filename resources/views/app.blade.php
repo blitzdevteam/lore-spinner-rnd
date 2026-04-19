@@ -10,7 +10,13 @@
         <link rel="icon" href="/favicon.png" type="image/png">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-        @vite(['resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
+        @php
+            $pageComponent = $page['component'];
+            $pageEntry = str_starts_with($pageComponent, 'VoiceLab/')
+                ? 'resources/js/voice-lab/pages/' . substr($pageComponent, strlen('VoiceLab/')) . '.vue'
+                : 'resources/js/pages/' . $pageComponent . '.vue';
+        @endphp
+        @vite(['resources/js/app.ts', $pageEntry])
         @inertiaHead
     </head>
     <body>
