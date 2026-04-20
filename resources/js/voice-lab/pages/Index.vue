@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import VoiceLabLayout from '../layouts/VoiceLabLayout.vue';
 import VoiceLabOrb from '../components/VoiceLabOrb.vue';
-import { useVoiceLab } from '../composables/useVoiceLab';
+import { useVoiceLab, type VoiceLabIntro } from '../composables/useVoiceLab';
 import { router } from '@inertiajs/vue3';
 
-const { state, audioLevel, errorMessage, choices, activate, sendChoice, clearHistory } = useVoiceLab();
+const props = defineProps<{
+    intro?: VoiceLabIntro;
+}>();
+
+const introConfig: VoiceLabIntro = props.intro ?? { enabled: false, audioUrl: '', choices: [] };
+
+const { state, audioLevel, errorMessage, choices, hasStartedIntro, activate, sendChoice, clearHistory } =
+    useVoiceLab(introConfig);
 
 const handleBack = () => {
     if (window.history.length > 1) {
@@ -75,6 +82,13 @@ const handleClearHistory = async () => {
                         class="text-sm text-primary-300"
                     >
                         Speaking...
+                    </p>
+                    <p
+                        v-else-if="!hasStartedIntro && introConfig.enabled"
+                        key="begin"
+                        class="text-sm text-gray-400"
+                    >
+                        Tap to begin
                     </p>
                     <p
                         v-else

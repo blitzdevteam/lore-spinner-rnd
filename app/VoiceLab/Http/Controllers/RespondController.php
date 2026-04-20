@@ -30,24 +30,38 @@ final class RespondController extends Controller
         }
 
         $result = $processTurn->handle($session, $request->string('message')->toString());
-
         $spokenText = strip_tags($result['response']);
 
-        try {
-            $audio = $tts->speak($spokenText);
-        } catch (RuntimeException $e) {
-            $status = $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 502;
+        return new StreamedResponse(function () use ($tts, $spokenText): void {
+            @ini_set('output_buffering', '0');
+            @ini_set('zlib.output_compression', '0');
+            @ini_set('implicit_flush', '1');
 
-            abort($status, $e->getMessage());
-        }
+            while (ob_get_level() > 0) {
+                @ob_end_flush();
+            }
 
-        return new StreamedResponse(function () use ($audio): void {
-            echo $audio;
+            try {
+                foreach ($tts->stream($spokenText) as $chunk) {
+                    echo $chunk;
+                    @ob_flush();
+                    @flush();
+                }
+            } catch (RuntimeException $e) {
+                logger()->warning('VoiceLab: streaming TTS aborted mid-response', [
+                    'message' => $e->getMessage(),
+                    'status' => $e->getCode(),
+                ]);
+            }
         }, 200, [
             'Content-Type' => 'audio/mpeg',
-            'Content-Length' => strlen($audio),
-            'Cache-Control' => 'no-cache, no-store',
-            'X-VoiceLab-Choices' => json_encode($result['choices']),
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+            // Disable nginx/reverse-proxy buffering so chunks flush to the client
+            // as they arrive from ElevenLabs.
+            'X-Accel-Buffering' => 'no',
+            'X-VoiceLab-Choices' => (string) json_encode($result['choices']),
             'Access-Control-Expose-Headers' => 'X-VoiceLab-Choices',
         ]);
     }

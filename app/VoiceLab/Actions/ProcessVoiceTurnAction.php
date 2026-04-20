@@ -45,11 +45,20 @@ final readonly class ProcessVoiceTurnAction
      */
     public function generateOpening(VoiceLabSession $session): array
     {
-        $result = $this->generateReply(
-            systemPrompt: $this->renderSystemPrompt($session),
-            conversationHistory: [],
-            playerAction: '',
-        );
+        $intro = config('voice-lab.intro', []);
+
+        if (($intro['enabled'] ?? false) && is_string($intro['text'] ?? null) && trim($intro['text']) !== '') {
+            $result = [
+                'response' => $intro['text'],
+                'choices' => array_values((array) ($intro['choices'] ?? [])),
+            ];
+        } else {
+            $result = $this->generateReply(
+                systemPrompt: $this->renderSystemPrompt($session),
+                conversationHistory: [],
+                playerAction: '',
+            );
+        }
 
         $session->prompts()->create([
             'role' => VoiceLabRoleEnum::NARRATOR,

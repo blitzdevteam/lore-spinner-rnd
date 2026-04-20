@@ -11,6 +11,14 @@ final class IndexController extends Controller
 {
     public function __invoke(): Response
     {
-        return inertia('VoiceLab/Index');
+        $intro = config('voice-lab.intro', []);
+
+        return inertia('VoiceLab/Index', [
+            'intro' => [
+                'enabled' => (bool) ($intro['enabled'] ?? false),
+                'audioUrl' => (string) ($intro['audio_url'] ?? ''),
+                'choices' => array_values((array) ($intro['choices'] ?? [])),
+            ],
+        ]);
     }
 }

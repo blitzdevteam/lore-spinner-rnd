@@ -1,6 +1,13 @@
 import { computed, onUnmounted, ref } from 'vue';
+import { useVoiceSfx } from './useVoiceSfx';
 
 export type VoiceLabState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
+
+export interface VoiceLabIntro {
+    enabled: boolean;
+    audioUrl: string;
+    choices: string[];
+}
 
 function getXsrfToken(): string | null {
     const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
@@ -26,22 +33,27 @@ function getSupportedMimeType(): string {
     return 'audio/webm';
 }
 
-export function useVoiceLab() {
+export function useVoiceLab(intro: VoiceLabIntro | null = null) {
     const state = ref<VoiceLabState>('idle');
     const audioLevel = ref(0);
     const errorMessage = ref<string | null>(null);
     const choices = ref<string[]>([]);
+    const hasStartedIntro = ref(false);
+
+    const sfx = useVoiceSfx();
 
     let mediaRecorder: MediaRecorder | null = null;
     let audioChunks: Blob[] = [];
     let micStream: MediaStream | null = null;
 
     let audioContext: AudioContext | null = null;
-    let analyser: AnalyserNode | null = null;
+    let micAnalyser: AnalyserNode | null = null;
+    let playbackAnalyser: AnalyserNode | null = null;
     let audioSource: MediaElementAudioSourceNode | null = null;
     let micSource: MediaStreamAudioSourceNode | null = null;
     let currentAudio: HTMLAudioElement | null = null;
     let levelRaf: number | null = null;
+    let thinkingTickTimer: number | null = null;
 
     const isActive = computed(() => state.value !== 'idle');
 
@@ -52,6 +64,12 @@ export function useVoiceLab() {
     function setError(msg: string) {
         errorMessage.value = msg;
         state.value = 'error';
+        try {
+            sfx.playError();
+        } catch {
+            /* sfx is best-effort */
+        }
+        stopThinkingTicks();
         setTimeout(() => {
             if (state.value === 'error') {
                 state.value = 'idle';
@@ -77,7 +95,11 @@ export function useVoiceLab() {
 
     function stopMicLevel() {
         if (micSource) {
-            micSource.disconnect();
+            try {
+                micSource.disconnect();
+            } catch {
+                /* already disconnected */
+            }
             micSource = null;
         }
         stopAudioLevel();
@@ -85,12 +107,20 @@ export function useVoiceLab() {
 
     function stopPlayback() {
         if (currentAudio) {
-            currentAudio.pause();
+            try {
+                currentAudio.pause();
+            } catch {
+                /* noop */
+            }
             currentAudio.src = '';
             currentAudio = null;
         }
         if (audioSource) {
-            audioSource.disconnect();
+            try {
+                audioSource.disconnect();
+            } catch {
+                /* noop */
+            }
             audioSource = null;
         }
         stopAudioLevel();
@@ -103,25 +133,19 @@ export function useVoiceLab() {
         return audioContext;
     }
 
-    function ensureAnalyser(): AnalyserNode {
+    function makeAnalyser(): AnalyserNode {
         const ctx = getAudioContext();
-        if (!analyser) {
-            analyser = ctx.createAnalyser();
-            analyser.fftSize = 256;
-            analyser.smoothingTimeConstant = 0.7;
-        }
-        return analyser;
+        const node = ctx.createAnalyser();
+        node.fftSize = 256;
+        node.smoothingTimeConstant = 0.7;
+        return node;
     }
 
-    function startLevelLoop() {
-        const node = analyser;
-        if (!node) return;
-
+    function startLevelLoop(node: AnalyserNode) {
         const dataArray = new Uint8Array(node.frequencyBinCount);
 
         function tick() {
-            if (!analyser) return;
-            analyser.getByteFrequencyData(dataArray);
+            node.getByteFrequencyData(dataArray);
             let sum = 0;
             for (let i = 0; i < dataArray.length; i++) {
                 sum += dataArray[i];
@@ -130,30 +154,53 @@ export function useVoiceLab() {
             levelRaf = requestAnimationFrame(tick);
         }
 
+        if (levelRaf !== null) cancelAnimationFrame(levelRaf);
         levelRaf = requestAnimationFrame(tick);
     }
 
     function trackMicLevel(stream: MediaStream) {
         const ctx = getAudioContext();
-        const node = ensureAnalyser();
-
+        micAnalyser = makeAnalyser();
         micSource = ctx.createMediaStreamSource(stream);
-        micSource.connect(node);
-
-        startLevelLoop();
+        micSource.connect(micAnalyser);
+        startLevelLoop(micAnalyser);
     }
 
     function trackAudioLevel(audio: HTMLAudioElement) {
-        const node = ensureAnalyser();
+        const ctx = getAudioContext();
+        playbackAnalyser = makeAnalyser();
+        audioSource = ctx.createMediaElementSource(audio);
+        audioSource.connect(playbackAnalyser);
+        playbackAnalyser.connect(ctx.destination);
+        startLevelLoop(playbackAnalyser);
+    }
 
-        audioSource = getAudioContext().createMediaElementSource(audio);
-        audioSource.connect(node);
-        node.connect(getAudioContext().destination);
+    function startThinkingTicks() {
+        stopThinkingTicks();
+        thinkingTickTimer = window.setTimeout(function loop() {
+            if (state.value !== 'thinking') return;
+            sfx.playThinkingTick();
+            thinkingTickTimer = window.setTimeout(loop, 900);
+        }, 1500);
+    }
 
-        startLevelLoop();
+    function stopThinkingTicks() {
+        if (thinkingTickTimer !== null) {
+            clearTimeout(thinkingTickTimer);
+            thinkingTickTimer = null;
+        }
     }
 
     async function activate() {
+        sfx.prime();
+
+        if (intro?.enabled && !hasStartedIntro.value) {
+            hasStartedIntro.value = true;
+            sfx.playWake();
+            await playIntro();
+            return;
+        }
+
         if (state.value === 'listening') {
             await finishRecording();
             return;
@@ -177,6 +224,8 @@ export function useVoiceLab() {
             return;
         }
 
+        sfx.playListenStart();
+
         audioChunks = [];
         const mimeType = getSupportedMimeType();
         mediaRecorder = new MediaRecorder(micStream, { mimeType });
@@ -197,12 +246,22 @@ export function useVoiceLab() {
                 return;
             }
 
+            // --- Bug 1 fix: disconnect the mic graph synchronously BEFORE stopping
+            //     the recorder, so any residual audio flushed on .stop() never
+            //     reaches the analyser or leaks into the next turn. Also request
+            //     a final data tick so the tail chunk is already collected.
+            sfx.playListenStop();
+            stopMicLevel();
+            releaseMic();
+            try {
+                mediaRecorder.requestData();
+            } catch {
+                /* some browsers throw if inactive; safe to ignore */
+            }
+
             mediaRecorder.addEventListener(
                 'stop',
                 async () => {
-                    stopMicLevel();
-                    releaseMic();
-
                     const mimeType = mediaRecorder?.mimeType || 'audio/webm';
                     const audioBlob = new Blob(audioChunks, { type: mimeType });
                     audioChunks = [];
@@ -214,6 +273,7 @@ export function useVoiceLab() {
                     }
 
                     state.value = 'thinking';
+                    startThinkingTicks();
 
                     try {
                         const text = await transcribe(audioBlob);
@@ -223,10 +283,13 @@ export function useVoiceLab() {
                             return;
                         }
 
-                        const result = await getAiResponse(text);
+                        const result = await streamAiResponse(text);
+                        stopThinkingTicks();
                         choices.value = result.choices;
-                        await playResponse(result.audio);
+                        await result.played;
+                        sfx.playReady();
                     } catch (err) {
+                        stopThinkingTicks();
                         setError(err instanceof Error ? err.message : 'Something went wrong');
                     }
 
@@ -258,7 +321,7 @@ export function useVoiceLab() {
         return data.text ?? '';
     }
 
-    async function getAiResponse(message: string): Promise<{ audio: Blob; choices: string[] }> {
+    async function streamAiResponse(message: string): Promise<{ played: Promise<void>; choices: string[] }> {
         const response = await fetch('/user/voice-lab/respond', {
             method: 'POST',
             credentials: 'same-origin',
@@ -266,7 +329,7 @@ export function useVoiceLab() {
             body: JSON.stringify({ message }),
         });
 
-        if (!response.ok) throw new Error('AI response failed');
+        if (!response.ok || !response.body) throw new Error('AI response failed');
 
         let parsedChoices: string[] = [];
         try {
@@ -276,7 +339,129 @@ export function useVoiceLab() {
             /* header absent or malformed — non-fatal */
         }
 
-        return { audio: await response.blob(), choices: parsedChoices };
+        const mimeType = 'audio/mpeg';
+        const canStream =
+            typeof window.MediaSource !== 'undefined' &&
+            window.MediaSource.isTypeSupported(mimeType);
+
+        const played = canStream
+            ? playStreamedAudio(response.body, mimeType)
+            : playBufferedAudio(response);
+
+        return { played, choices: parsedChoices };
+    }
+
+    function playStreamedAudio(stream: ReadableStream<Uint8Array>, mimeType: string): Promise<void> {
+        return new Promise((resolve) => {
+            const mediaSource = new MediaSource();
+            const audio = new Audio();
+            currentAudio = audio;
+            const url = URL.createObjectURL(mediaSource);
+            audio.src = url;
+
+            let started = false;
+            let finished = false;
+            const pending: Uint8Array[] = [];
+            let sourceBuffer: SourceBuffer | null = null;
+
+            const finish = () => {
+                if (finished) return;
+                finished = true;
+                stopPlayback();
+                URL.revokeObjectURL(url);
+                state.value = 'idle';
+                resolve();
+            };
+
+            const pumpPending = () => {
+                if (!sourceBuffer || sourceBuffer.updating) return;
+                const next = pending.shift();
+                if (next) {
+                    try {
+                        sourceBuffer.appendBuffer(next as unknown as BufferSource);
+                    } catch (e) {
+                        console.warn('[voice-lab] appendBuffer failed', e);
+                        finish();
+                    }
+                    return;
+                }
+                if (mediaSource.readyState === 'open' && (mediaSource as MediaSource & { _done?: boolean })._done) {
+                    try {
+                        mediaSource.endOfStream();
+                    } catch {
+                        /* already ended */
+                    }
+                }
+            };
+
+            audio.addEventListener('ended', finish, { once: true });
+            audio.addEventListener(
+                'error',
+                () => {
+                    setError('Audio playback failed');
+                    finish();
+                },
+                { once: true },
+            );
+
+            mediaSource.addEventListener('sourceopen', async () => {
+                try {
+                    sourceBuffer = mediaSource.addSourceBuffer(mimeType);
+                } catch (e) {
+                    console.warn('[voice-lab] addSourceBuffer failed', e);
+                    finish();
+                    return;
+                }
+                sourceBuffer.addEventListener('updateend', pumpPending);
+
+                const reader = stream.getReader();
+
+                try {
+                    while (true) {
+                        const { value, done } = await reader.read();
+                        if (done) break;
+                        if (!value || value.byteLength === 0) continue;
+                        pending.push(value);
+                        pumpPending();
+
+                        if (!started) {
+                            started = true;
+                            const ctx = getAudioContext();
+                            if (ctx.state === 'suspended') void ctx.resume();
+                            trackAudioLevel(audio);
+                            state.value = 'speaking';
+                            void audio.play();
+                        }
+                    }
+                } catch (e) {
+                    console.warn('[voice-lab] stream read failed', e);
+                }
+
+                (mediaSource as MediaSource & { _done?: boolean })._done = true;
+                pumpPending();
+            }, { once: true });
+        });
+    }
+
+    async function playBufferedAudio(response: Response): Promise<void> {
+        const blob = await response.blob();
+        return playResponse(blob);
+    }
+
+    async function playIntro(): Promise<void> {
+        if (!intro?.audioUrl) return;
+        state.value = 'speaking';
+
+        try {
+            const response = await fetch(intro.audioUrl, { credentials: 'same-origin' });
+            if (!response.ok) throw new Error(`Intro fetch failed (${response.status})`);
+            const blob = await response.blob();
+            await playResponse(blob);
+            choices.value = [...intro.choices];
+            sfx.playReady();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Intro failed to load');
+        }
     }
 
     async function playResponse(audioBlob: Blob): Promise<void> {
@@ -293,7 +478,7 @@ export function useVoiceLab() {
 
                     trackAudioLevel(audio);
                     state.value = 'speaking';
-                    audio.play();
+                    void audio.play();
                 },
                 { once: true },
             );
@@ -329,12 +514,16 @@ export function useVoiceLab() {
 
         choices.value = [];
         state.value = 'thinking';
+        startThinkingTicks();
 
         try {
-            const result = await getAiResponse(choice);
+            const result = await streamAiResponse(choice);
+            stopThinkingTicks();
             choices.value = result.choices;
-            await playResponse(result.audio);
+            await result.played;
+            sfx.playReady();
         } catch (err) {
+            stopThinkingTicks();
             setError(err instanceof Error ? err.message : 'Something went wrong');
         }
     }
@@ -345,17 +534,22 @@ export function useVoiceLab() {
             credentials: 'same-origin',
             headers: makeHeaders(),
         });
+        hasStartedIntro.value = false;
+        choices.value = [];
+        state.value = 'idle';
     }
 
     function cleanup() {
+        stopThinkingTicks();
         stopPlayback();
         stopMicLevel();
         releaseMic();
         stopAudioLevel();
+        micAnalyser = null;
+        playbackAnalyser = null;
         if (audioContext) {
             audioContext.close();
             audioContext = null;
-            analyser = null;
         }
     }
 
@@ -367,6 +561,7 @@ export function useVoiceLab() {
         errorMessage,
         choices,
         isActive,
+        hasStartedIntro,
         activate,
         sendChoice,
         clearHistory,

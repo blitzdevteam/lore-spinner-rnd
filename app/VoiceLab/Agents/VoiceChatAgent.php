@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\VoiceLab\Agents;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use Laravel\Ai\Attributes\Model;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Attributes\Timeout;
 use Laravel\Ai\Contracts\Agent;
@@ -13,7 +12,6 @@ use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-#[Model('gpt-5.2')]
 #[Temperature(0.85)]
 #[Timeout(60)]
 class VoiceChatAgent implements Agent, HasStructuredOutput
@@ -23,6 +21,16 @@ class VoiceChatAgent implements Agent, HasStructuredOutput
     public function __construct(
         private string $customInstructions,
     ) {}
+
+    /**
+     * Runtime-resolved model. Voice Lab defaults to the mini variant for
+     * ~1–2s faster turns; set VOICELAB_LLM_MODEL to override for an A/B
+     * comparison against the full-size model.
+     */
+    public function model(): string
+    {
+        return (string) env('VOICELAB_LLM_MODEL', 'gpt-5.2-mini');
+    }
 
     public function instructions(): Stringable|string
     {

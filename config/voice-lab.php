@@ -28,7 +28,9 @@ return [
     */
     'api_key' => env('ELEVENLABS_API_KEY'),
     'voice_id' => env('VOICELAB_VOICE_ID', env('ELEVENLABS_VOICE_ID')),
-    'model_id' => env('VOICELAB_MODEL_ID', env('ELEVENLABS_MODEL_ID', 'eleven_v3')),
+    // Default to turbo_v2_5 for sub-400ms first-byte latency. Use eleven_flash_v2_5
+    // for even faster (~150ms) at the cost of some expressive range.
+    'model_id' => env('VOICELAB_MODEL_ID', env('ELEVENLABS_MODEL_ID', 'eleven_turbo_v2_5')),
     'output_format' => env('VOICELAB_OUTPUT_FORMAT', 'mp3_44100_128'),
 
     'voice_settings' => [
@@ -56,5 +58,40 @@ return [
     */
     'history_size' => (int) env('VOICELAB_HISTORY_SIZE', 6),
     'greeting_enabled' => (bool) env('VOICELAB_GREETING_ENABLED', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Intro (pre-baked Session 1 cold open)
+    |--------------------------------------------------------------------------
+    |
+    | The first tap of the orb should play an instant, cinematic narration
+    | with zero server round-trip. This section drives that: the text is
+    | TTS-baked once to an MP3 on the public disk via `php artisan
+    | voicelab:bake-intro`, and the same text + choices are stored as the
+    | opening narrator turn so conversation history stays consistent.
+    |
+    | `text`      — HTML with <p> per paragraph; chunked for hallucination-safe TTS.
+    | `choices`   — sentence-form choice buttons (6–14 words each).
+    | `audio_path`— path on the `public` disk where the baked MP3 lives.
+    | `audio_url` — public URL used by the frontend to fetch the MP3.
+    |
+    */
+    'intro' => [
+        'enabled' => (bool) env('VOICELAB_INTRO_ENABLED', true),
+        'audio_path' => env('VOICELAB_INTRO_AUDIO_PATH', 'voicelab/session-1-opening.mp3'),
+        'audio_url' => env('VOICELAB_INTRO_AUDIO_URL', '/storage/voicelab/session-1-opening.mp3'),
+        'text' => <<<'HTML'
+<p>Heat shimmers off the grass and the air tastes like dust and crushed clover. You push yourself up from the bank before you've even decided to — because something white flashes past your knees.</p>
+<p>A Rabbit. Pink-eyed. Close enough that you hear its breath.</p>
+<p>It mutters, panicked, "Oh dear! Oh dear! I shall be late!" and — impossible — hooks a paw into a waistcoat-pocket. Metal glints. A watch. It checks the time like it matters.</p>
+<p>Your curiosity doesn't ask permission. You break into a run, skirts snagging at your ankles, heart thumping with the thrill of catching the world doing something it shouldn't.</p>
+<p>The Rabbit darts under the hedge and vanishes into a dark, round hole. You skid to the edge and peer down into the cool black. Your next step decides whether this is a story you watch, or one you fall into.</p>
+HTML,
+        'choices' => [
+            'Fall after the White Rabbit into the dark hole.',
+            'Hesitate at the edge and listen for what lies below.',
+            'Step back and let the impossible pass you by.',
+        ],
+    ],
 
 ];
