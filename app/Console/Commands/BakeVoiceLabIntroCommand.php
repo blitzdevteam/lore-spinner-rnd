@@ -89,7 +89,20 @@ final class BakeVoiceLabIntroCommand extends Command
         $disk->put($path, implode('', $buffers));
 
         $bytes = $disk->size($path);
-        $this->info("Wrote {$bytes} bytes to public/{$path}");
+        $this->info("Wrote {$bytes} bytes to public disk at {$path}");
+
+        try {
+            $url = $disk->url($path);
+            $this->line("Public URL (from disk driver): {$url}");
+        } catch (\Throwable) {
+            $this->line('Public URL: (driver did not return one — check disk config)');
+        }
+
+        $symlink = public_path('storage');
+        if (! file_exists($symlink)) {
+            $this->warn('public/storage symlink is missing on this environment.');
+            $this->warn('Run: php artisan storage:link');
+        }
 
         return self::SUCCESS;
     }
