@@ -23,13 +23,14 @@ class VoiceChatAgent implements Agent, HasStructuredOutput
     ) {}
 
     /**
-     * Runtime-resolved model. Voice Lab defaults to the mini variant for
-     * ~1–2s faster turns; set VOICELAB_LLM_MODEL to override for an A/B
-     * comparison against the full-size model.
+     * Runtime-resolved model. Defaults to the same model Voice Lab shipped
+     * with originally (gpt-5.2). Set VOICELAB_LLM_MODEL to a mini variant
+     * once you confirm the exact slug registered in your Laravel\Ai
+     * provider — dropping to mini saves ~1–2s per turn.
      */
     public function model(): string
     {
-        return (string) env('VOICELAB_LLM_MODEL', 'gpt-5.2-mini');
+        return (string) env('VOICELAB_LLM_MODEL', 'gpt-5.2');
     }
 
     public function instructions(): Stringable|string

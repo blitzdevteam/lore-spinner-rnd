@@ -132,7 +132,16 @@ final readonly class ProcessVoiceTurnAction
                 'response' => $response['response'] ?? '<p>The world waits for you to speak...</p>',
                 'choices' => $response['choices'] ?? ['Continue forward', 'Look around', 'Speak again'],
             ];
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            logger()->error('VoiceLab: LLM turn failed', [
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile().':'.$e->getLine(),
+                'player_action' => mb_substr($playerAction, 0, 500),
+                'history_size' => count($conversationHistory),
+                'model' => (string) env('VOICELAB_LLM_MODEL', 'gpt-5.2'),
+            ]);
+
             return [
                 'response' => '<p>The world stirs gently around you, as if waiting for another word.</p>',
                 'choices' => ['Continue forward', 'Look around', 'Speak again'],
