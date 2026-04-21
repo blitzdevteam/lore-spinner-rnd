@@ -29,7 +29,7 @@ final readonly class CreateGameAction
         ]);
     }
 
-    private function resolveStartEvent(Story $story, Event $firstEvent): Event
+    public function resolveStartEvent(Story $story, Event $firstEvent): Event
     {
         $adaptation = $story->adaptation;
 

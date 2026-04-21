@@ -50,6 +50,9 @@ Route::prefix('user')->name('user.')->group(function (): void {
             Route::post('games/{game}/begin', [User\GameController::class, 'begin'])
                 ->name('games.begin');
 
+            Route::post('games/{game}/reset', [User\GameController::class, 'reset'])
+                ->name('games.reset');
+
             Route::singleton('games.prompt', User\Game\PromptController::class)
                 ->creatable()
                 ->only(['store']);

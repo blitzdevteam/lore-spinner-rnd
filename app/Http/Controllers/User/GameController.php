@@ -59,6 +59,31 @@ final class GameController extends Controller
         return to_route('user.games.show', $game);
     }
 
+    public function reset(Game $game, CreateGameAction $createGameAction): RedirectResponse
+    {
+        $story = $game->story;
+        $firstChapter = $story->chapters()->orderBy('position')->first();
+        $firstEvent = $firstChapter?->events()->orderBy('position')->first();
+
+        if ($firstEvent === null) {
+            return to_route('user.games.show', $game);
+        }
+
+        $startEvent = $createGameAction->resolveStartEvent($story, $firstEvent);
+
+        $game->prompts()->delete();
+        $game->update([
+            'current_event_id' => $startEvent->id,
+            'current_session_number' => null,
+            'current_beat_type' => null,
+            'branching_choices_taken' => null,
+            'tracked_dimensions' => null,
+            'branch_resolution_log' => null,
+        ]);
+
+        return to_route('user.games.show', $game);
+    }
+
     public function begin(Game $game): RedirectResponse
     {
         if ($game->prompts()->exists()) {

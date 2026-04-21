@@ -249,7 +249,7 @@ onMounted(() => {
     </div>
 
     <!-- Gameplay phase -->
-    <GameplayLayout v-else :input-disabled="!canSubmitInput" @submit="handleSubmit" @back="handleBack">
+    <GameplayLayout v-else :input-disabled="!canSubmitInput" :game-id="game.id" @submit="handleSubmit" @back="handleBack">
         <template #header>
             <div class="hidden flex-col gap-1.5 md:flex">
                 <h1 class="text-xl uppercase md:text-3xl">{{ (game as any).currentEvent?.title ?? 'Adventure' }}</h1>

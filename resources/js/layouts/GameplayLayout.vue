@@ -16,8 +16,9 @@ import { ref } from 'vue';
 const props = withDefaults(
     defineProps<{
         inputDisabled?: boolean;
+        gameId?: string;
     }>(),
-    { inputDisabled: false },
+    { inputDisabled: false, gameId: undefined },
 );
 
 type RightPanel = 'journal' | 'settings' | null;
@@ -164,7 +165,7 @@ const handleInputSubmit = (prompt: string) => {
                     class="fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] max-w-sm flex-col overflow-y-auto border-s border-gray-700 bg-gray-900 md:sticky md:right-auto md:z-0 md:w-sm md:max-w-none md:shrink-0"
                 >
                     <div class="flex h-full w-full flex-col px-6 pt-8">
-                        <GameplaySettingsPanel />
+                        <GameplaySettingsPanel :game-id="props.gameId" />
                     </div>
                 </div>
             </Transition>

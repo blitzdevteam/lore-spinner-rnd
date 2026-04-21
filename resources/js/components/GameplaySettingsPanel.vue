@@ -1,11 +1,40 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
 import { useGameplaySettings } from '@/composables/useGameplaySettings';
-import { LucideMinus, LucidePlus, LucideRotateCcw } from 'lucide-vue-next';
+import { router } from '@inertiajs/vue3';
+import { LucideMinus, LucidePlus, LucideRefreshCw, LucideRotateCcw } from 'lucide-vue-next';
+import { ref } from 'vue';
+
+const props = defineProps<{
+    gameId?: string;
+}>();
 
 const { settings, defaults, fontColorPresets, backgroundPresets, reset } = useGameplaySettings();
 
 const clampFontSize = (val: number) => Math.min(28, Math.max(12, val));
+
+const isResetting = ref(false);
+
+const handleResetGame = () => {
+    if (!props.gameId || isResetting.value) return;
+    const confirmed = window.confirm(
+        'Start a fresh game? This will erase all your current progress, including every prompt and choice you have made.',
+    );
+    if (!confirmed) return;
+
+    isResetting.value = true;
+    router.post(
+        `/user/games/${props.gameId}/reset`,
+        {},
+        {
+            preserveScroll: false,
+            preserveState: false,
+            onFinish: () => {
+                isResetting.value = false;
+            },
+        },
+    );
+};
 </script>
 
 <template>
@@ -140,6 +169,23 @@ const clampFontSize = (val: number) => Math.min(28, Math.max(12, val));
                     The ancient door creaked open, revealing a corridor bathed in moonlight...
                 </p>
             </div>
+        </div>
+
+        <!-- Game controls -->
+        <div v-if="gameId" class="flex flex-col gap-2.5 border-t border-gray-700/40 pt-6">
+            <label class="text-xs font-medium uppercase tracking-wider text-gray-400">Game</label>
+            <BaseButton
+                severity="gray-muted"
+                class="w-full"
+                :disabled="isResetting"
+                @click="handleResetGame"
+            >
+                <LucideRefreshCw :size="16" :class="{ 'animate-spin': isResetting }" />
+                <span>{{ isResetting ? 'Resetting...' : 'Start a fresh game' }}</span>
+            </BaseButton>
+            <p class="text-xs leading-relaxed text-gray-500">
+                Erases all progress for this story and begins a new playthrough from the start.
+            </p>
         </div>
     </div>
 </template>
