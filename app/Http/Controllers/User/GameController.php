@@ -16,6 +16,7 @@ use App\Models\Story;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Inertia\Response;
 use Laravel\Ai\Responses\StructuredAgentResponse;
 use Throwable;
@@ -166,11 +167,46 @@ final class GameController extends Controller
                 'response' => $response['response'] ?? '<p>The scene unfolds before you...</p>',
                 'choices' => $response['choices'] ?? ['Begin your adventure'],
             ];
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            Log::error('NarrationAgent failed during first-narration generation; falling back to formatted event content.', [
+                'story_id' => $story->id,
+                'event_id' => $firstEvent->id,
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+            ]);
+
             return [
-                'response' => '<p>' . nl2br(e($firstEvent->content)) . '</p>',
+                'response' => $this->formatEventContentAsHtml($firstEvent->content ?? ''),
                 'choices' => ['Begin your adventure'],
             ];
         }
+    }
+
+    /**
+     * Convert source-file event content into safe paragraph HTML without
+     * preserving its hard line wraps. Source scripts (e.g. Project Gutenberg)
+     * are pre-wrapped at ~67 columns; naive nl2br() would turn every wrap
+     * into a forced <br>, producing a visibly narrow, ragged column in the UI.
+     */
+    private function formatEventContentAsHtml(string $content): string
+    {
+        $normalized = str_replace(["\r\n", "\r"], "\n", trim($content));
+
+        if ($normalized === '') {
+            return '<p>The scene unfolds before you...</p>';
+        }
+
+        $paragraphs = preg_split('/\n\s*\n+/', $normalized) ?: [];
+
+        $html = '';
+        foreach ($paragraphs as $paragraph) {
+            $flattened = preg_replace('/\s*\n\s*/', ' ', trim($paragraph));
+            if ($flattened === null || $flattened === '') {
+                continue;
+            }
+            $html .= '<p>' . e($flattened) . '</p>';
+        }
+
+        return $html !== '' ? $html : '<p>The scene unfolds before you...</p>';
     }
 }
