@@ -364,12 +364,21 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
             const pending: Uint8Array[] = [];
             let sourceBuffer: SourceBuffer | null = null;
 
-            const finish = () => {
+            const finish = (errored = false) => {
                 if (finished) return;
                 finished = true;
+                // Detach listeners BEFORE stopPlayback() because clearing
+                // currentAudio.src fires a synthetic 'error' event that we
+                // must not let flip us into the error state after a clean end.
+                audio.removeEventListener('ended', onEnded);
+                audio.removeEventListener('error', onError);
                 stopPlayback();
                 URL.revokeObjectURL(url);
-                state.value = 'idle';
+                if (errored) {
+                    setError('Audio playback failed');
+                } else {
+                    state.value = 'idle';
+                }
                 resolve();
             };
 
@@ -381,7 +390,7 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
                         sourceBuffer.appendBuffer(next as unknown as BufferSource);
                     } catch (e) {
                         console.warn('[voice-lab] appendBuffer failed', e);
-                        finish();
+                        finish(true);
                     }
                     return;
                 }
@@ -394,15 +403,13 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
                 }
             };
 
-            audio.addEventListener('ended', finish, { once: true });
-            audio.addEventListener(
-                'error',
-                () => {
-                    setError('Audio playback failed');
-                    finish();
-                },
-                { once: true },
-            );
+            const onEnded = () => finish(false);
+            const onError = () => {
+                if (finished) return;
+                finish(true);
+            };
+            audio.addEventListener('ended', onEnded);
+            audio.addEventListener('error', onError);
 
             mediaSource.addEventListener('sourceopen', async () => {
                 try {
@@ -470,6 +477,32 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
             const audio = new Audio(url);
             currentAudio = audio;
 
+            let finished = false;
+
+            const finish = (errored: boolean) => {
+                if (finished) return;
+                finished = true;
+                // Detach BEFORE cleanup — stopPlayback() sets src='' which
+                // triggers a synthetic 'error' event we must ignore on a
+                // clean 'ended'.
+                audio.removeEventListener('ended', onEnded);
+                audio.removeEventListener('error', onError);
+                stopPlayback();
+                URL.revokeObjectURL(url);
+                if (errored) {
+                    setError('Audio playback failed');
+                } else {
+                    state.value = 'idle';
+                }
+                resolve();
+            };
+
+            const onEnded = () => finish(false);
+            const onError = () => {
+                if (finished) return;
+                finish(true);
+            };
+
             audio.addEventListener(
                 'canplay',
                 () => {
@@ -483,27 +516,8 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
                 { once: true },
             );
 
-            audio.addEventListener(
-                'ended',
-                () => {
-                    stopPlayback();
-                    URL.revokeObjectURL(url);
-                    state.value = 'idle';
-                    resolve();
-                },
-                { once: true },
-            );
-
-            audio.addEventListener(
-                'error',
-                () => {
-                    stopPlayback();
-                    URL.revokeObjectURL(url);
-                    setError('Audio playback failed');
-                    resolve();
-                },
-                { once: true },
-            );
+            audio.addEventListener('ended', onEnded);
+            audio.addEventListener('error', onError);
 
             audio.load();
         });
