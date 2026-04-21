@@ -12,6 +12,7 @@ use App\Models\Story;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Batchable;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Collection;
 use RuntimeException;
 use Throwable;
 
@@ -39,10 +40,7 @@ final class EntryPointDiagnosisJob implements ShouldQueue
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::ENTRY_POINT_DIAGNOSIS]);
 
-            $sessionEvents = $this->story->events()
-                ->where('events.session_number', $this->sessionNumber)
-                ->orderBy('events.position')
-                ->get(['events.id', 'events.position', 'events.title', 'events.objectives']);
+            $sessionEvents = $this->loadSessionEventsWithStoryPosition();
 
             if ($sessionEvents->isEmpty()) {
                 throw new RuntimeException(
@@ -60,7 +58,9 @@ final class EntryPointDiagnosisJob implements ShouldQueue
                     'sessionNumber' => $this->sessionNumber,
                     'sessionSourcePages' => $sessionSourcePages,
                     'sessionEvents' => $sessionEvents->map(fn (Event $ev) => [
+                        'story_position' => $ev->story_position,
                         'position' => $ev->position,
+                        'chapter_position' => $ev->chapter_position,
                         'title' => $ev->title,
                         'objectives' => $ev->objectives,
                     ])->all(),
@@ -70,16 +70,54 @@ final class EntryPointDiagnosisJob implements ShouldQueue
             $result = $response->toArray();
 
             $startPos = $result['start_event_position'] ?? null;
-            $startEvent = $sessionEvents->firstWhere('position', $startPos)
+            $startEvent = $sessionEvents->firstWhere('story_position', $startPos)
                 ?? $sessionEvents->first();
 
             $result['start_event_id'] = $startEvent->id;
-            $result['start_event_position'] = $startEvent->position;
+            $result['start_event_position'] = $startEvent->story_position;
+            $result['start_event_chapter_position'] = $startEvent->chapter_position;
+            $result['start_event_local_position'] = $startEvent->position;
 
             $session->update(['entry_point_diagnosis' => $result]);
         } catch (Throwable $throwable) {
             $session->update(['session_status' => SessionAdaptationStatusEnum::FAILED]);
             throw $throwable;
         }
+    }
+
+    /**
+     * Load the events in this session ordered by (chapter.position, event.position)
+     * and stamp each row with a 1-based story-global `story_position`. The ordinal
+     * is computed across ALL events in the story (not just this session) so it
+     * matches what StorySessionMapJob shows the agent.
+     *
+     * @return Collection<int, Event>
+     */
+    private function loadSessionEventsWithStoryPosition(): Collection
+    {
+        $allEvents = Event::query()
+            ->join('chapters', 'chapters.id', '=', 'events.chapter_id')
+            ->where('chapters.story_id', $this->story->id)
+            ->orderBy('chapters.position')
+            ->orderBy('events.position')
+            ->get([
+                'events.id',
+                'events.position',
+                'events.title',
+                'events.objectives',
+                'events.chapter_id',
+                'events.session_number',
+                'chapters.position as chapter_position',
+            ])
+            ->values()
+            ->map(function (Event $ev, int $i): Event {
+                $ev->setAttribute('story_position', $i + 1);
+
+                return $ev;
+            });
+
+        return $allEvents->filter(
+            fn (Event $ev) => (int) $ev->session_number === $this->sessionNumber
+        )->values();
     }
 }

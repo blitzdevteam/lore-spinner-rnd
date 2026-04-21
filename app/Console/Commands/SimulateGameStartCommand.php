@@ -162,13 +162,18 @@ final class SimulateGameStartCommand extends Command
         $this->info('=== START EVENT RESOLUTION (mirrors CreateGameAction) ===');
         $this->line('adaptation present:   ' . ($adaptation ? 'yes' : 'no'));
         $this->line('adaptation_status:    ' . ($adaptation?->adaptation_status?->value ?? 'n/a'));
-        $this->line('first event (chap 1): id=' . $firstEvent->id . ', pos=' . $firstEvent->position . ', title="' . $firstEvent->title . '", session=' . ($firstEvent->session_number ?? 'null'));
-        $this->line('resolved start event: id=' . $startEvent->id . ', pos=' . $startEvent->position . ', title="' . $startEvent->title . '", session=' . ($startEvent->session_number ?? 'null'));
+        $this->line('first event (chap 1): id=' . $firstEvent->id . ', chapter_id=' . $firstEvent->chapter_id . ', pos=' . $firstEvent->position . ', title="' . $firstEvent->title . '", session=' . ($firstEvent->session_number ?? 'null'));
+        $this->line('resolved start event: id=' . $startEvent->id . ', chapter_id=' . $startEvent->chapter_id . ', pos=' . $startEvent->position . ', title="' . $startEvent->title . '", session=' . ($startEvent->session_number ?? 'null'));
 
         if ($startEvent->id === $firstEvent->id) {
             $this->line('  -> start event unchanged from chapter-1 event 1');
+        } elseif ($startEvent->chapter_id !== $firstEvent->chapter_id) {
+            $this->warn('  -> WARNING: resolved start event is in a DIFFERENT chapter than chapter-1.');
+            $this->warn('     first-event chapter_id=' . $firstEvent->chapter_id . ' (chapter pos=' . $firstEvent->chapter?->position . ')');
+            $this->warn('     start-event chapter_id=' . $startEvent->chapter_id . ' (chapter pos=' . $startEvent->chapter?->position . ')');
+            $this->warn('     This usually signals event_position drift between the adaptation layer and events table.');
         } else {
-            $this->line("  -> start event shifted by " . ($startEvent->position - $firstEvent->position) . " position(s)");
+            $this->line("  -> start event shifted by " . ($startEvent->position - $firstEvent->position) . " position(s) within the same chapter");
         }
 
         $this->newLine();

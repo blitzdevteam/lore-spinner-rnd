@@ -11,8 +11,10 @@ use App\Models\Event;
 use App\Models\Story;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 use Throwable;
 
 final class StorySessionMapJob implements ShouldQueue
@@ -55,14 +57,16 @@ final class StorySessionMapJob implements ShouldQueue
                 ])
                 ->all();
 
-            $events = $this->story->events()
-                ->orderBy('events.position')
-                ->get(['events.id', 'events.position', 'events.title', 'events.objectives', 'events.chapter_id'])
+            $storyGlobalEvents = $this->loadEventsWithStoryPosition();
+            $totalEvents = $storyGlobalEvents->count();
+
+            $events = $storyGlobalEvents
                 ->map(fn ($ev) => [
+                    'story_position' => $ev->story_position,
                     'position' => $ev->position,
                     'title' => $ev->title,
                     'objectives' => $ev->objectives,
-                    'chapter_position' => $ev->chapter->position,
+                    'chapter_position' => $ev->chapter_position,
                 ])
                 ->all();
 
@@ -73,12 +77,13 @@ final class StorySessionMapJob implements ShouldQueue
                     'estimatedSessionCount' => $formatDetection['estimated_session_count'] ?? 1,
                     'chapters' => $chapters,
                     'events' => $events,
+                    'totalEvents' => $totalEvents,
                 ])->render()
             );
 
             $sessionMap = $response->toArray();
 
-            DB::transaction(function () use ($sessionMap, $adaptation): void {
+            DB::transaction(function () use ($sessionMap, $adaptation, $storyGlobalEvents): void {
                 $adaptation->sessionAdaptations()->delete();
                 $this->story->events()->update(['session_number' => null]);
 
@@ -87,10 +92,6 @@ final class StorySessionMapJob implements ShouldQueue
                     'adaptation_status' => AdaptationStatusEnum::ADAPTING_SESSIONS,
                 ]);
 
-                $allEvents = $this->story->events()
-                    ->orderBy('events.position')
-                    ->get(['events.id', 'events.position']);
-
                 $sessionNumbers = collect($sessionMap['session_allocation'])
                     ->pluck('session_number')
                     ->sort()
@@ -98,36 +99,23 @@ final class StorySessionMapJob implements ShouldQueue
 
                 foreach ($sessionMap['session_allocation'] as $session) {
                     $range = $this->parseEventRange($session['event_range']);
-                    $eventIds = $allEvents
-                        ->filter(fn ($ev) => $ev->position >= $range[0] && $ev->position <= $range[1])
+                    $eventIds = $storyGlobalEvents
+                        ->filter(fn ($ev) => $ev->story_position >= $range[0] && $ev->story_position <= $range[1])
                         ->pluck('id');
 
-                    if ($eventIds->isNotEmpty()) {
-                        Event::whereIn('id', $eventIds)->update([
-                            'session_number' => $session['session_number'],
-                        ]);
+                    if ($eventIds->isEmpty()) {
+                        throw new RuntimeException(sprintf(
+                            'Session %d resolved to zero events for range "%s" (story has %d events, story-global positions 1..%d).',
+                            $session['session_number'],
+                            $session['event_range'],
+                            $storyGlobalEvents->count(),
+                            $storyGlobalEvents->count(),
+                        ));
                     }
-                }
 
-                $emptySessions = $sessionNumbers->filter(function ($num) {
-                    return $this->story->events()
-                        ->where('events.session_number', $num)
-                        ->count() === 0;
-                });
-
-                if ($emptySessions->isNotEmpty()) {
-                    $this->story->events()->update(['session_number' => null]);
-
-                    $allEventIds = $allEvents->pluck('id');
-                    $chunks = $allEventIds->split($sessionNumbers->count());
-
-                    foreach ($chunks as $i => $chunk) {
-                        if ($chunk->isNotEmpty() && $sessionNumbers->has($i)) {
-                            Event::whereIn('id', $chunk)->update([
-                                'session_number' => $sessionNumbers[$i],
-                            ]);
-                        }
-                    }
+                    Event::whereIn('id', $eventIds)->update([
+                        'session_number' => $session['session_number'],
+                    ]);
                 }
 
                 foreach ($sessionNumbers as $num) {
@@ -178,5 +166,35 @@ final class StorySessionMapJob implements ShouldQueue
         $parts = explode('-', $range);
 
         return [(int) trim($parts[0]), (int) trim($parts[1] ?? $parts[0])];
+    }
+
+    /**
+     * Load every event in the story ordered by (chapter.position, event.position)
+     * and stamp a 1-based story-global `story_position` onto each row. This index
+     * is the contract used for both the agent prompt and session_allocation filtering.
+     *
+     * @return Collection<int, Event>
+     */
+    private function loadEventsWithStoryPosition(): Collection
+    {
+        return Event::query()
+            ->join('chapters', 'chapters.id', '=', 'events.chapter_id')
+            ->where('chapters.story_id', $this->story->id)
+            ->orderBy('chapters.position')
+            ->orderBy('events.position')
+            ->get([
+                'events.id',
+                'events.position',
+                'events.title',
+                'events.objectives',
+                'events.chapter_id',
+                'chapters.position as chapter_position',
+            ])
+            ->values()
+            ->map(function (Event $ev, int $i): Event {
+                $ev->setAttribute('story_position', $i + 1);
+
+                return $ev;
+            });
     }
 }

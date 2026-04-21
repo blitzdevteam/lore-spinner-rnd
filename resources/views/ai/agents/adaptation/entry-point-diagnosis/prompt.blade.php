@@ -6,9 +6,14 @@ PHASE 1 AUDIT RESULT:
 
 SESSION NUMBER: {{ $sessionNumber }}
 
+EVENT NUMBERING CONVENTION:
+Events below use the story-global ordinal (same numbering as the Story Session Map's `event_range`).
+The `start_event_position` you return MUST be one of the story-global Event numbers shown below.
+Do NOT use per-chapter positions.
+
 EVENTS IN THIS SESSION (use these positions to identify your cut point):
 @foreach($sessionEvents as $ev)
-- Position {{ $ev['position'] }}: {{ $ev['title'] }}@if(!empty($ev['objectives'])) — {{ $ev['objectives'] }}@endif
+- Event {{ $ev['story_position'] }} (Chapter {{ $ev['chapter_position'] }}, local pos {{ $ev['position'] }}): {{ $ev['title'] }}@if(!empty($ev['objectives'])) — {{ $ev['objectives'] }}@endif
 
 @endforeach
 

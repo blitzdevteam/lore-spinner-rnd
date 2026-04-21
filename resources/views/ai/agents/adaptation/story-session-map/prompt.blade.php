@@ -11,9 +11,14 @@ EXTRACTED CHAPTERS:
 Chapter {{ $chapter['position'] }}: {{ $chapter['title'] }}
 @endforeach
 
-EXTRACTED EVENTS:
+EVENT NUMBERING CONVENTION:
+Events below are numbered 1..{{ $totalEvents }} across the entire story (story-global ordinal).
+All `event_range` values AND `event_position` values you return MUST reference the story-global Event number shown below (e.g. "1-8", "48-58").
+Do NOT use per-chapter positions. Do NOT emit ranges that exceed {{ $totalEvents }}.
+
+EXTRACTED EVENTS (story-global ordinal | chapter context):
 @foreach($events as $event)
-Event {{ $event['position'] }} (Chapter {{ $event['chapter_position'] }}): {{ $event['title'] }}
+Event {{ $event['story_position'] }} of {{ $totalEvents }} (Chapter {{ $event['chapter_position'] }}, local pos {{ $event['position'] }}): {{ $event['title'] }}
 @if(!empty($event['objectives']))
   Objectives: {{ $event['objectives'] }}
 @endif
