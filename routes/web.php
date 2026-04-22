@@ -9,6 +9,8 @@ require __DIR__.'/routes/user.php';
 
 Route::get('/', Controllers\IndexController::class)->name('index');
 
+Route::get('design-rnd', fn () => inertia('DesignRnd'))->name('design-rnd');
+
 Route::resource('creators', Controllers\CreatorController::class)
     ->scoped([
         'creator' => 'username',
