@@ -19,16 +19,17 @@ void main() {
 `;
 
 /**
- * Signature page. One background, one orb.
- * Background:  deep ocean seen from below, slow caustic surface shimmer far above,
- *              marine-snow particles, strong bottom vignette.
- * Orb:         fluid-glass lens that refracts the ocean behind it, with an internal
- *              bottom-centered light source, a shattered rippling water rim, and
- *              debris flakes drifting around the boundary.
+ * Cinematic signature scene — one background, one orb.
  *
- * Everything is procedural — volumetric-feeling 3D fbm with domain warping for the
- * ocean texture and orb interior, spherical refraction for the lens, animated fracture
- * noise for the rim. No external assets. Movement is deliberately slow & cinematic.
+ * BACKGROUND  : dark undersea view with a wide, detailed caustic band across the
+ *               upper half (looking up toward the surface), crushed to near-black
+ *               in the lower half.
+ * ORB         : a self-illuminated teal-cyan energy sphere. Its interior is a
+ *               crackling ridged-noise pattern mapped onto the 3D surface of a
+ *               sphere (so curvature is readable), lit from a bright hotspot at
+ *               the bottom-centre. A shattered water rim breaks the boundary.
+ * AMBIENCE    : rising bubbles near the orb, soft teal light pool on the seafloor
+ *               beneath it, marine-snow particles, film grain.
  */
 const fragSrc = /* glsl */ `
 precision highp float;
@@ -36,7 +37,7 @@ precision highp float;
 uniform vec2  uRes;
 uniform float uTime;
 
-// ----- hashing & noise -----
+// ----- hashing -----
 float hash31(vec3 p) {
     p = fract(p * 0.3183099 + vec3(0.71, 0.113, 0.419));
     p *= 17.0;
@@ -48,6 +49,7 @@ float hash21(vec2 p) {
     return fract(p.x * p.y);
 }
 
+// ----- value noise 3D -----
 float noise3(vec3 p) {
     vec3 i = floor(p);
     vec3 f = fract(p);
@@ -60,6 +62,7 @@ float noise3(vec3 p) {
         f.z);
 }
 
+// Soft fbm (clouds / caustics body)
 float fbm3(vec3 p) {
     float v = 0.0, a = 0.5;
     for (int i = 0; i < 4; i++) {
@@ -70,17 +73,22 @@ float fbm3(vec3 p) {
     return v;
 }
 
-float fbm3Hi(vec3 p) {
-    float v = 0.0, a = 0.5;
+// Ridged fbm — produces sharp vein / crackle patterns used for the orb interior
+// and the high-frequency ripple detail on the ocean surface.
+float ridged(vec3 p) {
+    float v = 0.0, a = 0.5, w = 1.0;
     for (int i = 0; i < 5; i++) {
-        v += a * noise3(p);
-        p = p * 2.03 + vec3(1.7, 9.2, 3.1);
-        a *= 0.5;
+        float n = 1.0 - abs(2.0 * noise3(p) - 1.0); // ridge
+        n = n * n;                                   // sharpen
+        v += a * n * w;
+        w = clamp(n * 1.4, 0.0, 1.0);               // amplitude feedback for natural veins
+        p = p * 2.08 + vec3(1.7, 9.2, 3.1);
+        a *= 0.55;
     }
     return v;
 }
 
-// Domain-warped fbm: richer, more "painterly" cloud / caustic structure.
+// Domain-warped fbm — richer caustic structure.
 float warped(vec3 p) {
     vec3 q = vec3(
         fbm3(p),
@@ -90,164 +98,252 @@ float warped(vec3 p) {
     return fbm3(p + 2.2 * q);
 }
 
-// ----- The background: underwater looking up -----
+// ----- BACKGROUND : undersea ----------------------------------------------------
+// Look is driven by a *radial* light source at upper-centre (a distant surface
+// punch-through), tight high-freq ridged ripples for fabric-like water detail,
+// and aggressive darkness crushing in from every direction outside that pool.
 vec3 background(vec2 uv) {
-    // Vertical colour ramp: ink-black seafloor below → rich midnight-navy middle →
-    // a breath of ocean-blue depth near the top. The whole image stays dark and
-    // moody; the surface shimmer doesn't override the darkness, it lives inside it.
-    vec3 cBottom = vec3(0.001, 0.005, 0.013);
-    vec3 cMid    = vec3(0.004, 0.024, 0.058);
-    vec3 cTop    = vec3(0.016, 0.072, 0.142);
-
     float y = uv.y;
-    vec3 col = mix(cBottom, cMid, smoothstep(-0.95, 0.15, y));
-    col = mix(col, cTop, smoothstep(0.05, 1.05, y));
 
-    // Slow domain-warped caustics. The warp is sampled at a different time rate
-    // than the caustic itself, producing that drifting, layered surface motion.
-    float causticMask = smoothstep(-0.20, 0.75, y);
+    // Virtual "sun on the surface" — upper-centre.
+    vec2  sunPos = vec2(0.0, 0.55);
+    float sd     = length(uv - sunPos);
 
-    float w1 = fbm3(vec3(uv * 1.1,               uTime * 0.030));
-    float w2 = fbm3(vec3(uv * 1.1 + vec2(5.2,1.3), uTime * 0.025));
+    // Soft central glow shape.
+    float glowNear = exp(-sd * 3.2);
+    float glowFar  = exp(-sd * 1.15);
+    float glow     = glowNear * 0.55 + glowFar * 0.70;
+
+    // Base: near-pure black.
+    vec3 col = vec3(0.0010, 0.0030, 0.0060);
+
+    // Ripple visibility mask: ripples only exist where the distant light reaches,
+    // biased toward the upper half.
+    float rippleMask = smoothstep(0.0, 1.0, glow * 2.2)
+                     * smoothstep(-0.45, 0.85, y);
+    rippleMask = clamp(rippleMask, 0.0, 1.0);
+
+    // Slow large-scale flow warp — the slow body motion.
+    float w1 = fbm3(vec3(uv * 0.80,                uTime * 0.022));
+    float w2 = fbm3(vec3(uv * 0.80 + vec2(5.2, 1.3), uTime * 0.018));
     vec2  warp = vec2(w1, w2) - 0.5;
 
-    float caustic = warped(vec3(uv * 2.4 + warp * 1.1, uTime * 0.055));
-    caustic = pow(clamp(caustic, 0.0, 1.0), 1.7);
+    // Three ripple layers stacked for that "velvet / fabric" water detail.
+    // Mid-freq ridged ripple (the dominant pattern).
+    float ripple  = ridged(vec3(uv * 7.5 + warp * 1.9, uTime * 0.065));
+    ripple = pow(clamp(ripple, 0.0, 1.0), 1.05);
 
-    // Body of the shimmer: a muted blue wash.
-    col += vec3(0.045, 0.190, 0.385) * caustic * causticMask * 1.20;
+    // High-freq micro ripple — fine grain sitting on the ridges.
+    float micro   = ridged(vec3(uv * 16.0 + warp * 3.0, uTime * 0.110));
+    micro = pow(clamp(micro, 0.0, 1.0), 1.35);
 
-    // Wave crests where the caustic peaks — the bright veins in the reference.
-    float crest = smoothstep(0.58, 0.86, caustic) * causticMask;
-    col += vec3(0.18, 0.50, 0.78) * crest * 0.85;
+    // Very low-freq swell giving volumetric body under the ripples.
+    float swell   = fbm3(vec3(uv * 1.7 + warp * 0.6, uTime * 0.032));
+    swell = pow(clamp(swell, 0.0, 1.0), 2.0);
 
-    // Finer crest highlights riding on top of the big waves.
-    float micro = fbm3(vec3(uv * 7.5 + warp * 2.0, uTime * 0.08));
-    float microHi = smoothstep(0.60, 0.82, micro) * causticMask * crest;
-    col += vec3(0.30, 0.70, 0.95) * microHi * 0.6;
+    float wave = ripple * 0.55 + micro * 0.25 + swell * 0.35;
 
-    // Marine snow — very faint far-field particles, mostly in the mid/lower water.
-    float snowMask = smoothstep(0.85, -0.20, y);
-    float snow = smoothstep(0.996, 1.0, hash21(floor(uv * 260.0))) * 0.55 * snowMask;
+    // Wave body colour — subdued teal wash, applied only within the glow pool.
+    col += vec3(0.022, 0.110, 0.150) * wave * rippleMask * 1.05;
+
+    // Sharp crest highlights — the bright veins in the surface texture.
+    float crest = smoothstep(0.58, 0.82, ripple) * rippleMask;
+    col += vec3(0.080, 0.300, 0.400) * crest * 0.85;
+
+    // Micro sparkle riding on the crests.
+    float microHi = smoothstep(0.65, 0.86, micro) * crest;
+    col += vec3(0.160, 0.500, 0.600) * microHi * 0.65;
+
+    // Central ambient glow — the "sun through the surface".
+    col += vec3(0.028, 0.118, 0.165) * exp(-sd * 2.0) * 0.75;
+    col += vec3(0.090, 0.260, 0.340) * exp(-sd * 5.2) * 0.35;
+
+    // RADIAL darkness: outside the glow pool, crush hard toward black. This is
+    // what gives the reference its dome-like feeling of light concentrated in
+    // one spot and the rest of the water swallowed by depth.
+    float radialDark = smoothstep(0.25, 1.40, sd);
+    col *= mix(1.00, 0.16, radialDark);
+
+    // Bottom crush — absolute darkness at the seafloor.
+    col *= mix(0.12, 1.00, smoothstep(-1.15, 0.05, y));
+
+    // Marine-snow particles — sparse, biased toward the upper / mid water.
+    float snow = smoothstep(0.996, 1.0, hash21(floor(uv * 300.0))) * 0.40;
+    snow *= smoothstep(0.95, -0.4, y);
     col += vec3(snow);
-
-    // Bottom crush — the seafloor side fades almost completely to black.
-    col *= mix(0.25, 1.0, smoothstep(-1.20, 0.05, y));
 
     return col;
 }
 
+// Rising-bubbles field — tiled motion with time flow upward.
+float bubbles(vec2 uv) {
+    float s = 0.0;
+    for (int k = 0; k < 2; k++) {
+        float scale = 8.0 + float(k) * 6.0;
+        float speed = 0.10 + float(k) * 0.05;
+
+        vec2 g = uv * scale + vec2(float(k) * 2.7, -uTime * speed);
+        vec2 id = floor(g);
+        vec2 f = fract(g) - 0.5;
+
+        float rnd = hash21(id + float(k) * 11.13);
+        if (rnd > 0.78) {
+            vec2 off = vec2(hash21(id + 1.3) - 0.5, hash21(id + 2.7) - 0.5) * 0.55;
+            float r  = 0.025 + (rnd - 0.78) * 0.12;
+            float d  = length(f - off);
+            float b  = smoothstep(r, r * 0.55, d);
+            // fade in over cell life so bubbles don't pop
+            float life = fract(g.y);
+            b *= smoothstep(0.0, 0.25, life) * smoothstep(1.0, 0.75, life);
+            s += b * (0.35 + rnd * 0.65);
+        }
+    }
+    return s;
+}
+
 void main() {
     vec2 fc = gl_FragCoord.xy;
-    vec2 uv = (fc - 0.5 * uRes) / min(uRes.x, uRes.y); // y-up, origin center, aspect-neutral
+    vec2 uv = (fc - 0.5 * uRes) / min(uRes.x, uRes.y); // y-up, origin centre
 
-    // ---------- BACKGROUND ----------
+    // ----- SCENE BACKGROUND -----
     vec3 color = background(uv);
 
-    // ---------- ORB ----------
-    // Composition: centered, slightly below the optical middle so the caustics
-    // read as being *above* and the orb as being *in front*.
-    vec2  orbC = vec2(0.0, -0.03);
-    float orbR = 0.30;
+    // ----- ORB -----
+    vec2  orbC = vec2(0.0, -0.06);  // slightly below centre for cinematic framing
+    float orbR = 0.22;               // ~22% of min viewport dimension
 
-    vec2  o = (uv - orbC) / orbR;     // normalized orb coords, 1.0 at rim
+    vec2  o = (uv - orbC) / orbR;    // orb-local coords, rim at d=1
     float d = length(o);
     float theta = atan(o.y, o.x);
 
-    // Rippling, irregular rim: domain-warped 3D fbm over a polar strip.
-    vec3 rimPos = vec3(cos(theta) * 2.3, sin(theta) * 2.3, uTime * 0.10);
+    // --- 3D sphere surface coordinates ---
+    // Fake the depth z for each pixel inside the sphere so texture can be sampled
+    // on the true 3D surface. This is what gives the orb its spherical readable
+    // form instead of looking like a flat disc.
+    float dClamp = min(d, 1.0);
+    float z = sqrt(max(1.0 - dClamp * dClamp, 0.0));
+    vec3 sphereP = vec3(o.x, o.y, z);
+
+    // --- Rippling, fractured rim ---
+    vec3 rimPos = vec3(cos(theta) * 2.1, sin(theta) * 2.1, uTime * 0.09);
     float rimFbm = warped(rimPos);
-    float rimAmp = 0.055;
+    float rimAmp = 0.050;
     float edge = 1.0 + (rimFbm - 0.5) * rimAmp;
 
-    // Anti-aliased mask using screen-space edge derivative.
+    // AA'd orb mask
     float aa = fwidth(d) * 1.2;
     float orbMask = 1.0 - smoothstep(edge - aa, edge + aa, d);
 
-    // ---- Inside the orb: fluid-glass lens ----
+    vec3 orbColor = vec3(0.0);
+
     if (orbMask > 0.001) {
-        // Fake spherical depth — how much this pixel "bulges" toward us on the sphere.
-        float z = sqrt(max(1.0 - min(d, 1.0) * min(d, 1.0), 0.0));
+        // === Crackling interior mapped onto the sphere surface ===
+        // Sampling at sphereP means the pattern bends around the sphere's curvature,
+        // exactly like the reference's visible "latitude" striations.
+        vec3 texP = sphereP;
+        texP.z += uTime * 0.04;                      // slow drift along the z axis
+        float crackA = ridged(texP * 2.4);            // broad veins
+        float crackB = ridged(texP * 5.8 + vec3(9.3, 2.1, 4.7)); // fine fractures
+        float crack  = crackA * 0.60 + crackB * 0.55;
 
-        // Lens refraction: compress the sampled background toward the orb center,
-        // stronger near the rim. This magnifies and bends the ocean behind it.
-        float t = smoothstep(0.0, 1.0, d);
-        vec2 refractedUV = orbC + (uv - orbC) * (1.0 - t * 0.30);
-
-        // Fluid shimmer: offset the refracted sample with a slow 2D noise flow.
-        vec2 shim = vec2(
-            fbm3(vec3(o * 3.2,                uTime * 0.14)),
-            fbm3(vec3(o * 3.2 + vec3(7.3,1.1,4.0), uTime * 0.14))
-        ) - 0.5;
-        refractedUV += shim * 0.030 * orbR;
-
-        // Tiny chromatic dispersion around the lens edges — the "glass" tell.
-        float disp  = 0.0050 * (1.0 - z);
-        vec2  dispDir = normalize(o + 1e-4);
-        vec3 refracted;
-        refracted.r = background(refractedUV + dispDir * disp).r;
-        refracted.g = background(refractedUV).g;
-        refracted.b = background(refractedUV - dispDir * disp).b;
-
-        // Glass focuses light — slight gain so the refracted image is luminous.
-        refracted *= 1.22;
-
-        // Internal bottom-centered light source.
-        vec2 L   = vec2(0.0, -0.78);
+        // === Internal hotspot at the bottom ===
+        vec2  L  = vec2(0.0, -0.78);
         float Ld = length(o - L);
-        float beam = exp(-Ld * 1.55);      // soft upward lift from the hotspot
-        float hot  = exp(-Ld * 20.0);      // bright glow core
-        float pin  = exp(-Ld * 65.0);      // near-white specular pinpoint
+        float beam = exp(-Ld * 1.45);
+        float hot  = exp(-Ld * 22.0);
+        float pin  = exp(-Ld * 75.0);
 
-        // Volumetric haze modulated by the beam so the light has something to catch in.
-        float haze = warped(vec3(o * 1.9, uTime * 0.075)) * beam;
+        // Energy = crackle lit by the internal beam.
+        float energy = crack * (0.35 + beam * 1.70);
 
-        vec3 orbColor = refracted;
-        orbColor += vec3(0.35, 0.78, 1.00) * haze * 0.95;
-        orbColor += vec3(0.75, 0.92, 1.00) * hot  * 1.55;
-        orbColor += vec3(1.00, 1.00, 1.00) * pin  * 2.70;
+        // === Teal / cyan palette ===
+        vec3 cDark  = vec3(0.003, 0.030, 0.040);     // near-black teal
+        vec3 cMid   = vec3(0.030, 0.380, 0.400);     // deep teal
+        vec3 cHigh  = vec3(0.220, 0.930, 0.900);     // bright cyan veins
+        vec3 cWhite = vec3(0.900, 1.000, 0.990);     // luminous core
 
-        // Inner edge darkening — the "total internal reflection" look of a glass sphere.
-        orbColor *= mix(1.0, 0.55, smoothstep(0.72, 1.00, d));
+        orbColor = mix(cDark,   cMid,   smoothstep(0.00, 0.40, energy));
+        orbColor = mix(orbColor, cHigh, smoothstep(0.40, 1.20, energy));
+        orbColor = mix(orbColor, cWhite, smoothstep(1.30, 2.40, energy));
 
-        // Fresnel-like rim brightening on the *inside* of the lens.
-        float fresnel = pow(clamp(d, 0.0, 1.0), 3.5);
-        orbColor += vec3(0.25, 0.60, 0.95) * fresnel * 0.35;
+        // Hotspot + pinpoint.
+        orbColor += vec3(0.70, 0.98, 1.00) * hot * 1.70;
+        orbColor += cWhite                 * pin * 3.20;
 
-        color = mix(color, orbColor, orbMask);
+        // Spherical shading cue — ever so slight darkening toward the rim so the
+        // sphere feels voluminous (the crackle already carries most of the form).
+        orbColor *= mix(1.00, 0.72, smoothstep(0.70, 1.00, d));
+
+        // Fresnel-style rim brightening — bright cyan ring where the glass is
+        // "catching" light tangentially. This plus the rim-band below is what
+        // reads as the visible sphere shell.
+        float fresnel = pow(clamp(d, 0.0, 1.0), 3.0);
+        orbColor += vec3(0.20, 0.78, 0.80) * fresnel * 0.55;
     }
 
-    // ---- Shattered water rim band ----
-    float rimInner = edge - 0.042;
-    float rimOuter = edge + 0.010;
-    float rimBand  = smoothstep(rimInner, edge - 0.010, d)
-                   - smoothstep(edge - 0.010, rimOuter, d);
-    float rimTex   = pow(clamp(warped(vec3(o * 7.0, uTime * 0.18)), 0.0, 1.0), 1.3);
-    color += vec3(0.32, 0.72, 1.00) * rimBand * (0.28 + rimTex * 1.55) * 1.05;
+    // ----- Shattered water rim band (on top of everything) -----
+    float rimInner = edge - 0.038;
+    float rimOuter = edge + 0.009;
+    float rimBand  = smoothstep(rimInner, edge - 0.009, d)
+                   - smoothstep(edge - 0.009, rimOuter, d);
+    float rimTex   = pow(clamp(ridged(vec3(o * 6.5, uTime * 0.17)), 0.0, 1.0), 1.2);
+    vec3  rimCol   = vec3(0.22, 0.88, 0.85) * rimBand * (0.32 + rimTex * 1.55) * 1.05;
 
-    // ---- Outer flakes / debris (broken-glass chunks just beyond the rim) ----
+    // ----- Debris flakes just outside the rim -----
     float flakeMask = smoothstep(edge + 0.14, edge + 0.00, d)
                     * smoothstep(edge - 0.002, edge + 0.008, d);
-    float flakeN    = warped(vec3(o * 11.0, uTime * 0.24));
-    float flakes    = smoothstep(0.60, 0.72, flakeN) * flakeMask;
-    color += vec3(0.25, 0.60, 0.95) * flakes * 1.35;
+    float flakeN    = ridged(vec3(o * 11.0, uTime * 0.22));
+    float flakes    = smoothstep(0.62, 0.80, flakeN) * flakeMask;
+    vec3  flakeCol  = vec3(0.20, 0.78, 0.82) * flakes * 1.40;
 
-    // ---- Soft aura around the orb ----
+    // ----- Ambient teal aura around the orb -----
     float aura = smoothstep(0.55, 0.0, abs(d - 1.0));
-    color += vec3(0.10, 0.35, 0.60) * aura * 0.09;
+    vec3  auraCol = vec3(0.05, 0.40, 0.42) * aura * 0.18;
 
-    // ---------- CINEMATIC POST ----------
-    // Scene vignette.
-    float vign = smoothstep(1.35, 0.30, length(uv));
-    color *= mix(0.40, 1.00, vign);
+    // ----- Wide radial light spill (illuminates bubbles / water around orb) -----
+    vec2  hotWorld = orbC + vec2(0.0, -orbR * 0.78);
+    float hotDist  = length(uv - hotWorld);
+    float spill    = exp(-hotDist * 3.0) * 0.55
+                   + exp(-hotDist * 8.0) * 0.55;
+
+    // ----- Light pool on the "seafloor" beneath the orb -----
+    float floorY      = orbC.y - orbR * 1.05;
+    float floorMask   = smoothstep(floorY + 0.10, floorY - 0.25, uv.y);
+    float floorRadial = exp(-pow((uv.x - orbC.x) * 2.2, 2.0));
+    vec3  floorPool   = vec3(0.05, 0.42, 0.44) * floorMask * floorRadial * 0.45;
+
+    // ----- Rising bubbles, mostly near the orb column -----
+    float bubbleField = bubbles(uv);
+    float bubbleZone  = exp(-pow((uv.x - orbC.x) * 1.6, 2.0)) *
+                        smoothstep(-0.8, 0.2, uv.y);
+    vec3  bubbleCol   = vec3(0.30, 0.90, 0.92) * bubbleField * bubbleZone * 0.85;
+
+    // ----- COMPOSITE -----
+    float outside = 1.0 - orbMask;
+
+    color += auraCol       * outside;
+    color += floorPool     * outside;
+    color += vec3(0.10, 0.55, 0.58) * spill * outside * 0.35;
+    color += bubbleCol     * outside;
+    color += flakeCol      * outside;
+
+    color = mix(color, orbColor, orbMask);
+
+    // Rim sits on top — water surface catches light.
+    color += rimCol;
+
+    // ----- CINEMATIC POST -----
+    // Gentle scene vignette.
+    float vign = smoothstep(1.30, 0.25, length(uv));
+    color *= mix(0.42, 1.00, vign);
 
     // Filmic-ish tonemap.
     color = color / (1.0 + color);
     color = pow(color, vec3(0.88));
     color = max(color - 0.004, 0.0);
 
-    // Very subtle film grain — reads as celluloid rather than digital noise.
-    float grain = (hash21(fc + uTime * 55.0) - 0.5) * 0.012;
+    // Subtle film grain.
+    float grain = (hash21(fc + uTime * 57.0) - 0.5) * 0.013;
     color += grain;
 
     gl_FragColor = vec4(color, 1.0);
@@ -317,11 +413,9 @@ onMounted(() => {
         return;
     }
     gl = ctx;
-    // `fwidth()` in the fragment shader needs OES_standard_derivatives in WebGL1.
     gl.getExtension('OES_standard_derivatives');
 
     const vs = compile(gl, gl.VERTEX_SHADER, vertSrc);
-    // Prepend the derivatives pragma to the fragment source.
     const fsSrc = '#extension GL_OES_standard_derivatives : enable\n' + fragSrc;
     const fs = compile(gl, gl.FRAGMENT_SHADER, fsSrc);
     program = link(gl, vs, fs);
@@ -352,7 +446,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <Head title="Design R&D — Lens" />
+    <Head title="Design R&D — Orb" />
 
     <main class="scene">
         <canvas ref="canvas" class="orb-canvas" />
