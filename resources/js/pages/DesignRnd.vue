@@ -11,7 +11,6 @@ let program: WebGLProgram | null = null;
 let raf = 0;
 let startTime = 0;
 let bgTexSize: [number, number] = [1, 1];
-let orbTexSize: [number, number] = [1, 1];
 
 const uniforms: Record<string, WebGLUniformLocation | null> = {};
 
@@ -21,21 +20,29 @@ void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
 `;
 
 /**
- * Hybrid scene: the photoreal references in /resources/js/assets/design-rnd
- * (ocean-texture.png + orb-texture.png) are sampled as WebGL textures and
- * brought to life by layering animated procedural effects on top:
+ * Design R&D — signature scene. Two real PNG textures, brought alive with
+ * layered procedural motion that reads as a slow, deep ocean.
  *
- *  - slow drift + breathing zoom on the ocean background
- *  - 2D fbm flow-field warping the background UVs (the water "moves")
- *  - brand-cyan radial screen overlay (from the JSX, #54f4da)
- *  - orb texture sampled with fluid shimmer + chromatic dispersion at the rim
- *  - breathing pulse on the orb luminance
- *  - procedural rising bubbles around the orb
- *  - wide radial light spill + seafloor light pool under the orb
- *  - filmic tonemap, vignette, film grain
+ *  BACKGROUND (ocean-texture.png)
+ *    • aspect-correct "cover" UV so it fills any viewport
+ *    • three overlapping drift channels (two sine waves + vertical current) so
+ *      the motion never loops obviously
+ *    • two fbm flow fields at different scales/speeds warp the sample UV —
+ *      the fixed ripples in the photo visibly *flow* under this
+ *    • gentle breathing zoom (two harmonics)
+ *    • subtle cyan brand tint via screen-blend radial
  *
- * Orb position and size are uniforms so they can be animated/transitioned
- * from the Vue side later (scroll, route change, pointer follow, etc.).
+ *  ORB (orb-texture.png)
+ *    • slow figure-eight float + breathing scale
+ *    • very subtle UV shimmer so the interior churns rather than sits
+ *    • soft brightness pulse
+ *    • screen-blended over the water so the PNG's dark border is naturally
+ *      transparent and its starfield reads as marine-snow particles
+ *
+ *  FINISH
+ *    • gentle vignette, Reinhard tonemap, light gamma lift, 1-unit grain
+ *
+ * Orb position / scale are uniforms so motion can be driven from Vue later.
  */
 const fragSrc = /* glsl */ `
 precision highp float;
@@ -44,11 +51,11 @@ uniform vec2      uRes;
 uniform float     uTime;
 uniform sampler2D uBgTex;
 uniform sampler2D uOrbTex;
-uniform vec2      uBgSize;      // source bg texture pixels
-uniform vec2      uOrbCenter;   // orb centre in aspect-neutral UV
-uniform float     uOrbScale;    // orb radius in aspect-neutral UV
+uniform vec2      uBgSize;
+uniform vec2      uOrbCenter;
+uniform float     uOrbScale;
 
-// ----- 2D value noise -----
+// ----- 2D value noise & fbm -----
 float hash21(vec2 p) {
     p = fract(p * vec2(123.34, 456.21));
     p += dot(p, p + 45.32);
@@ -59,10 +66,9 @@ float noise2(vec2 p) {
     vec2 f = fract(p);
     f = f * f * (3.0 - 2.0 * f);
     return mix(
-        mix(hash21(i),                    hash21(i + vec2(1.0, 0.0)), f.x),
-        mix(hash21(i + vec2(0.0, 1.0)),   hash21(i + vec2(1.0, 1.0)), f.x),
-        f.y
-    );
+        mix(hash21(i),                   hash21(i + vec2(1.0, 0.0)), f.x),
+        mix(hash21(i + vec2(0.0, 1.0)),  hash21(i + vec2(1.0, 1.0)), f.x),
+        f.y);
 }
 float fbm2(vec2 p) {
     float v = 0.0, a = 0.5;
@@ -74,7 +80,7 @@ float fbm2(vec2 p) {
     return v;
 }
 
-// ----- "Cover" UV for a source texture in an arbitrary-aspect viewport -----
+// Aspect-correct "cover" UV for a source texture.
 vec2 coverUV(vec2 uv01, vec2 srcSize, vec2 dstSize) {
     float srcA = srcSize.x / srcSize.y;
     float dstA = dstSize.x / dstSize.y;
@@ -90,114 +96,116 @@ vec2 coverUV(vec2 uv01, vec2 srcSize, vec2 dstSize) {
 }
 
 void main() {
-    vec2 fc = gl_FragCoord.xy;
+    vec2 fc   = gl_FragCoord.xy;
     vec2 uv01 = fc / uRes;
-    vec2 uv   = (fc - 0.5 * uRes) / min(uRes.x, uRes.y); // y-up, origin centre, aspect-neutral
+    vec2 uv   = (fc - 0.5 * uRes) / min(uRes.x, uRes.y);  // aspect-neutral centred
 
-    // ============ BACKGROUND (texture + animation) ============
-    // Slow breathing zoom and drift so the still PNG feels alive.
-    float bgZoom = 1.0 + 0.025 * sin(uTime * 0.08);
-    vec2  bgBase = coverUV(uv01, uBgSize, uRes);
-    bgBase = (bgBase - 0.5) / bgZoom + 0.5;
-    bgBase.y += uTime * 0.0012;
-    bgBase.x += sin(uTime * 0.04) * 0.004;
+    float t = uTime;
 
-    // Animated refraction flow — 2D fbm offset nudges the sampled water,
-    // so static ripples in the PNG subtly swim as if lit from shifting caustics.
-    vec2 flow = vec2(
-        fbm2(uv * 2.8 + uTime * 0.06),
-        fbm2(uv * 2.8 + vec2(5.2, 1.3) + uTime * 0.06)
+    // =====================================================================
+    //  BACKGROUND — slow ocean, alive.
+    // =====================================================================
+    // Three non-commensurate drift channels so the loop never obviously repeats.
+    vec2 bgDrift = vec2(
+        sin(t * 0.043) * 0.0045 + sin(t * 0.071) * 0.0020,
+        t * 0.0025            + sin(t * 0.037) * 0.0060
+    );
+
+    // Breathing zoom with two harmonics (keeps the "breath" from feeling
+    // mechanical). Amplitude deliberately small — ocean swells, not pump.
+    float zoom = 1.0
+               + 0.018 * sin(t * 0.055)
+               + 0.009 * sin(t * 0.133 + 1.2);
+
+    // Flow field — two fbm layers at different scales moving opposite directions.
+    // This is the single biggest driver of "alive water" because every pixel's
+    // sample position is constantly being nudged by a slow, organic vector field.
+    vec2 flowLo = vec2(
+        fbm2(uv * 1.4 + vec2(0.0,  t * 0.060)),
+        fbm2(uv * 1.4 + vec2(5.2,  t * 0.060) + vec2(1.3, 0.0))
     ) - 0.5;
 
-    vec2 bgUV = clamp(bgBase + flow * 0.006, 0.0, 1.0);
-    vec3 bg   = texture2D(uBgTex, bgUV).rgb;
+    vec2 flowHi = vec2(
+        fbm2(uv * 3.6 + vec2(0.0, -t * 0.090)),
+        fbm2(uv * 3.6 + vec2(7.1, -t * 0.090) + vec2(3.2, 0.0))
+    ) - 0.5;
 
-    // Brand cyan (#54f4da ≈ vec3(0.329, 0.957, 0.855)) — radial screen overlay.
-    // Echoes the OceanTexture.jsx spec.
-    vec2  tintCentre = vec2(0.0, 0.30);
-    float tintRadial = smoothstep(1.35, 0.00, length(uv - tintCentre));
-    vec3  brandTint  = vec3(0.329, 0.957, 0.855) * tintRadial * 0.22;
+    vec2 flow = flowLo * 0.0140 + flowHi * 0.0065;
+
+    // Final background sample.
+    vec2 bgUV = coverUV(uv01, uBgSize, uRes);
+    bgUV = (bgUV - 0.5) / zoom + 0.5 + bgDrift + flow;
+    bgUV = clamp(bgUV, 0.0, 1.0);
+    vec3 bg = texture2D(uBgTex, bgUV).rgb;
+
+    // Brand cyan (#54f4da) — very soft radial screen-tint centred in the
+    // upper third, modulated by a slow breath so the atmosphere itself shifts.
+    float tintBreath = 0.85 + 0.15 * sin(t * 0.09);
+    vec2  tintC      = vec2(0.0, 0.28);
+    float tintRadial = smoothstep(1.30, 0.05, length(uv - tintC));
+    vec3  brandTint  = vec3(0.329, 0.957, 0.855) * tintRadial * 0.17 * tintBreath;
     bg = 1.0 - (1.0 - bg) * (1.0 - brandTint);
 
-    // ============ ORB (texture + animation) ============
-    vec2  orbLocal = (uv - uOrbCenter) / uOrbScale;     // -1..1 orb-space
+    // =====================================================================
+    //  ORB — floats, breathes, pulses.
+    // =====================================================================
+    // Figure-eight float: two sinusoids on x and y at non-commensurate rates.
+    vec2 orbFloat = vec2(
+        sin(t * 0.11)  * 0.0085,
+        sin(t * 0.155) * 0.0130 + cos(t * 0.083) * 0.0055
+    );
+    vec2  orbC     = uOrbCenter + orbFloat;
+    float orbScale = uOrbScale * (1.0 + 0.016 * sin(t * 0.23));
+
+    vec2  orbLocal = (uv - orbC) / orbScale;
     float d        = length(orbLocal);
 
-    // Fluid shimmer — animated 2D flow offset for the orb texture sample.
-    vec2 orbShim = vec2(
-        fbm2(orbLocal * 3.2 + uTime * 0.14),
-        fbm2(orbLocal * 3.2 + vec2(7.3, 1.1) + uTime * 0.14)
+    // Subtle fluid shimmer so the orb interior churns gently.
+    vec2 shim = vec2(
+        fbm2(orbLocal * 2.6 + t * 0.13),
+        fbm2(orbLocal * 2.6 + vec2(9.1, 2.3) + t * 0.13)
     ) - 0.5;
 
-    // Orb tex UV: orbLocal (-1..1) → (0..1), plus shimmer.
-    vec2 orbTexUV = orbLocal * 0.5 + 0.5 + orbShim * 0.013;
+    // Clamp texture read; use a rectangular mask to ignore anything outside
+    // the orb PNG bounds so we don't bleed stretched edge pixels.
+    vec2 orbUV = orbLocal * 0.5 + 0.5 + shim * 0.009;
+    float inRect = step(0.0, orbUV.x) * step(orbUV.x, 1.0)
+                 * step(0.0, orbUV.y) * step(orbUV.y, 1.0);
 
-    // Mask so contributions only occur where we're actually in orb texture space.
-    float inOrb = step(0.0, orbTexUV.x) * step(orbTexUV.x, 1.0)
-                * step(0.0, orbTexUV.y) * step(orbTexUV.y, 1.0);
-    vec2  sampleUV = clamp(orbTexUV, 0.0, 1.0);
+    vec3 orbSample = texture2D(uOrbTex, clamp(orbUV, 0.0, 1.0)).rgb;
 
-    // Chromatic dispersion near the rim — the "glass lens" tell.
-    float disp    = 0.0065 * smoothstep(0.40, 1.00, d);
-    vec2  dispDir = normalize(orbLocal + 1e-4);
+    // Soft luminance pulse — 8% amplitude over ~20s.
+    float pulse    = 0.94 + 0.08 * sin(t * 0.32);
+    vec3  orbColor = orbSample * pulse * inRect;
 
-    vec3 orbSample;
-    orbSample.r = texture2D(uOrbTex, clamp(sampleUV + dispDir * disp, 0.0, 1.0)).r;
-    orbSample.g = texture2D(uOrbTex, sampleUV).g;
-    orbSample.b = texture2D(uOrbTex, clamp(sampleUV - dispDir * disp, 0.0, 1.0)).b;
+    // Screen blend: the PNG's dark border is effectively neutral, only the
+    // luminous orb body and its embedded stars add to the water.
+    vec3 scene = 1.0 - (1.0 - bg) * (1.0 - orbColor);
 
-    // Breathing pulse + gentle lift.
-    float pulse = 0.93 + 0.10 * sin(uTime * 0.55);
-    vec3  orbColor = orbSample * pulse * 1.08 * inOrb;
+    // Gentle ambient light spill around the orb — ties it to the water.
+    float spill = exp(-d * 2.8) * 0.35 + exp(-d * 6.5) * 0.50;
+    scene += vec3(0.14, 0.85, 0.95) * spill * 0.18;
 
-    // Screen-blend the orb over the water — black pixels of the PNG are neutral,
-    // luminous veins/hotspot add on top exactly like a light source.
-    vec3 sceneColor = 1.0 - (1.0 - bg) * (1.0 - orbColor);
+    // Seafloor light pool beneath the orb, breathing with the pulse.
+    float floorY      = orbC.y - orbScale * 1.08;
+    float floorMask   = 1.0 - smoothstep(floorY - 0.32, floorY + 0.08, uv.y);
+    float floorRadial = exp(-pow((uv.x - orbC.x) * 2.1, 2.0));
+    scene += vec3(0.06, 0.38, 0.44) * floorMask * floorRadial * 0.32 * pulse;
 
-    // Wide radial light spill: the orb's light leaks into the surrounding water.
-    float spill = exp(-d * 2.5) * 0.40 + exp(-d * 6.0) * 0.50;
-    sceneColor += vec3(0.14, 0.93, 0.85) * spill * 0.22;
+    // =====================================================================
+    //  FINISH
+    // =====================================================================
+    float vign = smoothstep(1.35, 0.30, length(uv));
+    scene *= mix(0.55, 1.00, vign);
 
-    // Seafloor light pool beneath the orb (inverted smoothstep is 1 below, 0 above).
-    float floorY      = uOrbCenter.y - uOrbScale * 1.05;
-    float floorMask   = 1.0 - smoothstep(floorY - 0.30, floorY + 0.10, uv.y);
-    float floorRadial = exp(-pow((uv.x - uOrbCenter.x) * 2.0, 2.0));
-    sceneColor += vec3(0.08, 0.48, 0.48) * floorMask * floorRadial * 0.32;
+    scene = scene / (1.0 + scene);              // Reinhard tonemap
+    scene = pow(scene, vec3(0.90));              // gentle gamma lift
+    scene = max(scene - 0.002, 0.0);             // slight black crush
 
-    // ============ RISING BUBBLES (procedural) ============
-    for (int k = 0; k < 2; k++) {
-        float scale = 8.0 + float(k) * 6.0;
-        float speed = 0.10 + float(k) * 0.05;
-        vec2 g = uv * scale + vec2(float(k) * 2.7, -uTime * speed);
-        vec2 id = floor(g);
-        vec2 f = fract(g) - 0.5;
-        float rnd = hash21(id + float(k) * 11.13);
-        if (rnd > 0.78) {
-            vec2 off = vec2(hash21(id + 1.3) - 0.5, hash21(id + 2.7) - 0.5) * 0.55;
-            float r = 0.025 + (rnd - 0.78) * 0.12;
-            float dd = length(f - off);
-            float b = smoothstep(r, r * 0.55, dd);
-            float life = fract(g.y);
-            b *= smoothstep(0.0, 0.25, life) * smoothstep(1.0, 0.75, life);
-            // Concentrate bubbles near the orb + in the visible upper water.
-            float zone = exp(-pow(length(uv - uOrbCenter) * 1.4, 2.0))
-                       * smoothstep(-0.8, 0.2, uv.y);
-            sceneColor += vec3(0.30, 0.90, 0.92) * b * zone * 0.65 * (0.35 + rnd * 0.65);
-        }
-    }
+    float grain = (hash21(fc + t * 57.0) - 0.5) * 0.010;
+    scene += grain;
 
-    // ============ CINEMATIC POST ============
-    float vign = smoothstep(1.30, 0.25, length(uv));
-    sceneColor *= mix(0.45, 1.00, vign);
-
-    sceneColor = sceneColor / (1.0 + sceneColor);       // Reinhard tonemap
-    sceneColor = pow(sceneColor, vec3(0.88));           // gentle gamma lift
-    sceneColor = max(sceneColor - 0.004, 0.0);          // gentle black crush
-
-    float grain = (hash21(fc + uTime * 57.0) - 0.5) * 0.012;
-    sceneColor += grain;
-
-    gl_FragColor = vec4(sceneColor, 1.0);
+    gl_FragColor = vec4(scene, 1.0);
 }
 `;
 
@@ -240,7 +248,6 @@ function createTex(glCtx: WebGLRenderingContext, img: HTMLImageElement): WebGLTe
     glCtx.bindTexture(glCtx.TEXTURE_2D, tex);
     glCtx.pixelStorei(glCtx.UNPACK_FLIP_Y_WEBGL, true);
     glCtx.texImage2D(glCtx.TEXTURE_2D, 0, glCtx.RGBA, glCtx.RGBA, glCtx.UNSIGNED_BYTE, img);
-    // Non-power-of-two friendly settings.
     glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_MIN_FILTER, glCtx.LINEAR);
     glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_MAG_FILTER, glCtx.LINEAR);
     glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_WRAP_S, glCtx.CLAMP_TO_EDGE);
@@ -271,9 +278,8 @@ function frame(t: number) {
     gl.uniform2f(uniforms.uRes, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.uniform1f(uniforms.uTime, time);
     gl.uniform2f(uniforms.uBgSize, bgTexSize[0], bgTexSize[1]);
-    // Default orb framing — will become animatable later.
-    gl.uniform2f(uniforms.uOrbCenter, 0.0, -0.06);
-    gl.uniform1f(uniforms.uOrbScale, 0.26);
+    gl.uniform2f(uniforms.uOrbCenter, 0.0, -0.08);
+    gl.uniform1f(uniforms.uOrbScale, 0.30);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
     raf = requestAnimationFrame(frame);
@@ -297,7 +303,6 @@ onMounted(async () => {
     program = link(gl, vs, fs);
     gl.useProgram(program);
 
-    // Fullscreen triangle pair.
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(
@@ -322,7 +327,6 @@ onMounted(async () => {
         const bgTex = createTex(gl, bgImg);
         const orbTex = createTex(gl, orbImg);
         bgTexSize = [bgImg.naturalWidth, bgImg.naturalHeight];
-        orbTexSize = [orbImg.naturalWidth, orbImg.naturalHeight];
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, bgTex);
