@@ -275,10 +275,11 @@ DB resilience: this batch ships a migration but no live DB run was required to v
 
 ### Commit metadata
 
-- **Commit SHA:** _to be filled by commit step below_
+- **Commit SHA:** `a7272d2`
 - **Branch:** `main`
-- **Push:** _origin main, no force, no hooks skipped_
-- **Surgical revert (this batch only):** `git revert <sha>`
+- **Push:** `origin main` (pushed cleanly, `b66015d..a7272d2`)
+- **Stat:** 9 files changed, 1100 insertions, 23 deletions
+- **Surgical revert (this batch only):** `git revert a7272d2`
 
 ### USER REVIEW CHECKPOINT — Batch 3
 
