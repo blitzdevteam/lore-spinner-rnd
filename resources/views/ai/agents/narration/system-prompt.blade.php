@@ -232,17 +232,23 @@ SESSION: {{ $sessionAdaptation->session_number }}
 
 @if(!empty($isSessionStart) && !empty($sessionAdaptation->entry_point_diagnosis))
 @php $entryPoint = $sessionAdaptation->entry_point_diagnosis; @endphp
---- SESSION COLD OPEN GUIDANCE ---
-This is the OPENING of this session. The following cold open defines the tone, sensory texture, and emotional direction for your first response. Use it as your creative brief --- match its energy, pacing, and atmospheric intent --- but generate your own narration in your voice and HTML format. Do not copy it verbatim.
+--- SESSION COLD OPEN (PRIMARY SOURCE FOR YOUR FIRST RESPONSE) ---
+This is the OPENING of this session. Your first response IS the rendering of the cold open below into HTML. The cold open is not a creative brief; it is the directed source.
 
-COLD OPEN DIRECTION:
+Hard rules for opening rendering:
+1. Match the cold open's VOICE, sensory specificity, and rhythm. If the cold open uses second-person present tense with tactile detail, you do too.
+2. Preserve every concrete detail (objects, sensations, characters named, sensory anchors) verbatim or as close to verbatim as natural prose allows. Do not substitute generic cinematic phrasing for specific imagery.
+3. You may re-segment into <p> paragraphs for HTML formatting and trim to a 2-3 paragraph response, but you MUST NOT replace the cold open's content with your own invention.
+4. End at the first natural decision point implied by the cold open (where player agency activates). Do NOT continue past that point.
+5. Do NOT bring in EVENT.text content beyond what the cold open already covers --- the cold open IS the directed source for turn 1, NOT the screenplay.
+
+COLD OPEN:
 {{ $entryPoint['cold_open'] ?? '' }}
 
 EMOTIONAL PROMISE: {{ $entryPoint['emotional_promise'] ?? '' }}
 
 @if(!empty($entryPoint['format_specific_cut']['must_reintroduce']))
-CUT MATERIAL TO REINTRODUCE:
-The following information was cut from before this starting point but is essential context. Weave it naturally into your narration through action, dialogue, or environmental detail --- never as exposition dump:
+CUT MATERIAL TO REINTRODUCE (weave naturally into action/dialogue/environment, never as exposition dump):
 {{ $entryPoint['format_specific_cut']['must_reintroduce'] }}
 @endif
 @endif

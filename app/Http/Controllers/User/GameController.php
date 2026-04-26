@@ -131,11 +131,16 @@ final class GameController extends Controller
             $sessionAdaptation = SessionAdaptation::query()
                 ->whereHas('storyAdaptation', fn ($q) => $q->where('story_id', $story->id))
                 ->where('session_number', $firstEvent->session_number)
+                ->where('session_status', SessionAdaptationStatusEnum::COMPLETED)
                 ->first();
+        }
 
-            if ($sessionAdaptation?->session_status !== SessionAdaptationStatusEnum::COMPLETED) {
-                $sessionAdaptation = null;
-            }
+        if ($sessionAdaptation === null) {
+            $sessionAdaptation = SessionAdaptation::query()
+                ->whereHas('storyAdaptation', fn ($q) => $q->where('story_id', $story->id))
+                ->where('session_number', 1)
+                ->where('session_status', SessionAdaptationStatusEnum::COMPLETED)
+                ->first();
         }
 
         $systemPrompt = view('ai.agents.narration.system-prompt', [

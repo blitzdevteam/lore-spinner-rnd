@@ -83,12 +83,60 @@ Every `Game::prompts()` callsite was audited; only three were ordering-dependent
 
 ### Commit metadata
 
+- **Commit SHA:** `44938d1`
+- **Branch:** `main`
+- **Push:** `origin main` (pushed cleanly, no force, no hooks skipped)
+- **Stat:** 8 files changed, 2941 insertions, 2 deletions (diff dominated by the companion docs landing alongside the 2-line code fix; code-only diff is the 16-line model docblock add + the closure-form eager-load).
+- **Surgical revert (this batch only):** `git revert 44938d1`
+
+### USER REVIEW CHECKPOINT — Batch 0
+
+After this commit lands, the next batch (WS-C — first-narration cold open) begins.
+
+---
+
+## Batch 1 — WS-C: cold-open lookup hardening + prompt rewrite
+
+**Workstream:** WS-C (P1).
+**Goal:** Make the SessionAdaptation lookup in `GameController::generateFirstNarration` resilient to `firstEvent->session_number === null` (the seed-time default until the adaptation pipeline runs), and rewrite the cold-open block in `system-prompt.blade.php` from "creative brief, generate your own" to "this IS your first response, preserve detail, do not substitute generic phrasing."
+
+### Pre-flight (static, since Docker is currently down)
+
+| Question | Answer | Source |
+|---|---|---|
+| Does the seeder set `session_number` on Alice's events? | NO. Default is null at seed-time. | `database/seeders/AddSingleStorySeeder.php` (no `session_number` writes); `database/migrations/2026_04_15_000003_add_session_number_to_events_table.php` line 14 (`->nullable()`) |
+| Where does `session_number` get backfilled? | `StorySessionMapJob` (lines 88, 117, 123) — runs only after the adaptation pipeline kicks off. | `app/Jobs/Adaptation/StorySessionMapJob.php` |
+| Does Alice's S1 cold open exist in the export? | YES. Carroll-voiced ("Heat shimmers off the river stones…"). | `database/exports/adapptation-third-try.json` line 396 |
+| Failure mode this fix addresses | If a game starts before the adaptation pipeline writes back `events.session_number`, the original gate on `firstEvent->session_number !== null` skips the lookup entirely and the cold-open block never enters the prompt. The new fallback always probes for Session 1 of the story. | n/a |
+
+Live DB pre-flight (which gate fails *for the production seed today*) deferred until Docker is back up; the static evidence already proves the fix is strictly more permissive — it cannot regress the cold-open block being available, only widen the cases where it is.
+
+### Files touched
+
+| File | Change |
+|---|---|
+| `app/Http/Controllers/User/GameController.php` | `generateFirstNarration()`: keep the original session-specific lookup, add a Session-1-of-story fallback, push the COMPLETED status check into the WHERE clause for both queries (was a post-fetch null-out). |
+| `resources/views/ai/agents/narration/system-prompt.blade.php` | `--- SESSION COLD OPEN ---` block rewritten to "(PRIMARY SOURCE FOR YOUR FIRST RESPONSE)" with five hard rules: voice/rhythm match, verbatim detail preservation, HTML resegmentation allowed, end at first decision point, do not bring in EVENT.text. |
+
+### Validation evidence
+
+Offline render of the system-prompt Blade against a stubbed SessionAdaptation modeled on Alice's actual S1 export:
+
+```
+PRIMARY SOURCE marker:                  YES
+Carroll cold-open prose present:        YES
+White Rabbit anchor present:            YES
+Hard rule 2 (preserve detail):          YES
+Hard rule 5 (cold open IS source):      YES
+Rendered length:                        10654 bytes
+```
+
+Block excerpt confirmed to render the new instructions verbatim with the Carroll prose embedded. No linter errors.
+
+### Commit metadata
+
 (Filled in immediately after `git push`.)
 
 - **Commit SHA:** _(see below)_
 - **Branch:** `main`
 - **Push:** `origin main`
-
-### USER REVIEW CHECKPOINT — Batch 0
-
-After this commit lands, the next batch (WS-C — first-narration cold open) begins.
