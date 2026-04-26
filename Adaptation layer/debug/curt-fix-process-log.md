@@ -192,8 +192,111 @@ DB resilience verified: with Docker down (live DB unreachable), the command warn
 
 ### Commit metadata
 
-(Filled in immediately after `git push`.)
-
-- **Commit SHA:** _(see below)_
+- **Commit SHA:** `b66015d`
 - **Branch:** `main`
-- **Push:** `origin main`
+- **Push:** `origin main` (pushed cleanly)
+- **Stat:** 6 files changed, 434 insertions, 8 deletions
+- **Surgical revert (this batch only):** `git revert b66015d`
+
+### USER REVIEW CHECKPOINT — Batch 2
+
+Observability is in place. Every turn now produces a structured log row that is rule-checked by `game:trace`. The model now receives an explicit first-turn-vs-subsequent-turn signal instead of having to infer it. Next batch: WS-B (state persistence — `world_state` migration, NarrationAgent schema, persistence loop, system-prompt feedback).
+
+---
+
+## Batch 3 — WS-B: persistent world state + structured choice routing
+
+**Workstream:** WS-B (P1).
+**Goal:** Give the runtime a memory. The narrator now (a) emits a structured `state_delta` per turn, (b) the runtime applies it cumulatively to a new `games.world_state` JSON column, (c) the next system prompt feeds the world state back to the model as TRUTH OF RECORD, and (d) authored A/B/C branches are detected deterministically before the model even sees the input — closing Curt's "the bottle didn't shrink me", "no inventory", "branches feel cosmetic" symptoms.
+
+### Files touched
+
+| File | Change |
+|---|---|
+| `database/migrations/2026_04_26_000001_add_world_state_to_games_table.php` (new) | Adds nullable `world_state` JSON column to `games`, after `branch_resolution_log`. |
+| `app/Models/Game.php` | `world_state` added to docblock + `$casts` (JSON). |
+| `app/Http/Controllers/User/GameController.php` | `reset()` nullifies `world_state`. `generateFirstNarration` passes empty `worldState` and `null` `deterministicMatch` to view. |
+| `app/Ai/Agents/NarrationAgent.php` | Schema expanded: adds required `input_classification`, `mapped_choice_id`, `mapped_option`, and a comprehensive `state_delta` object (objects acquired/lost/transformed, conditions added/removed, location, knowledge, relationships, tracked-path votes, write-once flags). All sub-fields required; uses constructor-form `object()` syntax to satisfy `Illuminate\JsonSchema\JsonSchemaTypeFactory`. |
+| `app/Http/Controllers/User/Game/PromptController.php` | `store()` rewritten end-to-end: deterministic authored-choice detection (B4), world-state-aware system prompt (B3), structured-output capture, cumulative `applyStateDelta`, idempotent `appendBranchingChoice`, `mergeTrackedDimensions`, capped `appendBranchResolutionLog`, `resolveCurrentBeatType` walk. New helpers: `resolveSessionAdaptation`, `matchAuthoredChoice`, `normalizeForMatch`, `applyStateDelta`, `appendBranchingChoice`, `mergeTrackedDimensions`, `appendBranchResolutionLog`, `resolveCurrentBeatType`, `summarizeStateDelta`. Log row now includes classification, mapped option/choice, state-delta summary, and world-state object/condition counts. |
+| `resources/views/ai/agents/narration/system-prompt.blade.php` | New `=== PERSISTENT WORLD STATE (TRUTH OF RECORD) ===` block listing held objects (with qualifier + contents), active conditions, known facts, relationships, raised flags, and current location. New `=== AUTHORED-CHOICE ROUTING (RUNTIME-DETECTED) ===` block forcing `input_classification=authored_choice`, `mapped_option`, `mapped_choice_id` when the runtime has matched. `OUTPUT REQUIREMENT` enumerates all seven structured fields and the ten `state_delta` sub-fields with discipline rules. |
+| `resources/views/ai/agents/narration/prompt.blade.php` | Adds a `DETERMINISTIC AUTHORED-CHOICE MATCH` hint at the bottom of the user prompt when the runtime has matched, repeating the must-set fields. |
+| `Adaptation layer/debug/wsb-validation.php` (new, validation harness) | DB-tolerant unit-style harness for the six new helpers. |
+
+### B4 — deterministic authored-choice detection
+
+`matchAuthoredChoice` normalizes the player input and each authored option's text (lowercase, strip punctuation, collapse whitespace), tokenizes both into ≥3-char tokens, and emits a match when the Jaccard-style overlap ratio is ≥0.6 OR the normalized input is a substring of an option (or vice versa, score floored at 0.85). When matched, the system prompt and user prompt both receive a "you MUST route to this option" hint, and the runtime records the option/choice_id deterministically — even if the model returned the wrong field, the runtime's match wins (`$deterministicMatch['option'] ?? $aiResult['mapped_option']`).
+
+### B2 — persistence loop
+
+After each turn:
+
+1. `applyStateDelta(world_state, ai.state_delta)` — additive for objects/conditions/knowledge/relationships/flags, subtractive for `objects_lost` / `conditions_removed`, mutating for `objects_transformed`, last-write-wins for `location_changed`. `updated_at` always rewritten.
+2. `appendBranchingChoice` — keyed by `(session_number, event_id)`; second call for the same key updates the row instead of appending, so a player's evolving turn within one event doesn't bloat the array.
+3. `mergeTrackedDimensions` — accumulates path votes per dimension (e.g., `curiosity_vs_caution → ['curiosity', 'curiosity', 'caution']`). The session-end resolution job can read these to pick a path.
+4. `appendBranchResolutionLog` — capped at last 200 entries.
+5. `resolveCurrentBeatType` — walks the `session_architecture` beat list one step on advance, clamps at the last beat.
+
+All five updates batched into a single `$game->update()`. Then the prompts row is created (so the post-turn refreshed state is what the next turn observes).
+
+### B3 — system-prompt feedback
+
+When `world_state` has any of `objects/conditions/knowledge/relationships/flags/location` populated, a `=== PERSISTENT WORLD STATE (TRUTH OF RECORD) ===` block is injected. It enumerates inventory with qualifiers ("bottle labeled DRINK ME (drained) — contains: …"), active conditions with notes ("small: shrunk to ten inches"), facts known, named-character dispositions, raised flags, and current sub-location. The block ends with a CRITICAL clause: held objects remain held unless this turn explicitly drops/uses/transforms them; conditions persist until removed; `state_delta` is the channel for any change.
+
+### Validation evidence
+
+`Adaptation layer/debug/wsb-validation.php` exercises a 6-turn Alice scenario in-process (no live DB needed). All 28 assertions green:
+
+```
+[1] matchAuthoredChoice                       (5/5)
+[2] applyStateDelta cumulative buildup        (10/10)
+[3] mergeTrackedDimensions accumulation       (3/3)
+[4] appendBranchingChoice idempotency         (4/4)
+[5] appendBranchResolutionLog cap (250→200)   (1/1)
+[6] resolveCurrentBeatType beat-walk          (4/4)
+failures: 0
+```
+
+The 6-turn scenario specifically covers Curt's failure modes:
+
+- Turn 1: cold-open location set + first knowledge fact + flag raised.
+- Turn 2: bottle picked up (object acquired with qualifier `full` and contents).
+- Turn 3: bottle drunk → object transformed to `drained`, condition `small` added, knowledge "The bottle made you smaller." gained, `curiosity` path voted.
+- Turn 4: golden key acquired alongside the (still-held) bottle.
+- Turn 5: door unlocked — location shifts to "doorway to a small garden", new knowledge gained, new flag raised.
+- Turn 6: condition `small` removed, condition `frustrated` added — both held objects still retained.
+
+After turn 6, `world_state.objects` has both `bottle labeled DRINK ME (drained)` and `small golden key`, conditions has `frustrated`, knowledge has all three accumulated facts, flags has both raised flags, location is the latest. This is exactly the cumulative behavior Curt's testing showed missing.
+
+Schema serialization smoke test (against `JsonSchemaTypeFactory`) — output ~10.6 KB, all seven top-level fields present, `state_delta` has all ten required sub-keys, `objects_acquired` items typed as objects.
+
+System-prompt render smoke test with the post-T5 world state + a deterministic A match — every probe hit (PERSISTENT WORLD STATE block, OBJECTS HELD list naming both items, ACTIVE CONDITIONS, location string, AUTHORED-CHOICE ROUTING block, `mapped_option = "A"` directive, TURN STATE block, OUTPUT REQUIREMENT enumerating `state_delta` and `input_classification`).
+
+DB resilience: this batch ships a migration but no live DB run was required to validate the runtime logic. The migration is reversible (`down()` drops the column) and additive — existing games default to `world_state = NULL`, which the helpers treat as `[]`.
+
+### Commit metadata
+
+- **Commit SHA:** _to be filled by commit step below_
+- **Branch:** `main`
+- **Push:** _origin main, no force, no hooks skipped_
+- **Surgical revert (this batch only):** `git revert <sha>`
+
+### USER REVIEW CHECKPOINT — Batch 3
+
+The full WS-0 → WS-C → WS-A → WS-B series is now landed:
+
+- WS-0 — `Game::prompts()` ordering collision fixed.
+- WS-C — cold-open block is reachable and framed as the directed source.
+- WS-A — every turn is structured-logged + rule-checked, model gets explicit first-vs-subsequent turn signal.
+- WS-B — narrator emits a structured world-state delta, runtime applies it cumulatively, next prompt feeds it back; authored A/B/C branches are detected deterministically.
+
+Curt's defect lineup mapped to the landed fixes:
+
+| Curt symptom | Fix |
+|---|---|
+| Player input ghost-overwriting prior turns | WS-0 |
+| Generic-feeling cold open / loss of Carroll voice | WS-C |
+| Rehash drift on later turns / event never advances | WS-A (turn-state signal + log-rule visibility) |
+| "Bottle didn't shrink me" / "key disappeared" / no inventory | WS-B (state_delta + world_state) |
+| Branches feel cosmetic / wrong A/B/C routing | WS-B (deterministic match) |
+
+Ready for live playthrough validation once Docker is back up. The `game:trace` command will print a per-turn audit including state-delta summary, mapped option, and world-state object/condition counts.

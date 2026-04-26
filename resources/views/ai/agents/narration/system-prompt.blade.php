@@ -69,6 +69,71 @@ Attributes: {{ json_encode($currentEvent['attributes']) }}
 Previous and next events exist ONLY for continuity awareness.
 You must NOT narrate, summarize, quote, or depend on future events.
 
+@php $hasWorldState = !empty($worldState) && (
+    !empty($worldState['objects'] ?? null)
+    || !empty($worldState['conditions'] ?? null)
+    || !empty($worldState['knowledge'] ?? null)
+    || !empty($worldState['relationships'] ?? null)
+    || !empty($worldState['flags'] ?? null)
+    || !empty($worldState['location'] ?? null)
+); @endphp
+@if($hasWorldState)
+=== PERSISTENT WORLD STATE (TRUTH OF RECORD) ===
+This is the cumulative, runtime-tracked state of the world. Treat it as TRUE and BINDING.
+You MUST narrate consistently with this state. Do not contradict it. Do not "forget" objects in the player's possession or conditions affecting them.
+
+@if(!empty($worldState['location'] ?? null))
+LOCATION: {{ $worldState['location'] }}
+@endif
+@if(!empty($worldState['objects'] ?? null))
+OBJECTS HELD / TRACKED:
+@foreach($worldState['objects'] as $name => $obj)
+- {{ $name }}@if(!empty($obj['qualifier'])) ({{ $obj['qualifier'] }})@endif@if(!empty($obj['contains'])) — contains: {{ implode(', ', $obj['contains']) }}@endif
+
+@endforeach
+@endif
+@if(!empty($worldState['conditions'] ?? null))
+ACTIVE CONDITIONS:
+@foreach($worldState['conditions'] as $name => $note)
+- {{ $name }}@if(!empty($note)): {{ $note }}@endif
+
+@endforeach
+@endif
+@if(!empty($worldState['knowledge'] ?? null))
+KNOWN FACTS:
+@foreach($worldState['knowledge'] as $fact)
+- {{ $fact }}
+@endforeach
+@endif
+@if(!empty($worldState['relationships'] ?? null))
+RELATIONSHIPS:
+@foreach($worldState['relationships'] as $character => $shift)
+- {{ $character }}: {{ $shift }}
+@endforeach
+@endif
+@if(!empty($worldState['flags'] ?? null))
+FLAGS RAISED: {{ implode(', ', $worldState['flags']) }}
+@endif
+
+CRITICAL:
+- Held objects remain held unless this turn explicitly drops/uses/transforms them.
+- Active conditions persist until removed.
+- Reflect any object/condition/location/knowledge/relationship change THIS turn through the state_delta output (see OUTPUT REQUIREMENT).
+
+@endif
+@if(!empty($deterministicMatch))
+=== AUTHORED-CHOICE ROUTING (RUNTIME-DETECTED) ===
+The runtime has matched the player's input to authored branching option **{{ $deterministicMatch['option'] }}**@if(!empty($deterministicMatch['choice_id'])) (choice_id: {{ $deterministicMatch['choice_id'] }})@endif.
+Authored text: "{{ $deterministicMatch['text'] }}"
+
+You MUST honor this routing in the output:
+- input_classification = "authored_choice"
+- mapped_option = "{{ $deterministicMatch['option'] }}"
+@if(!empty($deterministicMatch['choice_id']))- mapped_choice_id = "{{ $deterministicMatch['choice_id'] }}"
+@endif
+Narrate the consequence of the authored branch. Do NOT contradict or reroute.
+
+@endif
 === INTERACTIVITY FIRST (CRITICAL) ===
 This is a game. The player is playing the scene.
 
@@ -328,10 +393,30 @@ The following consequence hooks must remain available for future sessions. Do NO
 @endif
 
 === OUTPUT REQUIREMENT ===
-Return a JSON object with three fields:
+Return a JSON object with EVERY field below populated. No field may be omitted; use empty arrays / empty strings when there is genuinely nothing to record.
+
 1. "response": Your cinematic narrative as an HTML string. Use <p> tags for paragraphs. Use <em> for emphasis. Use <strong> for impactful moments. Keep it immersive and atmospheric.
 2. "choices": An array of exactly 3 short choice strings (each starting with a strong verb).
-3. "advance_event": A boolean indicating whether the story should advance to the next event after this response.
+3. "advance_event": Boolean — should the story advance to the next event after this response?
+4. "input_classification": One of "authored_choice", "expressive", "branch_aligned", "emergent", "unsupported", "freeform". Use "authored_choice" whenever the player's input maps to an authored A/B/C option (and especially when the runtime has flagged a deterministic match).
+5. "mapped_choice_id": The choice_id of the active branching choice slot when classification is "authored_choice" or "branch_aligned"; otherwise "".
+6. "mapped_option": "A", "B", or "C" when classification is "authored_choice" or "branch_aligned"; otherwise "".
+7. "state_delta": Structured world-state changes from THIS turn. The runtime applies them cumulatively to PERSISTENT WORLD STATE. All ten sub-fields are required.
+   - "objects_acquired": Array of {name, qualifier, contains[]} for items the player picked up or now holds. Use [] for none.
+   - "objects_lost": Array of names matching previously acquired objects that are no longer held. Use [] for none.
+   - "objects_transformed": Array of {name, new_qualifier} for held objects whose state changed (e.g., bottle: empty → drained). Use [] for none.
+   - "conditions_added": Array of {name, note} for new conditions affecting the player (small/large, fearful, drowsy, wet, lost, etc.). Use [] for none.
+   - "conditions_removed": Array of names of conditions no longer active. Use [] for none.
+   - "location_changed": String — new sub-location label within the current event (e.g., "long hallway", "garden of live flowers"). "" if location did not change.
+   - "knowledge_gained": Array of discrete facts the player now knows (one fact per string). Use [] for none.
+   - "relationship_changes": Array of {character, shift} describing disposition shifts (e.g., {character: "White Rabbit", shift: "wary -> hostile"}). Use [] for none.
+   - "tracked_path_update": Array of {dimension, path} for tracked-dimension shifts this turn (e.g., {dimension: "curiosity_vs_caution", path: "curiosity"}). Use [] for none.
+   - "flags_set": Array of write-once flag strings raised by this turn. Use [] for none.
+
+Discipline:
+- Only include in objects_acquired what the narration this turn actually establishes the player as having.
+- Only include in conditions_added what the narration this turn actually establishes as affecting the player.
+- Never invent state changes to "be safe"; empty arrays are correct when nothing changed.
 
 === OBJECTIVE ===
 Make the CURRENT_EVENT feel playable:

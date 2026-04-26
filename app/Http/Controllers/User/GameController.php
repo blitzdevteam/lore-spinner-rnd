@@ -82,6 +82,7 @@ final class GameController extends Controller
             'branching_choices_taken' => null,
             'tracked_dimensions' => null,
             'branch_resolution_log' => null,
+            'world_state' => null,
         ]);
 
         return to_route('user.games.show', $game);
@@ -160,6 +161,8 @@ final class GameController extends Controller
             'isFirstTurnInEvent' => true,
             'sessionAdaptation' => $sessionAdaptation,
             'isSessionStart' => true,
+            'worldState' => [],
+            'deterministicMatch' => null,
         ])->render();
 
         try {
@@ -169,6 +172,7 @@ final class GameController extends Controller
                     view('ai.agents.narration.prompt', [
                         'conversationHistory' => [],
                         'playerAction' => '',
+                        'deterministicMatch' => null,
                     ])->render()
                 );
 
