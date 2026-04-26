@@ -33,7 +33,9 @@ final class GameController extends Controller
         $game->load([
             'story',
             'currentEvent.chapter',
-            'prompts:id,game_id,event_id,response,choices,prompt',
+            'prompts' => fn ($q) => $q
+                ->select(['id', 'game_id', 'event_id', 'response', 'choices', 'prompt'])
+                ->oldest(),
             'prompts.event',
         ]);
 

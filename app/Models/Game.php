@@ -71,10 +71,22 @@ final class Game extends Model
     }
 
     /**
+     * Intentionally returns an UNORDERED HasMany.
+     *
+     * Earlier this relation chained ->oldest() so iteration was always
+     * chronological. That collided with call sites doing ->latest()->first()
+     * and ->latest()->limit(6): Laravel stacks ORDER BY clauses, so the
+     * resulting SQL was ORDER BY created_at ASC, created_at DESC and the DB
+     * honored the first clause — silently returning the oldest row from
+     * latest() and the oldest 6 rows from the conversation-history query.
+     *
+     * Call sites that need a specific order MUST add it explicitly
+     * (oldest() for UI rendering, latest() for newest-first reads).
+     *
      * @return HasMany<Prompt, $this>
      */
     public function prompts(): HasMany
     {
-        return $this->hasMany(Prompt::class)->oldest();
+        return $this->hasMany(Prompt::class);
     }
 }
