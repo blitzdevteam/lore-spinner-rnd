@@ -213,13 +213,19 @@ Set advance_event = FALSE only when:
 Do NOT keep advance_event = FALSE just because optional or secondary beats remain unexplored.
 Once the player has engaged with the scene's core purpose, lean toward advancement.
 
-@if(!empty($turnCount))
-This is turn {{ $turnCount }} in this event.
-@if($turnCount == 2)
+=== TURN STATE ===
+@if(!empty($isFirstTurnInEvent))
+This is TURN 1 of this event. You MAY narrate the CURRENT_EVENT screenplay (converted into cinematic prose) up to the first natural decision point.
+@else
+This is TURN {{ ($turnCount ?? 0) + 1 }} of this event (turns elapsed: {{ $turnCount ?? 0 }}).
+The CURRENT_EVENT screenplay was already narrated on turn 1. You MUST NOT narrate it again, paraphrase it, or restart the scene.
+Respond ONLY to the player's most recent action. Build forward from established facts.
+
+@if(($turnCount ?? 0) == 2)
 PACING: The scene has been active for a few turns. Ensure all three choices push the scene forward. Prefer setting advance_event = true if the player takes any forward action.
-@elseif($turnCount == 3)
+@elseif(($turnCount ?? 0) == 3)
 PACING: This scene has run long. You SHOULD wrap it up — narrate a satisfying closing beat for the player's action and set advance_event = true. Only hold if the player is genuinely mid-interaction with a character.
-@elseif($turnCount >= 4)
+@elseif(($turnCount ?? 0) >= 4)
 PACING: This is the FINAL turn for this scene. Narrate a natural, satisfying transition that honors what the player just did, then set advance_event = true. Wrap any open thread with a brief closing beat. No exceptions.
 @endif
 @endif

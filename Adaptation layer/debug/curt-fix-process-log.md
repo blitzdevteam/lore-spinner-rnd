@@ -135,6 +135,63 @@ Block excerpt confirmed to render the new instructions verbatim with the Carroll
 
 ### Commit metadata
 
+- **Commit SHA:** `4adb165`
+- **Branch:** `main`
+- **Push:** `origin main` (pushed cleanly)
+- **Stat:** 3 files changed, 71 insertions, 12 deletions
+- **Surgical revert (this batch only):** `git revert 4adb165`
+
+### USER REVIEW CHECKPOINT — Batch 1
+
+Cold-open block is now (a) reachable for any first event of a story whose Session 1 has been adapted, and (b) framed as the directed source of the first response, not a generic creative brief. Next batch: WS-A (observability — narration log channel + game:trace command + isFirstTurnInEvent block).
+
+---
+
+## Batch 2 — WS-A: observability + first-turn signal
+
+**Workstream:** WS-A (P1).
+**Goal:** Make every player turn observable (A1) and stop relying on the model to infer first-vs-subsequent turn (A2).
+
+### Files touched
+
+| File | Change |
+|---|---|
+| `config/logging.php` | New `narration` channel — daily-rotated file at `storage/logs/narration.log`, `LOG_NARRATION_LEVEL`/`LOG_NARRATION_DAYS` env hooks. |
+| `app/Http/Controllers/User/Game/PromptController.php` | A1: `Log::channel('narration')->info('narration.turn', [...])` at the bottom of `store()`, after the prompts row is created and the game is refreshed (so `event_id_after` / `session_number_after` reflect the real post-turn state). A2: `'isFirstTurnInEvent' => $turnCount === 0` passed into the system-prompt view. |
+| `app/Http/Controllers/User/GameController.php` | A2: `'isFirstTurnInEvent' => true` and `'turnCount' => 0` passed unconditionally for first-narration. |
+| `resources/views/ai/agents/narration/system-prompt.blade.php` | A2: replaces the `@if(!empty($turnCount))` block (which silently failed on `turnCount === 0` because `empty(0)` is true) with an explicit two-state `=== TURN STATE ===` block. Pacing-pressure block now only fires under the `!isFirstTurnInEvent` branch. |
+| `app/Console/Commands/GameTraceCommand.php` (new) | Pretty-prints the structured `narration.turn` entries for one game id, asserts four hard rules per row, summarizes total violations. DB-tolerant (warns and continues if DB unreachable). |
+
+### Validation evidence
+
+System-prompt assertions (offline render across turn states):
+
+```
+TURN 1 (turnCount=0, isFirstTurnInEvent=true):
+  has TURN STATE marker:        YES
+  has TURN 1 of this event:     YES
+  no "already narrated":        YES   (correct — turn 1 may narrate the screenplay)
+  no PACING block:              YES   (correct — no pacing pressure on turn 1)
+
+TURN 3 (turnCount=2, isFirstTurnInEvent=false):
+  has TURN STATE marker:        YES
+  has TURN 3 of this event:     YES
+  has "already narrated":       YES
+  has PACING block:             YES
+
+TURN 5 (turnCount=4, isFirstTurnInEvent=false):
+  has TURN 5 of this event:     YES
+  has FINAL turn pacing:        YES
+```
+
+Bug fixed in passing: the previous `@if(!empty($turnCount))` guard never fired on turn 1 (`empty(0) === true` in PHP). Turn 1 used to get **no** turn-state instruction at all — the model had to infer it. The new explicit signal closes that hole, which is a structural contributor to Curt's #2 (rehash drift).
+
+`game:trace` command end-to-end test: synthetic log rows written to `storage/logs/narration-YYYY-MM-DD.log`, command parsed both rows, evaluated all 4 rules per row, reported `rows_shown: 2 / total_violations: 0`, and printed a per-turn report with prompt hash, choices, and rule status. Synthetic log file deleted after test.
+
+DB resilience verified: with Docker down (live DB unreachable), the command warns "DB lookup failed... Continuing with log-only trace" and proceeds.
+
+### Commit metadata
+
 (Filled in immediately after `git push`.)
 
 - **Commit SHA:** _(see below)_

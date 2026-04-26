@@ -15,6 +15,7 @@ use App\Models\SessionAdaptation;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Laravel\Ai\Responses\StructuredAgentResponse;
 use Throwable;
 
@@ -75,12 +76,34 @@ final class PromptController extends Controller
             }
         }
 
+        $resolvedEventId = $shouldAdvance && isset($nextEvent)
+            ? $nextEvent->id
+            : $currentEvent->id;
+
         $game->prompts()->create([
-            'event_id' => $shouldAdvance && isset($nextEvent)
-                ? $nextEvent->id
-                : $currentEvent->id,
+            'event_id' => $resolvedEventId,
             'response' => $aiResult['response'],
             'choices' => $aiResult['choices'],
+        ]);
+
+        $game->refresh();
+
+        Log::channel('narration')->info('narration.turn', [
+            'game_id' => $game->id,
+            'event_id_before' => $currentEvent->id,
+            'event_id_after' => $game->current_event_id,
+            'session_number_before' => $currentEvent->session_number,
+            'session_number_after' => $game->current_session_number,
+            'turn_count' => $turnCount,
+            'is_first_turn_in_event' => $turnCount === 0,
+            'advance_event_returned' => $aiResult['advance_event'],
+            'force_advanced' => ! ($aiResult['advance_event']) && $turnCount >= 5,
+            'is_continue' => $isContinue,
+            'player_input_first_120' => mb_substr((string) $prompt, 0, 120),
+            'narrator_response_first_120' => mb_substr(strip_tags((string) $aiResult['response']), 0, 120),
+            'choices_returned' => $aiResult['choices'],
+            'system_prompt_hash' => hash('sha256', $systemPrompt),
+            'logged_at' => now()->toIso8601String(),
         ]);
 
         return back();
@@ -176,6 +199,7 @@ final class PromptController extends Controller
             ],
             'nextEvents' => $this->getNextEvents($currentEvent, 2),
             'turnCount' => $turnCount,
+            'isFirstTurnInEvent' => $turnCount === 0,
             'sessionAdaptation' => $sessionAdaptation,
             'isSessionStart' => $isSessionStart,
         ])->render();

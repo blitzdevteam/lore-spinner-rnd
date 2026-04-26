@@ -129,6 +129,14 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'narration' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/narration.log'),
+            'level' => env('LOG_NARRATION_LEVEL', 'info'),
+            'days' => env('LOG_NARRATION_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

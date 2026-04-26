@@ -156,6 +156,8 @@ final class GameController extends Controller
                 'attributes' => $firstEvent->attributes,
             ],
             'nextEvents' => $nextEvents,
+            'turnCount' => 0,
+            'isFirstTurnInEvent' => true,
             'sessionAdaptation' => $sessionAdaptation,
             'isSessionStart' => true,
         ])->render();
