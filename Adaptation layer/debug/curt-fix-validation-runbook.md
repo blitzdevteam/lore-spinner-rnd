@@ -1,0 +1,340 @@
+# Curt Fix Series — Live Validation Runbook
+
+**Companion to:** `curt-fix-process-log.md`
+**Scope:** WS-0 / WS-C / WS-A / WS-B (commits `44938d1`, `4adb165`, `b66015d`, `a7272d2`)
+**Environment:** the deployed Laravel container (your `pgsql` runs there). All commands below are written for **inside the app container**. Replace the `php` prefix with whatever your project uses (`sail artisan`, `docker compose exec app php`, etc.) — examples shown with bare `php artisan`.
+
+---
+
+## Conventions
+
+- **Reference game id (Curt’s capture):** `01kpv313jddy575ct6bv6cak4j` — taken from `Adaptation layer/debug/curt-game-log.json` (`game_id`). Use this in copy-paste commands when validating the same dataset; on another database, substitute your own id from tinker: `\App\Models\Game::with('story')->latest()->first()->id`.
+- **Runner game id resolution:** `curt-fix-validation-runner.php` accepts an optional second argument. If omitted, it uses env `CURT_FIX_VALIDATION_GAME_ID`, then falls back to the reference id above (and prints one line to stderr when using the fallback).
+- `<STORY_ID>` — UUID of the Alice story. `\App\Models\Story::where('title','like','%Alice%')->first()->id`.
+- **Do not use `php artisan tinker <<'TINKER'` in one-line deployment shells** (Laravel Cloud, CI “run command”, some SSH wrappers). Bash needs real newlines before the closing `TINKER`; if the UI flattens the snippet, you get `syntax error near unexpected token '('` and `wanted TINKER`. For Steps 4, 5, and 9 use the bootstrap script instead (same PHP, one line, heredoc-free):
+
+  `php "Adaptation layer/debug/curt-fix-validation-runner.php" step4`
+
+  Or with an explicit id: `php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 '01kpv313jddy575ct6bv6cak4j'`
+
+- For each step, paste the output (or a redacted summary) under the `### Result` heading I left empty.
+
+---
+
+## Prep — environment sanity
+
+```bash
+php artisan migrate:status | grep -i world_state
+```
+
+**Expected:** the `2026_04_26_000001_add_world_state_to_games_table` row shows `Ran` (or `Pending` if you haven't migrated yet — run `php artisan migrate` first).
+
+### Result
+
+  2026_04_26_000001_add_world_state_to_games_table ................... [3] Ran  
+
+---
+
+```bash
+php artisan migrate
+```
+
+**Expected if already migrated:** `Nothing to migrate.` Otherwise it should apply `2026_04_26_000001_add_world_state_to_games_table` cleanly.
+
+### Result
+
+`Nothing to migrate.`
+---
+
+## Step 1 — confirm `games.world_state` column exists
+
+```bash
+php artisan tinker --execute="echo \Schema::hasColumn('games', 'world_state') ? 'world_state column: PRESENT' : 'world_state column: MISSING';"
+```
+
+**Expected:** `world_state column: PRESENT`.
+
+### Result
+
+world_state column: PRESENT
+
+---
+
+## Step 2 — schema serializes for `NarrationAgent`
+
+```bash
+php artisan tinker --execute="
+\$agent = new \App\Ai\Agents\NarrationAgent('test');
+\$schema = new \Illuminate\JsonSchema\JsonSchemaTypeFactory();
+\$shape = \$agent->schema(\$schema);
+\$out = [];
+foreach (\$shape as \$k => \$v) { \$out[\$k] = \$v->toArray(); }
+\$json = json_encode(['properties' => \$out]);
+echo 'top_keys=' . implode(',', array_keys(\$shape)) . PHP_EOL;
+echo 'state_delta_keys=' . implode(',', array_keys(\$shape['state_delta']->toArray()['properties'] ?? [])) . PHP_EOL;
+echo 'bytes=' . strlen(\$json) . PHP_EOL;
+"
+```
+
+**Expected (exact):**
+```
+top_keys=response,choices,advance_event,input_classification,mapped_choice_id,mapped_option,state_delta
+state_delta_keys=objects_acquired,objects_lost,objects_transformed,conditions_added,conditions_removed,location_changed,knowledge_gained,relationship_changes,tracked_path_update,flags_set
+bytes=10000  (within ±2 KB)
+```
+
+### Result
+
+top_keys=response,choices,advance_event,input_classification,mapped_choice_id,mapped_option,state_delta
+state_delta_keys=objects_acquired,objects_lost,objects_transformed,conditions_added,conditions_removed,location_changed,knowledge_gained,relationship_changes,tracked_path_update,flags_set
+bytes=5645
+---
+
+## Step 3 — run the in-process WS-B helper harness
+
+This is the script that already passed 28/28 against my host. It needs no DB but does need to boot Laravel.
+
+```bash
+php "Adaptation layer/debug/wsb-validation.php"
+```
+
+**Expected:** ends with `failures: 0`. If anything regressed in your environment (e.g., the `JsonSchema` API moved between Laravel patch versions), this is where it'll surface.
+
+### Result
+
+=== WS-B validation: Alice 6-turn scenario ===
+
+[1] matchAuthoredChoice
+  ok   verbatim-ish input maps to option B
+  ok   lowercased verbatim maps to option A
+  ok   unrelated input does not match any option
+  ok   empty input does not match
+  ok   short paraphrase matches via token overlap
+
+[2] applyStateDelta cumulative buildup (6 turns)
+  turn 1 applied; objects=0 conditions=0 knowledge=1 location=long hallway with the small door
+  turn 2 applied; objects=1 conditions=0 knowledge=1 location=long hallway with the small door
+  turn 3 applied; objects=1 conditions=1 knowledge=2 location=long hallway with the small door
+  turn 4 applied; objects=2 conditions=1 knowledge=2 location=long hallway with the small door
+  turn 5 applied; objects=2 conditions=1 knowledge=3 location=doorway to a small garden
+  turn 6 applied; objects=2 conditions=1 knowledge=3 location=doorway to a small garden
+  ok   bottle object retained across turns
+  ok   bottle qualifier transformed to drained
+  ok   golden key retained
+  ok   small condition was removed in turn 6
+  ok   frustrated condition added in turn 6
+  ok   last location_changed wins
+  ok   cumulative knowledge T1 retained
+  ok   cumulative knowledge T3 retained
+  ok   cumulative knowledge T5 retained
+  ok   flag from T1 retained
+  ok   flag from T5 retained
+
+[3] mergeTrackedDimensions accumulates path votes
+  ok   curiosity_vs_caution dimension recorded
+  ok   three curiosity votes accumulated across turns 2,3,5
+  ok   all three votes are "curiosity"
+
+[4] appendBranchingChoice idempotency
+  ok   second call updates existing entry rather than duplicating
+  ok   second call overwrote advanced=true
+  ok   different event creates a new entry
+  ok   empty option does not append
+
+[5] appendBranchResolutionLog grows monotonically and trims
+  ok   branch_resolution_log trims to 200 entries
+
+[6] resolveCurrentBeatType walks the beat map on advance
+  ok   starts at cold_open when current is null and advancing
+  ok   advances cold_open → rising_curiosity
+  ok   no advance → unchanged
+  ok   past last beat clamps to last
+
+=== summary ===
+failures: 0
+
+---
+
+## Step 4 — render the system prompt against a real Alice game
+
+This is the offline render: no LLM call, no DB writes — just exercises `renderSystemPrompt` with the *actual* current state of an existing game.
+
+From the **project root** inside the app container (quotes matter because the path has a space):
+
+```bash
+php "Adaptation layer/debug/curt-fix-validation-runner.php" step4
+```
+
+Same with Curt’s reference id explicit (optional):
+
+```bash
+php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 '01kpv313jddy575ct6bv6cak4j'
+```
+
+**Expected (fresh game, no turns yet):**
+- `PERSISTENT WORLD STATE` may MISS (correct — empty state hides the block).
+- `TURN STATE`, `AUTHORED-CHOICE ROUTING` (will MISS for a fresh turn — correct), `state_delta`, `objects_acquired` should all be `ok`.
+- `SESSION COLD OPEN` should be `ok` if Alice S1 is COMPLETED in `session_adaptations`.
+
+**Expected (mid-game, after a few turns with state_delta):**
+- All probes `ok` except possibly `AUTHORED-CHOICE ROUTING` (only fires when the runtime matched).
+- `world_state_object_count` should be ≥1 if the player picked anything up.
+
+### Result
+
+
+---
+
+## Step 5 — live cold-open turn (the real fix for Curt's #1)
+
+Nuke the game and trigger the first narration cleanly.
+
+```bash
+php "Adaptation layer/debug/curt-fix-validation-runner.php" step5
+```
+
+**Writes to DB:** deletes all prompts for that game and resets `current_event_id`, session/branch/world_state fields to match `CreateGameAction::resolveStartEvent` (same as the old tinker block). Uses the same game id resolution as Step 4 (override with arg or `CURT_FIX_VALIDATION_GAME_ID`).
+
+Then in the browser, visit `/games/01kpv313jddy575ct6bv6cak4j` (or your route; replace the id if your DB uses a different game) so the begin-flow generates the first narration. Then dump the first prompt:
+
+```bash
+php artisan tinker --execute="
+\$game = \App\Models\Game::find('01kpv313jddy575ct6bv6cak4j');
+\$first = \$game->prompts()->orderBy('created_at')->first();
+echo 'first_response_first_400=' . PHP_EOL;
+echo mb_substr(strip_tags(\$first->response), 0, 400) . PHP_EOL;
+"
+```
+
+**Expected:** the first 400 chars sound like Carroll-voiced cold-open prose (the `entry_point_diagnosis.cold_open` from `database/exports/adapptation-third-try.json`), NOT generic "the scene unfolds before you" or naked screenplay.
+
+### Result
+
+
+---
+
+## Step 6 — live 6-turn playthrough
+
+This is the canonical Alice scenario from the WS-B harness, but real:
+
+| Turn | Action to type into the game UI | Expected world_state shift |
+|---|---|---|
+| 1 | (cold open already rendered — read it) | `location` set to a long-hallway-ish place; maybe a knowledge fact + flag |
+| 2 | "Pick up the bottle labeled DRINK ME" | `objects_acquired` adds the bottle |
+| 3 | "Drink from the bottle" | `objects_transformed` (bottle → drained) + `conditions_added` ("small"…) + `knowledge_gained` |
+| 4 | "Pick up the small golden key from the table" | `objects_acquired` adds the key, bottle still held |
+| 5 | "Try the golden key on the smallest door" | matches authored option **A** for C1; runtime should set `input_classification=authored_choice`, `mapped_option=A`. `location_changed` to a garden/doorway, `flags_set` includes door-unlock |
+| 6 | "Try to squeeze through the doorway" | `conditions_removed` may drop "small", `conditions_added` may add "stuck"/"frustrated" |
+
+After all 6 turns, dump:
+
+```bash
+php artisan tinker --execute="
+\$game = \App\Models\Game::find('01kpv313jddy575ct6bv6cak4j')->fresh();
+echo 'world_state=' . PHP_EOL . json_encode(\$game->world_state, JSON_PRETTY_PRINT) . PHP_EOL;
+echo 'tracked_dimensions=' . json_encode(\$game->tracked_dimensions) . PHP_EOL;
+echo 'branching_choices_taken=' . json_encode(\$game->branching_choices_taken) . PHP_EOL;
+echo 'current_beat_type=' . (string) \$game->current_beat_type . PHP_EOL;
+echo 'branch_resolution_log_count=' . count(\$game->branch_resolution_log ?? []) . PHP_EOL;
+"
+```
+
+**Expected:**
+- `world_state.objects` has at least the bottle (drained) and the golden key.
+- `world_state.conditions` reflects the latest condition (no longer "small" if turn 6 changed it).
+- `world_state.knowledge` is a list ≥3 entries.
+- `world_state.location` is the most recent location string.
+- `tracked_dimensions` has at least one dimension key with a non-empty path array.
+- `branching_choices_taken` has an entry with `option=A`, `choice_id=C1`, `classification=authored_choice` (turn 5).
+- `current_beat_type` advanced one or more steps from null/cold_open.
+- `branch_resolution_log_count` ≈ 6 (one per turn, capped at 200).
+
+### Result
+
+
+---
+
+## Step 7 — `game:trace` over the same playthrough
+
+```bash
+php artisan game:trace 01kpv313jddy575ct6bv6cak4j
+```
+
+**Expected:**
+- One row per turn, in chronological order.
+- Each row prints `event_id_before/after`, `session_number_before/after`, `turn_count`, `is_first_turn_in_event`, `advance_event_returned`, classification, mapped option, state-delta summary, world-state counts.
+- All four hard rules show `ok` (`event_id_after >= event_id_before`, `advance_event=true → event changed`, `session_number_after` not cleared, choices differ from previous turn).
+- Footer reports `total_violations: 0`.
+
+### Result
+
+
+---
+
+## Step 8 — narration log file shape
+
+```bash
+tail -n 20 storage/logs/narration-$(date +%F).log
+```
+
+**Expected:** structured JSON-ish lines from `narration.turn`, each with `state_delta_summary`, `mapped_option`, `mapped_choice_id`, `deterministic_match`, `world_state_object_count`. If your env isn't UTC, swap the `date` for whatever date the file is named with.
+
+### Result
+
+
+---
+
+## Step 9 — deterministic-match smoke test against live data
+
+This proves WS-B B4 actually fires for the real session_choice_design rows the adaptation pipeline produced.
+
+```bash
+php "Adaptation layer/debug/curt-fix-validation-runner.php" step9
+```
+
+**Expected:**
+- For Alice's S1 (assuming the choice texts in your DB are roughly the canonical Wonderland choices), the first two inputs match an option (A/B/C) with `choice_id` populated, and the third returns `(none)`.
+- If your authored choice texts differ from the harness assumptions, you'll see `(none)` for the first two too — that's a content-mismatch issue, not a code bug. Paste the `choice_design_keys` and we can tune the matcher's threshold or map field names.
+
+### Result
+
+
+---
+
+## Step 10 — sanity check WS-0 stayed fixed
+
+The most important regression to keep verified.
+
+```bash
+php artisan tinker --execute="
+\$game = \App\Models\Game::find('01kpv313jddy575ct6bv6cak4j');
+\$sql = \$game->prompts()->latest()->limit(6)->toSql();
+echo 'sql=' . \$sql . PHP_EOL;
+echo 'order_by_count=' . substr_count(strtolower(\$sql), 'order by') . PHP_EOL;
+"
+```
+
+**Expected:** exactly **one** `order by` clause (the `latest()`), not the stacked `order by created_at asc, created_at desc` we hit pre-WS-0. `order_by_count=1`.
+
+### Result
+
+
+---
+
+## Rollback reference
+
+| Scope | Command |
+|---|---|
+| Entire fix series | `git reset --hard 6dd6fa9` (then `git push --force-with-lease origin main` if already pushed) |
+| WS-B only | `git revert a7272d2` |
+| WS-A only | `git revert b66015d` |
+| WS-C only | `git revert 4adb165` |
+| WS-0 only | `git revert 44938d1` |
+
+For database rollback after reverting WS-B: `php artisan migrate:rollback --step=1` will undo the `world_state` column add. Existing games won't break since the column was always nullable.
+
+---
+
+## When you've run everything
+
+Append the commit SHA of the runbook update plus a `Status: GREEN/RED` line at the very bottom, then I'll fold whatever needs follow-up into a WS-D batch.
