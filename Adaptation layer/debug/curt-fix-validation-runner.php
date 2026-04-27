@@ -10,6 +10,7 @@ declare(strict_types=1);
  * From project root (inside the app container):
  *   php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 [<GAME_ID>]
  *   php "Adaptation layer/debug/curt-fix-validation-runner.php" step5 [<GAME_ID>]
+ *   php "Adaptation layer/debug/curt-fix-validation-runner.php" step5b [<GAME_ID>]
  *   php "Adaptation layer/debug/curt-fix-validation-runner.php" step9 [<GAME_ID>]
  *
  * Game id resolution (first match wins): CLI arg → env CURT_FIX_VALIDATION_GAME_ID →
@@ -20,7 +21,9 @@ declare(strict_types=1);
 const CURT_REFERENCE_GAME_ID = '01kpv313jddy575ct6bv6cak4j';
 
 if ($argc < 2) {
-    fwrite(STDERR, "Usage: php curt-fix-validation-runner.php {step4|step5|step9} [<GAME_ID>]\n");
+    fwrite(STDERR, "Usage: php curt-fix-validation-runner.php {step4|step5|step5b|step9} [<GAME_ID>]\n");
+    fwrite(STDERR, "  step5  = reset game (deletes prompts; no first narration yet)\n");
+    fwrite(STDERR, "  step5b = call GameController::begin() if no prompts (creates first narration; needs LLM keys)\n");
     fwrite(STDERR, "  GAME_ID: optional CLI arg, else env CURT_FIX_VALIDATION_GAME_ID, else " . CURT_REFERENCE_GAME_ID . "\n");
     exit(64);
 }
@@ -31,7 +34,7 @@ if (($argv[2] ?? null) === null && getenv('CURT_FIX_VALIDATION_GAME_ID') === fal
     fwrite(STDERR, "Using reference game_id from curt-game-log.json (pass id or set CURT_FIX_VALIDATION_GAME_ID to override).\n");
 }
 
-if (! in_array($step, ['step4', 'step5', 'step9'], true)) {
+if (! in_array($step, ['step4', 'step5', 'step5b', 'step9'], true)) {
     fwrite(STDERR, "Unknown step: {$argv[1]}\n");
     exit(64);
 }
@@ -44,6 +47,7 @@ $kernel->bootstrap();
 
 use App\Actions\Game\CreateGameAction;
 use App\Http\Controllers\User\Game\PromptController;
+use App\Http\Controllers\User\GameController;
 use App\Models\Game;
 
 $game = Game::with(['story', 'currentEvent'])->find($gameId);
@@ -111,6 +115,32 @@ if ($step === 'step5') {
         'world_state' => null,
     ]);
     echo 'reset to event=' . $startEvent->id . PHP_EOL;
+    echo 'note: events.id is numeric in many seeds; first narration is NOT created until step5b or POST user/games/{id}/begin.' . PHP_EOL;
+    exit(0);
+}
+
+if ($step === 'step5b') {
+    $game->refresh();
+    if ($game->prompts()->exists()) {
+        echo 'skip_first_narration: prompts already exist (count=' . $game->prompts()->count() . ')' . PHP_EOL;
+        $first = $game->prompts()->orderBy('created_at')->first();
+        echo 'first_response_first_400=' . PHP_EOL;
+        echo mb_substr(strip_tags((string) $first->response), 0, 400) . PHP_EOL;
+        exit(0);
+    }
+
+    app(GameController::class)->begin($game);
+    $game->refresh();
+
+    $first = $game->prompts()->orderBy('created_at')->first();
+    if ($first === null) {
+        fwrite(STDERR, "begin() did not create a prompt row (check logs / LLM config).\n");
+        exit(1);
+    }
+
+    echo 'first_prompt_created=yes prompt_id=' . $first->id . PHP_EOL;
+    echo 'first_response_first_400=' . PHP_EOL;
+    echo mb_substr(strip_tags((string) $first->response), 0, 400) . PHP_EOL;
     exit(0);
 }
 

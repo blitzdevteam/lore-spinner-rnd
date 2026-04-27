@@ -11,7 +11,7 @@
 - **Reference game id (Curt’s capture):** `01kpv313jddy575ct6bv6cak4j` — taken from `Adaptation layer/debug/curt-game-log.json` (`game_id`). Use this in copy-paste commands when validating the same dataset; on another database, substitute your own id from tinker: `\App\Models\Game::with('story')->latest()->first()->id`.
 - **Runner game id resolution:** `curt-fix-validation-runner.php` accepts an optional second argument. If omitted, it uses env `CURT_FIX_VALIDATION_GAME_ID`, then falls back to the reference id above (and prints one line to stderr when using the fallback).
 - `<STORY_ID>` — UUID of the Alice story. `\App\Models\Story::where('title','like','%Alice%')->first()->id`.
-- **Do not use `php artisan tinker <<'TINKER'` in one-line deployment shells** (Laravel Cloud, CI “run command”, some SSH wrappers). Bash needs real newlines before the closing `TINKER`; if the UI flattens the snippet, you get `syntax error near unexpected token '('` and `wanted TINKER`. For Steps 4, 5, and 9 use the bootstrap script instead (same PHP, one line, heredoc-free):
+- **Do not use `php artisan tinker <<'TINKER'` in one-line deployment shells** (Laravel Cloud, CI “run command”, some SSH wrappers). Bash needs real newlines before the closing `TINKER`; if the UI flattens the snippet, you get `syntax error near unexpected token '('` and `wanted TINKER`. For Steps 4, 5, 5b, and 9 use the bootstrap script instead (same PHP, one line, heredoc-free):
 
   `php "Adaptation layer/debug/curt-fix-validation-runner.php" step4`
 
@@ -179,6 +179,7 @@ php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 '01kpv313jddy5
 **Expected (mid-game, after a few turns with state_delta):**
 - All probes `ok` except possibly `AUTHORED-CHOICE ROUTING` (only fires when the runtime matched).
 - `world_state_object_count` should be ≥1 if the player picked anything up.
+- **`MISS SESSION COLD OPEN`** usually means the rendered prompt is not on the session entry event (`isSessionStart` is false), or Session 1 adaptation is missing / not `COMPLETED` — not a runner bug.
 
 ### Result
 
@@ -187,33 +188,59 @@ php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 '01kpv313jddy5
 
 ## Step 5 — live cold-open turn (the real fix for Curt's #1)
 
-Nuke the game and trigger the first narration cleanly.
+**Order matters:** `step5` only resets the DB row and **deletes all prompts**. Nothing creates the first narration until **`step5b`** (CLI) or **`POST /user/games/{game}/begin`** (browser “Begin” — a GET to the game page alone does **not** insert the first prompt).
+
+### 5a — reset (same as before)
 
 ```bash
 php "Adaptation layer/debug/curt-fix-validation-runner.php" step5
 ```
 
-**Writes to DB:** deletes all prompts for that game and resets `current_event_id`, session/branch/world_state fields to match `CreateGameAction::resolveStartEvent` (same as the old tinker block). Uses the same game id resolution as Step 4 (override with arg or `CURT_FIX_VALIDATION_GAME_ID`).
+**Writes to DB:** deletes all prompts for that game and resets `current_event_id`, session/branch/world_state fields to match `CreateGameAction::resolveStartEvent`. `reset to event=…` prints **`events.id`** (often `1` on a fresh SQLite seed — that is normal, not the game id).
 
-Then in the browser, visit `/games/01kpv313jddy575ct6bv6cak4j` (or your route; replace the id if your DB uses a different game) so the begin-flow generates the first narration. Then dump the first prompt:
+### Result (5a)
+
+
+### 5b — create first narration (fixes “null prompt” if you skip the UI)
+
+Calls `GameController::begin()` (same as `POST` route `user.games.begin`). Requires working **NarrationAgent / LLM** config in that environment.
+
+```bash
+php "Adaptation layer/debug/curt-fix-validation-runner.php" step5b
+```
+
+**Expected:** `first_prompt_created=yes` and ~400 chars of HTML stripped narration. If prompts already exist, you get `skip_first_narration` and a dump of the existing first row.
+
+### Result (5b)
+
+
+### Optional — dump first prompt via tinker (null-safe)
+
+Only use this **after 5b** or after you have actually triggered begin in the UI.
 
 ```bash
 php artisan tinker --execute="
 \$game = \App\Models\Game::find('01kpv313jddy575ct6bv6cak4j');
-\$first = \$game->prompts()->orderBy('created_at')->first();
+\$first = \$game?->prompts()->orderBy('created_at')->first();
+if (\$first === null) {
+    echo 'no_prompts_yet: run step5b or POST user/games/{id}/begin before this dump.' . PHP_EOL;
+} else {
 echo 'first_response_first_400=' . PHP_EOL;
-echo mb_substr(strip_tags(\$first->response), 0, 400) . PHP_EOL;
+echo mb_substr(strip_tags((string) \$first->response), 0, 400) . PHP_EOL;
+}
 "
 ```
 
 **Expected:** the first 400 chars sound like Carroll-voiced cold-open prose (the `entry_point_diagnosis.cold_open` from `database/exports/adapptation-third-try.json`), NOT generic "the scene unfolds before you" or naked screenplay.
 
-### Result
+### Result (tinker dump)
 
 
 ---
 
 ## Step 6 — live 6-turn playthrough
+
+**Prerequisite:** Step **5b** (or UI begin) has run so **at least one prompt exists**, then you submit **six** player turns via the normal game UI (`POST` to the prompt route). If you run the Step 6 dump immediately after **5a** only, you will see `world_state=null`, `branch_resolution_log_count=0`, etc. — that only means no turns were played yet, not that WS-B is broken.
 
 This is the canonical Alice scenario from the WS-B harness, but real:
 
@@ -255,6 +282,8 @@ echo 'branch_resolution_log_count=' . count(\$game->branch_resolution_log ?? [])
 ---
 
 ## Step 7 — `game:trace` over the same playthrough
+
+**Prerequisite:** same as Step 6 — you need logged turns in `narration` log and prompt rows; right after a bare reset, trace will be empty or stale.
 
 ```bash
 php artisan game:trace 01kpv313jddy575ct6bv6cak4j
@@ -317,7 +346,8 @@ echo 'order_by_count=' . substr_count(strtolower(\$sql), 'order by') . PHP_EOL;
 **Expected:** exactly **one** `order by` clause (the `latest()`), not the stacked `order by created_at asc, created_at desc` we hit pre-WS-0. `order_by_count=1`.
 
 ### Result
-
+sql=select * from "prompts" where "prompts"."game_id" = ? and "prompts"."game_id" is not null order by "created_at" desc limit 6
+order_by_count=1
 
 ---
 
