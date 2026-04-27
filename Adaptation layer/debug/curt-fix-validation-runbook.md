@@ -8,14 +8,15 @@
 
 ## Conventions
 
-- **Reference game id (Curt’s capture):** `01kpv313jddy575ct6bv6cak4j` — taken from `Adaptation layer/debug/curt-game-log.json` (`game_id`). Use this in copy-paste commands when validating the same dataset; on another database, substitute your own id from tinker: `\App\Models\Game::with('story')->latest()->first()->id`.
-- **Runner game id resolution:** `curt-fix-validation-runner.php` accepts an optional second argument. If omitted, it uses env `CURT_FIX_VALIDATION_GAME_ID`, then falls back to the reference id above (and prints one line to stderr when using the fallback).
+- **Reference game id (Curt’s capture — historical, do not remove):** `01kpv313jddy575ct6bv6cak4j` — the `game_id` stored in `Adaptation layer/debug/curt-game-log.json`. Use it only when replaying or comparing against that exact export; it is **not** the default for current lab runs.
+- **Active validation game id (runbook + runner default — not Curt’s):** `01kpe60znegetqss98x1kvxrb7` — use this in all **copy-paste commands below** and when appending debug results, so logs line up with the game you are actually playing now. Update this line in the runbook when you rotate to a fresh Alice game.
+- **Runner game id resolution:** `curt-fix-validation-runner.php` accepts an optional second argument. If omitted, it uses env `CURT_FIX_VALIDATION_GAME_ID`, then falls back to the **active validation** id above (stderr prints which default was used and reminds you of Curt’s historical id).
 - `<STORY_ID>` — UUID of the Alice story. `\App\Models\Story::where('title','like','%Alice%')->first()->id`.
 - **Do not use `php artisan tinker <<'TINKER'` in one-line deployment shells** (Laravel Cloud, CI “run command”, some SSH wrappers). Bash needs real newlines before the closing `TINKER`; if the UI flattens the snippet, you get `syntax error near unexpected token '('` and `wanted TINKER`. For Steps 4, 5, 5b, and 9 use the bootstrap script instead (same PHP, one line, heredoc-free):
 
   `php "Adaptation layer/debug/curt-fix-validation-runner.php" step4`
 
-  Or with an explicit id: `php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 '01kpv313jddy575ct6bv6cak4j'`
+  Or with an explicit id: `php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 '01kpe60znegetqss98x1kvxrb7'`
 
 - For each step, paste the output (or a redacted summary) under the `### Result` heading I left empty.
 
@@ -168,7 +169,7 @@ php "Adaptation layer/debug/curt-fix-validation-runner.php" step4
 Same with Curt’s reference id explicit (optional):
 
 ```bash
-php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 '01kpv313jddy575ct6bv6cak4j'
+php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 '01kpe60znegetqss98x1kvxrb7'
 ```
 
 **Expected (fresh game, no turns yet):**
@@ -183,7 +184,16 @@ php "Adaptation layer/debug/curt-fix-validation-runner.php" step4 '01kpv313jddy5
 
 ### Result
 
-
+Using reference game_id from curt-game-log.json (pass id or set CURT_FIX_VALIDATION_GAME_ID to override).
+ok   PERSISTENT WORLD STATE
+ok   TURN STATE
+MISS AUTHORED-CHOICE ROUTING
+ok   state_delta
+ok   objects_acquired
+ok   SESSION COLD OPEN
+rendered_bytes=24016
+session_resolved=1
+world_state_object_count=0
 ---
 
 ## Step 5 — live cold-open turn (the real fix for Curt's #1)
@@ -199,7 +209,9 @@ php "Adaptation layer/debug/curt-fix-validation-runner.php" step5
 **Writes to DB:** deletes all prompts for that game and resets `current_event_id`, session/branch/world_state fields to match `CreateGameAction::resolveStartEvent`. `reset to event=…` prints **`events.id`** (often `1` on a fresh SQLite seed — that is normal, not the game id).
 
 ### Result (5a)
-
+Using reference game_id from curt-game-log.json (pass id or set CURT_FIX_VALIDATION_GAME_ID to override).
+reset to event=1
+note: events.id is numeric in many seeds; first narration is NOT created until step5b or POST user/games/{id}/begin.
 
 ### 5b — create first narration (fixes “null prompt” if you skip the UI)
 
@@ -212,7 +224,10 @@ php "Adaptation layer/debug/curt-fix-validation-runner.php" step5b
 **Expected:** `first_prompt_created=yes` and ~400 chars of HTML stripped narration. If prompts already exist, you get `skip_first_narration` and a dump of the existing first row.
 
 ### Result (5b)
-
+Using reference game_id from curt-game-log.json (pass id or set CURT_FIX_VALIDATION_GAME_ID to override).
+first_prompt_created=yes prompt_id=01kq7fcznc5qy21br6t0zbbfyr
+first_response_first_400=
+Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice “without pictures or conversations?”So she was considering in her own mind (as well as she could, for the hot day made her feel very s
 
 ### Optional — dump first prompt via tinker (null-safe)
 
@@ -220,13 +235,13 @@ Only use this **after 5b** or after you have actually triggered begin in the UI.
 
 ```bash
 php artisan tinker --execute="
-\$game = \App\Models\Game::find('01kpv313jddy575ct6bv6cak4j');
+\$game = \App\Models\Game::find('01kpe60znegetqss98x1kvxrb7');
 \$first = \$game?->prompts()->orderBy('created_at')->first();
 if (\$first === null) {
     echo 'no_prompts_yet: run step5b or POST user/games/{id}/begin before this dump.' . PHP_EOL;
 } else {
-echo 'first_response_first_400=' . PHP_EOL;
-echo mb_substr(strip_tags((string) \$first->response), 0, 400) . PHP_EOL;
+echo 'first_response_first_1000=' . PHP_EOL;
+echo mb_substr(strip_tags((string) \$first->response), 0, 1000) . PHP_EOL;
 }
 "
 ```
@@ -234,7 +249,8 @@ echo mb_substr(strip_tags((string) \$first->response), 0, 400) . PHP_EOL;
 **Expected:** the first 400 chars sound like Carroll-voiced cold-open prose (the `entry_point_diagnosis.cold_open` from `database/exports/adapptation-third-try.json`), NOT generic "the scene unfolds before you" or naked screenplay.
 
 ### Result (tinker dump)
-
+Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice “without pictures or conversations?”So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.There was nothing so _very_ remarkable in that; nor did Alice think it so _very_ much out of the way to hear the Rabbit say to itself, “Oh dear! Oh dear! I shall be late!” (when she thought it over afterwards, it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but when the Rabbit actually _took a watch out of its waistcoat-pocket_, and looked at it, an
+...
 
 ---
 
@@ -257,7 +273,7 @@ After all 6 turns, dump:
 
 ```bash
 php artisan tinker --execute="
-\$game = \App\Models\Game::find('01kpv313jddy575ct6bv6cak4j')->fresh();
+\$game = \App\Models\Game::find('01kpe60znegetqss98x1kvxrb7')->fresh();
 echo 'world_state=' . PHP_EOL . json_encode(\$game->world_state, JSON_PRETTY_PRINT) . PHP_EOL;
 echo 'tracked_dimensions=' . json_encode(\$game->tracked_dimensions) . PHP_EOL;
 echo 'branching_choices_taken=' . json_encode(\$game->branching_choices_taken) . PHP_EOL;
@@ -286,7 +302,7 @@ echo 'branch_resolution_log_count=' . count(\$game->branch_resolution_log ?? [])
 **Prerequisite:** same as Step 6 — you need logged turns in `narration` log and prompt rows; right after a bare reset, trace will be empty or stale.
 
 ```bash
-php artisan game:trace 01kpv313jddy575ct6bv6cak4j
+php artisan game:trace 01kpe60znegetqss98x1kvxrb7
 ```
 
 **Expected:**
@@ -336,7 +352,7 @@ The most important regression to keep verified.
 
 ```bash
 php artisan tinker --execute="
-\$game = \App\Models\Game::find('01kpv313jddy575ct6bv6cak4j');
+\$game = \App\Models\Game::find('01kpe60znegetqss98x1kvxrb7');
 \$sql = \$game->prompts()->latest()->limit(6)->toSql();
 echo 'sql=' . \$sql . PHP_EOL;
 echo 'order_by_count=' . substr_count(strtolower(\$sql), 'order by') . PHP_EOL;

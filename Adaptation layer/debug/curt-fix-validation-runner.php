@@ -14,24 +14,27 @@ declare(strict_types=1);
  *   php "Adaptation layer/debug/curt-fix-validation-runner.php" step9 [<GAME_ID>]
  *
  * Game id resolution (first match wins): CLI arg → env CURT_FIX_VALIDATION_GAME_ID →
- * reference id from Curt's captured log (curt-game-log.json).
+ * DEFAULT_VALIDATION_GAME_ID (active Alice validation game; Curt's JSON capture is CURT_GAME_LOG_GAME_ID).
  */
 
-/** Reference `game_id` from `Adaptation layer/debug/curt-game-log.json` (Curt's test session). */
-const CURT_REFERENCE_GAME_ID = '01kpv313jddy575ct6bv6cak4j';
+/** Historical `game_id` in `Adaptation layer/debug/curt-game-log.json` (Curt's session) — doc correlation only. */
+const CURT_GAME_LOG_GAME_ID = '01kpv313jddy575ct6bv6cak4j';
+
+/** Default game id for runbook copy-paste / runner fallback (active Alice validation game; not Curt's capture). */
+const DEFAULT_VALIDATION_GAME_ID = '01kpe60znegetqss98x1kvxrb7';
 
 if ($argc < 2) {
     fwrite(STDERR, "Usage: php curt-fix-validation-runner.php {step4|step5|step5b|step9} [<GAME_ID>]\n");
     fwrite(STDERR, "  step5  = reset game (deletes prompts; no first narration yet)\n");
     fwrite(STDERR, "  step5b = call GameController::begin() if no prompts (creates first narration; needs LLM keys)\n");
-    fwrite(STDERR, "  GAME_ID: optional CLI arg, else env CURT_FIX_VALIDATION_GAME_ID, else " . CURT_REFERENCE_GAME_ID . "\n");
+    fwrite(STDERR, "  GAME_ID: optional CLI arg, else env CURT_FIX_VALIDATION_GAME_ID, else " . DEFAULT_VALIDATION_GAME_ID . "\n");
     exit(64);
 }
 
 $step = strtolower($argv[1]);
-$gameId = $argv[2] ?? getenv('CURT_FIX_VALIDATION_GAME_ID') ?: CURT_REFERENCE_GAME_ID;
+$gameId = $argv[2] ?? getenv('CURT_FIX_VALIDATION_GAME_ID') ?: DEFAULT_VALIDATION_GAME_ID;
 if (($argv[2] ?? null) === null && getenv('CURT_FIX_VALIDATION_GAME_ID') === false) {
-    fwrite(STDERR, "Using reference game_id from curt-game-log.json (pass id or set CURT_FIX_VALIDATION_GAME_ID to override).\n");
+    fwrite(STDERR, 'Using DEFAULT_VALIDATION_GAME_ID=' . DEFAULT_VALIDATION_GAME_ID . ' (Curt historical game_id in curt-game-log.json: ' . CURT_GAME_LOG_GAME_ID . "). Pass CLI id or set CURT_FIX_VALIDATION_GAME_ID to override.\n");
 }
 
 if (! in_array($step, ['step4', 'step5', 'step5b', 'step9'], true)) {
