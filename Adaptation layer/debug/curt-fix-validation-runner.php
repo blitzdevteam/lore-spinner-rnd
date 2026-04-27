@@ -77,10 +77,10 @@ if ($step === 'step4') {
         'AUTHORED-CHOICE ROUTING',
         'state_delta',
         'objects_acquired',
-        'cold open' => 'SESSION COLD OPEN',
+        'SESSION COLD OPEN',
     ];
-    foreach ($probes as $label => $needle) {
-        $needle = is_int($label) ? $label : $needle;
+    foreach ($probes as $needle) {
+        $needle = (string) $needle;
         echo (str_contains($rendered, $needle) ? 'ok   ' : 'MISS ') . $needle . PHP_EOL;
     }
     echo 'rendered_bytes=' . strlen($rendered) . PHP_EOL;
