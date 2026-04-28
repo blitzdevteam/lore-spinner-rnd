@@ -43,16 +43,18 @@ $assert = function (bool $cond, string $label) use (&$failures): void {
 
 echo "=== WS-B validation: Alice 6-turn scenario ===\n";
 
-// Synthesize a session_choice_design like the adaptation layer produces.
+// Synthesize a session_choice_design matching the real adaptation-pipeline shape:
+// branching_choice_N -> { choice_id, option_a/b/c: { text } }, plus expressive_choices[].
 $fakeSessionAdaptation = new SessionAdaptation();
 $fakeSessionAdaptation->forceFill([
     'session_number' => 1,
     'session_status' => SessionAdaptationStatusEnum::COMPLETED,
     'session_choice_design' => [
-        'choices' => [
-            ['option' => 'A', 'choice_id' => 'C1', 'text' => 'Try the golden key on the smallest door'],
-            ['option' => 'B', 'choice_id' => 'C1', 'text' => 'Drink from the bottle labeled DRINK ME'],
-            ['option' => 'C', 'choice_id' => 'C1', 'text' => 'Look around the long hallway carefully'],
+        'branching_choice_1' => [
+            'choice_id' => 'C1',
+            'option_a' => ['text' => 'Try the golden key on the smallest door'],
+            'option_b' => ['text' => 'Drink from the bottle labeled DRINK ME'],
+            'option_c' => ['text' => 'Look around the long hallway carefully'],
         ],
     ],
     'session_architecture' => [

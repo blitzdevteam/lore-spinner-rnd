@@ -96,7 +96,16 @@ final class GameController extends Controller
 
         $story = $game->story;
         $firstEvent = $game->currentEvent;
-        $aiResult = $this->generateFirstNarration($story, $firstEvent);
+
+        try {
+            $aiResult = $this->generateFirstNarration($story, $firstEvent);
+        } catch (Throwable) {
+            // generateFirstNarration logged the exception (narration.llm_failed). Do NOT
+            // insert a prompt row — that would persist a fake "scene unfolds" first beat.
+            // Player can hit Begin again once the upstream issue is resolved.
+            return to_route('user.games.show', $game)
+                ->with('error', 'Opening narration hiccuped — please retry begin.');
+        }
 
         $game->prompts()->create([
             'event_id' => $firstEvent->id,
@@ -144,6 +153,16 @@ final class GameController extends Controller
                 ->first();
         }
 
+        $coldOpenText = (string) ($sessionAdaptation?->entry_point_diagnosis['cold_open'] ?? '');
+        Log::channel('narration')->info('narration.cold_open_audit', [
+            'story_id' => $story->id,
+            'event_id' => $firstEvent->id,
+            'session_adaptation_resolved' => $sessionAdaptation !== null,
+            'session_number' => $sessionAdaptation?->session_number,
+            'cold_open_present' => $coldOpenText !== '',
+            'cold_open_first_120' => $coldOpenText !== '' ? mb_substr($coldOpenText, 0, 120) : null,
+        ]);
+
         $systemPrompt = view('ai.agents.narration.system-prompt', [
             'characterName' => $storyData['character_name'] ?? null,
             'worldRules' => $storyData['world_rules'] ?? [],
@@ -176,22 +195,35 @@ final class GameController extends Controller
                     ])->render()
                 );
 
+            $responseHtml = (string) ($response['response'] ?? '');
+            $choices = $response['choices'] ?? [];
+
+            Log::channel('narration')->info('narration.llm_success', [
+                'site' => 'first_narration',
+                'story_id' => $story->id,
+                'event_id' => $firstEvent->id,
+                'response_bytes' => strlen($responseHtml),
+                'choices_count' => count($choices),
+                'system_prompt_bytes' => strlen($systemPrompt),
+                'cold_open_present' => $coldOpenText !== '',
+            ]);
+
             return [
-                'response' => $response['response'] ?? '<p>The scene unfolds before you...</p>',
-                'choices' => $response['choices'] ?? ['Begin your adventure'],
+                'response' => $responseHtml,
+                'choices' => $choices,
             ];
         } catch (Throwable $e) {
-            Log::error('NarrationAgent failed during first-narration generation; falling back to formatted event content.', [
+            Log::channel('narration')->error('narration.llm_failed', [
+                'site' => 'first_narration',
                 'story_id' => $story->id,
                 'event_id' => $firstEvent->id,
                 'exception' => $e::class,
                 'message' => $e->getMessage(),
+                'system_prompt_bytes' => strlen($systemPrompt),
+                'cold_open_present' => $coldOpenText !== '',
             ]);
 
-            return [
-                'response' => $this->formatEventContentAsHtml($firstEvent->content ?? ''),
-                'choices' => ['Begin your adventure'],
-            ];
+            throw $e;
         }
     }
 

@@ -1,8 +1,10 @@
 # Curt Fix Series — Live Validation Runbook
 
 **Companion to:** `curt-fix-process-log.md`
-**Scope:** WS-0 / WS-C / WS-A / WS-B (commits `44938d1`, `4adb165`, `b66015d`, `a7272d2`)
+**Scope:** WS-0 / WS-C / WS-A / WS-B (commits `44938d1`, `4adb165`, `b66015d`, `a7272d2`) + **Curt Fix v2 — No Fallbacks** (schema strict-mode fix, kill silent stubs, B4 matcher rewrite, GameTraceCommand type fix, LLM observability)
 **Environment:** the deployed Laravel container (your `pgsql` runs there). All commands below are written for **inside the app container**. Replace the `php` prefix with whatever your project uses (`sail artisan`, `docker compose exec app php`, etc.) — examples shown with bare `php artisan`.
+
+> **Validation PASS 2 (post-Curt-Fix-v2):** the prior `### Result` blocks below are historical evidence from the failed PASS 1 run (when the silent stub was masking the OpenAI strict-mode rejection). Re-run the steps in the new validation order — `step5` reset → **`step11` first** → `step5b` → `step9` → 1 UI turn → `game:trace` → 5 more turns — and overwrite the result blocks. PASS 2 is GREEN when every probe lines up with its expected output below.
 
 ---
 
@@ -224,8 +226,8 @@ php "Adaptation layer/debug/curt-fix-validation-runner.php" step5b
 **Expected:** `first_prompt_created=yes` and ~400 chars of HTML stripped narration. If prompts already exist, you get `skip_first_narration` and a dump of the existing first row.
 
 ### Result (5b)
-Using reference game_id from curt-game-log.json (pass id or set CURT_FIX_VALIDATION_GAME_ID to override).
-first_prompt_created=yes prompt_id=01kq7fcznc5qy21br6t0zbbfyr
+Using DEFAULT_VALIDATION_GAME_ID=01kpe60znegetqss98x1kvxrb7 (Curt historical game_id in curt-game-log.json: 01kpv313jddy575ct6bv6cak4j). Pass CLI id or set CURT_FIX_VALIDATION_GAME_ID to override.
+first_prompt_created=yes prompt_id=01kq7gpd2xxp18ynd1gyvmg0y0
 first_response_first_400=
 Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice “without pictures or conversations?”So she was considering in her own mind (as well as she could, for the hot day made her feel very s
 
@@ -249,8 +251,8 @@ echo mb_substr(strip_tags((string) \$first->response), 0, 1000) . PHP_EOL;
 **Expected:** the first 400 chars sound like Carroll-voiced cold-open prose (the `entry_point_diagnosis.cold_open` from `database/exports/adapptation-third-try.json`), NOT generic "the scene unfolds before you" or naked screenplay.
 
 ### Result (tinker dump)
+first_response_first_1000=
 Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice “without pictures or conversations?”So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.There was nothing so _very_ remarkable in that; nor did Alice think it so _very_ much out of the way to hear the Rabbit say to itself, “Oh dear! Oh dear! I shall be late!” (when she thought it over afterwards, it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but when the Rabbit actually _took a watch out of its waistcoat-pocket_, and looked at it, an
-...
 
 ---
 
@@ -294,7 +296,20 @@ echo 'branch_resolution_log_count=' . count(\$game->branch_resolution_log ?? [])
 
 ### Result
 
-
+world_state=
+{
+    "objects": [],
+    "conditions": [],
+    "knowledge": [],
+    "relationships": [],
+    "flags": [],
+    "location": null,
+    "updated_at": "2026-04-27T13:08:03+00:00"
+}
+tracked_dimensions=[]
+branching_choices_taken=[]
+current_beat_type=ESCALATION
+branch_resolution_log_count=2
 ---
 
 ## Step 7 — `game:trace` over the same playthrough
@@ -313,36 +328,75 @@ php artisan game:trace 01kpe60znegetqss98x1kvxrb7
 
 ### Result
 
+=== GAME ===
+id:                    01kpe60znegetqss98x1kvxrb7
+story_id:              1
+current_event_id:      3
+current_session_number: null
 
+=== TURN TRACE (2 rows) ===
+
+--- TURN 1 (logged 2026-04-27T13:07:50+00:00) ---
+  event_id:            1 -> 2
+  session_number:      1 -> null
+  turn_count_in_event: 1
+  advance_returned:    true
+  is_continue:         false
+  prompt_hash:         a5793c75c69c
+  player_input:        "Pick up the bottle labeled DRINK ME"
+  narrator_response:   "The scene unfolds before you..."
+  choices_returned:
+    A) Continue forward
+    B) Investigate your surroundings
+    C) Take a moment to reflect
+
+In GameTraceCommand.php line 285:
+                                                                               
+  App\Console\Commands\GameTraceCommand::assertHardRules(): Argument #1 ($eve  
+  ntBefore) must be of type ?string, int given, called in /var/www/html/app/C  
+  onsole/Commands/GameTraceCommand.php on line 119       
 ---
 
 ## Step 8 — narration log file shape
 
 ```bash
-tail -n 20 storage/logs/narration-$(date +%F).log
+tail -n 40 storage/logs/narration-$(date +%F).log
 ```
 
-**Expected:** structured JSON-ish lines from `narration.turn`, each with `state_delta_summary`, `mapped_option`, `mapped_choice_id`, `deterministic_match`, `world_state_object_count`. If your env isn't UTC, swap the `date` for whatever date the file is named with.
+**Expected (Curt Fix v2):** four log row types now appear, all on the `narration` channel:
+
+| Row | Emitted from | What it proves |
+|---|---|---|
+| `narration.cold_open_audit` | `GameController::generateFirstNarration` (every begin) | Whether `entry_point_diagnosis.cold_open` was non-empty when the system prompt was rendered. `cold_open_present=true` + a recognizable `cold_open_first_120` ("Heat shimmers off the river stones…") means WS-C content is reaching the model. |
+| `narration.llm_success` | both `GameController::generateFirstNarration` and `PromptController::generateNarration` | The OpenAI call returned. `state_delta_keys_present` should list all 10 sub-keys (objects_acquired, objects_lost, objects_transformed, conditions_added, conditions_removed, location_changed, knowledge_gained, relationship_changes, tracked_path_update, flags_set) on a successful WS-B turn. `input_classification` must be in the schema enum (one of `expressive/branch_aligned/emergent/unsupported/opening`, plus `authored_choice` from the runbook prompt) — **never** the legacy `freeform`. |
+| `narration.llm_failed` | both call sites (only on exception) | The pre-fix silent catch is gone. Any LLM failure now logs `exception` class + `message` + `system_prompt_bytes` + `history_turns`. If you see this in PASS 2, the schema fix is incomplete or there's an unrelated upstream error — read the `message` and act. |
+| `narration.turn` | `PromptController::store` (post-success only — failure path no longer logs this row) | Existing per-turn audit row: `state_delta_summary` counts, `world_state_object_count`, `mapped_option`, `mapped_choice_id`, `deterministic_match`, `system_prompt_hash`. |
+
+If your env isn't UTC, swap `$(date +%F)` for whatever date the file is named with.
 
 ### Result
-
+[2026-04-27 13:07:50] production.INFO: narration.turn {"game_id":"01kpe60znegetqss98x1kvxrb7","event_id_before":1,"event_id_after":2,"session_number_before":1,"session_number_after":null,"turn_count":1,"is_first_turn_in_event":false,"advance_event_returned":true,"force_advanced":false,"is_continue":false,"input_classification":"freeform","mapped_choice_id":null,"mapped_option":null,"deterministic_match":false,"state_delta_summary":{"objects_acquired":0,"objects_lost":0,"objects_transformed":0,"conditions_added":0,"conditions_removed":0,"location_changed":"","knowledge_gained":0,"relationship_changes":0,"tracked_path_update":0,"flags_set":0},"world_state_object_count":0,"world_state_condition_count":0,"player_input_first_120":"Pick up the bottle labeled DRINK ME","narrator_response_first_120":"The scene unfolds before you...","choices_returned":["Continue forward","Investigate your surroundings","Take a moment to reflect"],"system_prompt_hash":"a5793c75c69cd47b1f94a96c56a41cb7cd85d45087d51be1d2090b1c3c08894d","logged_at":"2026-04-27T13:07:50+00:00"} 
+[2026-04-27 13:08:03] production.INFO: narration.turn {"game_id":"01kpe60znegetqss98x1kvxrb7","event_id_before":2,"event_id_after":3,"session_number_before":1,"session_number_after":null,"turn_count":1,"is_first_turn_in_event":false,"advance_event_returned":true,"force_advanced":false,"is_continue":false,"input_classification":"freeform","mapped_choice_id":null,"mapped_option":null,"deterministic_match":false,"state_delta_summary":{"objects_acquired":0,"objects_lost":0,"objects_transformed":0,"conditions_added":0,"conditions_removed":0,"location_changed":"","knowledge_gained":0,"relationship_changes":0,"tracked_path_update":0,"flags_set":0},"world_state_object_count":0,"world_state_condition_count":0,"player_input_first_120":"Drink from the bottle","narrator_response_first_120":"The scene unfolds before you...","choices_returned":["Continue forward","Investigate your surroundings","Take a moment to reflect"],"system_prompt_hash":"7f066d10404df2f5606a1b2113695c6e877333e00c8817e68d6c93c46d2d8318","logged_at":"2026-04-27T13:08:03+00:00"} 
 
 ---
 
 ## Step 9 — deterministic-match smoke test against live data
 
-This proves WS-B B4 actually fires for the real session_choice_design rows the adaptation pipeline produced.
+This proves WS-B B4 actually fires for the real session_choice_design rows the adaptation pipeline produced. Curt Fix v2 rewrote the matcher around the real nested shape (`branching_choice_*.option_a.text` etc.) plus the `expressive_choices[]` array. Inputs are now near-verbatim copies of the canonical S1_C1 Alice option text so the Jaccard scorer has real overlap to grip.
 
 ```bash
 php "Adaptation layer/debug/curt-fix-validation-runner.php" step9
 ```
 
-**Expected:**
-- For Alice's S1 (assuming the choice texts in your DB are roughly the canonical Wonderland choices), the first two inputs match an option (A/B/C) with `choice_id` populated, and the third returns `(none)`.
-- If your authored choice texts differ from the harness assumptions, you'll see `(none)` for the first two too — that's a content-mismatch issue, not a code bug. Paste the `choice_design_keys` and we can tune the matcher's threshold or map field names.
+**Expected (post-Curt-Fix-v2):**
+- `extracted_candidates=` should be ≥ 12 for Alice S1 (3 branching slots × 3 options + N expressive items × 3 options). On the third-try export it lands at 18.
+- Input 1 (`Sprint after him and dive for the rabbit-hole`) matches `option=A choice_id=S1_C1` (substring shortcut → score ≥ 0.85).
+- Input 2 (`Keep him in sight but slow just long enough to clock landmarks`) matches `option=B choice_id=S1_C1` (substring shortcut).
+- Input 3 (`Shout into the void`) returns `(none)`.
+
+If candidate count is 0 or matches all return `(none)`, the `session_choice_design` row is empty in this DB — that's a content-pipeline issue, not a runtime bug.
 
 ### Result
-
 
 ---
 
@@ -367,11 +421,48 @@ order_by_count=1
 
 ---
 
+## Step 11 — direct NarrationAgent probe (Curt Fix v2)
+
+This is the **first thing to run after the schema-strict fix lands** — it bypasses both controllers and calls `NarrationAgent::make($systemPrompt)->prompt(...)` against a tiny throwaway system prompt. If OpenAI is going to reject our schema for being non-strict-compliant (or any other reason), this surfaces the raw exception class + message + first frame instead of letting it disappear into a stub. Step 5b and the controller path can then be trusted to actually exercise the full pipe.
+
+```bash
+php "Adaptation layer/debug/curt-fix-validation-runner.php" step11
+```
+
+**Expected (success path — what PASS 2 should look like):**
+
+```
+agent_class=App\Ai\Agents\NarrationAgent
+system_prompt_bytes=<a few hundred>
+status=ok
+response_bytes=<>0
+response_first_300=<some Carroll-flavored opening prose>
+choices_count=3
+input_classification=opening
+state_delta_keys=objects_acquired,objects_lost,objects_transformed,conditions_added,conditions_removed,location_changed,knowledge_gained,relationship_changes,tracked_path_update,flags_set
+```
+
+**Expected (failure path — diagnosis surface):**
+
+```
+status=fail
+exception_class=<some Prism / OpenAI / Throwable subclass>
+exception_message=<the actual API error — typically "Invalid schema for response_format ... additionalProperties is required" if the schema fix regressed>
+first_frame=<file>:<line> <Class>::<method>
+```
+
+If failure: read the exception_message verbatim. The most common symptoms after this point are (a) `OPENAI_API_KEY` missing in the env, (b) provider rate-limit / quota, (c) a model rename. None of those are runtime-logic bugs and none can hide behind silent stubs anymore.
+
+### Result
+
+---
+
 ## Rollback reference
 
 | Scope | Command |
 |---|---|
-| Entire fix series | `git reset --hard 6dd6fa9` (then `git push --force-with-lease origin main` if already pushed) |
+| Entire fix series (incl. v2) | `git reset --hard 6dd6fa9` (then `git push --force-with-lease origin main` if already pushed) |
+| Curt Fix v2 only | `git revert <v2 sha — fill after commit>` (restores the WS-B-as-shipped state, including the silent stub) |
 | WS-B only | `git revert a7272d2` |
 | WS-A only | `git revert b66015d` |
 | WS-C only | `git revert 4adb165` |

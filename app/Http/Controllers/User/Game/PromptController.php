@@ -58,12 +58,20 @@ final class PromptController extends Controller
             deterministicMatch: $deterministicMatch,
         );
 
-        $aiResult = $this->generateNarration(
-            systemPrompt: $systemPrompt,
-            conversationHistory: $conversationHistory,
-            playerAction: $isContinue ? 'Continue forward' : $prompt,
-            deterministicMatch: $deterministicMatch,
-        );
+        try {
+            $aiResult = $this->generateNarration(
+                systemPrompt: $systemPrompt,
+                conversationHistory: $conversationHistory,
+                playerAction: $isContinue ? 'Continue forward' : $prompt,
+                deterministicMatch: $deterministicMatch,
+            );
+        } catch (Throwable) {
+            // The narration call already logged the failure (narration.llm_failed). No prompt
+            // row is created here — the player's input is preserved in the previous prompt's
+            // ->update() above, so a retry submits cleanly. We surface a banner instead of a
+            // fake "scene unfolds" stub so playtests see the failure honestly.
+            return back()->with('error', 'Narration hiccuped — your input was preserved. Please retry.');
+        }
 
         $shouldAdvance = $aiResult['advance_event'];
 
@@ -303,11 +311,11 @@ final class PromptController extends Controller
             return null;
         }
 
-        $choices = $sessionAdaptation->session_choice_design['choices']
-            ?? $sessionAdaptation->session_choice_design
-            ?? null;
+        $candidates = $this->extractAuthoredOptions(
+            (array) ($sessionAdaptation->session_choice_design ?? [])
+        );
 
-        if (! is_array($choices) || empty($choices)) {
+        if ($candidates === []) {
             return null;
         }
 
@@ -321,10 +329,10 @@ final class PromptController extends Controller
         $best = null;
         $bestScore = 0.0;
 
-        foreach ($choices as $choice) {
-            $option = (string) ($choice['option'] ?? $choice['letter'] ?? '');
-            $text = (string) ($choice['text'] ?? $choice['title'] ?? $choice['summary'] ?? '');
-            $choiceId = $choice['id'] ?? $choice['choice_id'] ?? null;
+        foreach ($candidates as $candidate) {
+            $option = $candidate['option'];
+            $text = $candidate['text'];
+            $choiceId = $candidate['choice_id'];
 
             if ($option === '' || $text === '') {
                 continue;
@@ -348,13 +356,92 @@ final class PromptController extends Controller
                 $bestScore = $score;
                 $best = [
                     'option' => $option,
-                    'choice_id' => $choiceId !== null ? (string) $choiceId : null,
+                    'choice_id' => $choiceId,
                     'text' => $text,
                 ];
             }
         }
 
         return $bestScore >= 0.6 ? $best : null;
+    }
+
+    /**
+     * Flatten the nested session_choice_design shape into a list of authored option candidates.
+     *
+     * Real shape produced by the adaptation pipeline (see database/exports/adapptation-third-try.json):
+     *   {
+     *     branching_choice_1: { choice_id, option_a: {text, ...}, option_b: {text}, option_c: {text}, ... },
+     *     branching_choice_2: { ... },
+     *     branching_choice_3: { ... },
+     *     expressive_choices: [
+     *       { source_moment, option_a: {text}, option_b: {text}, option_c: {text}, ... },
+     *       ...
+     *     ],
+     *   }
+     *
+     * Each branching slot emits 3 candidates (A/B/C with its choice_id). Each expressive item emits 3
+     * candidates with choice_id = null (these are tonal/expressive, not pre-authored branch slots).
+     *
+     * @param  array<string, mixed>  $design
+     * @return list<array{option: 'A'|'B'|'C', choice_id: ?string, text: string}>
+     */
+    private function extractAuthoredOptions(array $design): array
+    {
+        $candidates = [];
+
+        foreach (['branching_choice_1', 'branching_choice_2', 'branching_choice_3'] as $slot) {
+            $entry = $design[$slot] ?? null;
+            if (! is_array($entry)) {
+                continue;
+            }
+
+            $choiceId = isset($entry['choice_id']) ? (string) $entry['choice_id'] : null;
+
+            foreach (['A' => 'option_a', 'B' => 'option_b', 'C' => 'option_c'] as $option => $key) {
+                $optionEntry = $entry[$key] ?? null;
+                $text = is_array($optionEntry)
+                    ? (string) ($optionEntry['text'] ?? '')
+                    : (string) ($optionEntry ?? '');
+
+                if ($text === '') {
+                    continue;
+                }
+
+                $candidates[] = [
+                    'option' => $option,
+                    'choice_id' => $choiceId,
+                    'text' => $text,
+                ];
+            }
+        }
+
+        $expressive = $design['expressive_choices'] ?? null;
+        if (is_array($expressive)) {
+            foreach ($expressive as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+
+                foreach (['A' => 'option_a', 'B' => 'option_b', 'C' => 'option_c'] as $option => $key) {
+                    $optionEntry = $item[$key] ?? null;
+                    $text = is_array($optionEntry)
+                        ? (string) ($optionEntry['text'] ?? '')
+                        : (string) ($optionEntry ?? '');
+
+                    if ($text === '') {
+                        continue;
+                    }
+
+                    $candidates[] = [
+                        'option' => $option,
+                        'choice_id' => null,
+                        'text' => $text,
+                    ];
+                }
+            }
+        }
+
+        return $candidates;
     }
 
     private function normalizeForMatch(string $value): string
@@ -757,25 +844,38 @@ final class PromptController extends Controller
                     ])->render()
                 );
 
+            $stateDelta = is_array($response['state_delta'] ?? null) ? $response['state_delta'] : [];
+
+            Log::channel('narration')->info('narration.llm_success', [
+                'response_bytes' => strlen((string) ($response['response'] ?? '')),
+                'state_delta_keys_present' => array_keys($stateDelta),
+                'input_classification' => $response['input_classification'] ?? null,
+                'mapped_option' => $response['mapped_option'] ?? null,
+                'mapped_choice_id' => $response['mapped_choice_id'] ?? null,
+                'system_prompt_bytes' => strlen($systemPrompt),
+                'history_turns' => count($conversationHistory),
+            ]);
+
             return [
                 'response' => $response['response'] ?? '',
-                'choices' => $response['choices'] ?? ['Continue forward', 'Investigate your surroundings', 'Take a moment to reflect'],
+                'choices' => $response['choices'] ?? [],
                 'advance_event' => (bool) ($response['advance_event'] ?? false),
-                'input_classification' => (string) ($response['input_classification'] ?? 'freeform'),
+                'input_classification' => (string) ($response['input_classification'] ?? ''),
                 'mapped_choice_id' => (string) ($response['mapped_choice_id'] ?? ''),
                 'mapped_option' => (string) ($response['mapped_option'] ?? ''),
-                'state_delta' => is_array($response['state_delta'] ?? null) ? $response['state_delta'] : [],
+                'state_delta' => $stateDelta,
             ];
-        } catch (Throwable) {
-            return [
-                'response' => '<p>The scene unfolds before you...</p>',
-                'choices' => ['Continue forward', 'Investigate your surroundings', 'Take a moment to reflect'],
-                'advance_event' => true,
-                'input_classification' => 'freeform',
-                'mapped_choice_id' => '',
-                'mapped_option' => '',
-                'state_delta' => [],
-            ];
+        } catch (Throwable $e) {
+            Log::channel('narration')->error('narration.llm_failed', [
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+                'system_prompt_bytes' => strlen($systemPrompt),
+                'history_turns' => count($conversationHistory),
+                'deterministic_match' => $deterministicMatch !== null,
+                'player_action_first_120' => mb_substr($playerAction, 0, 120),
+            ]);
+
+            throw $e;
         }
     }
 }

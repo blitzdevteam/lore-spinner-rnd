@@ -278,13 +278,15 @@ final class GameTraceCommand extends Command
     }
 
     /**
+     * @param  int|string|null  $eventBefore
+     * @param  int|string|null  $eventAfter
      * @param  array<int, string>  $choices
      * @param  array<int, string>|null  $previousChoices
      * @return list<string>
      */
     private function assertHardRules(
-        ?string $eventBefore,
-        ?string $eventAfter,
+        int|string|null $eventBefore,
+        int|string|null $eventAfter,
         ?int $sessionBefore,
         ?int $sessionAfter,
         bool $advanceReturned,

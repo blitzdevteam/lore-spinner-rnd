@@ -108,7 +108,7 @@ class NarrationAgent implements Agent, HasStructuredOutput
                                 ->title('Contains')
                                 ->description('Names of nested objects (e.g. backpack contains ["phone", "notebook"]). Empty array if none.')
                                 ->items($schema->string()->required()),
-                        ])->required()
+                        ])->required()->withoutAdditionalProperties()
                     ),
                 'objects_lost' => $schema
                     ->array()
@@ -125,7 +125,7 @@ class NarrationAgent implements Agent, HasStructuredOutput
                         $schema->object([
                             'name' => $schema->string()->required()->title('Name'),
                             'new_qualifier' => $schema->string()->required()->title('New Qualifier'),
-                        ])->required()
+                        ])->required()->withoutAdditionalProperties()
                     ),
                 'conditions_added' => $schema
                     ->array()
@@ -140,7 +140,7 @@ class NarrationAgent implements Agent, HasStructuredOutput
                                 ->required()
                                 ->title('Note')
                                 ->description('Short context, e.g. "10 inches tall after drinking". Empty string if none.'),
-                        ])->required()
+                        ])->required()->withoutAdditionalProperties()
                     ),
                 'conditions_removed' => $schema
                     ->array()
@@ -172,7 +172,7 @@ class NarrationAgent implements Agent, HasStructuredOutput
                                 ->required()
                                 ->title('Shift')
                                 ->description('Short phrase, e.g. "more agitated", "warmed slightly", "openly hostile".'),
-                        ])->required()
+                        ])->required()->withoutAdditionalProperties()
                     ),
                 'tracked_path_update' => $schema
                     ->array()
@@ -191,7 +191,7 @@ class NarrationAgent implements Agent, HasStructuredOutput
                                 ->required()
                                 ->title('Path')
                                 ->description('Exactly one of "A", "B", or "C".'),
-                        ])->required()
+                        ])->required()->withoutAdditionalProperties()
                     ),
                 'flags_set' => $schema
                     ->array()
@@ -201,6 +201,7 @@ class NarrationAgent implements Agent, HasStructuredOutput
                     ->items($schema->string()->required()),
             ])
                 ->required()
+                ->withoutAdditionalProperties()
                 ->title('State Delta')
                 ->description('Structured world-state changes from this turn. Every top-level key is required; use empty arrays / empty strings for "no change in this category". The runtime applies these cumulatively to the persisted world_state column.'),
         ];
