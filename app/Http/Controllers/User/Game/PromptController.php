@@ -86,14 +86,18 @@ final class PromptController extends Controller
             $nextEvent = $this->findNextEvent($currentEvent, $game->story_id);
 
             if ($nextEvent) {
-                $gameUpdate['current_event_id'] = $nextEvent->id;
-
                 if ($nextEvent->session_number !== null
                     && $nextEvent->session_number !== $currentEvent->session_number) {
                     $nextEvent = $this->applySessionTransitionCut($nextEvent, $game);
-                    $gameUpdate['current_event_id'] = $nextEvent->id;
-                    $gameUpdate['current_session_number'] = $nextEvent->session_number;
                 }
+
+                // Games columns must always mirror the event they point at, so the
+                // narration log and any downstream consumer (Filament, trace, future
+                // UI) see a single source of truth. Writing unconditionally (even
+                // when the new event has a nullable session_number) prevents the
+                // denormalized column from drifting silently.
+                $gameUpdate['current_event_id'] = $nextEvent->id;
+                $gameUpdate['current_session_number'] = $nextEvent->session_number;
             }
         }
 
@@ -162,13 +166,20 @@ final class PromptController extends Controller
         ]);
 
         $game->refresh();
+        $game->load('currentEvent');
+
+        // session_number_before/after always reference the event table (authoritative).
+        // game_current_session_number_after is logged separately so any denormalization
+        // drift between events.session_number and games.current_session_number surfaces.
+        $sessionNumberAfter = $game->currentEvent?->session_number;
 
         Log::channel('narration')->info('narration.turn', [
             'game_id' => $game->id,
             'event_id_before' => $currentEvent->id,
             'event_id_after' => $game->current_event_id,
             'session_number_before' => $currentEvent->session_number,
-            'session_number_after' => $game->current_session_number,
+            'session_number_after' => $sessionNumberAfter,
+            'game_current_session_number_after' => $game->current_session_number,
             'turn_count' => $turnCount,
             'is_first_turn_in_event' => $turnCount === 0,
             'advance_event_returned' => $aiResult['advance_event'],

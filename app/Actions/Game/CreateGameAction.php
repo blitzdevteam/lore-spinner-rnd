@@ -26,6 +26,7 @@ final readonly class CreateGameAction
         return $user->games()->create([
             'story_id' => $story->id,
             'current_event_id' => $startEvent->id,
+            'current_session_number' => $startEvent->session_number,
         ]);
     }
 

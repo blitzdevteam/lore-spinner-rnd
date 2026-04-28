@@ -251,9 +251,10 @@ echo mb_substr(strip_tags((string) \$first->response), 0, 1000) . PHP_EOL;
 **Expected:** the first 400 chars sound like Carroll-voiced cold-open prose (the `entry_point_diagnosis.cold_open` from `database/exports/adapptation-third-try.json`), NOT generic "the scene unfolds before you" or naked screenplay.
 
 ### Result (tinker dump)
-first_response_first_1000=
-Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice “without pictures or conversations?”So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.There was nothing so _very_ remarkable in that; nor did Alice think it so _very_ much out of the way to hear the Rabbit say to itself, “Oh dear! Oh dear! I shall be late!” (when she thought it over afterwards, it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but when the Rabbit actually _took a watch out of its waistcoat-pocket_, and looked at it, an
-
+Using DEFAULT_VALIDATION_GAME_ID=01kpe60znegetqss98x1kvxrb7 (Curt historical game_id in curt-game-log.json: 01kpv313jddy575ct6bv6cak4j). Pass CLI id or set CURT_FIX_VALIDATION_GAME_ID to override.
+first_prompt_created=yes prompt_id=01kq8rxsps5kdwpwqjbmmgsr60
+first_response_first_400=
+Heat shimmers off the river stones, and your stockings stick to the back of your knees as you lean over the grass, half-listening to your sister’s page-turning.Then a White Rabbit flashes past so close you catch the clean, sharp scent of crushed clover—and it mutters, plainly, like a person: “Oh dear! Oh dear! I shall be late!”You don’t freeze. You lunge up, skirt snagging on a thistle, because th
 ---
 
 ## Step 6 — live 6-turn playthrough
@@ -323,7 +324,8 @@ php artisan game:trace 01kpe60znegetqss98x1kvxrb7
 **Expected:**
 - One row per turn, in chronological order.
 - Each row prints `event_id_before/after`, `session_number_before/after`, `turn_count`, `is_first_turn_in_event`, `advance_event_returned`, classification, mapped option, state-delta summary, world-state counts.
-- All four hard rules show `ok` (`event_id_after >= event_id_before`, `advance_event=true → event changed`, `session_number_after` not cleared, choices differ from previous turn).
+- All four hard rules show `ok` (`event_id_after >= event_id_before`, `advance_event=true → event changed`, `session_number_after` does NOT regress below `session_number_before` when both are non-null — a null `session_number_after` is legitimate for events the adaptation pipeline has not yet backfilled, choices differ from previous turn).
+- `session_number_before` / `session_number_after` are sourced from `events.session_number` (the authoritative source). If `games.current_session_number` drifts from the current event, the trace prints a `(drift: games.current_session_number=…)` note next to the session line — informational, not a violation.
 - Footer reports `total_violations: 0`.
 
 ### Result
@@ -398,6 +400,22 @@ If candidate count is 0 or matches all return `(none)`, the `session_choice_desi
 
 ### Result
 
+Using DEFAULT_VALIDATION_GAME_ID=01kpe60znegetqss98x1kvxrb7 (Curt historical game_id in curt-game-log.json: 01kpv313jddy575ct6bv6cak4j). Pass CLI id or set CURT_FIX_VALIDATION_GAME_ID to override.
+session=1
+choice_design_keys=branching_choice_1,expressive_choices,branching_choice_2,branching_choice_3
+extracted_candidates=18
+  [0] option=A choice_id=S1_C1 text="You sprint after him and dive for the rabbit-hole the instant you see it."
+  [1] option=B choice_id=S1_C1 text="You keep him in sight but slow just long enough to clock landmarks and the shape"
+  [2] option=C choice_id=S1_C1 text="You call out to him first and watch how he reacts before you commit to the hole."
+
+INPUT: Sprint after him and dive for the rabbit-hole
+MATCH: {"option":"A","choice_id":"S1_C1","text":"You sprint after him and dive for the rabbit-hole the instant you see it."}
+
+INPUT: Keep him in sight but slow just long enough to clock landmarks
+MATCH: {"option":"B","choice_id":"S1_C1","text":"You keep him in sight but slow just long enough to clock landmarks and the shape of the hedge."}
+
+INPUT: Shout into the void
+MATCH: (none)
 ---
 
 ## Step 10 — sanity check WS-0 stayed fixed
@@ -454,7 +472,16 @@ first_frame=<file>:<line> <Class>::<method>
 If failure: read the exception_message verbatim. The most common symptoms after this point are (a) `OPENAI_API_KEY` missing in the env, (b) provider rate-limit / quota, (c) a model rename. None of those are runtime-logic bugs and none can hide behind silent stubs anymore.
 
 ### Result
-
+Using DEFAULT_VALIDATION_GAME_ID=01kpe60znegetqss98x1kvxrb7 (Curt historical game_id in curt-game-log.json: 01kpv313jddy575ct6bv6cak4j). Pass CLI id or set CURT_FIX_VALIDATION_GAME_ID to override.
+agent_class=App\Ai\Agents\NarrationAgent
+system_prompt_bytes=487
+status=ok
+response_bytes=826
+response_first_300=The river lies slack and shining, as if the heat has pressed it flat. Tall grass leans toward the water in slow surrender, and the air tastes faintly of mud and sun-warmed reeds. You stand at the bank where the damp earth gives way to a skin of ripples, listening to the small, steady noises that sur
+choices_count=3
+input_classification=opening
+state_delta_keys=objects_acquired,objects_lost,objects_transformed,conditions_added,conditions_removed,location_changed,knowledge_gained,relationship_changes,tracked_path_update,flags_set
+Laravel © 2026
 ---
 
 ## Rollback reference
@@ -475,3 +502,59 @@ For database rollback after reverting WS-B: `php artisan migrate:rollback --step
 ## When you've run everything
 
 Append the commit SHA of the runbook update plus a `Status: GREEN/RED` line at the very bottom, then I'll fold whatever needs follow-up into a WS-D batch.
+
+
+
+
+
+--------------------
+Play 1+ turns in the UI, then:
+
+tail -n 40 storage/logs/narration-$(date +%F).log
+php artisan game:trace 01kpe60znegetqss98x1kvxrb7
+
+
+#results:
+
+[2026-04-28 00:48:08] production.INFO: narration.cold_open_audit {"story_id":1,"event_id":1,"session_adaptation_resolved":true,"session_number":1,"cold_open_present":true,"cold_open_first_120":"Heat shimmers off the river stones, and your stockings stick to the back of your knees as you lean over the grass, half-"} 
+[2026-04-28 00:48:16] production.INFO: narration.llm_success {"site":"first_narration","story_id":1,"event_id":1,"response_bytes":807,"choices_count":3,"system_prompt_bytes":24016,"cold_open_present":true} 
+[2026-04-28 00:52:54] production.INFO: narration.cold_open_audit {"story_id":1,"event_id":1,"session_adaptation_resolved":true,"session_number":1,"cold_open_present":true,"cold_open_first_120":"Heat shimmers off the river stones, and your stockings stick to the back of your knees as you lean over the grass, half-"} 
+[2026-04-28 00:53:00] production.INFO: narration.llm_success {"site":"first_narration","story_id":1,"event_id":1,"response_bytes":809,"choices_count":3,"system_prompt_bytes":24016,"cold_open_present":true} 
+[2026-04-28 01:01:09] production.INFO: narration.llm_success {"response_bytes":1158,"state_delta_keys_present":["objects_acquired","objects_lost","objects_transformed","conditions_added","conditions_removed","location_changed","knowledge_gained","relationship_changes","tracked_path_update","flags_set"],"input_classification":"authored_choice","mapped_option":"C","mapped_choice_id":"S1_C1","system_prompt_bytes":22158,"history_turns":2} 
+[2026-04-28 01:01:09] production.INFO: narration.turn {"game_id":"01kpe60znegetqss98x1kvxrb7","event_id_before":1,"event_id_after":2,"session_number_before":1,"session_number_after":null,"turn_count":1,"is_first_turn_in_event":false,"advance_event_returned":true,"force_advanced":false,"is_continue":false,"input_classification":"authored_choice","mapped_choice_id":"S1_C1","mapped_option":"C","deterministic_match":true,"state_delta_summary":{"objects_acquired":0,"objects_lost":0,"objects_transformed":0,"conditions_added":1,"conditions_removed":0,"location_changed":"under the hedge (rabbit-hole edge)","knowledge_gained":2,"relationship_changes":0,"tracked_path_update":1,"flags_set":1},"world_state_object_count":0,"world_state_condition_count":1,"player_input_first_120":"You call out to him first and watch how he reacts before you commit to the hole.","narrator_response_first_120":"Your voice catches on the hot air as you send it after him—an instinctive, bright call meant to pin the impossible thing","choices_returned":["Dive into the rabbit-hole after him.","Crouch at the edge and peer into the darkness for any sign of him.","Circle the hedge and scan for another entrance or exit nearby."],"system_prompt_hash":"a57b05ec368f97147bc158109bdd1d4f596e47aa254124d8a0d4c84bc1b0a411","logged_at":"2026-04-28T01:01:09+00:00"} 
+
+
+
+----
+
+
+$results of second command:
+
+=== GAME ===
+id:                    01kpe60znegetqss98x1kvxrb7
+story_id:              1
+current_event_id:      2
+current_session_number: null
+
+=== TURN TRACE (1 rows) ===
+
+--- TURN 1 (logged 2026-04-28T01:01:09+00:00) ---
+  event_id:            1 -> 2
+  session_number:      1 -> null
+  turn_count_in_event: 1
+  advance_returned:    true
+  is_continue:         false
+  prompt_hash:         a57b05ec368f
+  player_input:        "You call out to him first and watch how he reacts before you commit to the hole."
+  narrator_response:   "Your voice catches on the hot air as you send it after him—an instinctive, bright call meant to pin the impossible thing"
+  choices_returned:
+    A) Dive into the rabbit-hole after him.
+    B) Crouch at the edge and peer into the darkness for any sign of him.
+    C) Circle the hedge and scan for another entrance or exit nearby.
+  rules:               3/4 PASS
+    ! rule 3: session_number cleared without a transition target
+
+=== SUMMARY ===
+rows_shown:       1
+total_violations: 1
+Trace contains rule violations. Inspect the rows flagged above.

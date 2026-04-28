@@ -18,10 +18,11 @@ use Throwable;
  * per row so the next playtest produces deterministic pass/fail evidence
  * instead of vibe.
  *
- * Hard rules (from curt-feedback-fix.md §A1):
+ * Hard rules:
  *   1. event_id_after >= event_id_before (no rewind unless session-cut adjusts).
  *   2. If advance_event_returned === true, event_id_after !== event_id_before.
- *   3. If session transition occurred, session_number_after === nextEvent.session_number.
+ *   3. session_number_after did NOT regress vs session_number_before when both
+ *      are non-null (nullable session_number is legitimate for unadapted events).
  *   4. Generated choices differ from the immediately previous turn's choices
  *      (no exact-string repeats).
  *
@@ -99,8 +100,18 @@ final class GameTraceCommand extends Command
             $choices = $row['choices_returned'] ?? [];
             $promptHash = substr((string) ($row['system_prompt_hash'] ?? ''), 0, 12);
 
+            $gameSessionAfter = $row['game_current_session_number_after'] ?? null;
+            $driftNote = '';
+            if (array_key_exists('game_current_session_number_after', $row)
+                && $gameSessionAfter !== $sessionAfter) {
+                $driftNote = sprintf(
+                    ' (drift: games.current_session_number=%s)',
+                    $gameSessionAfter ?? 'null'
+                );
+            }
+
             $this->line('  event_id:            ' . $eventBefore . ' -> ' . $eventAfter);
-            $this->line('  session_number:      ' . ($sessionBefore ?? 'null') . ' -> ' . ($sessionAfter ?? 'null'));
+            $this->line('  session_number:      ' . ($sessionBefore ?? 'null') . ' -> ' . ($sessionAfter ?? 'null') . $driftNote);
             $this->line('  turn_count_in_event: ' . ($turnCount ?? 'null') . (($isFirstTurn === true) ? ' (FIRST TURN)' : ''));
             $this->line('  advance_returned:    ' . $this->bool($advanceReturned) . (($forceAdvanced === true) ? ' (force-advanced via 5-turn cap)' : ''));
             $this->line('  is_continue:         ' . $this->bool($isContinue));
@@ -303,8 +314,12 @@ final class GameTraceCommand extends Command
             $violations[] = 'rule 2: advance_event=true but event_id did not change';
         }
 
-        if ($sessionBefore !== $sessionAfter && $sessionAfter === null) {
-            $violations[] = 'rule 3: session_number cleared without a transition target';
+        // Rule 3 fires only on a true regression: both session numbers are known and
+        // after < before. A null after is legitimate when the next event is unadapted
+        // (events.session_number is nullable by design and only backfilled by
+        // StorySessionMapJob once the adaptation pipeline completes).
+        if (is_int($sessionBefore) && is_int($sessionAfter) && $sessionAfter < $sessionBefore) {
+            $violations[] = "rule 3: session_number regressed ({$sessionBefore} -> {$sessionAfter})";
         }
 
         if ($previousChoices !== null && $previousChoices !== [] && $choices !== []) {

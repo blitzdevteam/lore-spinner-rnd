@@ -77,7 +77,7 @@ final class GameController extends Controller
         $game->prompts()->delete();
         $game->update([
             'current_event_id' => $startEvent->id,
-            'current_session_number' => null,
+            'current_session_number' => $startEvent->session_number,
             'current_beat_type' => null,
             'branching_choices_taken' => null,
             'tracked_dimensions' => null,
