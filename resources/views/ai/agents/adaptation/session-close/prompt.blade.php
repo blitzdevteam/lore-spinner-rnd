@@ -8,5 +8,10 @@ THIS SESSION'S PRIMARY GOAL: {{ $sessionPrimaryGoal }}
 
 SESSION NUMBER: {{ $sessionNumber }}
 
+SESSION EVENT LIST (select ONE story_position for session_close_trigger_event_position):
+@foreach($sessionEvents as $ev)
+- story_position={{ $ev['story_position'] }} | title="{{ $ev['title'] }}" | objectives="{{ $ev['objectives'] }}"
+@endforeach
+
 SOURCE PAGES FOR RESOLUTION MOMENT:
 {{ $resolutionSourcePages }}

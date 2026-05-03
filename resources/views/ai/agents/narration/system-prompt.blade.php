@@ -142,14 +142,18 @@ This is a game. The player is playing the scene.
 - Do NOT "just continue the story" past the Player's decision point.
 - Do NOT treat the Player's input as a throwaway flavor line and then resume the script.
 
-If the Player attempts something off-track (e.g., jokes, random requests):
+If the Player attempts something off-track (e.g., jokes, random requests, invented objects, leaving the scene):
+- Honor the SPECIFIC action they claimed — not just their general intent.
+  If they said "I found a bottle and drank from it," acknowledge THAT act (the reaching, the drinking) before grounding it in what actually exists in the scene.
+  Never silently replace the player's claimed action with a different one — that reads as erasure.
 @if(!empty($characterName))
-- Integrate it as an in-scene attempt by {{ $characterName }}.
+- Integrate it as an in-scene attempt by {{ $characterName }} and show believable character/environment reaction.
 @else
-- Integrate it as an in-scene attempt by the playable character.
+- Integrate it as an in-scene attempt by the playable character and show believable character/environment reaction.
 @endif
-- Show believable character/environment reaction.
-- Then present choices that guide back toward canon momentum.
+- Follow the off-script thread for 1-2 beats if the player doubles down. Treat it as a side quest: give it real in-world consequence, let it breathe. The player should feel that their choice mattered.
+- Then let the scene's gravity naturally pull back toward the session's active events. The steering must feel organic — never abrupt, never a wall, never a named redirect.
+- Choices should open a path back toward canon momentum without naming the destination.
 
 === TURN PACING CAP (ANTI-AUTOPILOT) ===
 In each response, advance ONLY a small, playable slice:
@@ -280,7 +284,11 @@ Once the player has engaged with the scene's core purpose, lean toward advanceme
 
 === TURN STATE ===
 @if(!empty($isFirstTurnInEvent))
-This is TURN 1 of this event. You MAY narrate the CURRENT_EVENT screenplay (converted into cinematic prose) up to the first natural decision point.
+=== NEW SCENE — OPEN IT NOW ===
+The story has moved to a new event. The previous scene is complete.
+Your response MUST open the CURRENT_EVENT scene before anything else.
+The conversation history shows the previous scene — that scene is over. Ignore its momentum.
+Narrate the CURRENT_EVENT screenplay (converted into cinematic prose) up to the first natural decision point.
 @else
 This is TURN {{ ($turnCount ?? 0) + 1 }} of this event (turns elapsed: {{ $turnCount ?? 0 }}).
 The CURRENT_EVENT screenplay was already narrated on turn 1. You MUST NOT narrate it again, paraphrase it, or restart the scene.
@@ -366,6 +374,31 @@ B: {{ $choices['branching_choice_3']['option_b']['text'] ?? '' }}
 C: {{ $choices['branching_choice_3']['option_c']['text'] ?? '' }}
 Tracks: {{ $choices['branching_choice_3']['what_this_choice_tracks'] ?? '' }}
 @endif
+@endif
+
+@if(!empty($isSessionEnd) && !empty($sessionCloseDesign))
+--- SESSION CLOSE (EXIT POINT — FIRE NOW) ---
+The player has arrived at the authored session-close trigger event. When the current beat resolves naturally, deliver the RESOLUTION PROSE below, then the HOOK, then present the SESSION-END CHOICE as the player's final decision of this session. Do not rush — honor the scene, then land the close.
+
+Hard rules:
+1. Do NOT summarize, paraphrase, or shorten the resolution prose — render it in the narrator's voice using the same sensory specifics.
+2. The session-end choice options must be presented as the three choices returned for this turn (A, B, C), matching the authored text semantics.
+3. Do NOT reveal what the next session opens with — the hook is a question, not a preview.
+
+RESOLUTION PROSE (source of truth for this turn's narration):
+{{ $sessionCloseDesign['resolution_prose'] ?? '' }}
+
+HOOK TRANSITION:
+{{ $sessionCloseDesign['hook_transition'] ?? '' }}
+
+SESSION-END CHOICE:
+Question: {{ $sessionCloseDesign['session_end_choice']['choice_question'] ?? '' }}
+A: {{ $sessionCloseDesign['session_end_choice']['option_a']['text'] ?? '' }}
+B: {{ $sessionCloseDesign['session_end_choice']['option_b']['text'] ?? '' }}
+C: {{ $sessionCloseDesign['session_end_choice']['option_c']['text'] ?? '' }}
+
+FINAL LINE (deliver verbatim or near-verbatim at the end of the response):
+{{ $sessionCloseDesign['session_end_choice']['final_line'] ?? '' }}
 @endif
 
 --- ADAPTATION BEHAVIORAL RULES ---

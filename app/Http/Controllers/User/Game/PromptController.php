@@ -49,6 +49,45 @@ final class PromptController extends Controller
             sessionAdaptation: $sessionAdaptation,
         );
 
+        // Continue-on-authored-branch fallback: when the player hits continue and the
+        // previous turn's choices were a deterministic match for an authored branching
+        // set (S1_C1/S1_C2/S1_C3 etc.), treat the continue as taking the passive path
+        // (option C — the opportunistic/silent path in every authored S1 design).
+        // Without this, an authored branch served correctly is silently bypassed and
+        // the dimension is never recorded, breaking all cross-session payoffs.
+        if ($isContinue && $deterministicMatch === null && $sessionAdaptation !== null) {
+            $lastPrompt = $game->prompts()->latest()->first();
+            $lastChoices = is_array($lastPrompt?->choices) ? $lastPrompt->choices : [];
+
+            foreach ($lastChoices as $choiceText) {
+                $choiceText = (string) $choiceText;
+                if ($choiceText === '') {
+                    continue;
+                }
+
+                $match = $this->matchAuthoredChoice($choiceText, $sessionAdaptation);
+
+                if ($match !== null && $match['choice_id'] !== null) {
+                    $passiveText = (string) ($lastChoices[2] ?? $choiceText);
+
+                    $deterministicMatch = [
+                        'option' => 'C',
+                        'choice_id' => $match['choice_id'],
+                        'text' => $passiveText,
+                    ];
+
+                    Log::channel('narration')->info('narration.continue_authored_default', [
+                        'game_id' => $game->id,
+                        'event_id' => $currentEvent->id,
+                        'choice_id' => $match['choice_id'],
+                        'defaulted_option' => 'C',
+                    ]);
+
+                    break;
+                }
+            }
+        }
+
         $systemPrompt = $this->renderSystemPrompt(
             story: $game->story,
             currentEvent: $currentEvent,
@@ -159,8 +198,13 @@ final class PromptController extends Controller
             $game->update($gameUpdate);
         }
 
+        // Record the event that was *narrated* this turn, not the event being advanced to.
+        // When advance_event=true fires, $currentEvent is the scene the narrator just rendered;
+        // $nextEvent is where the next turn will open. Writing $nextEvent here would make the
+        // next turn see turn_count>=1 for the new event and suppress isFirstTurnInEvent, which
+        // causes the narrator to skip the new scene's opening entirely.
         $game->prompts()->create([
-            'event_id' => $resolvedEventId,
+            'event_id' => $currentEvent->id,
             'response' => $aiResult['response'],
             'choices' => $aiResult['choices'],
         ]);
@@ -271,6 +315,32 @@ final class PromptController extends Controller
                 && $turnCount === 0;
         }
 
+        // Exit-point detection: mirror the entry-point logic using the explicit authored
+        // session_close_trigger_event_id produced by Phase 7. A legacy fallback (last events
+        // of the session's declared event_range) is preserved for adaptations produced before
+        // the field existed; newly-adapted stories will never hit that branch.
+        $isSessionEnd = false;
+        $sessionCloseDesign = null;
+
+        if ($sessionAdaptation?->session_close_design && $turnCount === 0) {
+            $closeDesign = $sessionAdaptation->session_close_design;
+            $triggerEventId = $closeDesign['session_close_trigger_event_id'] ?? null;
+
+            if ($triggerEventId !== null) {
+                $isSessionEnd = $currentEvent->id === (int) $triggerEventId;
+            } else {
+                $sessionEventRange = $sessionAdaptation->entry_point_diagnosis['session_event_range'] ?? null;
+                if (is_string($sessionEventRange) && str_contains($sessionEventRange, '-')) {
+                    [, $rangeEnd] = array_map('intval', explode('-', $sessionEventRange, 2));
+                    $isSessionEnd = $currentEvent->position >= ($rangeEnd - 4);
+                }
+            }
+
+            if ($isSessionEnd) {
+                $sessionCloseDesign = $closeDesign;
+            }
+        }
+
         return view('ai.agents.narration.system-prompt', [
             'characterName' => $storyData['character_name'] ?? null,
             'worldRules' => $storyData['world_rules'] ?? [],
@@ -288,6 +358,8 @@ final class PromptController extends Controller
             'isFirstTurnInEvent' => $turnCount === 0,
             'sessionAdaptation' => $sessionAdaptation,
             'isSessionStart' => $isSessionStart,
+            'isSessionEnd' => $isSessionEnd,
+            'sessionCloseDesign' => $sessionCloseDesign,
             'worldState' => $worldState,
             'deterministicMatch' => $deterministicMatch,
         ])->render();

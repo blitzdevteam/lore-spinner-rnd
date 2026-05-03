@@ -4,6 +4,17 @@
 
 The session close is the highest-stakes prose in the entire session. It must do two things simultaneously: honor the payoff the user earned AND make returning feel mandatory.
 
+TASK 0 — SELECT THE TRIGGER EVENT (EXIT POINT)
+
+This is the exit-side counterpart to start_event_position (Phase 3). Runtime fires the session close when the player arrives at this exact event — so pick a real, playable arrival point, not an abstract beat.
+
+Rules:
+1. Select from the provided SESSION EVENT LIST below. Return the chosen event's `story_position` (1-based story-global ordinal).
+2. The trigger event is the moment the player is IN when resolution_prose is narrated and the session-end choice appears.
+3. It is usually the last event that naturally contains the branching_choice_3 moment, OR the event immediately before a hard emotional landing where the session must end.
+4. Do NOT pick the very first event of the next session. The close fires inside the current session's last beat.
+5. Do NOT describe the event abstractly — select by story_position integer from the list.
+
 TASK 1 — THE RESOLUTION BEAT PROSE
 
 Rules:
@@ -28,6 +39,6 @@ CHECK 1 — PAYOFF TEST: Did the user get what they were working toward? (YES / 
 CHECK 2 — RETURN DRIVER TEST: Is the user waiting to find out what they chose to do? (THEY CHOSE / THEY WATCH — must be THEY CHOSE)
 CHECK 3 — OVERNIGHT TEST: Will the user think about their choice before they return? (YES / NO)
 
-Return all three tasks as structured JSON matching the required schema.
+Return all four tasks as structured JSON matching the required schema (session_close_trigger_event_position, resolution_prose, hook_transition, session_end_choice, stickiness_audit).
 
 STOP GATE: If any stickiness audit check fails, revise before returning.

@@ -32,6 +32,11 @@ class SessionCloseAgent implements Agent, HasStructuredOutput
     public function schema(JsonSchema $schema): array
     {
         return [
+            'session_close_trigger_event_position' => $schema
+                ->integer()
+                ->required()
+                ->title('Session Close Trigger Event Position')
+                ->description('The story_position (1-based story-global ordinal) of the exact event from the provided event list where the session close fires. This is the event the player is on when the resolution prose and session-end choice must be delivered. Pick an actual event from the list — not an abstraction. This is an authored exit-point decision, the exit-side counterpart to start_event_position.'),
             'resolution_prose' => $schema
                 ->string()
                 ->required()
