@@ -264,7 +264,7 @@ if ($step === 'step12') {
 
     $probes = [
         'NEW SCENE — OPEN IT NOW'         => 'scene-open directive (Fix 1+2)',
-        'Honor the specific action'        => 'off-script side-quest rule (Fix 3)',
+        'Honor the SPECIFIC action'        => 'off-script side-quest rule (Fix 3)',
         'TURN STATE'                       => 'turn state block present',
         'ADAPTATION LAYER CONTEXT'         => 'adaptation context injected',
         'PRE-AUTHORED BRANCHING CHOICES'   => 'branching choices block present',
