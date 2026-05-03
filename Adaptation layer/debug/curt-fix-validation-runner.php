@@ -27,10 +27,13 @@ const CURT_GAME_LOG_GAME_ID = '01kpv313jddy575ct6bv6cak4j';
 const DEFAULT_VALIDATION_GAME_ID = '01kpe60znegetqss98x1kvxrb7';
 
 if ($argc < 2) {
-    fwrite(STDERR, "Usage: php curt-fix-validation-runner.php {step4|step5|step5b|step9|step11} [<GAME_ID>]\n");
-    fwrite(STDERR, "  step5  = reset game (deletes prompts; no first narration yet)\n");
-    fwrite(STDERR, "  step5b = call GameController::begin() if no prompts (creates first narration; needs LLM keys)\n");
-    fwrite(STDERR, "  step11 = direct NarrationAgent probe (bypasses controller; needs LLM keys)\n");
+    fwrite(STDERR, "Usage: php curt-fix-validation-runner.php {step4|step5|step5b|step9|step11|step12|step13|step14} [<GAME_ID>]\n");
+    fwrite(STDERR, "  step5   = reset game (deletes prompts; no first narration yet)\n");
+    fwrite(STDERR, "  step5b  = call GameController::begin() if no prompts (creates first narration; needs LLM keys)\n");
+    fwrite(STDERR, "  step11  = direct NarrationAgent probe (bypasses controller; needs LLM keys)\n");
+    fwrite(STDERR, "  step12  = system-prompt probe: verify NEW SCENE + SESSION CLOSE blocks render\n");
+    fwrite(STDERR, "  step13  = verify session_close_trigger_event_id present in DB for game's session\n");
+    fwrite(STDERR, "  step14  = verify narration.continue_authored_default appeared in today's log\n");
     fwrite(STDERR, "  GAME_ID: optional CLI arg, else env CURT_FIX_VALIDATION_GAME_ID, else " . DEFAULT_VALIDATION_GAME_ID . "\n");
     exit(64);
 }
@@ -41,7 +44,7 @@ if (($argv[2] ?? null) === null && getenv('CURT_FIX_VALIDATION_GAME_ID') === fal
     fwrite(STDERR, 'Using DEFAULT_VALIDATION_GAME_ID=' . DEFAULT_VALIDATION_GAME_ID . ' (Curt historical game_id in curt-game-log.json: ' . CURT_GAME_LOG_GAME_ID . "). Pass CLI id or set CURT_FIX_VALIDATION_GAME_ID to override.\n");
 }
 
-if (! in_array($step, ['step4', 'step5', 'step5b', 'step9', 'step11'], true)) {
+if (! in_array($step, ['step4', 'step5', 'step5b', 'step9', 'step11', 'step12', 'step13', 'step14'], true)) {
     fwrite(STDERR, "Unknown step: {$argv[1]}\n");
     exit(64);
 }
@@ -234,6 +237,127 @@ PROMPT;
         }
         exit(1);
     }
+}
+
+// ─── Step 12 — system-prompt probe: verify NEW SCENE + SESSION CLOSE blocks ───────────────────────
+// Renders the system prompt for the game's current event at turn 0 (isFirstTurnInEvent=true) and
+// checks that the narration-fix directive blocks are present.
+if ($step === 'step12') {
+    $ref = new \ReflectionMethod(PromptController::class, 'renderSystemPrompt');
+    $ref->setAccessible(true);
+    $resolveSession = new \ReflectionMethod(PromptController::class, 'resolveSessionAdaptation');
+    $resolveSession->setAccessible(true);
+
+    $ctrl = new PromptController();
+    $session = $resolveSession->invoke($ctrl, $game, $game->currentEvent);
+
+    // Render at turn 0 so isFirstTurnInEvent = true fires
+    $rendered = $ref->invoke(
+        $ctrl,
+        $game->story,
+        $game->currentEvent,
+        0,
+        $session,
+        $game->world_state ?? [],
+        null
+    );
+
+    $probes = [
+        'NEW SCENE — OPEN IT NOW'         => 'scene-open directive (Fix 1+2)',
+        'Honor the specific action'        => 'off-script side-quest rule (Fix 3)',
+        'TURN STATE'                       => 'turn state block present',
+        'ADAPTATION LAYER CONTEXT'         => 'adaptation context injected',
+        'PRE-AUTHORED BRANCHING CHOICES'   => 'branching choices block present',
+        'SESSION CLOSE (EXIT POINT'        => 'session close block (Fix 5) — only present when current event = trigger',
+    ];
+
+    foreach ($probes as $needle => $label) {
+        $found = str_contains($rendered, $needle);
+        echo ($found ? 'ok   ' : 'miss ') . $needle . '  [' . $label . ']' . PHP_EOL;
+    }
+
+    echo PHP_EOL;
+    echo 'rendered_bytes=' . strlen($rendered) . PHP_EOL;
+    echo 'session_resolved=' . ($session?->session_number ?? 'null') . PHP_EOL;
+    echo 'current_event_id=' . $game->currentEvent->id . PHP_EOL;
+    echo 'current_event_title=' . $game->currentEvent->title . PHP_EOL;
+    echo 'is_first_turn_in_event=true (forced for probe)' . PHP_EOL;
+
+    $closeDesign = $session?->session_close_design ?? null;
+    $triggerId = $closeDesign['session_close_trigger_event_id'] ?? null;
+    echo 'session_close_trigger_event_id=' . ($triggerId ?? '(not set — legacy fallback active)') . PHP_EOL;
+
+    $isSessionEnd = $triggerId !== null
+        ? $game->currentEvent->id === (int) $triggerId
+        : false;
+    echo 'would_fire_session_close=' . ($isSessionEnd ? 'YES' : 'no — current event is not the trigger') . PHP_EOL;
+
+    exit(0);
+}
+
+// ─── Step 13 — verify session_close_trigger_event_id is set in DB ────────────────────────────────
+if ($step === 'step13') {
+    $resolveSession = new \ReflectionMethod(PromptController::class, 'resolveSessionAdaptation');
+    $resolveSession->setAccessible(true);
+    $ctrl = new PromptController();
+    $session = $resolveSession->invoke($ctrl, $game, $game->currentEvent);
+
+    if ($session === null) {
+        echo 'FAIL: no session adaptation resolved for game current event' . PHP_EOL;
+        exit(1);
+    }
+
+    $closeDesign = $session->session_close_design ?? null;
+    $triggerId = $closeDesign['session_close_trigger_event_id'] ?? null;
+    $triggerPos = $closeDesign['session_close_trigger_event_position'] ?? null;
+
+    echo 'session_number=' . $session->session_number . PHP_EOL;
+    echo 'session_close_design_present=' . ($closeDesign !== null ? 'yes' : 'NO') . PHP_EOL;
+    echo 'session_close_trigger_event_id=' . ($triggerId ?? 'MISSING — needs DB patch or Phase 7 re-run') . PHP_EOL;
+    echo 'session_close_trigger_event_position=' . ($triggerPos ?? '(not set)') . PHP_EOL;
+
+    if ($triggerId !== null) {
+        $triggerEvent = \App\Models\Event::find((int) $triggerId);
+        echo 'trigger_event_title=' . ($triggerEvent?->title ?? 'event not found') . PHP_EOL;
+        echo 'status=ok' . PHP_EOL;
+        exit(0);
+    } else {
+        echo PHP_EOL . 'Patch command (Alice session ' . $session->session_number . ', story ' . $game->story_id . '):' . PHP_EOL;
+        echo 'php artisan tinker --execute="' . PHP_EOL;
+        echo '\$s=App\Models\SessionAdaptation::whereHas(\'storyAdaptation\',fn(\$q)=>\$q->where(\'story_id\',' . $game->story_id . '))->where(\'session_number\',' . $session->session_number . ')->firstOrFail();' . PHP_EOL;
+        echo '\$d=\$s->session_close_design;\$d[\'session_close_trigger_event_id\']=12;\$s->update([\'session_close_design\'=>\$d]);echo \'patched\';"' . PHP_EOL;
+        exit(1);
+    }
+}
+
+// ─── Step 14 — verify narration.continue_authored_default appeared in today's log ───────────────
+if ($step === 'step14') {
+    $logPath = base_path('storage/logs/narration-' . date('Y-m-d') . '.log');
+
+    if (! file_exists($logPath)) {
+        echo 'FAIL: log file not found: ' . $logPath . PHP_EOL;
+        echo 'Play a continue turn after authored S1_C2 choices are shown, then re-run.' . PHP_EOL;
+        exit(1);
+    }
+
+    $content = file_get_contents($logPath);
+    $hits = (int) preg_match_all('/continue_authored_default.*?"game_id":"' . preg_quote($gameId, '/') . '"/', $content);
+
+    echo 'log_file=' . $logPath . PHP_EOL;
+    echo 'game_id_filter=' . $gameId . PHP_EOL;
+    echo 'continue_authored_default_hits=' . $hits . PHP_EOL;
+
+    if ($hits > 0) {
+        $lines = array_filter(explode(PHP_EOL, $content), fn ($l) => str_contains($l, 'continue_authored_default') && str_contains($l, $gameId));
+        $last = (string) end($lines);
+        echo 'last_hit_first_300=' . mb_substr($last, 0, 300) . PHP_EOL;
+        echo 'status=ok — continue defaulted to authored branch option C' . PHP_EOL;
+        exit(0);
+    }
+
+    echo 'status=MISS — no continue_authored_default for this game today' . PHP_EOL;
+    echo 'Play to a turn where authored S1_C2 choices appear, hit continue in the UI, then re-run.' . PHP_EOL;
+    exit(1);
 }
 
 exit(1);
