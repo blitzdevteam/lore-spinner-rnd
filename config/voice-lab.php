@@ -78,19 +78,24 @@ return [
     */
     'intro' => [
         'enabled' => (bool) env('VOICELAB_INTRO_ENABLED', true),
-        'audio_path' => env('VOICELAB_INTRO_AUDIO_PATH', 'voicelab/session-1-opening.mp3'),
-        'audio_url' => env('VOICELAB_INTRO_AUDIO_URL', '/storage/voicelab/session-1-opening.mp3'),
+        // Bumped to v2 to invalidate any cached MP3 from the previous intro
+        // text. Re-run `php artisan voicelab:bake-intro --force` after changing.
+        'audio_path' => env('VOICELAB_INTRO_AUDIO_PATH', 'voicelab/session-1-opening-v2.mp3'),
+        'audio_url' => env('VOICELAB_INTRO_AUDIO_URL', '/storage/voicelab/session-1-opening-v2.mp3'),
+        // Cold open and choice options sourced verbatim from
+        // database/exports/adapptation-third-try.json (Session 1 →
+        // entry_point_diagnosis.cold_open and session_choice_design.branching_choice_1).
         'text' => <<<'HTML'
-<p>Heat shimmers off the grass and the air tastes like dust and crushed clover. You push yourself up from the bank before you've even decided to — because something white flashes past your knees.</p>
-<p>A Rabbit. Pink-eyed. Close enough that you hear its breath.</p>
-<p>It mutters, panicked, "Oh dear! Oh dear! I shall be late!" and — impossible — hooks a paw into a waistcoat-pocket. Metal glints. A watch. It checks the time like it matters.</p>
-<p>Your curiosity doesn't ask permission. You break into a run, skirts snagging at your ankles, heart thumping with the thrill of catching the world doing something it shouldn't.</p>
-<p>The Rabbit darts under the hedge and vanishes into a dark, round hole. You skid to the edge and peer down into the cool black. Your next step decides whether this is a story you watch, or one you fall into.</p>
+<p>Heat shimmers off the river stones, and your stockings stick to the back of your knees as you lean over the grass, half-listening to your sister's page-turning.</p>
+<p>Then a White Rabbit flashes past so close you catch the clean, sharp scent of crushed clover — and it mutters, plainly, like a person: "Oh dear! Oh dear! I shall be late!"</p>
+<p>You don't freeze. You lunge up, skirt snagging on a thistle, because the Rabbit has a waistcoat-pocket. Because it pulls out a watch and checks it with frantic dignity, as if being late could matter to a rabbit.</p>
+<p>Is this a trick? A dream? Or the first real thing that's happened all day?</p>
+<p>The Rabbit darts toward the hedge, and the shadow beneath it looks like a mouth. You break into a run before you can talk yourself out of it.</p>
 HTML,
         'choices' => [
-            'Fall after the White Rabbit into the dark hole.',
-            'Hesitate at the edge and listen for what lies below.',
-            'Step back and let the impossible pass you by.',
+            'You sprint after him and dive for the rabbit-hole the instant you see it.',
+            'You keep him in sight but slow just long enough to clock landmarks and the shape of the hedge.',
+            'You call out to him first and watch how he reacts before you commit to the hole.',
         ],
     ],
 

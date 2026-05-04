@@ -27,16 +27,16 @@ const handleClearHistory = async () => {
 </script>
 
 <template>
-    <VoiceLabLayout @back="handleBack">
+    <VoiceLabLayout @back="handleBack" class="xen-tint">
         <template #header>
             <div class="flex flex-col gap-1">
-                <h1 class="text-xl uppercase tracking-wider md:text-3xl">Voice Lab</h1>
+                <h1 class="xen-brand-title text-xl uppercase tracking-[0.4em] md:text-3xl">XEN</h1>
             </div>
         </template>
 
         <template #actions>
             <button
-                class="rounded-full border border-gray-700 px-3 py-1.5 text-xs text-gray-400 transition-colors hover:border-gray-500 hover:text-gray-200"
+                class="xen-reset-btn rounded-full border px-3 py-1.5 text-xs transition-all"
                 @click="handleClearHistory"
             >
                 Reset
@@ -57,49 +57,43 @@ const handleClearHistory = async () => {
                     <p
                         v-if="state === 'error'"
                         key="error"
-                        class="text-sm text-red-400"
+                        class="xen-label xen-label--error"
                     >
                         {{ errorMessage ?? 'Something went wrong' }}
                     </p>
                     <p
                         v-else-if="state === 'listening'"
                         key="listening"
-                        class="flex items-center gap-2 text-sm text-primary-400"
+                        class="xen-label xen-label--listening flex items-center gap-2"
                     >
-                        <span class="inline-block size-2 animate-pulse rounded-full bg-primary-400" />
+                        <span class="xen-pulse-dot" />
                         Listening...
                     </p>
                     <p
                         v-else-if="state === 'thinking'"
                         key="thinking"
-                        class="text-sm text-blue-400"
+                        class="xen-label xen-label--thinking"
                     >
                         Thinking...
                     </p>
                     <p
                         v-else-if="state === 'speaking'"
                         key="speaking"
-                        class="text-sm text-primary-300"
+                        class="xen-label xen-label--speaking"
                     >
                         Speaking...
                     </p>
                     <p
-                        v-else-if="!hasStartedIntro && introConfig.enabled"
-                        key="begin"
-                        class="text-sm text-gray-400"
-                    >
-                        Tap to begin
-                    </p>
-                    <p
                         v-else
                         key="idle"
-                        class="text-sm text-gray-500"
+                        class="xen-label xen-label--idle"
                     >
-                        Tap to speak
+                        Tap Orb to speak to Xen
                     </p>
                 </Transition>
             </div>
         </template>
+
         <template #controls>
             <TransitionGroup
                 name="choice-pop"
@@ -110,7 +104,7 @@ const handleClearHistory = async () => {
                     v-for="(choice, i) in choices"
                     :key="choice"
                     :disabled="state !== 'idle'"
-                    class="w-full rounded-xl border border-gray-700/60 bg-gray-900/70 px-4 py-3 text-left text-sm text-gray-200 backdrop-blur transition-all hover:border-primary-500/50 hover:bg-gray-800/70 hover:text-white disabled:pointer-events-none disabled:opacity-40"
+                    class="xen-choice-btn w-full"
                     :style="{ transitionDelay: `${i * 60}ms` }"
                     @click="sendChoice(choice)"
                 >
@@ -122,33 +116,171 @@ const handleClearHistory = async () => {
 </template>
 
 <style scoped>
+/*
+ * XEN experience — Tiffany Blue identity.
+ *
+ * The full primary-* spectrum is defined globally in resources/css/app.css
+ * (Pantone 1837 #0ABAB5 as 500 anchor), so every primary-* Tailwind class
+ * already resolves to tiffany across the whole app.
+ *
+ * This class pins convenience aliases used by the gradient effects below.
+ * Shervin: fine-tune only these tokens to shift the XEN-specific look.
+ */
+.xen-tint {
+    --xen-bright: var(--color-primary-300);   /* #5dede0 — highlight */
+    --xen-mid:    var(--color-primary-500);   /* #0abab5 — Pantone 1837 */
+    --xen-deep:   var(--color-primary-600);   /* #089490 — depth */
+    --xen-text:   var(--color-primary-200);   /* #8beee8 — light text */
+    --xen-dark:   var(--color-primary-950);   /* #042e2c — deep bg */
+}
+
+/* ─── BRAND TITLE ───────────────────────────────────────────────────────── */
+.xen-brand-title {
+    background: linear-gradient(
+        135deg,
+        var(--xen-text)  0%,
+        var(--xen-bright) 40%,
+        var(--xen-deep)  100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 18px color-mix(in srgb, var(--xen-mid) 35%, transparent));
+}
+
+/* ─── RESET BUTTON ──────────────────────────────────────────────────────── */
+.xen-reset-btn {
+    border-color: color-mix(in srgb, var(--xen-mid) 30%, transparent);
+    color: color-mix(in srgb, var(--xen-bright) 70%, #9ca3af);
+    background: transparent;
+}
+.xen-reset-btn:hover {
+    border-color: color-mix(in srgb, var(--color-primary-400) 60%, transparent);
+    color: var(--xen-text);
+    background: color-mix(in srgb, var(--xen-mid) 8%, transparent);
+}
+
+/* ─── STATE LABELS ──────────────────────────────────────────────────────── */
+.xen-label {
+    font-size: 0.875rem;
+    letter-spacing: 0.03em;
+}
+
+.xen-label--idle {
+    color: color-mix(in srgb, var(--xen-bright) 55%, #6b7280);
+}
+
+.xen-label--listening {
+    background: linear-gradient(90deg, var(--xen-bright), var(--xen-mid));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.xen-label--thinking {
+    background: linear-gradient(90deg, var(--xen-bright), var(--xen-deep));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0.85;
+}
+
+.xen-label--speaking {
+    background: linear-gradient(90deg, var(--xen-text), var(--xen-mid));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.xen-label--error {
+    color: #f87171;
+}
+
+/* ─── LISTENING PULSE DOT ───────────────────────────────────────────────── */
+.xen-pulse-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: var(--color-primary-400);
+    box-shadow: 0 0 6px 2px color-mix(in srgb, var(--color-primary-400) 60%, transparent);
+    animation: xen-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes xen-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.45; transform: scale(0.8); }
+}
+
+/* ─── CHOICE BUTTONS ────────────────────────────────────────────────────── */
+.xen-choice-btn {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.875rem;
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--xen-mid) 22%, transparent);
+    background: color-mix(in srgb, var(--xen-dark) 60%, #030712);
+    color: color-mix(in srgb, var(--xen-text) 80%, #f3f4f6);
+    backdrop-filter: blur(8px);
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.15s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+/* Subtle tiffany gradient wash behind text */
+.xen-choice-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--xen-mid) 10%, transparent) 0%,
+        transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.xen-choice-btn:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--color-primary-400) 55%, transparent);
+    background: color-mix(in srgb, var(--color-primary-900) 45%, #030712);
+    color: #fff;
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--xen-mid) 18%, transparent),
+        0 4px 16px color-mix(in srgb, var(--xen-mid) 14%, transparent);
+}
+.xen-choice-btn:hover:not(:disabled)::before {
+    opacity: 1;
+}
+
+.xen-choice-btn:disabled {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+/* ─── TRANSITIONS ───────────────────────────────────────────────────────── */
 .label-fade-enter-active,
 .label-fade-leave-active {
     transition: opacity 0.2s ease;
 }
-
 .label-fade-enter-from,
 .label-fade-leave-to {
     opacity: 0;
 }
 
 .choice-pop-enter-active {
-    transition:
-        opacity 0.3s ease,
-        transform 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
-
 .choice-pop-leave-active {
-    transition:
-        opacity 0.15s ease,
-        transform 0.15s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
 }
-
 .choice-pop-enter-from {
     opacity: 0;
     transform: translateY(8px) scale(0.96);
 }
-
 .choice-pop-leave-to {
     opacity: 0;
     transform: translateY(-4px) scale(0.98);

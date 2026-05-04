@@ -78,7 +78,8 @@ const stateMap: Record<string, StateConfig> = {
         rotate: 0.8,
         shimmer: 0.12,
         drift: 2.5,
-        hue: '168, 100%, 64%',
+        // Tiffany blue family — anchored on Pantone 1837 (#0ABAB5).
+        hue: '176, 78%, 56%',
         smokeSpeed: 0.15,
         smokeAlpha: 0.1,
         coreGlow: 0.12,
@@ -96,7 +97,7 @@ const stateMap: Record<string, StateConfig> = {
         rotate: 1.1,
         shimmer: 0.2,
         drift: 3.5,
-        hue: '168, 100%, 64%',
+        hue: '176, 85%, 58%',
         smokeSpeed: 0.35,
         smokeAlpha: 0.18,
         coreGlow: 0.22,
@@ -114,7 +115,9 @@ const stateMap: Record<string, StateConfig> = {
         rotate: 2.8,
         shimmer: 0.28,
         drift: 5,
-        hue: '220, 80%, 65%',
+        // Slightly bluer tiffany variant for "thinking" — keeps the family
+        // identity but reads cooler than the active idle/speaking states.
+        hue: '188, 70%, 60%',
         smokeSpeed: 0.5,
         smokeAlpha: 0.22,
         coreGlow: 0.18,
@@ -132,7 +135,7 @@ const stateMap: Record<string, StateConfig> = {
         rotate: 1.4,
         shimmer: 0.24,
         drift: 4,
-        hue: '168, 100%, 64%',
+        hue: '176, 88%, 58%',
         smokeSpeed: 0.7,
         smokeAlpha: 0.3,
         coreGlow: 0.4,
@@ -353,17 +356,21 @@ onBeforeUnmount(() => {
     isolation: isolate;
 }
 
+/*
+ * Tiffany Blue family — Pantone 1837 (#0ABAB5) anchor, lighter step #5DEDE0.
+ * Soft step #81D8D0 (RGB 129,216,208) used for translucent washes.
+ */
 .orb-aura {
     position: absolute;
     inset: 8%;
     border-radius: 999px;
     background: radial-gradient(
         circle at 50% 50%,
-        rgba(84, 244, 218, 0.34) 0%,
-        rgba(84, 244, 218, 0.22) 22%,
-        rgba(84, 244, 218, 0.1) 44%,
-        rgba(84, 244, 218, 0.03) 60%,
-        rgba(84, 244, 218, 0) 75%
+        rgba(93, 237, 224, 0.34) 0%,
+        rgba(93, 237, 224, 0.22) 22%,
+        rgba(10, 186, 181, 0.1) 44%,
+        rgba(10, 186, 181, 0.03) 60%,
+        rgba(10, 186, 181, 0) 75%
     );
     filter: blur(20px);
     pointer-events: none;
@@ -374,7 +381,7 @@ onBeforeUnmount(() => {
     inset: 16%;
     border-radius: 999px;
     background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 28%),
-        radial-gradient(circle at 62% 40%, rgba(84, 244, 218, 0.14), rgba(84, 244, 218, 0) 34%),
+        radial-gradient(circle at 62% 40%, rgba(93, 237, 224, 0.14), rgba(93, 237, 224, 0) 34%),
         radial-gradient(circle at 44% 68%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 30%);
     filter: blur(18px);
     mix-blend-mode: screen;
@@ -409,21 +416,21 @@ onBeforeUnmount(() => {
     will-change: transform, opacity;
 }
 
-/* Smoke A: rotating nebula wisps */
+/* Smoke A: rotating nebula wisps — tiffany */
 .orb-smoke-a {
     background:
-        radial-gradient(ellipse 60% 40% at 30% 35%, rgba(84, 244, 218, 0.3) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 55% at 70% 60%, rgba(84, 244, 218, 0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 30% 35%, rgba(93, 237, 224, 0.3) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 55% at 70% 60%, rgba(43, 217, 208, 0.2) 0%, transparent 55%),
         radial-gradient(ellipse 45% 35% at 55% 25%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
     mix-blend-mode: screen;
     filter: blur(12px);
 }
 
-/* Smoke B: counter-swirl with different shape */
+/* Smoke B: counter-swirl — tiffany with #81D8D0 highlight */
 .orb-smoke-b {
     background:
-        radial-gradient(ellipse 55% 45% at 65% 30%, rgba(84, 244, 218, 0.22) 0%, transparent 55%),
-        radial-gradient(ellipse 40% 60% at 35% 65%, rgba(120, 255, 230, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse 55% 45% at 65% 30%, rgba(93, 237, 224, 0.22) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 60% at 35% 65%, rgba(129, 216, 208, 0.2) 0%, transparent 50%),
         radial-gradient(ellipse 35% 30% at 50% 50%, rgba(255, 255, 255, 0.06) 0%, transparent 45%);
     mix-blend-mode: screen;
     filter: blur(16px);
@@ -432,7 +439,7 @@ onBeforeUnmount(() => {
 /* Caustic refraction — sharp light crawling */
 .orb-caustics {
     background:
-        conic-gradient(from 0deg at 40% 40%, transparent 0deg, rgba(255, 255, 255, 0.12) 30deg, transparent 60deg, transparent 120deg, rgba(84, 244, 218, 0.1) 150deg, transparent 180deg, transparent 240deg, rgba(255, 255, 255, 0.08) 270deg, transparent 300deg, transparent 360deg);
+        conic-gradient(from 0deg at 40% 40%, transparent 0deg, rgba(255, 255, 255, 0.12) 30deg, transparent 60deg, transparent 120deg, rgba(10, 186, 181, 0.1) 150deg, transparent 180deg, transparent 240deg, rgba(255, 255, 255, 0.08) 270deg, transparent 300deg, transparent 360deg);
     mix-blend-mode: overlay;
     filter: blur(6px);
 }

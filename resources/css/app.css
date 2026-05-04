@@ -8,18 +8,19 @@
     --container-gap: max(0px, calc((100vw - var(--container)) / 2));
     --color-background: #1a1a1a;
 
-    --color-primary-50: #effefa;
-    --color-primary-100: #c9fef3;
-    --color-primary-200: #93fce7;
-    --color-primary-300: #54f4da;
-    --color-primary-400: #34e2cb;
-    --color-primary-500: #09c3ae;
-    --color-primary-600: #049d8f;
-    --color-primary-700: #087d73;
-    --color-primary-800: #0c635d;
-    --color-primary-900: #0f524d;
-    --color-primary-950: #013231;
-    --color-primary: #54f4da;
+    /* Tiffany Blue — Pantone 1837 (#0ABAB5) as 500 anchor */
+    --color-primary-50:  #edfcfb;
+    --color-primary-100: #c4f5f2;
+    --color-primary-200: #8beee8;
+    --color-primary-300: #5dede0;
+    --color-primary-400: #2bd9d0;
+    --color-primary-500: #0abab5;
+    --color-primary-600: #089490;
+    --color-primary-700: #0c7270;
+    --color-primary-800: #0c5c59;
+    --color-primary-900: #0b4846;
+    --color-primary-950: #042e2c;
+    --color-primary: #0abab5;
 
     --color-secondary-50: #fff8eb;
     --color-secondary-100: #ffebc6;
