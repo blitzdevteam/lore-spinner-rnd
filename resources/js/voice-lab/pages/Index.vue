@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import VoiceLabLayout from '../layouts/VoiceLabLayout.vue';
 import VoiceLabOrb from '../components/VoiceLabOrb.vue';
+import { ref } from 'vue';
 import { useVoiceLab, type VoiceLabIntro } from '../composables/useVoiceLab';
 import { router } from '@inertiajs/vue3';
 
@@ -10,8 +11,25 @@ const props = defineProps<{
 
 const introConfig: VoiceLabIntro = props.intro ?? { enabled: false, audioUrl: '', choices: [] };
 
-const { state, audioLevel, errorMessage, choices, hasStartedIntro, activate, sendChoice, clearHistory } =
+const { state, audioLevel, errorMessage, choices, hasStartedIntro, activate, holdStart, holdEnd, sendChoice, clearHistory } =
     useVoiceLab(introConfig);
+
+// True once a touch event fires — used to show "Hold" vs "Tap" label.
+const isTouchDevice = ref(false);
+
+function onTouchStart(e: TouchEvent) {
+    isTouchDevice.value = true;
+    e.preventDefault(); // suppress ghost click on touch devices
+    holdStart();
+}
+
+function onTouchEnd() {
+    holdEnd();
+}
+
+function onTouchCancel() {
+    holdEnd();
+}
 
 const handleBack = () => {
     if (window.history.length > 1) {
@@ -44,12 +62,18 @@ const handleClearHistory = async () => {
         </template>
 
         <template #orb>
-            <div class="flex flex-col items-center gap-6" @click="activate">
+            <div
+                class="flex flex-col items-center gap-6"
+                @click="activate"
+                @touchstart.prevent="onTouchStart"
+                @touchend="onTouchEnd"
+                @touchcancel="onTouchCancel"
+            >
                 <VoiceLabOrb
                     :state="state"
                     :audio-level="audioLevel"
                     :size="260"
-                    class="cursor-pointer"
+                    class="cursor-pointer select-none"
                 />
 
                 <!-- State label -->
@@ -67,7 +91,7 @@ const handleClearHistory = async () => {
                         class="xen-label xen-label--listening flex items-center gap-2"
                     >
                         <span class="xen-pulse-dot" />
-                        Listening...
+                        {{ isTouchDevice ? 'Release to send...' : 'Listening...' }}
                     </p>
                     <p
                         v-else-if="state === 'thinking'"
@@ -88,7 +112,7 @@ const handleClearHistory = async () => {
                         key="idle"
                         class="xen-label xen-label--idle"
                     >
-                        Tap Orb to speak to Xen
+                        {{ isTouchDevice ? 'Hold Orb to speak to Xen' : 'Tap Orb to speak to Xen' }}
                     </p>
                 </Transition>
             </div>
