@@ -25,12 +25,11 @@ const menu: {
         link: creatorsIndex().url,
         icon: Users,
     },
-    // TEMP: Voice Lab hidden — uncomment to restore
-    // {
-    //     title: 'Voice Lab',
-    //     link: '/user/voice-lab',
-    //     icon: Mic,
-    // },
+    {
+        title: 'XEN',
+        link: '/user/voice-lab',
+        icon: Mic,
+    },
 ];
 
 const getMenuLinkClass = (link: string): string => {
