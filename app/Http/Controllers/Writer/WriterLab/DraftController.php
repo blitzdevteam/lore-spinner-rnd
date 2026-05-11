@@ -520,6 +520,68 @@ final class DraftController extends Controller
         }
     }
 
+    // ── Comprehensive script-change impact analysis (AJAX) ────────────────────
+
+    /**
+     * Analyse every adaptation layer that may be stale after an event edit:
+     *   - event objectives + attributes
+     *   - session beat_map entry
+     *   - session_choice_design (question + options)
+     *   - choice_consequence_map review flag
+     *   - cross-session canonical anchor warnings
+     *
+     * Returns structured JSON for the Chapter.vue impact panel.
+     */
+    public function analyseImpact(Request $request, Story $story, Chapter $chapter, WriterLabDraft $draft): JsonResponse
+    {
+        if (empty(trim($draft->rewritten_content ?? ''))) {
+            return response()->json(['error' => 'Save the edited content first.'], 422);
+        }
+
+        $sourceEvent = $draft->source_event_ids ? Event::find($draft->source_event_ids[0]) : null;
+
+        if (! $sourceEvent) {
+            return response()->json(['error' => 'Source event not found.'], 422);
+        }
+
+        $sessionNumber     = $draft->session_number ?? $sourceEvent->session_number;
+        $sessionAdaptation = $this->resolveSessionAdaptation($story, $sessionNumber);
+
+        // Original content comes from previous_state snapshot
+        $previousState   = $draft->previous_state ?? [];
+        $originalContent = $previousState['events'][0]['content'] ?? $sourceEvent->content;
+
+        // Attempt to find the downstream session adaptation for cross-session seeding
+        $nextSessionAdaptation = null;
+        if ($sessionNumber !== null) {
+            $nextSessionAdaptation = $this->resolveSessionAdaptation($story, $sessionNumber + 1);
+        }
+
+        $prompt = view('ai.agents.writer-lab.script-change-impact.prompt', [
+            'eventTitle'          => $sourceEvent->title,
+            'sessionNumber'       => $sessionNumber,
+            'eventPosition'       => $sourceEvent->position,
+            'originalContent'     => $originalContent,
+            'editedContent'       => $draft->rewritten_content,
+            'currentObjectives'   => $sourceEvent->objectives,
+            'currentAttributes'   => $sourceEvent->attributes,
+            'beatMap'             => $sessionAdaptation?->beat_map ?? [],
+            'choiceDesign'        => $sessionAdaptation?->session_choice_design ?? [],
+            'consequenceMap'      => $sessionAdaptation?->choice_consequence_map ?? [],
+            'nextSessionAwareness' => $sessionAdaptation?->next_session_awareness ?? null,
+            'nextSessionColdOpen' => $nextSessionAdaptation?->entry_point_diagnosis['cold_open'] ?? null,
+        ])->render();
+
+        try {
+            $agent  = \App\Ai\Agents\WriterLab\ScriptChangeImpactAgent::make();
+            $result = $agent->prompt($prompt)->toArray();
+
+            return response()->json(['impact' => $result]);
+        } catch (Throwable $e) {
+            return response()->json(['error' => 'Impact analysis failed: ' . $e->getMessage()], 500);
+        }
+    }
+
     // ── Private activate helpers ──────────────────────────────────────────────
 
     private function activateCombine(WriterLabDraft $draft): void
@@ -596,11 +658,20 @@ final class DraftController extends Controller
             return;
         }
 
-        Event::where('id', $eventId)->update([
+        $fields = [
             'content'         => $draft->rewritten_content,
-            'objectives'      => $draft->derived_objectives,
             'requires_choice' => $draft->requires_choice,
-        ]);
+        ];
+
+        // Apply revised metadata if the writer accepted the impact analysis suggestions
+        if (! empty($draft->derived_objectives)) {
+            $fields['objectives'] = $draft->derived_objectives;
+        }
+        if (! empty($draft->derived_attributes)) {
+            $fields['attributes'] = $draft->derived_attributes;
+        }
+
+        Event::where('id', $eventId)->update($fields);
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────

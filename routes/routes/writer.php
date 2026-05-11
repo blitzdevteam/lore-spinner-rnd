@@ -46,6 +46,8 @@ Route::prefix('writer')->name('writer.')->group(function (): void {
             Route::post('{draft}/preview', [Writer\WriterLab\DraftController::class, 'preview'])->name('preview');
             // AI choice alignment — returns JSON suggestion for inline diff in Chapter.vue
             Route::post('{draft}/suggest-choices', [Writer\WriterLab\DraftController::class, 'suggestChoices'])->name('suggest-choices');
+            // Comprehensive script-change impact analysis across all adaptation layers
+            Route::post('{draft}/analyse-impact', [Writer\WriterLab\DraftController::class, 'analyseImpact'])->name('analyse-impact');
         });
 
         // Version history

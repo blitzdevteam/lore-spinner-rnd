@@ -187,70 +187,67 @@ const runPreview = async () => {
     }
 };
 
-// ── AI choice alignment ────────────────────────────────────────────────────
-interface ChoiceSuggestion {
-    choice_slot: string;
-    suggested_question: string;
-    suggested_option_a: string;
-    suggested_option_b: string;
-    suggested_option_c: string;
-    tracked_dimension: string;
-    rationale: string;
-    changes_significant: boolean;
+// ── Script change impact analysis ──────────────────────────────────────────
+interface ImpactAnalysis {
+    severity: 'clean' | 'minor' | 'moderate' | 'significant';
+    summary: string;
+    objectives_needs_update: boolean;
+    objectives_revised: string;
+    attributes_needs_update: boolean;
+    attributes_revised: string[];
+    beat_map_needs_update: boolean;
+    beat_moment_revised: string;
+    beat_type_revised: string;
+    choice_design_needs_update: boolean;
+    choice_slot_affected: string;
+    choice_question_revised: string;
+    choice_option_a_revised: string;
+    choice_option_b_revised: string;
+    choice_option_c_revised: string;
+    choice_tracked_dimension: string;
+    consequence_map_needs_review: boolean;
+    consequence_map_note: string;
+    cross_session_concern: boolean;
+    cross_session_note: string;
 }
 
-const suggesting       = ref(false);
-const suggestion       = ref<ChoiceSuggestion | null>(null);
-const suggestionError  = ref<string | null>(null);
-const suggestionApplied = ref(false);
+const analysing      = ref(false);
+const impact         = ref<ImpactAnalysis | null>(null);
+const impactError    = ref<string | null>(null);
 
-const resetSuggestion = () => {
-    suggestion.value       = null;
-    suggestionError.value  = null;
-    suggestionApplied.value = false;
-};
-
-const eventHasChoiceDesign = computed(() => {
-    if (!focusedEvent.value?.session_number) return false;
-    const sa = props.sessionAdaptations[focusedEvent.value.session_number];
-    return sa?.session_choice_design && Object.keys(sa.session_choice_design).length > 0;
+// Track which sections the writer has accepted
+const acceptedSections = reactive<Record<string, boolean>>({
+    metadata: false,
+    beat_map: false,
+    choice_design: false,
 });
 
-const suggestChoices = async () => {
-    if (!saveDraftId.value) return;
-    suggesting.value      = true;
-    suggestion.value      = null;
-    suggestionError.value = null;
-
-    const url = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${saveDraftId.value}/suggest-choices`;
-    const data = await apiPost(url);
-
-    suggesting.value = false;
-    if (data.error) suggestionError.value = data.error;
-    else suggestion.value = data.suggestion;
+const resetImpact = () => {
+    impact.value    = null;
+    impactError.value = null;
+    acceptedSections.metadata     = false;
+    acceptedSections.beat_map     = false;
+    acceptedSections.choice_design = false;
 };
 
-const acceptSuggestion = async () => {
-    if (!suggestion.value || !saveDraftId.value || !focusedEvent.value?.session_number) return;
+const resetSuggestion = () => resetImpact();
 
-    // Build the full updated session_choice_design with the accepted slot merged in
-    const sa             = props.sessionAdaptations[focusedEvent.value.session_number];
-    const currentDesign  = sa?.session_choice_design ?? {};
-    const slot           = suggestion.value.choice_slot;
+const analyseImpact = async () => {
+    if (!saveDraftId.value) return;
+    analysing.value   = true;
+    impact.value      = null;
+    impactError.value = null;
 
-    const updatedDesign = {
-        ...currentDesign,
-        [slot]: {
-            ...(currentDesign[slot] ?? {}),
-            what_this_choice_tracks: suggestion.value.tracked_dimension,
-            choice_question:         suggestion.value.suggested_question,
-            option_a: { ...(currentDesign[slot]?.option_a ?? {}), text: suggestion.value.suggested_option_a },
-            option_b: { ...(currentDesign[slot]?.option_b ?? {}), text: suggestion.value.suggested_option_b },
-            option_c: { ...(currentDesign[slot]?.option_c ?? {}), text: suggestion.value.suggested_option_c },
-        },
-    };
+    const url = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${saveDraftId.value}/analyse-impact`;
+    const data = await apiPost(url);
 
-    // PATCH the draft to include this adaptation_patch
+    analysing.value = false;
+    if (data.error) impactError.value = data.error;
+    else impact.value = data.impact;
+};
+
+const patchDraft = async (patch: Record<string, unknown>) => {
+    if (!saveDraftId.value) return;
     await fetch(
         `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${saveDraftId.value}`,
         {
@@ -260,14 +257,67 @@ const acceptSuggestion = async () => {
                 'X-CSRF-TOKEN': csrf(),
                 Accept: 'application/json',
             },
-            body: JSON.stringify({
-                adaptation_patch: { session_choice_design: updatedDesign },
-            }),
+            body: JSON.stringify(patch),
         }
     );
-
-    suggestionApplied.value = true;
 };
+
+const acceptMetadata = async () => {
+    if (!impact.value) return;
+    await patchDraft({
+        derived_objectives: impact.value.objectives_revised,
+        derived_attributes: impact.value.attributes_revised,
+    });
+    acceptedSections.metadata = true;
+};
+
+const acceptBeatMap = async () => {
+    if (!impact.value || !focusedEvent.value?.session_number) return;
+    const sa          = props.sessionAdaptations[focusedEvent.value.session_number];
+    const currentMap  = sa?.beat_map ?? [];
+    // Append a structured note — beat_map is an array and we don't know exact index; store as patch note
+    await patchDraft({
+        adaptation_patch: {
+            beat_map_patch: {
+                event_position:    focusedEvent.value.position,
+                moment_revised:    impact.value.beat_moment_revised,
+                beat_type_revised: impact.value.beat_type_revised,
+            },
+        },
+    });
+    acceptedSections.beat_map = true;
+};
+
+const acceptChoiceDesign = async () => {
+    if (!impact.value || !focusedEvent.value?.session_number) return;
+    const sa            = props.sessionAdaptations[focusedEvent.value.session_number];
+    const currentDesign = sa?.session_choice_design ?? {};
+    const slot          = impact.value.choice_slot_affected;
+
+    const updatedDesign = {
+        ...currentDesign,
+        [slot]: {
+            ...(currentDesign[slot] ?? {}),
+            what_this_choice_tracks: impact.value.choice_tracked_dimension,
+            choice_question:         impact.value.choice_question_revised,
+            option_a: { ...(currentDesign[slot]?.option_a ?? {}), text: impact.value.choice_option_a_revised },
+            option_b: { ...(currentDesign[slot]?.option_b ?? {}), text: impact.value.choice_option_b_revised },
+            option_c: { ...(currentDesign[slot]?.option_c ?? {}), text: impact.value.choice_option_c_revised },
+        },
+    };
+
+    await patchDraft({ adaptation_patch: { session_choice_design: updatedDesign } });
+    acceptedSections.choice_design = true;
+};
+
+const severityColor = (s: string) => ({
+    clean:       'bg-emerald-900/30 text-emerald-300 border-emerald-700/30',
+    minor:       'bg-gray-800 text-gray-300 border-gray-700',
+    moderate:    'bg-yellow-900/30 text-yellow-300 border-yellow-700/30',
+    significant: 'bg-red-900/30 text-red-300 border-red-700/30',
+}[s] ?? 'bg-gray-800 text-gray-300 border-gray-700');
+
+const severityIcon = (s: string) => ({ clean: '✓', minor: '△', moderate: '⚠', significant: '⚡' }[s] ?? '?');
 
 // ── Session adaptation editing ─────────────────────────────────────────────
 const sessionNumbers = computed(() =>
@@ -628,12 +678,12 @@ const eventDraftLink = (eventId: number) => {
                                 <span v-else>▶ Preview Narration</span>
                             </button>
 
-                            <button v-if="saveDraftId && eventHasChoiceDesign"
+                            <button v-if="saveDraftId"
                                 class="rounded-lg border border-primary-700/50 bg-primary-950/30 px-4 py-2 text-sm text-primary-300 hover:bg-primary-900/40 transition-all disabled:opacity-40"
-                                :disabled="suggesting"
-                                @click="suggestChoices">
-                                <span v-if="suggesting">Analysing…</span>
-                                <span v-else>✦ Align Choices with AI</span>
+                                :disabled="analysing"
+                                @click="analyseImpact">
+                                <span v-if="analysing">Analysing layers…</span>
+                                <span v-else>✦ Analyse Script Changes</span>
                             </button>
 
                             <Link v-if="saveDraftId"
@@ -661,45 +711,123 @@ const eventDraftLink = (eventId: number) => {
                         </div>
 
                         <!-- ── Choice alignment suggestion ─────────────────── -->
-                        <div v-if="suggestionError" class="rounded-xl border border-red-800/40 bg-red-950/20 p-4 text-sm text-red-400">
-                            {{ suggestionError }}
+                        <!-- ── Impact analysis error ──────────────────────── -->
+                        <div v-if="impactError" class="rounded-xl border border-red-800/40 bg-red-950/20 p-4 text-sm text-red-400">
+                            {{ impactError }}
                         </div>
 
-                        <div v-if="suggestion" class="rounded-xl border border-primary-700/40 bg-primary-950/20 p-5 space-y-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-xs uppercase tracking-widest text-primary-400">✦ Choice Alignment Suggestion</h3>
-                                <span class="rounded-full px-2 py-0.5 text-xs"
-                                    :class="suggestion.changes_significant ? 'bg-yellow-900/50 text-yellow-300' : 'bg-gray-800 text-gray-400'">
-                                    {{ suggestion.changes_significant ? 'Changes suggested' : 'Minor / no changes needed' }}
-                                </span>
-                            </div>
+                        <!-- ── Full impact analysis panel ──────────────────── -->
+                        <div v-if="impact" class="rounded-xl border border-gray-700 bg-gray-900/60 overflow-hidden">
 
-                            <p class="text-xs text-gray-400 italic">{{ suggestion.rationale }}</p>
-
-                            <div class="space-y-2 text-sm">
-                                <div>
-                                    <span class="text-xs text-gray-500">Slot: </span>
-                                    <span class="text-gray-300">{{ choiceLabel(suggestion.choice_slot) }}</span>
-                                    <span class="ml-2 text-xs text-gray-600">tracks: {{ suggestion.tracked_dimension }}</span>
-                                </div>
-                                <div class="rounded-lg bg-gray-900 p-3 space-y-2">
-                                    <p class="font-medium text-gray-200">{{ suggestion.suggested_question }}</p>
-                                    <p class="text-gray-400">A: {{ suggestion.suggested_option_a }}</p>
-                                    <p class="text-gray-400">B: {{ suggestion.suggested_option_b }}</p>
-                                    <p class="text-gray-400">C: {{ suggestion.suggested_option_c }}</p>
+                            <!-- Header row -->
+                            <div class="flex items-center justify-between px-5 py-3 border-b border-gray-700/50">
+                                <h3 class="text-xs uppercase tracking-widest text-gray-400">✦ Script Change Impact</h3>
+                                <div class="flex items-center gap-2">
+                                    <span class="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+                                        :class="severityColor(impact.severity)">
+                                        {{ severityIcon(impact.severity) }} {{ impact.severity }}
+                                    </span>
+                                    <button class="text-xs text-gray-600 hover:text-gray-400 transition-colors" @click="impact = null">dismiss</button>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-3">
-                                <button v-if="!suggestionApplied"
-                                    class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 transition-all"
-                                    @click="acceptSuggestion">
-                                    Accept — add to draft
-                                </button>
-                                <span v-else class="text-sm text-emerald-400">✓ Added to draft</span>
-                                <button class="text-sm text-gray-500 hover:text-gray-300 transition-colors"
-                                    @click="suggestion = null">Dismiss</button>
+                            <!-- Summary -->
+                            <div class="px-5 py-3 border-b border-gray-800/50">
+                                <p class="text-sm text-gray-300 leading-relaxed">{{ impact.summary }}</p>
                             </div>
+
+                            <!-- ── Section: Event Metadata ──────────────────── -->
+                            <div v-if="impact.objectives_needs_update || impact.attributes_needs_update"
+                                class="border-b border-gray-800/50 px-5 py-4 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-xs font-semibold uppercase tracking-widest text-blue-400">Event Metadata</h4>
+                                    <button v-if="!acceptedSections.metadata"
+                                        class="rounded-lg bg-blue-900/40 px-3 py-1 text-xs text-blue-300 hover:bg-blue-800/50 transition-all border border-blue-700/30"
+                                        @click="acceptMetadata">Accept</button>
+                                    <span v-else class="text-xs text-emerald-400">✓ Applied to draft</span>
+                                </div>
+
+                                <div v-if="impact.objectives_needs_update" class="space-y-1">
+                                    <p class="text-xs text-gray-500">Objectives</p>
+                                    <p class="text-sm text-gray-200 rounded-lg bg-gray-800/50 px-3 py-2">{{ impact.objectives_revised }}</p>
+                                </div>
+
+                                <div v-if="impact.attributes_needs_update" class="space-y-1">
+                                    <p class="text-xs text-gray-500">Attributes</p>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span v-for="attr in impact.attributes_revised" :key="attr"
+                                            class="rounded-full bg-gray-800 border border-gray-700 px-2.5 py-0.5 text-xs text-gray-300">
+                                            {{ attr }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── Section: Beat Map ────────────────────────── -->
+                            <div v-if="impact.beat_map_needs_update"
+                                class="border-b border-gray-800/50 px-5 py-4 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-xs font-semibold uppercase tracking-widest text-orange-400">Beat Map</h4>
+                                    <button v-if="!acceptedSections.beat_map"
+                                        class="rounded-lg bg-orange-900/30 px-3 py-1 text-xs text-orange-300 hover:bg-orange-800/40 transition-all border border-orange-700/30"
+                                        @click="acceptBeatMap">Accept</button>
+                                    <span v-else class="text-xs text-emerald-400">✓ Applied to draft</span>
+                                </div>
+                                <div class="rounded-lg bg-gray-800/50 px-3 py-2 space-y-1">
+                                    <p class="text-sm text-gray-200">{{ impact.beat_moment_revised }}</p>
+                                    <p class="text-xs text-gray-500">Beat type → <span class="text-orange-300">{{ impact.beat_type_revised }}</span></p>
+                                </div>
+                            </div>
+
+                            <!-- ── Section: Choice Design ───────────────────── -->
+                            <div v-if="impact.choice_design_needs_update && impact.choice_slot_affected !== 'none'"
+                                class="border-b border-gray-800/50 px-5 py-4 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="text-xs font-semibold uppercase tracking-widest text-primary-400">Choice Design</h4>
+                                        <span class="text-xs text-gray-600">{{ choiceLabel(impact.choice_slot_affected) }} · {{ impact.choice_tracked_dimension }}</span>
+                                    </div>
+                                    <button v-if="!acceptedSections.choice_design"
+                                        class="rounded-lg bg-primary-900/40 px-3 py-1 text-xs text-primary-300 hover:bg-primary-800/50 transition-all border border-primary-700/30"
+                                        @click="acceptChoiceDesign">Accept</button>
+                                    <span v-else class="text-xs text-emerald-400">✓ Applied to draft</span>
+                                </div>
+                                <div class="rounded-lg bg-gray-800/50 px-3 py-2.5 space-y-2">
+                                    <p class="font-medium text-sm text-gray-200">{{ impact.choice_question_revised }}</p>
+                                    <p class="text-xs text-gray-400">A: {{ impact.choice_option_a_revised }}</p>
+                                    <p class="text-xs text-gray-400">B: {{ impact.choice_option_b_revised }}</p>
+                                    <p class="text-xs text-gray-400">C: {{ impact.choice_option_c_revised }}</p>
+                                </div>
+                            </div>
+
+                            <!-- ── Section: Consequence map flag (read-only) ── -->
+                            <div v-if="impact.consequence_map_needs_review"
+                                class="border-b border-gray-800/50 px-5 py-3">
+                                <div class="flex items-start gap-2">
+                                    <span class="text-yellow-500 mt-0.5 flex-none">⚠</span>
+                                    <div>
+                                        <p class="text-xs text-yellow-300 font-medium mb-0.5">Consequence Map — manual review needed</p>
+                                        <p class="text-xs text-gray-400">{{ impact.consequence_map_note }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── Section: Cross-session concern (read-only) ─ -->
+                            <div v-if="impact.cross_session_concern" class="px-5 py-3">
+                                <div class="flex items-start gap-2">
+                                    <span class="text-red-400 mt-0.5 flex-none">⚡</span>
+                                    <div>
+                                        <p class="text-xs text-red-300 font-medium mb-0.5">Cross-session anchor at risk</p>
+                                        <p class="text-xs text-gray-400">{{ impact.cross_session_note }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Clean result -->
+                            <div v-if="impact.severity === 'clean'" class="px-5 py-4 text-center">
+                                <p class="text-sm text-emerald-400">✓ All adaptation layers are still accurate. No changes needed.</p>
+                            </div>
+
                         </div>
 
                     </div>
