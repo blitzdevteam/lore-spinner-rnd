@@ -89,6 +89,7 @@ final class PromptController extends Controller
         }
 
         $systemPrompt = $this->renderSystemPrompt(
+            game: $game,
             story: $game->story,
             currentEvent: $currentEvent,
             turnCount: $turnCount,
@@ -299,6 +300,7 @@ final class PromptController extends Controller
      * @param  array{option: string, choice_id: ?string, text: string}|null  $deterministicMatch
      */
     private function renderSystemPrompt(
+        Game $game,
         \App\Models\Story $story,
         Event $currentEvent,
         int $turnCount = 0,
@@ -362,6 +364,7 @@ final class PromptController extends Controller
             'sessionCloseDesign' => $sessionCloseDesign,
             'worldState' => $worldState,
             'deterministicMatch' => $deterministicMatch,
+            'playerChoiceEchoes' => $this->resolvePlayerChoiceEchoes($game, $sessionAdaptation),
         ])->render();
     }
 
@@ -724,6 +727,79 @@ final class PromptController extends Controller
         }
 
         return $existing;
+    }
+
+    /**
+     * Build a small list of in-session echo strings derived from the player's actual
+     * branching choices and the adaptation consequence map. Only emits entries where
+     * there is a concrete current_session_echo or immediate_effect written by the
+     * adaptation layer — never fabricates. Returns [] when nothing meaningful is found
+     * so the prompt block is omitted entirely.
+     *
+     * @return list<string>
+     */
+    private function resolvePlayerChoiceEchoes(Game $game, ?SessionAdaptation $sessionAdaptation): array
+    {
+        if ($sessionAdaptation === null) {
+            return [];
+        }
+
+        $branchingChoices = $game->branching_choices_taken ?? [];
+        if ($branchingChoices === []) {
+            return [];
+        }
+
+        $cmap = $sessionAdaptation->choice_consequence_map ?? null;
+        if (! is_array($cmap) || $cmap === []) {
+            return [];
+        }
+
+        $echoes = [];
+
+        foreach ($branchingChoices as $taken) {
+            $choiceId = (string) ($taken['choice_id'] ?? '');
+            $option = strtolower((string) ($taken['option'] ?? ''));
+
+            if ($choiceId === '' || $option === '') {
+                continue;
+            }
+
+            // Match the taken choice to its consequence map entry by choice_id suffix
+            // e.g. S1_C1 -> consequence_map_choice_1, S1_C2 -> consequence_map_choice_2
+            $mapKey = null;
+            foreach (array_keys($cmap) as $key) {
+                // Extract the numeric suffix from both sides and compare
+                preg_match('/(\d+)$/', $choiceId, $choiceNum);
+                preg_match('/(\d+)$/', (string) $key, $mapNum);
+                if (isset($choiceNum[1], $mapNum[1]) && $choiceNum[1] === $mapNum[1]) {
+                    $mapKey = $key;
+                    break;
+                }
+            }
+
+            if ($mapKey === null || ! isset($cmap[$mapKey])) {
+                continue;
+            }
+
+            $pathKey = 'path_' . $option;
+            $pathData = $cmap[$mapKey][$pathKey] ?? null;
+
+            if (! is_array($pathData)) {
+                continue;
+            }
+
+            // Prefer current_session_echo as it's written for in-session flavour;
+            // fall back to immediate_effect if echo is absent.
+            $echo = (string) ($pathData['current_session_echo'] ?? $pathData['immediate_effect'] ?? '');
+
+            if ($echo === '' || str_starts_with($echo, 'N/A')) {
+                continue;
+            }
+
+            $echoes[] = $echo;
+        }
+
+        return $echoes;
     }
 
     /**

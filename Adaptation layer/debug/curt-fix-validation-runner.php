@@ -78,6 +78,7 @@ if ($step === 'step4') {
 
     $rendered = $ref->invoke(
         $ctrl,
+        $game,
         $game->story,
         $game->currentEvent,
         $game->prompts()->where('event_id', $game->currentEvent->id)->count(),
@@ -254,6 +255,7 @@ if ($step === 'step12') {
     // Render at turn 0 so isFirstTurnInEvent = true fires
     $rendered = $ref->invoke(
         $ctrl,
+        $game,
         $game->story,
         $game->currentEvent,
         0,

@@ -31,32 +31,48 @@ function stopTimeUpdates() {
     }
 }
 
-function attachListeners(audio: HTMLAudioElement) {
+function attachListeners(audio: HTMLAudioElement, key: string) {
+    // Guard: only attach once per element so cached replays don't stack handlers.
+    if ((audio as any).__ttsListenersAttached) return;
+    (audio as any).__ttsListenersAttached = true;
+
     audio.addEventListener('canplay', () => {
         isLoading.value = false;
         duration.value = audio.duration || 0;
+        console.debug('[TTS] canplay', key, 'duration', duration.value);
     });
     audio.addEventListener('playing', () => {
         isPlaying.value = true;
         isLoading.value = false;
         duration.value = audio.duration || 0;
+        console.debug('[TTS] playing', key);
         updateTime();
     });
     audio.addEventListener('ended', () => {
         isPlaying.value = false;
         stopTimeUpdates();
+        console.debug('[TTS] ended', key);
     });
     audio.addEventListener('pause', () => {
         isPlaying.value = false;
         stopTimeUpdates();
+        console.debug('[TTS] pause', key);
     });
-    audio.addEventListener('error', () => {
+    audio.addEventListener('error', (e) => {
         isPlaying.value = false;
         isLoading.value = false;
         stopTimeUpdates();
+        console.warn('[TTS] error', key, (e.target as HTMLAudioElement).error);
     });
     audio.addEventListener('loadedmetadata', () => {
         duration.value = audio.duration || 0;
+        console.debug('[TTS] loadedmetadata', key, 'duration', duration.value);
+    });
+    audio.addEventListener('stalled', () => {
+        console.warn('[TTS] stalled', key);
+    });
+    audio.addEventListener('waiting', () => {
+        console.debug('[TTS] waiting (buffering)', key);
     });
 }
 
@@ -65,7 +81,11 @@ function play(gameId: string, promptId: string) {
 
     if (currentAudio && activeKey.value === key && !currentAudio.ended) {
         if (currentAudio.paused) {
-            currentAudio.play();
+            currentAudio.play().catch((err) => {
+                console.warn('[TTS] play() rejected (resume)', key, err);
+                isPlaying.value = false;
+                isLoading.value = false;
+            });
         }
         return;
     }
@@ -77,19 +97,28 @@ function play(gameId: string, promptId: string) {
         activeKey.value = key;
         currentAudio.currentTime = 0;
         currentAudio.playbackRate = playbackRate.value;
-        currentAudio.play();
+        currentAudio.play().catch((err) => {
+            console.warn('[TTS] play() rejected (cache replay)', key, err);
+            isPlaying.value = false;
+            isLoading.value = false;
+        });
         return;
     }
 
     isLoading.value = true;
+    console.debug('[TTS] fetching', key);
     const audio = new Audio(`/user/games/${gameId}/tts/${promptId}`);
     audio.preload = 'auto';
     audio.playbackRate = playbackRate.value;
-    attachListeners(audio);
+    attachListeners(audio, key);
     audioCache.set(key, audio);
     currentAudio = audio;
     activeKey.value = key;
-    audio.play();
+    audio.play().catch((err) => {
+        console.warn('[TTS] play() rejected (new)', key, err);
+        isPlaying.value = false;
+        isLoading.value = false;
+    });
 }
 
 function stop() {
@@ -116,7 +145,10 @@ function pause() {
 
 function resume() {
     if (currentAudio && currentAudio.paused && !currentAudio.ended) {
-        currentAudio.play();
+        currentAudio.play().catch((err) => {
+            console.warn('[TTS] play() rejected (togglePause resume)', activeKey.value, err);
+            isPlaying.value = false;
+        });
     }
 }
 

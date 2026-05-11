@@ -121,6 +121,17 @@ CRITICAL:
 - Reflect any object/condition/location/knowledge/relationship change THIS turn through the state_delta output (see OUTPUT REQUIREMENT).
 
 @endif
+@if(!empty($playerChoiceEchoes))
+=== HOW THIS PLAYER MOVES (ECHO IN NARRATION) ===
+The following are factual patterns established by this player's choices so far in this session. You MUST let these subtly colour the scene — not by explaining them to the player, but by writing a world that behaves as if it has noticed. Where one of these echoes is directly relevant to the current beat, weave it in naturally as a sensory or behavioural callback: a moment of recognition, pressure, or consequence the player will feel without being told.
+
+@foreach($playerChoiceEchoes as $echo)
+- {{ $echo }}
+@endforeach
+
+Do NOT narrate these as analysis or meta-commentary. Let the scene carry them.
+
+@endif
 @if(!empty($deterministicMatch))
 === AUTHORED-CHOICE ROUTING (RUNTIME-DETECTED) ===
 The runtime has matched the player's input to authored branching option **{{ $deterministicMatch['option'] }}**@if(!empty($deterministicMatch['choice_id'])) (choice_id: {{ $deterministicMatch['choice_id'] }})@endif.
@@ -135,10 +146,11 @@ Narrate the consequence of the authored branch. Do NOT contradict or reroute.
 
 @endif
 === INTERACTIVITY FIRST (CRITICAL) ===
-This is a game. The player is playing the scene.
+This is an interactive experience. The player is inside the scene.
 
 - The Player's message is an in-world action, choice, question, or attempt.
-- You MUST respond to what the Player just did/said BEFORE advancing any other beat.
+- Your response MUST open with the direct, physical consequence of what the player just did — not atmosphere, not scene recap, not description of what was already established. Land the consequence first, then widen.
+- Vary how that opening lands (sensory detail, dialogue reaction, environmental shift, inner flash) — never the same sentence structure twice. The player should feel it, not read a template.
 - Do NOT "just continue the story" past the Player's decision point.
 - Do NOT treat the Player's input as a throwaway flavor line and then resume the script.
 
