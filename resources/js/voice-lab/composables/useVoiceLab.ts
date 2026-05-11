@@ -229,61 +229,37 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
         mediaRecorder.start(250);
     }
 
-    // Desktop tap-to-toggle: tap once to start, tap again to stop.
+    // Tap-to-toggle: tap once to start recording, tap again to stop and send.
     async function activate() {
         sfx.prime();
 
-        if (intro?.enabled && !hasStartedIntro.value) {
-            hasStartedIntro.value = true;
-            sfx.playWake();
-            await playIntro();
-            return;
-        }
-
-        if (state.value === 'listening') {
-            await finishRecording();
-            return;
-        }
-
-        if (state.value === 'speaking') {
-            stopPlayback();
-            state.value = 'idle';
-            return;
-        }
-
-        await startListening();
-    }
-
-    // Mobile hold-to-talk: press to start, release to send.
-    async function holdStart() {
-        sfx.prime();
-
-        if (intro?.enabled && !hasStartedIntro.value) {
-            hasStartedIntro.value = true;
-            sfx.playWake();
-            await playIntro();
-            return;
-        }
-
-        if (state.value === 'speaking') {
-            stopPlayback();
-            state.value = 'idle';
-            return;
-        }
-
-        await startListening();
-    }
-
-    async function holdEnd() {
+        // Cancel a slow getUserMedia (second tap while permission dialog open).
         if (listenPending) {
             listenPending = false;
             releaseMic();
             state.value = 'idle';
             return;
         }
+
+        if (intro?.enabled && !hasStartedIntro.value) {
+            hasStartedIntro.value = true;
+            sfx.playWake();
+            await playIntro();
+            return;
+        }
+
         if (state.value === 'listening') {
             await finishRecording();
+            return;
         }
+
+        if (state.value === 'speaking') {
+            stopPlayback();
+            state.value = 'idle';
+            return;
+        }
+
+        await startListening();
     }
 
     async function finishRecording(): Promise<void> {
@@ -627,8 +603,6 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
         isActive,
         hasStartedIntro,
         activate,
-        holdStart,
-        holdEnd,
         sendChoice,
         clearHistory,
         cleanup,
