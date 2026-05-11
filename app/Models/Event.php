@@ -13,8 +13,11 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $chapter_id
- * @property string $name
- * @property array<string> $attributes
+ * @property int $position
+ * @property string $title
+ * @property string $content
+ * @property string|null $objectives
+ * @property array<string>|null $attributes
  * @property int|null $session_number
  * @property bool $requires_choice
  * @property Carbon|null $created_at

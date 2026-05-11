@@ -310,17 +310,29 @@ final class DraftController extends Controller
             };
 
             // Apply any adaptation layer patches (cold_open edits, choice text changes, etc.)
+            // IMPORTANT: use recursive merge so partial patches (e.g. {cold_open: '...'} inside
+            // entry_point_diagnosis) don't overwrite the rest of the JSON column.
             if ($draft->adaptation_patch && $sessionAdaptation) {
-                foreach ($draft->adaptation_patch as $column => $value) {
-                    if (in_array($column, [
-                        'entry_point_diagnosis',
-                        'session_architecture',
-                        'session_choice_design',
-                        'choice_consequence_map',
-                        'session_close_design',
-                    ], strict: true)) {
-                        $sessionAdaptation->update([$column => $value]);
+                $allowedColumns = [
+                    'entry_point_diagnosis',
+                    'session_architecture',
+                    'session_choice_design',
+                    'choice_consequence_map',
+                    'session_close_design',
+                ];
+                foreach ($draft->adaptation_patch as $column => $patchValue) {
+                    if (! in_array($column, $allowedColumns, strict: true)) {
+                        continue;
                     }
+                    if (! is_array($patchValue)) {
+                        continue;
+                    }
+                    $existing = $sessionAdaptation->$column;
+                    // Merge: incoming patch takes precedence; existing keys not in patch are preserved
+                    $merged = is_array($existing)
+                        ? array_replace_recursive($existing, $patchValue)
+                        : $patchValue;
+                    $sessionAdaptation->update([$column => $merged]);
                 }
             }
 
@@ -572,10 +584,12 @@ final class DraftController extends Controller
             'editedContent'       => $draft->rewritten_content,
             'currentObjectives'   => $sourceEvent->objectives,
             'currentAttributes'   => $sourceEvent->attributes,
-            'beatMap'             => $sessionAdaptation?->beat_map ?? [],
+            // beat_map lives inside session_architecture, not as a top-level column
+            'beatMap'             => $sessionAdaptation?->session_architecture['beat_map'] ?? [],
             'choiceDesign'        => $sessionAdaptation?->session_choice_design ?? [],
             'consequenceMap'      => $sessionAdaptation?->choice_consequence_map ?? [],
-            'nextSessionAwareness' => $sessionAdaptation?->next_session_awareness ?? null,
+            // next_session_awareness is also inside session_architecture
+            'nextSessionAwareness' => $sessionAdaptation?->session_architecture['next_session_awareness'] ?? null,
             'nextSessionColdOpen' => $nextSessionAdaptation?->entry_point_diagnosis['cold_open'] ?? null,
         ])->render();
 
@@ -662,6 +676,8 @@ final class DraftController extends Controller
     {
         $eventId = $draft->source_event_ids[0] ?? null;
         if ($eventId === null) {
+            // Adaptation-only draft (no source event) — adaptation_patch is applied
+            // by the caller's loop; nothing to do here.
             return;
         }
 
@@ -670,13 +686,20 @@ final class DraftController extends Controller
             'requires_choice' => $draft->requires_choice,
         ];
 
-        // Apply revised metadata if the writer accepted the impact analysis suggestions
+        // Only overwrite objectives / attributes when the writer explicitly set them
+        // (via direct edit or accepted an AI suggestion). Null means "leave as-is".
         if (! empty($draft->derived_objectives)) {
             $fields['objectives'] = $draft->derived_objectives;
         }
         if (! empty($draft->derived_attributes)) {
             $fields['attributes'] = $draft->derived_attributes;
         }
+
+        // NOTE: beat_type is stored on the draft for context / preview, but the
+        // events table has no beat_type column. Beat-map entries live inside
+        // session_architecture['beat_map'] on SessionAdaptation. Any beat_type
+        // change should be captured as an adaptation_patch on the draft and is
+        // applied by the caller's adaptation_patch loop.
 
         Event::where('id', $eventId)->update($fields);
     }
