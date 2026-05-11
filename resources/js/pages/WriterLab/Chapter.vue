@@ -112,40 +112,143 @@ const rightPanelMode = computed<'event' | 'session' | 'empty'>(() => {
 const editContent        = ref('');
 const editRequiresChoice = ref(true);
 const editBeatType       = ref('');
+const editObjectives     = ref('');
+const editAttributes     = ref<string[]>([]);
 const editDirty          = ref(false);
 const saving             = ref(false);
 const saveError          = ref<string | null>(null);
 const saveDraftId        = ref<number | null>(null);
 
+// Track which fields were filled by AI so they can be highlighted
+const aiFilledFields = reactive<Record<string, boolean>>({});
+
+// Inline attribute tag editing
+const attrInput = ref('');
+const addAttribute = () => {
+    const v = attrInput.value.trim();
+    if (v && !editAttributes.value.includes(v)) {
+        editAttributes.value.push(v);
+        editDirty.value = true;
+    }
+    attrInput.value = '';
+};
+const removeAttribute = (i: number) => {
+    editAttributes.value.splice(i, 1);
+    editDirty.value = true;
+};
+
+// Inline choice design editing for the event's session
+// Keyed by slot name: branching_choice_1 / _2 / _3
+interface SlotEdit {
+    question: string;
+    option_a: string;
+    option_b: string;
+    option_c: string;
+    tracked_dimension: string;
+}
+const editChoiceSlots = reactive<Record<string, SlotEdit>>({});
+const choiceSlotsDirty = ref(false);
+
+const initChoiceSlots = (sessionNum: number | null) => {
+    for (const slot of choiceSlots) {
+        const s = sessionNum !== null
+            ? props.sessionAdaptations[sessionNum]?.session_choice_design?.[slot]
+            : undefined;
+        editChoiceSlots[slot] = {
+            question:          s?.choice_question ?? '',
+            option_a:          s?.option_a?.text ?? '',
+            option_b:          s?.option_b?.text ?? '',
+            option_c:          s?.option_c?.text ?? '',
+            tracked_dimension: s?.what_this_choice_tracks ?? '',
+        };
+    }
+    choiceSlotsDirty.value = false;
+};
+
 const resetEditState = (event: Event) => {
-    // If there's an existing edit draft for this event, load its content
     const existing = props.activeDrafts.find(
         d => d.type === 'edit' && d.source_event_ids?.includes(event.id)
     );
     editContent.value        = existing?.rewritten_content ?? event.content;
     editRequiresChoice.value = existing?.requires_choice ?? event.requires_choice;
     editBeatType.value       = existing?.beat_type ?? '';
+    editObjectives.value     = (existing?.derived_objectives as string | null) ?? event.objectives ?? '';
+    editAttributes.value     = [...((existing?.derived_attributes as string[] | null) ?? (event.attributes as string[] | null) ?? [])];
     editDirty.value          = false;
     saveDraftId.value        = existing?.id ?? null;
     saveError.value          = null;
+    Object.keys(aiFilledFields).forEach(k => { aiFilledFields[k] = false; });
+
+    // Load choice design for this event's session
+    initChoiceSlots(event.session_number);
+
+    // If existing draft had an adaptation_patch with session_choice_design, overlay that
+    const draftPatch = (existing?.adaptation_patch as Record<string, any> | null);
+    if (draftPatch?.session_choice_design) {
+        for (const slot of choiceSlots) {
+            const p = draftPatch.session_choice_design[slot];
+            if (p) {
+                editChoiceSlots[slot] = {
+                    question:          p.choice_question ?? editChoiceSlots[slot].question,
+                    option_a:          p.option_a?.text ?? editChoiceSlots[slot].option_a,
+                    option_b:          p.option_b?.text ?? editChoiceSlots[slot].option_b,
+                    option_c:          p.option_c?.text ?? editChoiceSlots[slot].option_c,
+                    tracked_dimension: p.what_this_choice_tracks ?? editChoiceSlots[slot].tracked_dimension,
+                };
+            }
+        }
+        choiceSlotsDirty.value = false;
+    }
 };
 
-watch(editContent, () => { editDirty.value = true; });
+watch(editContent, () => { editDirty.value = true; aiFilledFields.content = false; });
 watch(editRequiresChoice, () => { editDirty.value = true; });
-watch(editBeatType, () => { editDirty.value = true; });
+watch(editBeatType, () => { editDirty.value = true; aiFilledFields.beat_type = false; });
+watch(editObjectives, () => { editDirty.value = true; aiFilledFields.objectives = false; });
+
+const buildChoicePatch = () => {
+    // Build a full updated session_choice_design from editChoiceSlots
+    const session    = focusedEvent.value?.session_number ?? null;
+    const sa         = session !== null ? props.sessionAdaptations[session] ?? null : null;
+    const original   = sa?.session_choice_design ?? {};
+    const updated: Record<string, any> = {};
+
+    for (const slot of choiceSlots) {
+        const orig = original[slot] ?? {};
+        const edit = editChoiceSlots[slot];
+        if (!edit) continue;
+        updated[slot] = {
+            ...orig,
+            what_this_choice_tracks: edit.tracked_dimension,
+            choice_question:         edit.question,
+            option_a: { ...(orig.option_a ?? {}), text: edit.option_a },
+            option_b: { ...(orig.option_b ?? {}), text: edit.option_b },
+            option_c: { ...(orig.option_c ?? {}), text: edit.option_c },
+        };
+    }
+    return { session_choice_design: updated };
+};
 
 const saveEdit = async () => {
     if (!focusedEvent.value) return;
     saving.value    = true;
     saveError.value = null;
 
-    const url = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/edit`;
-    const data = await apiPost(url, {
+    const payload: Record<string, unknown> = {
         event_id:        focusedEvent.value.id,
         content:         editContent.value,
         requires_choice: editRequiresChoice.value,
         beat_type:       editBeatType.value || null,
-    });
+        objectives:      editObjectives.value || null,
+        attributes:      editAttributes.value,
+    };
+
+    if (choiceSlotsDirty.value) {
+        payload.adaptation_patch = buildChoicePatch();
+    }
+
+    const url = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/edit`;
+    const data = await apiPost(url, payload);
 
     saving.value = false;
 
@@ -187,7 +290,7 @@ const runPreview = async () => {
     }
 };
 
-// ── Script change impact analysis ──────────────────────────────────────────
+// ── Script change impact analysis → fills form fields in place ─────────────
 interface ImpactAnalysis {
     severity: 'clean' | 'minor' | 'moderate' | 'significant';
     summary: string;
@@ -211,113 +314,89 @@ interface ImpactAnalysis {
     cross_session_note: string;
 }
 
-const analysing      = ref(false);
-const impact         = ref<ImpactAnalysis | null>(null);
-const impactError    = ref<string | null>(null);
-
-// Track which sections the writer has accepted
-const acceptedSections = reactive<Record<string, boolean>>({
-    metadata: false,
-    beat_map: false,
-    choice_design: false,
-});
+const analysing          = ref(false);
+const impactError        = ref<string | null>(null);
+const impactSummary      = ref<string | null>(null);
+const impactSeverity     = ref<string | null>(null);
+const impactWarnings     = ref<{ type: 'consequence' | 'cross_session'; note: string }[]>([]);
 
 const resetImpact = () => {
-    impact.value    = null;
-    impactError.value = null;
-    acceptedSections.metadata     = false;
-    acceptedSections.beat_map     = false;
-    acceptedSections.choice_design = false;
+    impactError.value    = null;
+    impactSummary.value  = null;
+    impactSeverity.value = null;
+    impactWarnings.value = [];
 };
-
 const resetSuggestion = () => resetImpact();
 
 const analyseImpact = async () => {
     if (!saveDraftId.value) return;
-    analysing.value   = true;
-    impact.value      = null;
-    impactError.value = null;
+    analysing.value = true;
+    resetImpact();
 
     const url = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${saveDraftId.value}/analyse-impact`;
     const data = await apiPost(url);
 
     analysing.value = false;
-    if (data.error) impactError.value = data.error;
-    else impact.value = data.impact;
-};
 
-const patchDraft = async (patch: Record<string, unknown>) => {
-    if (!saveDraftId.value) return;
-    await fetch(
-        `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${saveDraftId.value}`,
-        {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrf(),
-                Accept: 'application/json',
-            },
-            body: JSON.stringify(patch),
-        }
-    );
-};
+    if (data.error) {
+        impactError.value = data.error;
+        return;
+    }
 
-const acceptMetadata = async () => {
-    if (!impact.value) return;
-    await patchDraft({
-        derived_objectives: impact.value.objectives_revised,
-        derived_attributes: impact.value.attributes_revised,
-    });
-    acceptedSections.metadata = true;
-};
+    const r: ImpactAnalysis = data.impact;
 
-const acceptBeatMap = async () => {
-    if (!impact.value || !focusedEvent.value?.session_number) return;
-    const sa          = props.sessionAdaptations[focusedEvent.value.session_number];
-    const currentMap  = sa?.beat_map ?? [];
-    // Append a structured note — beat_map is an array and we don't know exact index; store as patch note
-    await patchDraft({
-        adaptation_patch: {
-            beat_map_patch: {
-                event_position:    focusedEvent.value.position,
-                moment_revised:    impact.value.beat_moment_revised,
-                beat_type_revised: impact.value.beat_type_revised,
-            },
-        },
-    });
-    acceptedSections.beat_map = true;
-};
+    impactSummary.value  = r.summary;
+    impactSeverity.value = r.severity;
 
-const acceptChoiceDesign = async () => {
-    if (!impact.value || !focusedEvent.value?.session_number) return;
-    const sa            = props.sessionAdaptations[focusedEvent.value.session_number];
-    const currentDesign = sa?.session_choice_design ?? {};
-    const slot          = impact.value.choice_slot_affected;
+    // ── Fill form fields directly with AI suggestions ──────────────────────
+    if (r.objectives_needs_update && r.objectives_revised) {
+        editObjectives.value          = r.objectives_revised;
+        aiFilledFields.objectives     = true;
+    }
+    if (r.attributes_needs_update && r.attributes_revised?.length) {
+        editAttributes.value          = [...r.attributes_revised];
+        aiFilledFields.attributes     = true;
+    }
+    if (r.beat_map_needs_update && r.beat_type_revised) {
+        editBeatType.value            = r.beat_type_revised.toLowerCase();
+        aiFilledFields.beat_type      = true;
+    }
+    if (r.choice_design_needs_update && r.choice_slot_affected && r.choice_slot_affected !== 'none') {
+        const slot = r.choice_slot_affected;
+        editChoiceSlots[slot] = {
+            question:          r.choice_question_revised,
+            option_a:          r.choice_option_a_revised,
+            option_b:          r.choice_option_b_revised,
+            option_c:          r.choice_option_c_revised,
+            tracked_dimension: r.choice_tracked_dimension,
+        };
+        aiFilledFields[`choice_${slot}`] = true;
+        choiceSlotsDirty.value = true;
+    }
 
-    const updatedDesign = {
-        ...currentDesign,
-        [slot]: {
-            ...(currentDesign[slot] ?? {}),
-            what_this_choice_tracks: impact.value.choice_tracked_dimension,
-            choice_question:         impact.value.choice_question_revised,
-            option_a: { ...(currentDesign[slot]?.option_a ?? {}), text: impact.value.choice_option_a_revised },
-            option_b: { ...(currentDesign[slot]?.option_b ?? {}), text: impact.value.choice_option_b_revised },
-            option_c: { ...(currentDesign[slot]?.option_c ?? {}), text: impact.value.choice_option_c_revised },
-        },
-    };
+    // Mark everything dirty so the writer sees the Save button is active
+    if (r.severity !== 'clean') {
+        editDirty.value = true;
+    }
 
-    await patchDraft({ adaptation_patch: { session_choice_design: updatedDesign } });
-    acceptedSections.choice_design = true;
+    // ── Surface warnings that require manual action ────────────────────────
+    if (r.consequence_map_needs_review) {
+        impactWarnings.value.push({ type: 'consequence', note: r.consequence_map_note });
+    }
+    if (r.cross_session_concern) {
+        impactWarnings.value.push({ type: 'cross_session', note: r.cross_session_note });
+    }
 };
 
 const severityColor = (s: string) => ({
-    clean:       'bg-emerald-900/30 text-emerald-300 border-emerald-700/30',
-    minor:       'bg-gray-800 text-gray-300 border-gray-700',
-    moderate:    'bg-yellow-900/30 text-yellow-300 border-yellow-700/30',
-    significant: 'bg-red-900/30 text-red-300 border-red-700/30',
-}[s] ?? 'bg-gray-800 text-gray-300 border-gray-700');
+    clean:       'text-emerald-400',
+    minor:       'text-gray-400',
+    moderate:    'text-yellow-400',
+    significant: 'text-red-400',
+}[s] ?? 'text-gray-400');
 
-const severityIcon = (s: string) => ({ clean: '✓', minor: '△', moderate: '⚠', significant: '⚡' }[s] ?? '?');
+const severityIcon = (s: string) =>
+    ({ clean: '✓', minor: '△', moderate: '⚠', significant: '⚡' }[s] ?? '?');
 
 // ── Session adaptation editing ─────────────────────────────────────────────
 const sessionNumbers = computed(() =>
@@ -614,88 +693,189 @@ const eventDraftLink = (eventId: number) => {
 
                 <!-- ─── MODE: Event editor ────────────────────────────────── -->
                 <template v-if="rightPanelMode === 'event' && focusedEvent">
-                    <div class="flex-1 p-6 space-y-5">
+                    <div class="flex-1 overflow-y-auto p-5 space-y-5">
 
-                        <!-- Event header -->
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs font-mono text-gray-600">{{ focusedEvent.position }}</span>
-                            <h2 class="text-base font-semibold leading-tight">{{ focusedEvent.title }}</h2>
-                            <template v-if="focusedEvent.session_number !== null">
-                                <span class="rounded-full bg-gray-800 px-2 py-0.5 text-xs text-gray-400">S{{ focusedEvent.session_number }}</span>
-                            </template>
-                        </div>
-
-                        <!-- Content editor -->
-                        <div>
-                            <label class="mb-1.5 block text-xs uppercase tracking-widest text-gray-500">Event Content</label>
-                            <textarea
-                                v-model="editContent"
-                                rows="10"
-                                class="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-sm text-gray-200 leading-relaxed focus:border-primary-500 focus:outline-none resize-none"
-                                placeholder="Edit the event's screenplay content…"
-                            ></textarea>
-                        </div>
-
-                        <!-- Controls row -->
-                        <div class="flex items-center gap-6 flex-wrap">
-                            <label class="flex items-center gap-2 cursor-pointer select-none">
-                                <div class="relative h-5 w-9 rounded-full transition-colors duration-200"
-                                    :class="editRequiresChoice ? 'bg-primary-500' : 'bg-gray-700'"
-                                    @click="editRequiresChoice = !editRequiresChoice">
-                                    <div class="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200"
-                                        :class="editRequiresChoice ? 'translate-x-4' : 'translate-x-0.5'"></div>
-                                </div>
-                                <span class="text-sm text-gray-300">Requires player choice</span>
-                            </label>
-
+                        <!-- Action bar -->
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
                             <div class="flex items-center gap-2">
-                                <label class="text-xs text-gray-500">Beat</label>
-                                <select v-model="editBeatType"
-                                    class="rounded-lg border border-gray-700 bg-gray-900 px-2 py-1 text-sm text-gray-300 focus:border-primary-500 focus:outline-none">
-                                    <option value="">—</option>
-                                    <option v-for="bt in BEAT_TYPES" :key="bt" :value="bt">{{ bt }}</option>
-                                </select>
+                                <span class="text-xs font-mono text-gray-600">{{ focusedEvent.position }}</span>
+                                <h2 class="text-sm font-semibold">{{ focusedEvent.title }}</h2>
+                                <span v-if="focusedEvent.session_number !== null"
+                                    class="rounded-full bg-gray-800 px-2 py-0.5 text-xs text-gray-400">S{{ focusedEvent.session_number }}</span>
                             </div>
-                        </div>
-
-                        <!-- Save + Action row -->
-                        <div class="flex items-center gap-3 flex-wrap">
-                            <button
-                                class="rounded-lg px-4 py-2 text-sm font-medium transition-all disabled:opacity-40"
-                                :class="editDirty ? 'bg-primary-600 hover:bg-primary-500 text-white' : 'bg-gray-800 text-gray-400'"
-                                :disabled="saving || !editDirty"
-                                @click="saveEdit">
-                                <span v-if="saving">Saving…</span>
-                                <span v-else-if="saveDraftId && !editDirty">✓ Saved as Draft #{{ saveDraftId }}</span>
-                                <span v-else>Save as Draft</span>
-                            </button>
-
-                            <button v-if="saveDraftId"
-                                class="rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-all disabled:opacity-40"
-                                :disabled="previewing"
-                                @click="runPreview">
-                                <span v-if="previewing">Generating…</span>
-                                <span v-else>▶ Preview Narration</span>
-                            </button>
-
-                            <button v-if="saveDraftId"
-                                class="rounded-lg border border-primary-700/50 bg-primary-950/30 px-4 py-2 text-sm text-primary-300 hover:bg-primary-900/40 transition-all disabled:opacity-40"
-                                :disabled="analysing"
-                                @click="analyseImpact">
-                                <span v-if="analysing">Analysing layers…</span>
-                                <span v-else>✦ Analyse Script Changes</span>
-                            </button>
-
-                            <Link v-if="saveDraftId"
-                                :href="`/writer/writer-lab/${story.id}/chapters/${chapter.id}/drafts/${saveDraftId}`"
-                                class="text-xs text-gray-500 hover:text-gray-300 transition-colors ml-auto">
-                                Open full draft →
-                            </Link>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <button class="rounded-lg px-3 py-1.5 text-xs font-medium transition-all disabled:opacity-40"
+                                    :class="editDirty ? 'bg-primary-600 hover:bg-primary-500 text-white' : 'bg-gray-800 text-gray-500'"
+                                    :disabled="saving || !editDirty" @click="saveEdit">
+                                    <span v-if="saving">Saving…</span>
+                                    <span v-else-if="saveDraftId && !editDirty">✓ Saved</span>
+                                    <span v-else>Save Draft</span>
+                                </button>
+                                <button v-if="saveDraftId"
+                                    class="rounded-lg bg-gray-800 px-3 py-1.5 text-xs text-gray-300 hover:bg-gray-700 transition-all disabled:opacity-40"
+                                    :disabled="previewing" @click="runPreview">
+                                    <span v-if="previewing">…</span><span v-else>▶ Preview</span>
+                                </button>
+                                <button class="rounded-lg border border-primary-700/40 bg-primary-950/20 px-3 py-1.5 text-xs text-primary-300 hover:bg-primary-900/30 transition-all disabled:opacity-40"
+                                    :disabled="analysing || !saveDraftId"
+                                    :title="!saveDraftId ? 'Save a draft first' : 'Analyse all adaptation layers'"
+                                    @click="analyseImpact">
+                                    <span v-if="analysing">Analysing…</span>
+                                    <span v-else>✦ Analyse Changes</span>
+                                </button>
+                                <Link v-if="saveDraftId"
+                                    :href="`/writer/writer-lab/${story.id}/chapters/${chapter.id}/drafts/${saveDraftId}`"
+                                    class="text-xs text-gray-600 hover:text-gray-400 transition-colors">full draft →</Link>
+                            </div>
                         </div>
 
                         <p v-if="saveError" class="text-xs text-red-400">{{ saveError }}</p>
 
-                        <!-- ── Preview result ───────────────────────────────── -->
+                        <!-- AI fill status bar -->
+                        <div v-if="impactSummary" class="rounded-lg border border-gray-700/50 bg-gray-900/40 px-4 py-2.5 flex items-start gap-2.5">
+                            <span :class="['flex-none mt-px text-sm', severityColor(impactSeverity ?? '')]">{{ severityIcon(impactSeverity ?? '') }}</span>
+                            <div class="flex-1 min-w-0 space-y-0.5">
+                                <p class="text-xs text-gray-300 leading-relaxed">{{ impactSummary }}</p>
+                                <p v-if="impactSeverity !== 'clean'" class="text-xs text-amber-400">Fields updated by AI are highlighted in amber — edit freely, then save.</p>
+                                <p v-else class="text-xs text-emerald-400">All adaptation layers are still accurate.</p>
+                            </div>
+                            <button class="text-xs text-gray-700 hover:text-gray-500 flex-none" @click="resetImpact">✕</button>
+                        </div>
+                        <div v-if="impactError" class="rounded-lg border border-red-800/40 bg-red-950/20 px-4 py-2 text-xs text-red-400">{{ impactError }}</div>
+
+                        <!-- Manual-action warnings (consequence map / cross-session) -->
+                        <div v-if="impactWarnings.length" class="space-y-2">
+                            <div v-for="w in impactWarnings" :key="w.type"
+                                class="rounded-lg px-4 py-2.5 flex items-start gap-2 text-xs"
+                                :class="w.type === 'cross_session' ? 'bg-red-950/20 border border-red-800/30' : 'bg-yellow-950/20 border border-yellow-800/30'">
+                                <span :class="w.type === 'cross_session' ? 'text-red-400' : 'text-yellow-400'">{{ w.type === 'cross_session' ? '⚡' : '⚠' }}</span>
+                                <div>
+                                    <p class="font-medium mb-0.5" :class="w.type === 'cross_session' ? 'text-red-300' : 'text-yellow-300'">
+                                        {{ w.type === 'cross_session' ? 'Cross-session anchor at risk' : 'Consequence map — manual review needed' }}
+                                    </p>
+                                    <p class="text-gray-400">{{ w.note }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── SECTION 1: Event Script ── -->
+                        <div class="rounded-xl border border-gray-800 bg-gray-900/30 p-4 space-y-3">
+                            <h3 class="text-xs uppercase tracking-widest text-gray-500">Event Script</h3>
+                            <textarea v-model="editContent" rows="9"
+                                class="w-full rounded-xl border bg-gray-950 px-4 py-3 text-sm text-gray-200 leading-relaxed focus:outline-none resize-none transition-colors"
+                                :class="aiFilledFields.content ? 'border-amber-600/60' : 'border-gray-700 focus:border-primary-500'"
+                                placeholder="Edit the event's screenplay content…"></textarea>
+
+                            <div class="flex items-center gap-5 flex-wrap">
+                                <label class="flex items-center gap-2 cursor-pointer select-none">
+                                    <div class="relative h-5 w-9 rounded-full transition-colors duration-200"
+                                        :class="editRequiresChoice ? 'bg-primary-500' : 'bg-gray-700'"
+                                        @click="editRequiresChoice = !editRequiresChoice; editDirty = true">
+                                        <div class="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200"
+                                            :class="editRequiresChoice ? 'translate-x-4' : 'translate-x-0.5'"></div>
+                                    </div>
+                                    <span class="text-sm text-gray-300">Requires player choice</span>
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <label class="text-xs text-gray-500">Beat type</label>
+                                    <select v-model="editBeatType"
+                                        class="rounded-lg border bg-gray-950 px-2 py-1 text-sm text-gray-300 focus:outline-none transition-colors"
+                                        :class="aiFilledFields.beat_type ? 'border-amber-600/60' : 'border-gray-700 focus:border-primary-500'"
+                                        @change="editDirty = true">
+                                        <option value="">—</option>
+                                        <option v-for="bt in BEAT_TYPES" :key="bt" :value="bt">{{ bt }}</option>
+                                    </select>
+                                    <span v-if="aiFilledFields.beat_type" class="text-xs text-amber-400">AI</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── SECTION 2: Event Metadata (objectives + attributes) ── -->
+                        <div class="rounded-xl border border-gray-800 bg-gray-900/30 p-4 space-y-3">
+                            <h3 class="text-xs uppercase tracking-widest text-gray-500 flex items-center gap-2">
+                                Event Metadata
+                                <span v-if="aiFilledFields.objectives || aiFilledFields.attributes"
+                                    class="rounded-full bg-amber-900/40 border border-amber-700/30 px-2 py-0.5 text-xs text-amber-300">AI updated</span>
+                            </h3>
+
+                            <div>
+                                <label class="mb-1 block text-xs text-gray-500">Objectives <span class="text-gray-600">(past-tense factual summary)</span></label>
+                                <textarea v-model="editObjectives" rows="2"
+                                    class="w-full rounded-lg border px-3 py-2 text-sm text-gray-200 bg-gray-950 focus:outline-none resize-none transition-colors"
+                                    :class="aiFilledFields.objectives ? 'border-amber-600/60' : 'border-gray-700 focus:border-primary-500'"
+                                    placeholder="e.g. Alice committed to following the White Rabbit into the hole despite uncertainty."></textarea>
+                            </div>
+
+                            <div>
+                                <label class="mb-1.5 block text-xs text-gray-500">
+                                    Attributes <span class="text-gray-600">(canonical objects, characters, locations)</span>
+                                    <span v-if="aiFilledFields.attributes" class="ml-1 text-amber-400">AI</span>
+                                </label>
+                                <div class="flex flex-wrap gap-1.5 mb-2 min-h-[1.5rem]">
+                                    <span v-for="(attr, i) in editAttributes" :key="attr"
+                                        class="flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs transition-colors"
+                                        :class="aiFilledFields.attributes ? 'bg-amber-950/30 border-amber-700/30 text-amber-200' : 'bg-gray-800 border-gray-700 text-gray-300'">
+                                        {{ attr }}
+                                        <button class="text-gray-500 hover:text-red-400 transition-colors" @click="removeAttribute(i)">✕</button>
+                                    </span>
+                                    <span v-if="editAttributes.length === 0" class="text-xs text-gray-700">no attributes yet</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <input v-model="attrInput" type="text"
+                                        class="flex-1 rounded-lg border border-gray-700 bg-gray-950 px-3 py-1.5 text-xs text-gray-300 focus:border-primary-500 focus:outline-none"
+                                        placeholder="Add attribute and press Enter…"
+                                        @keydown.enter.prevent="addAttribute"
+                                        @keydown.comma.prevent="addAttribute" />
+                                    <button class="rounded-lg bg-gray-800 px-3 py-1.5 text-xs text-gray-400 hover:text-white transition-all" @click="addAttribute">Add</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── SECTION 3: Session Choice Design ── -->
+                        <div v-if="focusedEvent.session_number !== null && sessionAdaptations[focusedEvent.session_number]?.session_choice_design"
+                            class="rounded-xl border border-gray-800 bg-gray-900/30 p-4 space-y-3">
+                            <h3 class="text-xs uppercase tracking-widest text-gray-500">
+                                Session {{ focusedEvent.session_number }} — Choice Design
+                            </h3>
+
+                            <div v-for="slot in choiceSlots" :key="slot"
+                                class="rounded-lg border p-3.5 space-y-2.5 transition-colors"
+                                :class="aiFilledFields[`choice_${slot}`] ? 'border-amber-700/40 bg-amber-950/10' : 'border-gray-800 bg-gray-950/50'">
+
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-medium text-gray-400">{{ choiceLabel(slot) }}</span>
+                                    <span v-if="aiFilledFields[`choice_${slot}`]"
+                                        class="rounded-full bg-amber-900/40 border border-amber-700/30 px-1.5 py-0.5 text-xs text-amber-300">AI</span>
+                                    <span v-if="editChoiceSlots[slot]?.tracked_dimension" class="text-xs text-gray-600">· {{ editChoiceSlots[slot].tracked_dimension }}</span>
+                                </div>
+
+                                <div>
+                                    <label class="mb-1 block text-xs text-gray-600">Tracked Dimension</label>
+                                    <input v-model="editChoiceSlots[slot].tracked_dimension" type="text"
+                                        class="w-full rounded-lg border border-gray-700 bg-gray-900 px-2.5 py-1.5 text-xs text-gray-400 focus:border-primary-500 focus:outline-none"
+                                        @input="choiceSlotsDirty = true; editDirty = true; aiFilledFields[`choice_${slot}`] = false" />
+                                </div>
+                                <div>
+                                    <label class="mb-1 block text-xs text-gray-600">Choice Question</label>
+                                    <input v-model="editChoiceSlots[slot].question" type="text"
+                                        class="w-full rounded-lg border bg-gray-900 px-2.5 py-1.5 text-sm text-gray-200 focus:outline-none transition-colors"
+                                        :class="aiFilledFields[`choice_${slot}`] ? 'border-amber-600/50' : 'border-gray-700 focus:border-primary-500'"
+                                        @input="choiceSlotsDirty = true; editDirty = true; aiFilledFields[`choice_${slot}`] = false" />
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div v-for="opt in ['option_a', 'option_b', 'option_c'] as const" :key="opt">
+                                        <label class="mb-1 block text-xs text-gray-600">{{ opt.replace('_', ' ').toUpperCase() }}</label>
+                                        <textarea v-model="editChoiceSlots[slot][opt]" rows="3"
+                                            class="w-full rounded-lg border bg-gray-900 px-2 py-1.5 text-xs text-gray-300 focus:outline-none resize-none transition-colors"
+                                            :class="aiFilledFields[`choice_${slot}`] ? 'border-amber-600/50' : 'border-gray-700 focus:border-primary-500'"
+                                            @input="choiceSlotsDirty = true; editDirty = true; aiFilledFields[`choice_${slot}`] = false">
+                                        </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Preview result ── -->
                         <div v-if="previewHtml || previewError" class="rounded-xl border border-gray-700 bg-gray-900 p-5">
                             <h3 class="mb-3 text-xs uppercase tracking-widest text-gray-500">Narrator Preview</h3>
                             <div v-if="previewError" class="text-sm text-red-400">{{ previewError }}</div>
@@ -708,126 +888,6 @@ const eventDraftLink = (eventId: number) => {
                                     </div>
                                 </div>
                             </template>
-                        </div>
-
-                        <!-- ── Choice alignment suggestion ─────────────────── -->
-                        <!-- ── Impact analysis error ──────────────────────── -->
-                        <div v-if="impactError" class="rounded-xl border border-red-800/40 bg-red-950/20 p-4 text-sm text-red-400">
-                            {{ impactError }}
-                        </div>
-
-                        <!-- ── Full impact analysis panel ──────────────────── -->
-                        <div v-if="impact" class="rounded-xl border border-gray-700 bg-gray-900/60 overflow-hidden">
-
-                            <!-- Header row -->
-                            <div class="flex items-center justify-between px-5 py-3 border-b border-gray-700/50">
-                                <h3 class="text-xs uppercase tracking-widest text-gray-400">✦ Script Change Impact</h3>
-                                <div class="flex items-center gap-2">
-                                    <span class="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-                                        :class="severityColor(impact.severity)">
-                                        {{ severityIcon(impact.severity) }} {{ impact.severity }}
-                                    </span>
-                                    <button class="text-xs text-gray-600 hover:text-gray-400 transition-colors" @click="impact = null">dismiss</button>
-                                </div>
-                            </div>
-
-                            <!-- Summary -->
-                            <div class="px-5 py-3 border-b border-gray-800/50">
-                                <p class="text-sm text-gray-300 leading-relaxed">{{ impact.summary }}</p>
-                            </div>
-
-                            <!-- ── Section: Event Metadata ──────────────────── -->
-                            <div v-if="impact.objectives_needs_update || impact.attributes_needs_update"
-                                class="border-b border-gray-800/50 px-5 py-4 space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <h4 class="text-xs font-semibold uppercase tracking-widest text-blue-400">Event Metadata</h4>
-                                    <button v-if="!acceptedSections.metadata"
-                                        class="rounded-lg bg-blue-900/40 px-3 py-1 text-xs text-blue-300 hover:bg-blue-800/50 transition-all border border-blue-700/30"
-                                        @click="acceptMetadata">Accept</button>
-                                    <span v-else class="text-xs text-emerald-400">✓ Applied to draft</span>
-                                </div>
-
-                                <div v-if="impact.objectives_needs_update" class="space-y-1">
-                                    <p class="text-xs text-gray-500">Objectives</p>
-                                    <p class="text-sm text-gray-200 rounded-lg bg-gray-800/50 px-3 py-2">{{ impact.objectives_revised }}</p>
-                                </div>
-
-                                <div v-if="impact.attributes_needs_update" class="space-y-1">
-                                    <p class="text-xs text-gray-500">Attributes</p>
-                                    <div class="flex flex-wrap gap-1.5">
-                                        <span v-for="attr in impact.attributes_revised" :key="attr"
-                                            class="rounded-full bg-gray-800 border border-gray-700 px-2.5 py-0.5 text-xs text-gray-300">
-                                            {{ attr }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- ── Section: Beat Map ────────────────────────── -->
-                            <div v-if="impact.beat_map_needs_update"
-                                class="border-b border-gray-800/50 px-5 py-4 space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <h4 class="text-xs font-semibold uppercase tracking-widest text-orange-400">Beat Map</h4>
-                                    <button v-if="!acceptedSections.beat_map"
-                                        class="rounded-lg bg-orange-900/30 px-3 py-1 text-xs text-orange-300 hover:bg-orange-800/40 transition-all border border-orange-700/30"
-                                        @click="acceptBeatMap">Accept</button>
-                                    <span v-else class="text-xs text-emerald-400">✓ Applied to draft</span>
-                                </div>
-                                <div class="rounded-lg bg-gray-800/50 px-3 py-2 space-y-1">
-                                    <p class="text-sm text-gray-200">{{ impact.beat_moment_revised }}</p>
-                                    <p class="text-xs text-gray-500">Beat type → <span class="text-orange-300">{{ impact.beat_type_revised }}</span></p>
-                                </div>
-                            </div>
-
-                            <!-- ── Section: Choice Design ───────────────────── -->
-                            <div v-if="impact.choice_design_needs_update && impact.choice_slot_affected !== 'none'"
-                                class="border-b border-gray-800/50 px-5 py-4 space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <h4 class="text-xs font-semibold uppercase tracking-widest text-primary-400">Choice Design</h4>
-                                        <span class="text-xs text-gray-600">{{ choiceLabel(impact.choice_slot_affected) }} · {{ impact.choice_tracked_dimension }}</span>
-                                    </div>
-                                    <button v-if="!acceptedSections.choice_design"
-                                        class="rounded-lg bg-primary-900/40 px-3 py-1 text-xs text-primary-300 hover:bg-primary-800/50 transition-all border border-primary-700/30"
-                                        @click="acceptChoiceDesign">Accept</button>
-                                    <span v-else class="text-xs text-emerald-400">✓ Applied to draft</span>
-                                </div>
-                                <div class="rounded-lg bg-gray-800/50 px-3 py-2.5 space-y-2">
-                                    <p class="font-medium text-sm text-gray-200">{{ impact.choice_question_revised }}</p>
-                                    <p class="text-xs text-gray-400">A: {{ impact.choice_option_a_revised }}</p>
-                                    <p class="text-xs text-gray-400">B: {{ impact.choice_option_b_revised }}</p>
-                                    <p class="text-xs text-gray-400">C: {{ impact.choice_option_c_revised }}</p>
-                                </div>
-                            </div>
-
-                            <!-- ── Section: Consequence map flag (read-only) ── -->
-                            <div v-if="impact.consequence_map_needs_review"
-                                class="border-b border-gray-800/50 px-5 py-3">
-                                <div class="flex items-start gap-2">
-                                    <span class="text-yellow-500 mt-0.5 flex-none">⚠</span>
-                                    <div>
-                                        <p class="text-xs text-yellow-300 font-medium mb-0.5">Consequence Map — manual review needed</p>
-                                        <p class="text-xs text-gray-400">{{ impact.consequence_map_note }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- ── Section: Cross-session concern (read-only) ─ -->
-                            <div v-if="impact.cross_session_concern" class="px-5 py-3">
-                                <div class="flex items-start gap-2">
-                                    <span class="text-red-400 mt-0.5 flex-none">⚡</span>
-                                    <div>
-                                        <p class="text-xs text-red-300 font-medium mb-0.5">Cross-session anchor at risk</p>
-                                        <p class="text-xs text-gray-400">{{ impact.cross_session_note }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Clean result -->
-                            <div v-if="impact.severity === 'clean'" class="px-5 py-4 text-center">
-                                <p class="text-sm text-emerald-400">✓ All adaptation layers are still accurate. No changes needed.</p>
-                            </div>
-
                         </div>
 
                     </div>

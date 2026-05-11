@@ -429,10 +429,14 @@ final class DraftController extends Controller
     public function createEdit(Request $request, Story $story, Chapter $chapter): JsonResponse
     {
         $data = $request->validate([
-            'event_id'        => ['required', 'integer'],
-            'content'         => ['required', 'string'],
-            'requires_choice' => ['required', 'boolean'],
-            'beat_type'       => ['nullable', 'string'],
+            'event_id'         => ['required', 'integer'],
+            'content'          => ['required', 'string'],
+            'requires_choice'  => ['required', 'boolean'],
+            'beat_type'        => ['nullable', 'string'],
+            'objectives'       => ['nullable', 'string'],
+            'attributes'       => ['nullable', 'array'],
+            'attributes.*'     => ['string'],
+            'adaptation_patch' => ['nullable', 'array'],
         ]);
 
         $event = Event::findOrFail($data['event_id']);
@@ -452,6 +456,9 @@ final class DraftController extends Controller
             'rewritten_content' => $data['content'],
             'requires_choice'   => $data['requires_choice'],
             'beat_type'         => $data['beat_type'] ?? null,
+            'derived_objectives' => $data['objectives'] ?? null,
+            'derived_attributes' => $data['attributes'] ?? null,
+            'adaptation_patch'  => $data['adaptation_patch'] ?? null,
             'previous_state'    => $previousState,
             'status'            => 'writer_approved',
         ]);

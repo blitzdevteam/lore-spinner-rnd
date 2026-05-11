@@ -117,7 +117,7 @@ final class WriterLabController extends Controller
         $activeDrafts = WriterLabDraft::where('chapter_id', $chapter->id)
             ->active()
             ->orderByDesc('created_at')
-            ->get(['id', 'type', 'status', 'source_event_ids', 'beat_type', 'requires_choice', 'rewritten_content', 'created_at']);
+            ->get(['id', 'type', 'status', 'source_event_ids', 'beat_type', 'requires_choice', 'rewritten_content', 'derived_objectives', 'derived_attributes', 'adaptation_patch', 'created_at']);
 
         return inertia('WriterLab/Chapter', [
             'story'              => ['id' => $story->id, 'title' => $story->title, 'slug' => $story->slug],
