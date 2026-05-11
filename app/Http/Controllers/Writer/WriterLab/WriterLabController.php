@@ -71,10 +71,34 @@ final class WriterLabController extends Controller
      */
     public function chapter(Story $story, Chapter $chapter): Response
     {
-        $events = Event::where('chapter_id', $chapter->id)
+        $rawEvents = Event::where('chapter_id', $chapter->id)
             ->orderBy('position')
+            ->get();
+
+        $sessionNumbers = $rawEvents->pluck('session_number')->filter()->unique()->sort()->values();
+
+        $sessionAdaptationModels = SessionAdaptation::query()
+            ->whereHas('storyAdaptation', fn ($q) => $q->where('story_id', $story->id))
+            ->whereIn('session_number', $sessionNumbers)
             ->get()
-            ->map(fn (Event $event): array => [
+            ->keyBy('session_number');
+
+        // Best-effort match: each event's beat_type comes from the beat_map entry
+        // whose `moment` text has the highest word overlap with the event's title + content.
+        // Beat map is per-session and contains fewer entries than events, so multiple
+        // events may share the same matched beat_type (correct — beats span events).
+        $events = $rawEvents->map(function (Event $event) use ($sessionAdaptationModels): array {
+            $beatMatch = null;
+            $sessionNum = $event->session_number;
+            if ($sessionNum !== null) {
+                $sa = $sessionAdaptationModels[$sessionNum] ?? null;
+                $beatMap = $sa?->session_architecture['beat_map'] ?? [];
+                if (!empty($beatMap)) {
+                    $beatMatch = $this->bestBeatMatch($event, $beatMap);
+                }
+            }
+
+            return [
                 'id'              => $event->id,
                 'position'        => $event->position,
                 'title'           => $event->title,
@@ -83,15 +107,14 @@ final class WriterLabController extends Controller
                 'attributes'      => $event->attributes,
                 'session_number'  => $event->session_number,
                 'requires_choice' => $event->requires_choice,
-            ]);
+                // Extracted from session_architecture.beat_map — see bestBeatMatch()
+                'beat_type'       => $beatMatch['beat_type'] ?? null,
+                'beat_moment'     => $beatMatch['moment'] ?? null,
+            ];
+        });
 
-        $sessionNumbers = $events->pluck('session_number')->filter()->unique()->sort()->values();
-
-        $sessionAdaptations = SessionAdaptation::query()
-            ->whereHas('storyAdaptation', fn ($q) => $q->where('story_id', $story->id))
-            ->whereIn('session_number', $sessionNumbers)
-            ->get()
-            ->mapWithKeys(fn (SessionAdaptation $sa): array => [
+        $sessionAdaptations = $sessionAdaptationModels->mapWithKeys(
+            fn (SessionAdaptation $sa): array => [
                 $sa->session_number => [
                     'session_number'      => $sa->session_number,
                     'session_status'      => $sa->session_status,
@@ -102,7 +125,8 @@ final class WriterLabController extends Controller
                     'choice_consequence_map' => $sa->choice_consequence_map,
                     'session_close_design' => $sa->session_close_design,
                 ],
-            ]);
+            ]
+        );
 
         $prevChapter = Chapter::where('story_id', $story->id)
             ->where('position', '<', $chapter->position)
@@ -128,5 +152,68 @@ final class WriterLabController extends Controller
             'sessionAdaptations' => $sessionAdaptations,
             'activeDrafts'       => $activeDrafts,
         ]);
+    }
+
+    /**
+     * Pick the beat_map entry whose `moment` text most resembles this event's title + content.
+     * Returns ['beat_type' => 'SETUP', 'moment' => '...'] (lowercased beat_type) or null.
+     *
+     * Heuristic: token-overlap score on lowercase alphanumeric word tokens, with stopword
+     * filter. Fast and stable; doesn't need an LLM call.
+     *
+     * @param array<int, array<string, mixed>> $beatMap
+     */
+    private function bestBeatMatch(Event $event, array $beatMap): ?array
+    {
+        $eventTokens = $this->tokenize($event->title . ' ' . $event->content);
+        if (empty($eventTokens)) {
+            return null;
+        }
+
+        $best = null;
+        $bestScore = 0;
+
+        foreach ($beatMap as $entry) {
+            $momentText = (string) ($entry['moment'] ?? '');
+            if ($momentText === '') {
+                continue;
+            }
+            $beatTokens = $this->tokenize($momentText);
+            $overlap    = count(array_intersect($eventTokens, $beatTokens));
+            if ($overlap > $bestScore) {
+                $bestScore = $overlap;
+                $best      = $entry;
+            }
+        }
+
+        if ($best === null) {
+            return null;
+        }
+
+        return [
+            // Lowercase to match the runtime convention used by Vue's editBeatType select
+            'beat_type' => strtolower((string) ($best['beat_type'] ?? '')),
+            'moment'    => (string) ($best['moment'] ?? ''),
+        ];
+    }
+
+    /** @return array<int, string> */
+    private function tokenize(string $text): array
+    {
+        $stopwords = [
+            'the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 'be', 'been',
+            'being', 'to', 'of', 'in', 'on', 'at', 'for', 'with', 'by', 'as', 'it', 'its',
+            'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'they', 'we', 'my',
+            'your', 'his', 'her', 'their', 'our', 'has', 'have', 'had', 'do', 'does', 'did',
+            'will', 'would', 'should', 'could', 'can', 'may', 'might', 'shall', 'so', 'if',
+            'than', 'then', 'into', 'out', 'up', 'down', 'over', 'under', 'from', 'about',
+        ];
+        $lower = strtolower($text);
+        $words = preg_split('/[^a-z0-9]+/i', $lower) ?: [];
+        $filtered = array_filter(
+            $words,
+            fn (string $w): bool => $w !== '' && strlen($w) > 2 && !in_array($w, $stopwords, strict: true),
+        );
+        return array_values(array_unique($filtered));
     }
 }

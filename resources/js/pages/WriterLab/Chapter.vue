@@ -12,6 +12,9 @@ interface Event {
     attributes: string[] | null;
     session_number: number | null;
     requires_choice: boolean;
+    // Extracted from session_architecture.beat_map via best text-overlap match
+    beat_type: string | null;
+    beat_moment: string | null;
 }
 
 interface ChoiceOption { text: string; consequence?: string }
@@ -182,7 +185,9 @@ const resetEditState = (event: Event) => {
     editContent.value        = baseContent;
     originalContent.value    = baseContent; // snapshot for scriptRewritten comparison
     editRequiresChoice.value = existing?.requires_choice ?? event.requires_choice;
-    editBeatType.value       = existing?.beat_type ?? '';
+    // Pre-fill beat type: prefer an existing draft override, otherwise use the
+    // beat_type derived from the session_architecture.beat_map match for this event.
+    editBeatType.value       = existing?.beat_type ?? event.beat_type ?? '';
     editObjectives.value     = (existing?.derived_objectives as string | null) ?? event.objectives ?? '';
     editAttributes.value     = [...((existing?.derived_attributes as string[] | null) ?? (event.attributes as string[] | null) ?? [])];
     editDirty.value          = false;
@@ -437,6 +442,7 @@ watch(activeSession, (n) => {
     coldOpenEdit.value  = sa?.cold_open ?? '';
     coldOpenDirty.value = false;
     initChoiceEdits(sa?.session_choice_design ?? null);
+    initCloseEdit(sa?.session_close_design ?? null);
     adaptationTab.value = 'cold_open';
 });
 
@@ -467,11 +473,85 @@ const initChoiceEdits = (design: SessionChoiceDesign | null) => {
     choicesDirty.value = false;
 };
 
+// ── Session Close editing ──────────────────────────────────────────────────
+interface CloseEditState {
+    resolution_prose: string;
+    hook_transition: string;
+    choice_question: string;
+    option_a_text: string;
+    option_a_next: string;
+    option_b_text: string;
+    option_b_next: string;
+    option_c_text: string;
+    option_c_next: string;
+    final_line: string;
+}
+const closeEdit: CloseEditState = reactive({
+    resolution_prose: '',
+    hook_transition:  '',
+    choice_question:  '',
+    option_a_text:    '', option_a_next: '',
+    option_b_text:    '', option_b_next: '',
+    option_c_text:    '', option_c_next: '',
+    final_line:       '',
+});
+const closeDirty       = ref(false);
+const savingClose      = ref(false);
+const closeStickiness  = ref<Record<string, string> | null>(null);
+
+const initCloseEdit = (design: any) => {
+    closeEdit.resolution_prose = design?.resolution_prose ?? '';
+    closeEdit.hook_transition  = design?.hook_transition  ?? '';
+    closeEdit.choice_question  = design?.session_end_choice?.choice_question ?? '';
+    closeEdit.option_a_text    = design?.session_end_choice?.option_a?.text ?? '';
+    closeEdit.option_a_next    = design?.session_end_choice?.option_a?.next_session_opens ?? '';
+    closeEdit.option_b_text    = design?.session_end_choice?.option_b?.text ?? '';
+    closeEdit.option_b_next    = design?.session_end_choice?.option_b?.next_session_opens ?? '';
+    closeEdit.option_c_text    = design?.session_end_choice?.option_c?.text ?? '';
+    closeEdit.option_c_next    = design?.session_end_choice?.option_c?.next_session_opens ?? '';
+    closeEdit.final_line       = design?.session_end_choice?.final_line ?? '';
+    closeStickiness.value      = design?.stickiness_audit ?? null;
+    closeDirty.value           = false;
+};
+
+const saveClose = async () => {
+    if (activeSession.value === null) return;
+    savingClose.value = true;
+
+    // Build the full updated session_close_design structure.
+    // Backend uses array_replace_recursive so unspecified sub-keys (e.g. stickiness_audit)
+    // on the live row are preserved.
+    const updatedClose = {
+        resolution_prose: closeEdit.resolution_prose,
+        hook_transition:  closeEdit.hook_transition,
+        session_end_choice: {
+            choice_question: closeEdit.choice_question,
+            option_a: { text: closeEdit.option_a_text, next_session_opens: closeEdit.option_a_next },
+            option_b: { text: closeEdit.option_b_text, next_session_opens: closeEdit.option_b_next },
+            option_c: { text: closeEdit.option_c_text, next_session_opens: closeEdit.option_c_next },
+            final_line: closeEdit.final_line,
+        },
+    };
+
+    const url  = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/adaptation`;
+    const data = await apiPost(url, {
+        session_number:   activeSession.value,
+        adaptation_patch: { session_close_design: updatedClose },
+    });
+
+    savingClose.value = false;
+    if (!data.error) {
+        closeDirty.value = false;
+        router.reload({ only: ['activeDrafts'] });
+    }
+};
+
 // Initialize on mount
 if (activeSession.value !== null) {
     const sa = props.sessionAdaptations[activeSession.value] ?? null;
     coldOpenEdit.value = sa?.cold_open ?? '';
     initChoiceEdits(sa?.session_choice_design ?? null);
+    initCloseEdit(sa?.session_close_design ?? null);
 }
 
 const saveColdOpen = async () => {
@@ -808,6 +888,9 @@ const eventDraftLink = (eventId: number) => {
                                         <option v-for="bt in BEAT_TYPES" :key="bt" :value="bt">{{ bt }}</option>
                                     </select>
                                     <span v-if="aiFilledFields.beat_type" class="text-xs text-amber-400">AI</span>
+                                    <span v-else-if="focusedEvent.beat_type"
+                                        class="text-xs text-gray-600"
+                                        :title="focusedEvent.beat_moment ?? ''">from beat map</span>
                                 </div>
                             </div>
                         </div>
@@ -1010,13 +1093,99 @@ const eventDraftLink = (eventId: number) => {
                             </div>
                         </template>
 
-                        <!-- Session Close tab (read-only for now) -->
+                        <!-- Session Close tab — fully editable structured UI -->
                         <template v-else-if="adaptationTab === 'close'">
-                            <div class="space-y-3">
-                                <p class="text-xs text-gray-500">Session close design is read-only. It contains the authored hook transition and session-end choice.</p>
-                                <pre v-if="sessionAdaptation.session_close_design"
-                                    class="rounded-xl bg-gray-900 p-4 text-xs text-gray-400 overflow-auto max-h-96">{{ JSON.stringify(sessionAdaptation.session_close_design, null, 2) }}</pre>
-                                <p v-else class="text-gray-600 text-sm">No session close design yet.</p>
+                            <div v-if="!sessionAdaptation.session_close_design" class="text-gray-600 text-sm">
+                                No session close design yet.
+                            </div>
+
+                            <div v-else class="space-y-5">
+
+                                <!-- Resolution prose -->
+                                <div class="rounded-xl border border-gray-800 bg-gray-900 p-5 space-y-2">
+                                    <label class="block text-xs uppercase tracking-widest text-gray-500">Resolution Prose</label>
+                                    <p class="text-xs text-gray-600">The closing prose the narrator delivers as the session resolves.</p>
+                                    <textarea v-model="closeEdit.resolution_prose" rows="8"
+                                        class="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-200 leading-relaxed focus:border-primary-500 focus:outline-none resize-none"
+                                        @input="closeDirty = true"></textarea>
+                                </div>
+
+                                <!-- Hook transition -->
+                                <div class="rounded-xl border border-gray-800 bg-gray-900 p-5 space-y-2">
+                                    <label class="block text-xs uppercase tracking-widest text-gray-500">Hook Transition</label>
+                                    <p class="text-xs text-gray-600">The bridge from resolution into the session-end choice.</p>
+                                    <textarea v-model="closeEdit.hook_transition" rows="4"
+                                        class="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-200 leading-relaxed focus:border-primary-500 focus:outline-none resize-none"
+                                        @input="closeDirty = true"></textarea>
+                                </div>
+
+                                <!-- Session-end choice -->
+                                <div class="rounded-xl border border-gray-800 bg-gray-900 p-5 space-y-3">
+                                    <label class="block text-xs uppercase tracking-widest text-gray-500">Session-End Choice</label>
+                                    <p class="text-xs text-gray-600">The retention hook that bridges into next session.</p>
+
+                                    <div>
+                                        <label class="mb-1 block text-xs text-gray-500">Choice Question</label>
+                                        <input v-model="closeEdit.choice_question" type="text"
+                                            class="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-1.5 text-sm text-gray-200 focus:border-primary-500 focus:outline-none"
+                                            @input="closeDirty = true" />
+                                    </div>
+
+                                    <div v-for="opt in ['a', 'b', 'c'] as const" :key="opt"
+                                        class="rounded-lg border border-gray-800 bg-gray-950/40 p-3 space-y-2">
+                                        <div class="text-xs font-medium text-gray-400">Option {{ opt.toUpperCase() }}</div>
+                                        <div>
+                                            <label class="mb-1 block text-xs text-gray-600">Option text</label>
+                                            <textarea
+                                                v-model="closeEdit[`option_${opt}_text`]"
+                                                rows="2"
+                                                class="w-full rounded-lg border border-gray-700 bg-gray-950 px-2.5 py-1.5 text-xs text-gray-300 focus:border-primary-500 focus:outline-none resize-none"
+                                                @input="closeDirty = true"></textarea>
+                                        </div>
+                                        <div>
+                                            <label class="mb-1 block text-xs text-gray-600">Next session opens (carry-through)</label>
+                                            <textarea
+                                                v-model="closeEdit[`option_${opt}_next`]"
+                                                rows="2"
+                                                class="w-full rounded-lg border border-gray-700 bg-gray-950 px-2.5 py-1.5 text-xs text-gray-400 focus:border-primary-500 focus:outline-none resize-none"
+                                                @input="closeDirty = true"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="mb-1 block text-xs text-gray-500">Final Line</label>
+                                        <input v-model="closeEdit.final_line" type="text"
+                                            class="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-1.5 text-sm text-gray-200 focus:border-primary-500 focus:outline-none"
+                                            @input="closeDirty = true" />
+                                    </div>
+                                </div>
+
+                                <!-- Stickiness audit (read-only badges) -->
+                                <div v-if="closeStickiness" class="rounded-xl border border-gray-800/60 bg-gray-900/30 p-4 space-y-2">
+                                    <label class="block text-xs uppercase tracking-widest text-gray-500">Stickiness Audit</label>
+                                    <p class="text-xs text-gray-600">Editorial verification results (read-only; regenerated when the adaptation pipeline runs).</p>
+                                    <div class="flex flex-wrap gap-2 pt-1">
+                                        <div v-for="(verdict, key) in closeStickiness" :key="key"
+                                            class="flex items-center gap-2 rounded-full border px-3 py-1 text-xs"
+                                            :class="verdict === 'PASS'
+                                                ? 'bg-emerald-950/30 border-emerald-700/30 text-emerald-300'
+                                                : verdict === 'REVISE'
+                                                    ? 'bg-yellow-950/30 border-yellow-700/30 text-yellow-300'
+                                                    : 'bg-gray-800 border-gray-700 text-gray-400'">
+                                            <span class="font-medium">{{ String(key).replace(/_/g, ' ') }}</span>
+                                            <span>{{ verdict }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    class="rounded-lg px-4 py-2 text-sm font-medium transition-all disabled:opacity-40"
+                                    :class="closeDirty ? 'bg-primary-600 hover:bg-primary-500 text-white' : 'bg-gray-800 text-gray-500'"
+                                    :disabled="!closeDirty || savingClose"
+                                    @click="saveClose">
+                                    <span v-if="savingClose">Saving…</span>
+                                    <span v-else>Save Session Close as Draft</span>
+                                </button>
                             </div>
                         </template>
                     </div>

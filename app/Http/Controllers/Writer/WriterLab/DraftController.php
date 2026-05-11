@@ -435,8 +435,13 @@ final class DraftController extends Controller
     // ── Direct inline edit (AJAX) ─────────────────────────────────────────────
 
     /**
-     * Create or overwrite an edit draft for a single event directly from the
-     * Chapter.vue inline editor. Returns JSON so the page never navigates away.
+     * Upsert an edit draft for a single event.
+     *
+     * If an active (non-activated) edit draft already exists for this event, we
+     * update it in place — so iterative saves from Chapter.vue don't accumulate
+     * orphan draft rows. The previous_state snapshot is captured once on the
+     * first save and preserved across subsequent saves so rollback always
+     * reaches the pre-edit state, not the most-recent intermediate save.
      */
     public function createEdit(Request $request, Story $story, Chapter $chapter): JsonResponse
     {
@@ -457,31 +462,50 @@ final class DraftController extends Controller
             return response()->json(['error' => 'Event does not belong to this chapter.'], 422);
         }
 
-        $previousState = $this->buildPreviousState(collect([$event]));
+        // Look for a non-activated edit draft already touching this event.
+        // We use whereJsonContains so we hit the source_event_ids array element directly.
+        $existing = WriterLabDraft::where('chapter_id', $chapter->id)
+            ->where('type', 'edit')
+            ->whereNotIn('status', ['activated'])
+            ->whereJsonContains('source_event_ids', $event->id)
+            ->orderByDesc('id')
+            ->first();
 
-        $draft = WriterLabDraft::create([
-            'story_id'          => $story->id,
-            'chapter_id'        => $chapter->id,
-            'session_number'    => $event->session_number,
-            'type'              => 'edit',
-            'source_event_ids'  => [$event->id],
-            'rewritten_content' => $data['content'],
-            'requires_choice'   => $data['requires_choice'],
-            'beat_type'         => $data['beat_type'] ?? null,
+        $payload = [
+            'rewritten_content'  => $data['content'],
+            'requires_choice'    => $data['requires_choice'],
+            'beat_type'          => $data['beat_type'] ?? null,
             'derived_objectives' => $data['objectives'] ?? null,
             'derived_attributes' => $data['attributes'] ?? null,
-            'adaptation_patch'  => $data['adaptation_patch'] ?? null,
-            'previous_state'    => $previousState,
-            'status'            => 'writer_approved',
-        ]);
+            'adaptation_patch'   => $data['adaptation_patch'] ?? null,
+            'status'             => 'writer_approved',
+        ];
+
+        if ($existing !== null) {
+            // Keep the original previous_state so version rollback always reaches
+            // the live row as it existed BEFORE any draft edit cycle.
+            $existing->update($payload);
+            return response()->json(['draft_id' => $existing->id]);
+        }
+
+        $draft = WriterLabDraft::create(array_merge($payload, [
+            'story_id'         => $story->id,
+            'chapter_id'       => $chapter->id,
+            'session_number'   => $event->session_number,
+            'type'             => 'edit',
+            'source_event_ids' => [$event->id],
+            'previous_state'   => $this->buildPreviousState(collect([$event])),
+        ]));
 
         return response()->json(['draft_id' => $draft->id]);
     }
 
     /**
-     * Create a draft that carries only an adaptation_patch (cold open edit,
-     * choice design edits) with no event content change.
-     * Returns JSON for inline AJAX from Chapter.vue.
+     * Upsert an adaptation-only draft for a session (cold open, choice design,
+     * session close). One draft per (chapter, session_number) — incoming
+     * adaptation_patch is merged recursively into the existing draft's patch
+     * so the writer can edit cold open, then choices, then close, all in one
+     * draft that activates atomically.
      */
     public function createAdaptationEdit(Request $request, Story $story, Chapter $chapter): JsonResponse
     {
@@ -489,6 +513,26 @@ final class DraftController extends Controller
             'session_number'   => ['required', 'integer'],
             'adaptation_patch' => ['required', 'array'],
         ]);
+
+        $existing = WriterLabDraft::where('chapter_id', $chapter->id)
+            ->where('session_number', $data['session_number'])
+            ->where('type', 'edit')
+            ->whereNotIn('status', ['activated'])
+            ->whereNull('source_event_ids')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($existing !== null) {
+            $mergedPatch = array_replace_recursive(
+                $existing->adaptation_patch ?? [],
+                $data['adaptation_patch']
+            );
+            $existing->update([
+                'adaptation_patch' => $mergedPatch,
+                'status'           => 'writer_approved',
+            ]);
+            return response()->json(['draft_id' => $existing->id]);
+        }
 
         $draft = WriterLabDraft::create([
             'story_id'         => $story->id,
