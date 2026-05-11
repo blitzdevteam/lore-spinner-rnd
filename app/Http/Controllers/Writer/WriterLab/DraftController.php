@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Writer\WriterLab;
 
+use App\Ai\Agents\WriterLab\ChoiceAlignmentAgent;
 use App\Ai\Agents\WriterLab\EventCombinerAgent;
 use App\Ai\Agents\NarrationAgent;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
@@ -416,6 +417,106 @@ final class DraftController extends Controller
             ]);
         } catch (Throwable $e) {
             return response()->json(['error' => 'Narration preview failed: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // ── Direct inline edit (AJAX) ─────────────────────────────────────────────
+
+    /**
+     * Create or overwrite an edit draft for a single event directly from the
+     * Chapter.vue inline editor. Returns JSON so the page never navigates away.
+     */
+    public function createEdit(Request $request, Story $story, Chapter $chapter): JsonResponse
+    {
+        $data = $request->validate([
+            'event_id'        => ['required', 'integer'],
+            'content'         => ['required', 'string'],
+            'requires_choice' => ['required', 'boolean'],
+            'beat_type'       => ['nullable', 'string'],
+        ]);
+
+        $event = Event::findOrFail($data['event_id']);
+
+        if ($event->chapter_id !== $chapter->id) {
+            return response()->json(['error' => 'Event does not belong to this chapter.'], 422);
+        }
+
+        $previousState = $this->buildPreviousState(collect([$event]));
+
+        $draft = WriterLabDraft::create([
+            'story_id'          => $story->id,
+            'chapter_id'        => $chapter->id,
+            'session_number'    => $event->session_number,
+            'type'              => 'edit',
+            'source_event_ids'  => [$event->id],
+            'rewritten_content' => $data['content'],
+            'requires_choice'   => $data['requires_choice'],
+            'beat_type'         => $data['beat_type'] ?? null,
+            'previous_state'    => $previousState,
+            'status'            => 'writer_approved',
+        ]);
+
+        return response()->json(['draft_id' => $draft->id]);
+    }
+
+    /**
+     * Create a draft that carries only an adaptation_patch (cold open edit,
+     * choice design edits) with no event content change.
+     * Returns JSON for inline AJAX from Chapter.vue.
+     */
+    public function createAdaptationEdit(Request $request, Story $story, Chapter $chapter): JsonResponse
+    {
+        $data = $request->validate([
+            'session_number'   => ['required', 'integer'],
+            'adaptation_patch' => ['required', 'array'],
+        ]);
+
+        $draft = WriterLabDraft::create([
+            'story_id'         => $story->id,
+            'chapter_id'       => $chapter->id,
+            'session_number'   => $data['session_number'],
+            'type'             => 'edit',
+            'adaptation_patch' => $data['adaptation_patch'],
+            'status'           => 'writer_approved',
+        ]);
+
+        return response()->json(['draft_id' => $draft->id]);
+    }
+
+    /**
+     * Analyse the draft's rewritten_content against the session's choice_design
+     * and suggest updated choice question + A/B/C that align with the new script.
+     * Returns JSON — rendered inline as a diff panel in Chapter.vue.
+     */
+    public function suggestChoices(Request $request, Story $story, Chapter $chapter, WriterLabDraft $draft): JsonResponse
+    {
+        if (empty(trim($draft->rewritten_content ?? ''))) {
+            return response()->json(['error' => 'Save the edited content first.'], 422);
+        }
+
+        $sessionAdaptation = $this->resolveSessionAdaptation($story, $draft->session_number);
+
+        if ($sessionAdaptation === null || empty($sessionAdaptation->session_choice_design)) {
+            return response()->json(['error' => 'No choice design found for this session.'], 422);
+        }
+
+        $sourceEvent = $draft->source_event_ids ? Event::find($draft->source_event_ids[0]) : null;
+
+        $prompt = view('ai.agents.writer-lab.choice-alignment.prompt', [
+            'editedContent'    => $draft->rewritten_content,
+            'eventTitle'       => $sourceEvent?->title ?? 'Event',
+            'coldOpen'         => $sessionAdaptation->entry_point_diagnosis['cold_open'] ?? null,
+            'choiceDesign'     => $sessionAdaptation->session_choice_design,
+            'styleProfile'     => $story->system_prompt ?? [],
+        ])->render();
+
+        try {
+            $agent  = ChoiceAlignmentAgent::make();
+            $result = $agent->prompt($prompt)->toArray();
+
+            return response()->json(['suggestion' => $result]);
+        } catch (Throwable $e) {
+            return response()->json(['error' => 'AI suggestion failed: ' . $e->getMessage()], 500);
         }
     }
 
