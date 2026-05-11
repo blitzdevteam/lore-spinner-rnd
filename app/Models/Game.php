@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property array|null $tracked_dimensions
  * @property array|null $branch_resolution_log
  * @property array|null $world_state
+ * @property bool $is_preview
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Story $story
@@ -45,6 +46,7 @@ final class Game extends Model
             'tracked_dimensions' => 'json',
             'branch_resolution_log' => 'json',
             'world_state' => 'json',
+            'is_preview' => 'boolean',
         ];
     }
 

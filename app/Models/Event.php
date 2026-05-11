@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property array<string> $attributes
  * @property int|null $session_number
+ * @property bool $requires_choice
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Chapter $chapter
@@ -32,7 +33,8 @@ final class Event extends Model
     protected function casts(): array
     {
         return [
-            'attributes' => 'json'
+            'attributes'     => 'json',
+            'requires_choice' => 'boolean',
         ];
     }
 

@@ -59,54 +59,122 @@ From `sessions[0].entry_point_diagnosis`:
 
 ## 4. Systemic Issues
 
-### 4.0 CRITICAL RUNTIME GATE — Cold open will NOT fire in current state
+### 4.0 CRITICAL RUNTIME DATA DRIFT — Game opens on the wrong scene
 
-`CreateGameAction::resolveStartEvent` gates the cold-open event routing on **story-level** `adaptation_status === COMPLETED`:
+Confirmed via `php artisan game:simulate-start alices-adventures-in-wonderland` run against Laravel Cloud on 2026-04-20.
 
-```36:49:app/Actions/Game/CreateGameAction.php
-        if ($adaptation?->adaptation_status !== AdaptationStatusEnum::COMPLETED) {
-            return $firstEvent;
-        }
+#### 4.0.a What the live Cloud DB actually does
 
-        $session1 = $adaptation->sessionAdaptations()
-            ->where('session_number', 1)
-            ->where('session_status', SessionAdaptationStatusEnum::COMPLETED)
-            ->first();
+```
+=== START EVENT RESOLUTION (mirrors CreateGameAction) ===
+adaptation present:   yes
+adaptation_status:    completed
+first event (chap 1): id=1, pos=1, title="Alice notices the White Rabbit", session=1
+resolved start event: id=63, pos=1, title="Duchess links arms and walks with Alice", session=1
 
-        $startEventId = $session1?->entry_point_diagnosis['start_event_id'] ?? null;
+=== SESSION ADAPTATION LOOKUP (mirrors generateFirstNarration) ===
+matched session_adaptation: id=66, session_number=1, status=completed
+  entry_point_diagnosis:   present
 ```
 
-Alice's export has `adaptation_status: "adapting-sessions"`. Session 1 is completed, but because S4–S7 failed, the overall status will never flip to `completed` and will most likely land on `partial-completion` or `failed` after reconciliation.
+Three things to note vs this export:
 
-**Runtime impact:** the game starts at event position 1 (first event of first chapter, i.e. the Rabbit-with-watch moment from the source text unedited), **not** at the cold-open `start_event_id` (80). The carefully designed cut never takes effect.
+1. **`adaptation_status` on Cloud is `completed`**, not `adapting-sessions` as the export shows. The export is stale or the pipeline reconciled post-export. The `CreateGameAction` gate is OPEN on Cloud.
+2. **`start_event_id` on the live session 1 row resolves to event `id=63`**, not `id=80` as this export says. The two values have diverged.
+3. **Event 63 is `"Duchess links arms and walks with Alice"`**. Cross-reference with `story_session_map.branch_opportunities`:
+   ```json
+   {"session_number": 4, "event_position": 34,
+    "event_title": "Alice carries baby outside and it changes",
+    "downstream_payoff_session": 6,
+    "payoff_event": "Duchess links arms and walks with Alice"}
+   ```
+   That scene is Chapter 6 / Session 6 payoff material, not the Session 1 opening. But `events.session_number` in the DB is `1` for event 63, so the `CreateGameAction` guard (`$resolved->session_number === 1`) accepts it.
 
-Separately, the blade template has a **per-session** gate that would still inject the cold open if S1 is completed:
+#### 4.0.b What the LLM returned
 
-```227:227:resources/views/ai/agents/narration/system-prompt.blade.php
-@if(!empty($sessionAdaptation) && $sessionAdaptation->session_status === \App\Enums\Adaptation\SessionAdaptationStatusEnum::COMPLETED)
+Given event 63 (Duchess scene) as the current event AND the cold-open brief for the Rabbit-with-watch opening, the LLM correctly prioritised event content over the cold-open brief and narrated the Duchess scene cohesively:
+
+```
+"The Duchess slips in beside you as though you've been companions for years..."
 ```
 
-So the template is more permissive than the controller. Net effect:
-- The LLM **would** receive the cold-open brief (if the first event's `session_number = 1`)
-- But the game **starts at the wrong event**, so the brief describes a scene the event-content disagrees with
+Choices returned:
+- A: Answer her at once and ask what she means by a moral.
+- B: Venture that perhaps it hasn't one.
+- C: Gently ease a half-step away to loosen her squeeze while you keep walking.
 
-**Suggested fix direction (not patched):**
-- Relax the `CreateGameAction` gate to:
-  ```php
-  if ($session1?->session_status === SessionAdaptationStatusEnum::COMPLETED
-      && ! empty($session1->entry_point_diagnosis['start_event_id'])) {
-      // route to cold-open event
-  }
-  ```
-- I.e., treat session-1 completion as sufficient for session-1 routing, independent of whole-story status. This mirrors the blade's per-session permissiveness and lets users experience Session 1 even while the rest of the pipeline is still adapting/failed.
+These are **contextually correct for the Duchess scene** but are NOT the authored `S1_C1` branching choices (curiosity vs caution at the rabbit-hole). The pre-authored branching-choices block in the system prompt was silently ignored because the scene being narrated isn't at a branching slot.
 
-A **dry-run simulator** is available to verify current state on any environment without touching the DB:
+**Player impact:** a new user opens the game and lands mid-Chapter-6 with a Duchess arm-in-arm walk. No Rabbit, no watch, no rabbit-hole, no pursuit, no curiosity-vs-caution choice. The designed Session 1 opening never happens.
+
+#### 4.0.c Two distinct data bugs
+
+**Bug A — `start_event_id` drift.** Export says `80`, live DB resolves to `63`. Candidates:
+- Events table was re-ingested/renumbered after adaptation ran; `entry_point_diagnosis.start_event_id` wasn't updated.
+- Adaptation was re-run against a different events set and `start_event_id` was recomputed incorrectly.
+- Manual edit.
+
+Query to confirm:
+```sql
+SELECT sa.id, sa.session_number,
+       sa.entry_point_diagnosis->>'start_event_id' AS stored_start_id
+FROM session_adaptations sa
+JOIN story_adaptations s ON s.id = sa.story_adaptation_id
+WHERE s.story_id = 1 AND sa.session_number = 1;
+```
+
+**Bug B — `events.session_number` mis-assignment.** Event 63's content ("Duchess links arms and walks with Alice") is a Session 6 scene per the story-session-map, but `events.session_number = 1` in DB. Candidates:
+- Events seed/import assigned `session_number` by something other than `story_session_map.session_allocation` (chapter-based? round-robin? event-position-range math that doesn't match allocation?).
+- `session_number` was set once at import and never reconciled when the adaptation produced the authoritative allocation.
+
+Query to confirm:
+```sql
+SELECT e.id, e.chapter_id, e.position, e.session_number, e.title
+FROM events e
+JOIN chapters c ON c.id = e.chapter_id
+WHERE c.story_id = 1
+ORDER BY e.id;
+```
+Compare against `story_session_map.session_allocation` in `story_adaptations.story_session_map`:
+```json
+[
+  {"session_number": 1, "chapters_covered": "Chapter 1", "event_range": "1-8"},
+  {"session_number": 2, "chapters_covered": "Chapter 2 (pool + shore) + early Chapter 3 (Caterpillar arrival)", "event_range": "9-21"},
+  {"session_number": 3, "chapters_covered": "Chapter 2 (Rabbit house end) + Chapter 3", "event_range": "22-31"},
+  {"session_number": 4, "chapters_covered": "Chapter 4", "event_range": "32-38"},
+  {"session_number": 5, "chapters_covered": "Chapter 5", "event_range": "39-47"},
+  {"session_number": 6, "chapters_covered": "Chapter 6", "event_range": "48-58"},
+  {"session_number": 7, "chapters_covered": "Chapter 7", "event_range": "59-69"}
+]
+```
+Event 63 by event_position should be **session 7** (range 59-69), or if the title match to session 6 payoff is correct it should be **session 6**. Either way it is not session 1.
+
+#### 4.0.d Why the `CreateGameAction` guard didn't catch this
+
+```53:55:app/Actions/Game/CreateGameAction.php
+        if ($resolved
+            && $resolved->chapter->story_id === $story->id
+            && $resolved->session_number === 1) {
+```
+
+The guard trusts `events.session_number` as the validator. When the events table is corrupted, the guard passes garbage through. **The guard needs a second cross-check against `story_session_map.session_allocation` (or at minimum against `entry_point_diagnosis.start_event_position` + chapter).**
+
+#### 4.0.e Fix order (suggested, not patched)
+
+1. **Audit event data first** — run the two queries above. Until we know whether Bug A (wrong `start_event_id`) or Bug B (wrong `events.session_number`) is primary, any code patch will paper over the real issue.
+2. **Once the primary bug is identified**, fix it at the source: either re-run the event-import with the authoritative session allocation, or fix the `EntryPointDiagnosisJob` so it writes the correct event id.
+3. **Harden `CreateGameAction::resolveStartEvent`** to cross-validate `start_event_id` against `start_event_position` and expected chapter, so a future data drift fails loud instead of silently routing to a wrong scene.
+4. **Harden the blade template** to warn (or abort) when the current event's title/position doesn't match `entry_point_diagnosis.start_event_id` — so corrupted starts don't produce confidently-wrong LLM narration.
+
+A neutral **live-LLM simulator** is available for reproducing this on any environment without creating DB rows:
 
 ```bash
 php artisan game:simulate-start alices-adventures-in-wonderland
 ```
 
-It prints: adaptation gate status, resolved start event (vs first event), session lookup result, which adaptation blocks got injected into the system prompt, and a final PASS/PARTIAL/NOT-WIRED verdict. Full rendered prompt is dumped to `storage/app/debug/` for inspection.
+It resolves the start event exactly as `CreateGameAction` does, matches the session adaptation exactly as `generateFirstNarration` does, dumps the rendered system prompt to `storage/app/debug/`, calls the real LLM, and prints the response HTML + the three choices the player would see. No DB writes.
+
+**Known simulator UX gap:** the "shifted by N position(s)" line compares `position` values without checking `chapter_id`. Since positions are chapter-scoped, first event and resolved event can both be `position=1` in different chapters (as happened here), making the shift report misleadingly "0". Worth patching later — the other output fields make the mismatch obvious anyway.
 
 ---
 

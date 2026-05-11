@@ -145,6 +145,11 @@ You MUST honor this routing in the output:
 Narrate the consequence of the authored branch. Do NOT contradict or reroute.
 
 @endif
+@if(isset($currentEvent['requires_choice']) && $currentEvent['requires_choice'] === false)
+=== FLOW MOMENT (WRITER LAB DIRECTIVE) ===
+This event has been marked as a cinematic flow moment by the writer — it does not require player interaction. Narrate it naturally and cinematically. Set advance_event to true. Provide three placeholder choices as usual (the runtime still expects them structurally) but they are low-stakes since the event will advance automatically. Do NOT hold the scene for player agency — let it flow.
+
+@endif
 === INTERACTIVITY FIRST (CRITICAL) ===
 This is an interactive experience. The player is inside the scene.
 

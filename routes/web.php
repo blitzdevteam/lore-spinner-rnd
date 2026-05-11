@@ -6,6 +6,7 @@ use App\Http\Controllers;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/routes/user.php';
+require __DIR__.'/routes/writer.php';
 
 Route::get('/', Controllers\IndexController::class)->name('index');
 

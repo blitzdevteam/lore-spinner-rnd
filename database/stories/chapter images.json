@@ -1,0 +1,619 @@
+{
+    "symlink": {
+        "exists": true,
+        "target": "/var/www/html/storage/app/public"
+    },
+    "storage_dir": {
+        "exists": true,
+        "file_count": 96
+    },
+    "creators": [
+        {
+            "name": "FREEP1 ",
+            "email": "freep@lorespinner.com",
+            "has_avatar_record": true,
+            "avatar_url": "https://dev.lorespinner.com/storage/17089/avatar-14.jpg",
+            "file_on_disk": true
+        },
+        {
+            "name": "Thomas Wittmer",
+            "email": "thomas@lorespinner.com",
+            "has_avatar_record": true,
+            "avatar_url": "https://dev.lorespinner.com/storage/17086/avatar-11.jpg",
+            "file_on_disk": true
+        },
+        {
+            "name": "Hilton Williams",
+            "email": "hilton@lorespinner.com",
+            "has_avatar_record": true,
+            "avatar_url": "https://dev.lorespinner.com/storage/17087/avatar-12.jpg",
+            "file_on_disk": true
+        },
+        {
+            "name": "Rand Soares",
+            "email": "rand@lorespinner.com",
+            "has_avatar_record": true,
+            "avatar_url": "https://dev.lorespinner.com/storage/17088/avatar-13.jpg",
+            "file_on_disk": true
+        },
+        {
+            "name": "The Classics, Unbound ",
+            "email": "classics@lorespinner.com",
+            "has_avatar_record": true,
+            "avatar_url": "https://dev.lorespinner.com/storage/17090/avatar-15.jpg",
+            "file_on_disk": true
+        }
+    ],
+    "stories": [
+        {
+            "title": "Anima Machina",
+            "status": "published",
+            "creator": "Thomas Wittmer",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/19/cover-1.png",
+            "cover_path": "/var/www/html/storage/app/public/19/cover-1.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Bound & Broken",
+            "status": "published",
+            "creator": "Thomas Wittmer",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/20/cover-2.png",
+            "cover_path": "/var/www/html/storage/app/public/20/cover-2.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Driftheart",
+            "status": "published",
+            "creator": "Thomas Wittmer",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/21/cover-3.png",
+            "cover_path": "/var/www/html/storage/app/public/21/cover-3.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Nocturne",
+            "status": "published",
+            "creator": "Hilton Williams",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/22/cover-4.png",
+            "cover_path": "/var/www/html/storage/app/public/22/cover-4.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Session Zero",
+            "status": "published",
+            "creator": "Hilton Williams",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/23/cover-5.png",
+            "cover_path": "/var/www/html/storage/app/public/23/cover-5.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Shatterfall",
+            "status": "published",
+            "creator": "Thomas Wittmer",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/24/cover-6.png",
+            "cover_path": "/var/www/html/storage/app/public/24/cover-6.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "The Hollowing",
+            "status": "published",
+            "creator": "Hilton Williams",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/25/cover-7.png",
+            "cover_path": "/var/www/html/storage/app/public/25/cover-7.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Hemingway's War",
+            "status": "published",
+            "creator": "Rand Soares",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/17077/cover-hemingways-war.png",
+            "cover_path": "/var/www/html/storage/app/public/17077/cover-hemingways-war.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "High Stakes",
+            "status": "published",
+            "creator": "Rand Soares",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/17078/cover-high-stakes.png",
+            "cover_path": "/var/www/html/storage/app/public/17078/cover-high-stakes.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Pieces of Eight",
+            "status": "published",
+            "creator": "Rand Soares",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/17079/cover-pieces-of-eight.png",
+            "cover_path": "/var/www/html/storage/app/public/17079/cover-pieces-of-eight.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Time Machine",
+            "status": "published",
+            "creator": "Rand Soares",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/17080/cover-time-machine.png",
+            "cover_path": "/var/www/html/storage/app/public/17080/cover-time-machine.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "B.U.G.S.",
+            "status": "published",
+            "creator": "FREEP1 ",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/17081/cover-bugs.png",
+            "cover_path": "/var/www/html/storage/app/public/17081/cover-bugs.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Dream Police",
+            "status": "published",
+            "creator": "FREEP1 ",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/17082/cover-dream-police.png",
+            "cover_path": "/var/www/html/storage/app/public/17082/cover-dream-police.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Necropolis",
+            "status": "published",
+            "creator": "FREEP1 ",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/17083/cover-necropolis.png",
+            "cover_path": "/var/www/html/storage/app/public/17083/cover-necropolis.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "PJ's",
+            "status": "published",
+            "creator": "FREEP1 ",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/17084/cover-pjs.png",
+            "cover_path": "/var/www/html/storage/app/public/17084/cover-pjs.png",
+            "file_on_disk": true
+        },
+        {
+            "title": "Wasteland",
+            "status": "published",
+            "creator": "FREEP1 ",
+            "has_cover_record": true,
+            "cover_url": "https://dev.lorespinner.com/storage/17085/cover-wasteland.png",
+            "cover_path": "/var/www/html/storage/app/public/17085/cover-wasteland.png",
+            "file_on_disk": true
+        }
+    ],
+    "chapters": [
+        {
+            "id": 712,
+            "story": "Hemingway's War",
+            "position": 1,
+            "title": "Ambulance Corps Days in Milan",
+            "teaser": "A young Ernest Hemingway chafes at a support role and hungers for the front, where romance and bravado quickly give way to the realities of war.",
+            "has_cover": false
+        },
+        {
+            "id": 713,
+            "story": "Hemingway's War",
+            "position": 2,
+            "title": "The Ritz Circle in Prewar Paris",
+            "teaser": "In the gilded calm of the Ritz, Hemingway spars with friends, rivals, and his own restlessness as Europe darkens and old habits resurface.",
+            "has_cover": false
+        },
+        {
+            "id": 714,
+            "story": "Hemingway's War",
+            "position": 3,
+            "title": "Landing and the First Push Inland",
+            "teaser": "On the eve of invasion and the day it arrives, Hemingway plunges into the chaos of the front, courting danger and influence among soldiers and commanders.",
+            "has_cover": false
+        },
+        {
+            "id": 715,
+            "story": "Hemingway's War",
+            "position": 4,
+            "title": "An Irregulars Network Toward Paris",
+            "teaser": "As the lines advance, Hemingway gathers a small band and a growing web of intelligence, pushing boundaries while pressure from official channels tightens.",
+            "has_cover": false
+        },
+        {
+            "id": 716,
+            "story": "Hemingway's War",
+            "position": 5,
+            "title": "Paris Run and the Ritz Objective",
+            "teaser": "With the city near, a risky race through uncertain streets culminates in a charged arrival at a beloved destination—past and present echoing in the same rooms.",
+            "has_cover": false
+        },
+        {
+            "id": 717,
+            "story": "High Stakes",
+            "position": 1,
+            "title": "The First Loss",
+            "teaser": "A timed run for an exit ends in sudden violence, setting an ominous tone for a game where time and rules matter.",
+            "has_cover": false
+        },
+        {
+            "id": 718,
+            "story": "High Stakes",
+            "position": 2,
+            "title": "The Floor and the Invitation",
+            "teaser": "In the rush of the Stock Exchange and the quiet of an empty mansion, a confident trader carries private worries toward a familiar, secret appointment.",
+            "has_cover": false
+        },
+        {
+            "id": 719,
+            "story": "High Stakes",
+            "position": 3,
+            "title": "Rules of the Room",
+            "teaser": "A guarded estate reveals a wood-paneled game room where players, doors, and a strict host frame a high-risk contest with shifting stakes.",
+            "has_cover": false
+        },
+        {
+            "id": 720,
+            "story": "High Stakes",
+            "position": 4,
+            "title": "Through Door Twelve",
+            "teaser": "A harsh landscape tests endurance and instincts, and a fragmented map leads from open desert into a stranger, more populated wilderness.",
+            "has_cover": false
+        },
+        {
+            "id": 721,
+            "story": "High Stakes",
+            "position": 5,
+            "title": "Village Paths and Prison Stones",
+            "teaser": "A clash with local hunters pulls the traveler toward a village, a wary guide, and a covert rescue that changes what the mission means.",
+            "has_cover": false
+        },
+        {
+            "id": 722,
+            "story": "High Stakes",
+            "position": 6,
+            "title": "What the Maps Don’t Say",
+            "teaser": "Safe by firelight, truths about time, love, and hidden systems surface as a new threat races toward the same prize.",
+            "has_cover": false
+        },
+        {
+            "id": 723,
+            "story": "High Stakes",
+            "position": 7,
+            "title": "Two Routes to the Mountain",
+            "teaser": "One group takes a direct, dangerous passage while another climbs above; both push toward a marked mountain as hazards multiply.",
+            "has_cover": false
+        },
+        {
+            "id": 724,
+            "story": "High Stakes",
+            "position": 8,
+            "title": "Cannibal Skies, Forest Traps",
+            "teaser": "An open crossing triggers airborne hunters and a deadly botanical maze, forcing hard choices as pursuers close in.",
+            "has_cover": false
+        },
+        {
+            "id": 725,
+            "story": "High Stakes",
+            "position": 9,
+            "title": "Inside the Gargoyle Mountain",
+            "teaser": "Steam, stone, and fire lead to a final ascent where improvised tactics, rival players, and a guarded door converge under shrinking time.",
+            "has_cover": false
+        },
+        {
+            "id": 726,
+            "story": "High Stakes",
+            "position": 10,
+            "title": "The Run Back",
+            "teaser": "With the mountain collapsing behind them, survivors race through familiar hazards and chase a fleeing opponent toward the only way out.",
+            "has_cover": false
+        },
+        {
+            "id": 727,
+            "story": "High Stakes",
+            "position": 11,
+            "title": "Aftermath in the Game Room",
+            "teaser": "The return ignites a confrontation that spills beyond the contest itself, leaving the remaining players to face unsettling answers and a new direction.",
+            "has_cover": false
+        },
+        {
+            "id": 728,
+            "story": "Pieces of Eight",
+            "position": 1,
+            "title": "The Yacht Heist",
+            "teaser": "A luxury cruise in the Keys is interrupted by a sleek black vessel and a crew that moves with practiced precision.",
+            "has_cover": false
+        },
+        {
+            "id": 729,
+            "story": "Pieces of Eight",
+            "position": 2,
+            "title": "Investors and Legends",
+            "teaser": "A small dive shop pins its hopes on a long-obsessed wreck, courting money and equipment to chase a story buried offshore.",
+            "has_cover": false
+        },
+        {
+            "id": 730,
+            "story": "Pieces of Eight",
+            "position": 3,
+            "title": "The Madrid Expedition",
+            "teaser": "With a bigger boat and new tech, the team returns to the water—finding signs that their target may be closer than ever.",
+            "has_cover": false
+        },
+        {
+            "id": 731,
+            "story": "Pieces of Eight",
+            "position": 4,
+            "title": "Shadow Crew",
+            "teaser": "As the salvage crew celebrates progress, unseen players converge—some close, some watching from the dark water.",
+            "has_cover": false
+        },
+        {
+            "id": 732,
+            "story": "Pieces of Eight",
+            "position": 5,
+            "title": "Night Raid at Sea",
+            "teaser": "A sudden, coordinated strike turns a routine night aboard into a fight for survival in cramped corridors and black water.",
+            "has_cover": false
+        },
+        {
+            "id": 733,
+            "story": "Pieces of Eight",
+            "position": 6,
+            "title": "Loggerhead Gambit and Aftermath",
+            "teaser": "Stranded and hunted, the survivors attempt a desperate counterplay as larger forces collide around the stolen haul.",
+            "has_cover": false
+        },
+        {
+            "id": 734,
+            "story": "Time Machine",
+            "position": 1,
+            "title": "Catastrophe in the Tube",
+            "teaser": "A high-tech test run reaches critical speed inside a massive spinning apparatus. As the energy builds, the control room watches events veer out of control.",
+            "has_cover": false
+        },
+        {
+            "id": 735,
+            "story": "Time Machine",
+            "position": 2,
+            "title": "A Thesis Under Pressure",
+            "teaser": "On a college campus, an ambitious student tries to hold his life together while chasing a breakthrough. A late-night lab setup turns desperation into risky experimentation.",
+            "has_cover": false
+        },
+        {
+            "id": 736,
+            "story": "Time Machine",
+            "position": 3,
+            "title": "Demonstration Day Fallout",
+            "teaser": "With everything prepared for a formal presentation, tensions run high as outsiders close in. The consequences of cutting corners collide with the need to be believed.",
+            "has_cover": false
+        },
+        {
+            "id": 737,
+            "story": "Time Machine",
+            "position": 4,
+            "title": "The Billionaire’s Invitation",
+            "teaser": "A surprise interview leads to an exclusive world of artifacts, power, and hidden agendas. Over dinner, an irresistible proposal takes shape behind closed doors.",
+            "has_cover": false
+        },
+        {
+            "id": 738,
+            "story": "Time Machine",
+            "position": 5,
+            "title": "Pennsylvania Site Visit",
+            "teaser": "A remote facility reveals the scale of an operation built in secrecy. Amid repairs and towering machinery, a bold question hangs in the air.",
+            "has_cover": false
+        },
+        {
+            "id": 739,
+            "story": "B.U.G.S.",
+            "position": 1,
+            "title": "The Microsync Run",
+            "teaser": "A tightly timed infiltration inside a high-security tech facility puts a small team’s tools and teamwork to the test.",
+            "has_cover": false
+        },
+        {
+            "id": 740,
+            "story": "B.U.G.S.",
+            "position": 2,
+            "title": "An Offer and an Ominous Signal",
+            "teaser": "Back at their loft, the crew’s everyday hustle is interrupted by federal attention and unsettling signs of something larger.",
+            "has_cover": false
+        },
+        {
+            "id": 741,
+            "story": "B.U.G.S.",
+            "position": 3,
+            "title": "Leads, Allies, and a Trip to Berlin",
+            "teaser": "As clues point overseas, the team leans on old friends and cutting-edge gadgets to chase the trail in unfamiliar territory.",
+            "has_cover": false
+        },
+        {
+            "id": 742,
+            "story": "B.U.G.S.",
+            "position": 4,
+            "title": "The Evidence Heist",
+            "teaser": "A coordinated operation unfolds around a police station, where timing, disguises, and surveillance tech must all align.",
+            "has_cover": false
+        },
+        {
+            "id": 743,
+            "story": "B.U.G.S.",
+            "position": 5,
+            "title": "A Cargo Deadline",
+            "teaser": "With new information in hand, the team races home to intercept a high-stakes shipment before events outrun their control.",
+            "has_cover": false
+        },
+        {
+            "id": 744,
+            "story": "B.U.G.S.",
+            "position": 6,
+            "title": "Blackout at the Port",
+            "teaser": "At the Oakland docks, a sudden disruption turns a watchful stakeout into a fast-moving confrontation with no margin for error.",
+            "has_cover": false
+        },
+        {
+            "id": 745,
+            "story": "Dream Police",
+            "position": 1,
+            "title": "A Murder on the Grid",
+            "teaser": "A routine pursuit in the Dream World turns uncanny when an unseen force bends the rules and leaves the Dream Police scrambling for answers across both realities.",
+            "has_cover": false
+        },
+        {
+            "id": 746,
+            "story": "Dream Police",
+            "position": 2,
+            "title": "Off the Grid",
+            "teaser": "As grief and pressure mount, a new agent steps in and the investigation exposes disturbing gaps in what the Dream Police thought they understood about Dreamers and Crossovers.",
+            "has_cover": false
+        },
+        {
+            "id": 747,
+            "story": "Dream Police",
+            "position": 3,
+            "title": "Loose Ends in Waking Life",
+            "teaser": "A widening pattern of deaths and strange research pulls the case into the Real World, forcing uneasy alliances and a race to identify a culprit who won’t stay trackable.",
+            "has_cover": false
+        },
+        {
+            "id": 748,
+            "story": "Dream Police",
+            "position": 4,
+            "title": "The Net Tightens",
+            "teaser": "With the threat escalating, leads converge through criminals, academia, and coercive tactics—until a name finally surfaces and a trap is set on both sides of sleep.",
+            "has_cover": false
+        },
+        {
+            "id": 749,
+            "story": "Dream Police",
+            "position": 5,
+            "title": "Quadrant Seven",
+            "teaser": "A high-stakes operation at a volatile Dream World site tests every rule and every relationship, with consequences that echo back into the Real World.",
+            "has_cover": false
+        },
+        {
+            "id": 750,
+            "story": "Necropolis",
+            "position": 1,
+            "title": "The Commuter Line",
+            "teaser": "A routine morning train ride in Washington, DC turns ominous as strange presences converge in a crowded car.",
+            "has_cover": false
+        },
+        {
+            "id": 751,
+            "story": "Necropolis",
+            "position": 2,
+            "title": "After the Blast",
+            "teaser": "In the wake of catastrophe, Vincent scrambles through a locked-down city and confronts an impossible new reality closing in around him.",
+            "has_cover": false
+        },
+        {
+            "id": 752,
+            "story": "Necropolis",
+            "position": 3,
+            "title": "Hunted and Redirected",
+            "teaser": "Pursuers reveal themselves as Vincent flees and returns to the one guide who can explain the dangers and the path to safety.",
+            "has_cover": false
+        },
+        {
+            "id": 753,
+            "story": "Necropolis",
+            "position": 4,
+            "title": "City of the Souls",
+            "teaser": "Vincent arrives in Colma’s vast necropolis and is drawn into a hidden network of allies, tests, and unsettling truths.",
+            "has_cover": false
+        },
+        {
+            "id": 754,
+            "story": "Necropolis",
+            "position": 5,
+            "title": "Keys, Training, and Signals",
+            "teaser": "As Vincent begins to master new abilities, threads of the larger conflict tighten—on both sides—toward an impending search.",
+            "has_cover": false
+        },
+        {
+            "id": 755,
+            "story": "PJ's",
+            "position": 1,
+            "title": "Night Drop on a Ruined Coast",
+            "teaser": "An unmarked team makes a covert insertion from high altitude and threads through a devastated coastal village toward a faint signal in the dark.",
+            "has_cover": false
+        },
+        {
+            "id": 756,
+            "story": "PJ's",
+            "position": 2,
+            "title": "The Wounded in the Safe Room",
+            "teaser": "Inside a shattered house, urgent triage and improvised care turn a fragile shelter into a tense holding point as outside threats draw closer.",
+            "has_cover": false
+        },
+        {
+            "id": 757,
+            "story": "PJ's",
+            "position": 3,
+            "title": "A Funeral and Four Directions Home",
+            "teaser": "Grief and duty collide at a military farewell, and the remaining team members scatter across the country into personal lives that don’t pause for war.",
+            "has_cover": false
+        },
+        {
+            "id": 758,
+            "story": "PJ's",
+            "position": 4,
+            "title": "Leave Interrupted",
+            "teaser": "Across separate hometowns, old conflicts and new pressures surface—until a sudden call pulls everyone back toward a mission with no bullets, only weather.",
+            "has_cover": false
+        },
+        {
+            "id": 759,
+            "story": "PJ's",
+            "position": 5,
+            "title": "Flood Zone Triage",
+            "teaser": "A rooftop insertion drops the team into a submerged school turned evacuation hub, where medical priorities, dwindling time, and uneasy strangers tighten the air.",
+            "has_cover": false
+        },
+        {
+            "id": 760,
+            "story": "PJ's",
+            "position": 6,
+            "title": "The Second Storm Closing In",
+            "teaser": "As conditions worsen, a desperate report draws part of the team into the floodwaters while trouble inside the shelter accelerates toward a breaking point.",
+            "has_cover": false
+        },
+        {
+            "id": 761,
+            "story": "Wasteland",
+            "position": 1,
+            "title": "The Unmarked Flight",
+            "teaser": "A remote waste run turns into a desperate scramble when something far more human than cargo becomes trapped in the system. Back at the station, an exhausted crew gets pulled into one last unsettling assignment.",
+            "has_cover": false
+        },
+        {
+            "id": 762,
+            "story": "Wasteland",
+            "position": 2,
+            "title": "Dumped Alive",
+            "teaser": "Questions lead to silence, then force. A terrifying descent delivers Emmit and his team into a landscape that looks like the end of the world—and people who have learned to survive it.",
+            "has_cover": false
+        },
+        {
+            "id": 763,
+            "story": "Wasteland",
+            "position": 3,
+            "title": "Leo’s Fortress and the Market of Lines",
+            "teaser": "Dragged into a fortified settlement built from refuse, Emmit is judged by a leader who knows this desert’s rules. In a rough open-air exchange, power, barter, and threat collide as alliances strain.",
+            "has_cover": false
+        },
+        {
+            "id": 764,
+            "story": "Wasteland",
+            "position": 4,
+            "title": "Work, Truths, and a Dangerous Road",
+            "teaser": "Under brutal routines and harsher lessons, Emmit learns what this wasteland really is and why it exists. A risky plan forms around scarce technology, but the cost of pursuing it keeps rising.",
+            "has_cover": false
+        }
+    ]
+}

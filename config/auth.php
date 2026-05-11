@@ -50,6 +50,10 @@ return [
             'driver' => 'session',
             'provider' => 'creators',
         ],
+        'writer' => [
+            'driver' => 'session',
+            'provider' => 'writers',
+        ],
     ],
 
     /*
@@ -81,6 +85,10 @@ return [
         'creators' => [
             'driver' => 'eloquent',
             'model' => App\Models\Creator::class,
+        ],
+        'writers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Writer::class,
         ],
     ],
 
