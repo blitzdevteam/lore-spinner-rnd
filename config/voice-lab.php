@@ -52,11 +52,14 @@ return [
     | Conversation
     |--------------------------------------------------------------------------
     |
-    | history_size     — how many past turns to include in the AI context.
+    | history_size     — how many past prompt rows (narrator + listener) to
+    |                    include in the AI context. Too low (e.g. 6) drops the
+    |                    cold open after a few exchanges and the model loops
+    |                    or re-grounds like an opening. Default 40 ≈ 20 turns.
     | greeting_enabled — whether the first turn auto-emits an opening narration.
     |
     */
-    'history_size' => (int) env('VOICELAB_HISTORY_SIZE', 6),
+    'history_size' => (int) env('VOICELAB_HISTORY_SIZE', 40),
     'greeting_enabled' => (bool) env('VOICELAB_GREETING_ENABLED', true),
 
     /*

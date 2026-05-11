@@ -87,7 +87,7 @@ final readonly class ProcessVoiceTurnAction
      */
     private function buildConversationHistory(VoiceLabSession $session): array
     {
-        $limit = (int) config('voice-lab.history_size', 6);
+        $limit = (int) config('voice-lab.history_size', 40);
 
         $prompts = $session->prompts()
             ->latest()

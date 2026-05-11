@@ -45,6 +45,8 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
     let mediaRecorder: MediaRecorder | null = null;
     let audioChunks: Blob[] = [];
     let micStream: MediaStream | null = null;
+    /** True between requesting the mic and MediaRecorder.start() — fast touch release must cancel here. */
+    let listenPending = false;
 
     let audioContext: AudioContext | null = null;
     let micAnalyser: AnalyserNode | null = null;
@@ -192,18 +194,27 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
     }
 
     async function startListening() {
-        if (state.value !== 'idle' && state.value !== 'error') return;
+        if (listenPending || (state.value !== 'idle' && state.value !== 'error')) return;
 
         resetError();
-        state.value = 'listening';
+        listenPending = true;
 
         try {
             micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         } catch {
+            listenPending = false;
             setError('Microphone access denied');
             return;
         }
 
+        // Finger may have lifted before getUserMedia resolved (mobile quick tap).
+        if (!listenPending) {
+            releaseMic();
+            return;
+        }
+
+        listenPending = false;
+        state.value = 'listening';
         sfx.playListenStart();
 
         audioChunks = [];
@@ -264,6 +275,12 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
     }
 
     async function holdEnd() {
+        if (listenPending) {
+            listenPending = false;
+            releaseMic();
+            state.value = 'idle';
+            return;
+        }
         if (state.value === 'listening') {
             await finishRecording();
         }
@@ -581,10 +598,12 @@ export function useVoiceLab(intro: VoiceLabIntro | null = null) {
         });
         hasStartedIntro.value = false;
         choices.value = [];
+        listenPending = false;
         state.value = 'idle';
     }
 
     function cleanup() {
+        listenPending = false;
         stopThinkingTicks();
         stopPlayback();
         stopMicLevel();
