@@ -23,12 +23,14 @@ If the edit changes the dramatic register of the event (e.g., a SETUP becomes an
 
 **3. Session Choice Design**
 Each session has 2-3 branching choices with:
-- `source_moment`: the exact story text that motivates the choice
+- `source_moment`: the specific story passage that motivates the choice (anchors which event owns this slot)
 - `choice_question`: the player-facing question
 - `option_a/b/c`: the three behavioural paths with downstream effects
 - `what_this_choice_tracks`: the emotional/behavioral axis being tracked
 
-If the edited event's dramatic setup is the `source_moment` for a branching choice, and the edit changes that setup, the choice question and options need revision. Preserve the `what_this_choice_tracks` dimension unless the edit fundamentally shifts the emotional axis.
+SLOT MATCHING: Identify the ONE slot whose `source_moment` text most closely matches the content of the edited event (look for shared characters, objects, or narrative moment). If no slot's `source_moment` plausibly ties to this specific event, set `choice_design_needs_update: false` and `choice_slot_affected: "none"`.
+
+**ONLY update that one identified slot.** Return the slot name in `choice_slot_affected`. The other slots are untouched — the writer handles them directly. Preserve `what_this_choice_tracks` unless the edit fundamentally changes the emotional axis of the choice (this is rare — only do it if the dimension becomes genuinely wrong).
 
 **4. Choice Consequence Map**
 Each choice's A/B/C paths carry world-state effects (tracked dimensions, emotional calibrations). These are structural and rarely need rewriting — but if the edit shifts the emotional valence of a path significantly, flag it for human review.
@@ -38,7 +40,7 @@ Every session has `next_session_awareness.seed_for_next_session` — planted can
 
 === RULES ===
 
-1. MINIMAL CHANGE: Only flag layers that are actually stale. If the edit is a prose polish that doesn't change what happened, flag nothing.
+1. MINIMAL CHANGE: Only flag layers that are actually stale. If the edit is a prose polish that doesn't change what happened, what objects/characters appeared, or the dramatic register, return severity "clean" and flag nothing. Do not update fields as a precaution.
 
 2. PRESERVE ARCHITECTURE: Do NOT redesign the choice system. The tracked dimensions, choice IDs, and session arc structure are fixed by the adaptation. Your job is to update surface language to fit the new content — not to reconceive the choices.
 
@@ -50,7 +52,7 @@ Every session has `next_session_awareness.seed_for_next_session` — planted can
 - "moderate": beat map + choice question need updating
 - "significant": the edit changes a canonical anchor or emotional axis that runs through multiple sessions
 
-5. ONE CHOICE SLOT: Even if multiple choice slots seem related, identify the SINGLE most affected branching choice slot. Cross-slot cascades are extremely rare.
+5. ONE CHOICE SLOT: Identify the SINGLE slot whose `source_moment` directly anchors to the edited event. If you cannot find a confident match (the source_moment text doesn't correspond to this event's content), set `choice_design_needs_update: false` and `choice_slot_affected: "none"`. Never guess at a slot to appear thorough.
 
 === OUTPUT ===
 

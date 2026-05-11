@@ -119,7 +119,16 @@ const saving             = ref(false);
 const saveError          = ref<string | null>(null);
 const saveDraftId        = ref<number | null>(null);
 
-// Track which fields were filled by AI so they can be highlighted
+// The content as it was when the event was first focused (before any edits).
+// "Analyse Changes" is only meaningful — and only costs money — when the
+// script itself has been rewritten.  Other field edits (objectives, attributes,
+// choice slots) are direct and need no AI.
+const originalContent = ref('');
+const scriptRewritten = computed(() =>
+    editContent.value.trim() !== originalContent.value.trim()
+);
+
+// Track which fields were AI-filled so they render with amber highlight
 const aiFilledFields = reactive<Record<string, boolean>>({});
 
 // Inline attribute tag editing
@@ -169,7 +178,9 @@ const resetEditState = (event: Event) => {
     const existing = props.activeDrafts.find(
         d => d.type === 'edit' && d.source_event_ids?.includes(event.id)
     );
-    editContent.value        = existing?.rewritten_content ?? event.content;
+    const baseContent = existing?.rewritten_content ?? event.content;
+    editContent.value        = baseContent;
+    originalContent.value    = baseContent; // snapshot for scriptRewritten comparison
     editRequiresChoice.value = existing?.requires_choice ?? event.requires_choice;
     editBeatType.value       = existing?.beat_type ?? '';
     editObjectives.value     = (existing?.derived_objectives as string | null) ?? event.objectives ?? '';
@@ -329,57 +340,65 @@ const resetImpact = () => {
 const resetSuggestion = () => resetImpact();
 
 const analyseImpact = async () => {
-    if (!saveDraftId.value) return;
+    if (!focusedEvent.value || !scriptRewritten.value) return;
+
     analysing.value = true;
     resetImpact();
+
+    // Auto-save the draft first if not yet saved (or if content changed since last save)
+    // This ensures the backend has the latest content + previous_state for diff
+    if (!saveDraftId.value || editDirty.value) {
+        await saveEdit();
+        if (saveError.value) { analysing.value = false; return; }
+    }
 
     const url = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${saveDraftId.value}/analyse-impact`;
     const data = await apiPost(url);
 
     analysing.value = false;
 
-    if (data.error) {
-        impactError.value = data.error;
-        return;
-    }
+    if (data.error) { impactError.value = data.error; return; }
 
     const r: ImpactAnalysis = data.impact;
-
     impactSummary.value  = r.summary;
     impactSeverity.value = r.severity;
 
-    // ── Fill form fields directly with AI suggestions ──────────────────────
+    // ── Fill only the fields the AI flagged as stale ───────────────────────
+    // Objectives and attributes: the extracted metadata about WHAT happened
     if (r.objectives_needs_update && r.objectives_revised) {
-        editObjectives.value          = r.objectives_revised;
-        aiFilledFields.objectives     = true;
+        editObjectives.value      = r.objectives_revised;
+        aiFilledFields.objectives = true;
+        editDirty.value           = true;
     }
     if (r.attributes_needs_update && r.attributes_revised?.length) {
-        editAttributes.value          = [...r.attributes_revised];
-        aiFilledFields.attributes     = true;
+        editAttributes.value       = [...r.attributes_revised];
+        aiFilledFields.attributes  = true;
+        editDirty.value            = true;
     }
+    // Beat type: only if the dramatic register shifted
     if (r.beat_map_needs_update && r.beat_type_revised) {
-        editBeatType.value            = r.beat_type_revised.toLowerCase();
-        aiFilledFields.beat_type      = true;
+        editBeatType.value         = r.beat_type_revised.toLowerCase();
+        aiFilledFields.beat_type   = true;
+        editDirty.value            = true;
     }
+    // Choice design: ONLY the single slot whose source_moment ties to this event.
+    // The other two slots are NOT touched — writer handles those directly.
     if (r.choice_design_needs_update && r.choice_slot_affected && r.choice_slot_affected !== 'none') {
         const slot = r.choice_slot_affected;
+        // Preserve tracked_dimension unless AI explicitly changed it
         editChoiceSlots[slot] = {
             question:          r.choice_question_revised,
             option_a:          r.choice_option_a_revised,
             option_b:          r.choice_option_b_revised,
             option_c:          r.choice_option_c_revised,
-            tracked_dimension: r.choice_tracked_dimension,
+            tracked_dimension: r.choice_tracked_dimension || editChoiceSlots[slot]?.tracked_dimension || '',
         };
         aiFilledFields[`choice_${slot}`] = true;
         choiceSlotsDirty.value = true;
+        editDirty.value        = true;
     }
 
-    // Mark everything dirty so the writer sees the Save button is active
-    if (r.severity !== 'clean') {
-        editDirty.value = true;
-    }
-
-    // ── Surface warnings that require manual action ────────────────────────
+    // ── Warnings that require manual action (no auto-fill) ─────────────────
     if (r.consequence_map_needs_review) {
         impactWarnings.value.push({ type: 'consequence', note: r.consequence_map_note });
     }
@@ -716,12 +735,15 @@ const eventDraftLink = (eventId: number) => {
                                     :disabled="previewing" @click="runPreview">
                                     <span v-if="previewing">…</span><span v-else>▶ Preview</span>
                                 </button>
-                                <button class="rounded-lg border border-primary-700/40 bg-primary-950/20 px-3 py-1.5 text-xs text-primary-300 hover:bg-primary-900/30 transition-all disabled:opacity-40"
-                                    :disabled="analysing || !saveDraftId"
-                                    :title="!saveDraftId ? 'Save a draft first' : 'Analyse all adaptation layers'"
+                                <!-- Only available after the script content itself was changed.
+                                     Editing objectives/attributes/choices directly costs nothing — no AI needed. -->
+                                <button v-if="scriptRewritten"
+                                    class="rounded-lg border border-primary-700/40 bg-primary-950/20 px-3 py-1.5 text-xs text-primary-300 hover:bg-primary-900/30 transition-all disabled:opacity-40"
+                                    :disabled="analysing"
+                                    title="Script was rewritten — AI will check which adaptation layers are now stale"
                                     @click="analyseImpact">
                                     <span v-if="analysing">Analysing…</span>
-                                    <span v-else>✦ Analyse Changes</span>
+                                    <span v-else>✦ Analyse script changes</span>
                                 </button>
                                 <Link v-if="saveDraftId"
                                     :href="`/writer/writer-lab/${story.id}/chapters/${chapter.id}/drafts/${saveDraftId}`"

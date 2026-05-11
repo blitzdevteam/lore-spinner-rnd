@@ -30,6 +30,12 @@ Attributes: {{ json_encode($currentAttributes ?? []) }}
 @endif
 
 === TASK ===
-The writer has edited the event content above. Review all adaptation layers and identify which ones are now stale. Provide minimal, targeted revisions for each affected layer. Preserve the structural choice architecture — only update surface language to match the new content.
+The writer has rewritten the event script above. You must:
+1. Compare old vs. new content and determine what factually or tonally changed
+2. Check each adaptation layer — only flag layers that are genuinely stale as a result
+3. For choice design: look at the `source_moment` field in each slot and identify which slot (if any) is anchored to THIS event. Only suggest changes for that slot. If no slot's source_moment maps to this event, set choice_design_needs_update = false.
+4. Return severity "clean" if the edit is cosmetic (prose polish, same facts, same beats).
+
+Preserve the structural choice architecture. Only update surface language to match new content.
 
 Respond with structured JSON only.
