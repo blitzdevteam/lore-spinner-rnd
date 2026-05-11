@@ -2,22 +2,91 @@
 import BaseButton from '@/components/BaseButton.vue';
 import { logout } from '@/wayfinder/routes/user/authentication';
 import login from '@/wayfinder/routes/user/authentication/login';
+import register from '@/wayfinder/routes/user/authentication/register';
 import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronRight, LucideUpload, X } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ChevronRight, LucideUpload, PenLine, X } from 'lucide-vue-next';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 const page = usePage();
 
 const auth = computed(() => page.props.auth);
 
 const profileDrawerVisibility = ref(false);
+
+// Account dropdown (shown when not logged in)
+const accountMenuOpen = ref(false);
+const accountMenuRef  = ref<HTMLDivElement | null>(null);
+
+const closeOnOutsideClick = (e: MouseEvent) => {
+    if (accountMenuRef.value && !accountMenuRef.value.contains(e.target as Node)) {
+        accountMenuOpen.value = false;
+    }
+};
+
+onMounted(() => document.addEventListener('mousedown', closeOnOutsideClick));
+onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideClick));
 </script>
 
 <template>
     <template v-if="auth === null">
-        <Link :href="login.create().url">
-            <BaseButton class="!h-10">Account</BaseButton>
-        </Link>
+        <div ref="accountMenuRef" class="relative">
+            <BaseButton class="!h-10" @click="accountMenuOpen = !accountMenuOpen">
+                Account
+            </BaseButton>
+
+            <!-- Dropdown -->
+            <Transition
+                enter-active-class="transition duration-150 ease-out"
+                enter-from-class="opacity-0 scale-95 -translate-y-1"
+                enter-to-class="opacity-100 scale-100 translate-y-0"
+                leave-active-class="transition duration-100 ease-in"
+                leave-from-class="opacity-100 scale-100 translate-y-0"
+                leave-to-class="opacity-0 scale-95 -translate-y-1"
+            >
+                <div
+                    v-if="accountMenuOpen"
+                    class="absolute right-0 top-[calc(100%+8px)] z-50 w-56 origin-top-right rounded-2xl border border-gray-800 bg-gray-950 py-2 shadow-2xl"
+                >
+                    <!-- Player section -->
+                    <p class="px-4 pb-1 pt-2 text-[10px] uppercase tracking-widest text-gray-600">Player</p>
+                    <Link
+                        :href="login.create().url"
+                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-200 transition-colors hover:bg-gray-900 hover:text-white"
+                        @click="accountMenuOpen = false"
+                    >
+                        Log In
+                    </Link>
+                    <Link
+                        :href="register.create().url"
+                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-200 transition-colors hover:bg-gray-900 hover:text-white"
+                        @click="accountMenuOpen = false"
+                    >
+                        Sign Up
+                    </Link>
+
+                    <div class="my-2 border-t border-gray-800/80"></div>
+
+                    <!-- Writer Lab section -->
+                    <p class="px-4 pb-1 text-[10px] uppercase tracking-widest text-gray-600">Writer Lab</p>
+                    <Link
+                        href="/writer/authentication/login"
+                        class="flex items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-gray-900"
+                        @click="accountMenuOpen = false"
+                    >
+                        <span class="text-primary-400">Log In as Writer</span>
+                        <PenLine class="size-3.5 text-primary-500/60" />
+                    </Link>
+                    <Link
+                        href="/writer/authentication/register"
+                        class="flex items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-gray-900"
+                        @click="accountMenuOpen = false"
+                    >
+                        <span class="text-primary-400">Apply as Writer</span>
+                        <PenLine class="size-3.5 text-primary-500/60" />
+                    </Link>
+                </div>
+            </Transition>
+        </div>
     </template>
     <template v-else>
         <Teleport to="body">
@@ -91,6 +160,15 @@ const profileDrawerVisibility = ref(false);
                                             <Link href="#" class="flex items-center justify-between p-4 text-white transition-all hover:px-6">
                                                 <p class="text-sm font-normal">Help & Support</p>
                                                 <ChevronRight class="size-5" :stroke-width="2" />
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link
+                                                href="/writer/authentication/login"
+                                                class="flex items-center justify-between p-4 transition-all hover:px-6"
+                                            >
+                                                <p class="text-sm font-normal text-primary-400">Writer Lab</p>
+                                                <PenLine class="size-4 text-primary-500/70" :stroke-width="2" />
                                             </Link>
                                         </li>
                                         <li>
