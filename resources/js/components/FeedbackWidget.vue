@@ -20,23 +20,37 @@ const close = () => {
 const capturePageScreenshot = async (): Promise<File | null> => {
     try {
         const html2canvas = (await import('html2canvas')).default;
+
+        // Capture only the visible viewport (not the full scrollable page).
+        // This keeps the file small (~100-300 KB as JPEG) and avoids PHP's
+        // upload_max_filesize limit, which silently drops large uploads.
+        // useCORS:true + allowTaint:false skips cross-origin images rather
+        // than tainting the canvas (which would cause toBlob to throw).
         const canvas = await html2canvas(document.documentElement, {
             useCORS: true,
+            allowTaint: false,
             logging: false,
-            scale: Math.min(window.devicePixelRatio || 1, 2),
+            scale: 1,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            windowWidth: window.innerWidth,
+            windowHeight: window.innerHeight,
+            x: window.scrollX,
+            y: window.scrollY,
             ignoreElements: (element: Element) => Boolean(element.closest('.feedback-widget-root')),
         });
 
         const blob = await new Promise<Blob | null>((resolve) =>
-            canvas.toBlob((b) => resolve(b), 'image/png', 0.92),
+            canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.75),
         );
 
         if (!blob) {
             return null;
         }
 
-        return new File([blob], 'screenshot.png', { type: 'image/png' });
-    } catch {
+        return new File([blob], 'screenshot.jpg', { type: 'image/jpeg' });
+    } catch (error) {
+        console.error('[FeedbackWidget] Screenshot capture failed:', error);
         return null;
     }
 };

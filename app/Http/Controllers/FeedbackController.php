@@ -14,7 +14,7 @@ final class FeedbackController extends Controller
     {
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:5000'],
-            'screenshot' => ['nullable', 'file', 'image', 'max:8192'],
+            'screenshot' => ['nullable', 'file', 'mimetypes:image/jpeg,image/png,image/webp', 'max:4096'],
         ]);
 
         $screenshotPath = null;
