@@ -151,6 +151,24 @@ class ScriptChangeImpactAgent implements Agent, HasStructuredOutput
                 ->title('Consequence Map Note')
                 ->description('One sentence describing which consequence entries may need re-calibrating and why. Empty string if consequence_map_needs_review is false.'),
 
+            'consequence_option_a_revised' => $schema
+                ->string()
+                ->required()
+                ->title('Consequence Option A Revised')
+                ->description('Revised one-sentence consequence the world should now register if the player picks the choice_slot_affected\'s Option A, given the edited script. Empty string if consequence_map_needs_review is false OR choice_slot_affected is "none".'),
+
+            'consequence_option_b_revised' => $schema
+                ->string()
+                ->required()
+                ->title('Consequence Option B Revised')
+                ->description('Revised one-sentence consequence for Option B. Empty string if not applicable.'),
+
+            'consequence_option_c_revised' => $schema
+                ->string()
+                ->required()
+                ->title('Consequence Option C Revised')
+                ->description('Revised one-sentence consequence for Option C. Empty string if not applicable.'),
+
             // ── Cross-session layer ────────────────────────────────────────
             'cross_session_concern' => $schema
                 ->boolean()
@@ -163,6 +181,18 @@ class ScriptChangeImpactAgent implements Agent, HasStructuredOutput
                 ->required()
                 ->title('Cross Session Note')
                 ->description('Description of which downstream session is at risk and what specifically was planted that may now be disconnected. Empty string if cross_session_concern is false.'),
+
+            'cross_session_seed_revised' => $schema
+                ->string()
+                ->required()
+                ->title('Cross Session Seed Revised')
+                ->description('Revised wording of the specific planted seed / anchor that downstream sessions reference, so that downstream awareness stays aligned with the edit. One short paragraph. Empty string if cross_session_concern is false.'),
+
+            'cross_session_target_session' => $schema
+                ->integer()
+                ->required()
+                ->title('Cross Session Target Session')
+                ->description('The session_number of the downstream session that is affected. 0 if cross_session_concern is false or no specific downstream session is at risk.'),
 
         ];
     }

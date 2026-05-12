@@ -33,10 +33,20 @@ SLOT MATCHING: Identify the ONE slot whose `source_moment` text most closely mat
 **ONLY update that one identified slot.** Return the slot name in `choice_slot_affected`. The other slots are untouched — the writer handles them directly. Preserve `what_this_choice_tracks` unless the edit fundamentally changes the emotional axis of the choice (this is rare — only do it if the dimension becomes genuinely wrong).
 
 **4. Choice Consequence Map**
-Each choice's A/B/C paths carry world-state effects (tracked dimensions, emotional calibrations). These are structural and rarely need rewriting — but if the edit shifts the emotional valence of a path significantly, flag it for human review.
+Each choice's A/B/C paths carry world-state effects (tracked dimensions, emotional calibrations). These are structural and rarely need rewriting — but if the edit shifts the emotional valence of a path significantly:
+- flag with `consequence_map_needs_review: true`
+- write the actual revised one-sentence consequences in `consequence_option_a_revised`, `consequence_option_b_revised`, `consequence_option_c_revised`.
+- Each revised consequence is ONE sentence describing the world-state shift that path triggers (e.g. "Alice's curiosity outweighs her caution and the rabbit-hole admits her unhindered.").
+- Only fill these for the SAME slot identified in `choice_slot_affected`. If `choice_slot_affected == "none"`, the three consequence_option_*_revised fields must be empty strings.
 
 **5. Cross-Session Seeds**
-Every session has `next_session_awareness.seed_for_next_session` — planted canonical anchors and emotional residue that carry into the next session's cold open and dramatic question. If the edited event removes or changes one of those planted seeds (a character beat, an object, a state of mind), the downstream session's cold open may reference something that no longer exists or doesn't feel earned.
+Every session has `next_session_awareness.seed_for_next_session` — planted canonical anchors and emotional residue that carry into the next session's cold open and dramatic question. If the edited event removes or changes one of those planted seeds (a character beat, an object, a state of mind):
+- flag with `cross_session_concern: true`
+- name the downstream session_number in `cross_session_target_session`
+- describe the risk in `cross_session_note` (one sentence — what is now disconnected)
+- rewrite the actual seed wording in `cross_session_seed_revised` so the downstream session has something concrete to align with. Short paragraph. Reuse the original seed's vocabulary so the downstream cold open still works.
+
+If cross_session_concern is false: `cross_session_target_session` = 0 and the seed/note fields are empty strings.
 
 === RULES ===
 

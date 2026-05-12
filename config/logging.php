@@ -137,6 +137,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'writer-lab' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/writer-lab.log'),
+            'level' => env('LOG_WRITER_LAB_LEVEL', 'debug'),
+            'days' => env('LOG_WRITER_LAB_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

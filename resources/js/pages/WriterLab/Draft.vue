@@ -52,8 +52,24 @@ const editForm = useForm({
     split_parts: props.draft.split_parts ?? [],
     requires_choice: props.draft.requires_choice,
     beat_type: props.draft.beat_type ?? '',
+    derived_objectives: props.draft.derived_objectives ?? '',
+    derived_attributes: (props.draft.derived_attributes ?? []) as string[],
     adaptation_patch: props.draft.adaptation_patch ?? null,
 });
+
+const attributesText = computed<string>({
+    get: () => Array.isArray(editForm.derived_attributes)
+        ? editForm.derived_attributes.join('\n')
+        : '',
+    set: (v: string) => {
+        editForm.derived_attributes = v
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
+    },
+});
+
+const BEAT_TYPES = ['setup', 'escalation', 'breath', 'twist', 'resolution'];
 
 const saveEdit = () => {
     editForm.patch(
@@ -84,6 +100,17 @@ const activate = () => {
     );
 };
 
+// ── Discard ────────────────────────────────────────────────────────────────
+const discarding = ref(false);
+const discard = () => {
+    if (!confirm('Discard this draft permanently? Activated drafts cannot be discarded — use Versions to roll back.')) return;
+    discarding.value = true;
+    router.delete(
+        `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${props.draft.id}`,
+        { onFinish: () => { discarding.value = false; } }
+    );
+};
+
 // ── Preview ────────────────────────────────────────────────────────────────
 const previewing  = ref(false);
 const previewHtml = ref<string | null>(null);
@@ -100,19 +127,32 @@ const runPreview = async () => {
             `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${props.draft.id}/preview`,
             {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '',
-                    'Accept': 'application/json',
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                 },
             }
         );
-        const data = await res.json();
+        const raw = await res.text();
+        let data: Record<string, unknown> = {};
+        try {
+            data = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+        } catch {
+            previewError.value = raw.slice(0, 200) || `HTTP ${res.status}`;
+            previewing.value = false;
+            return;
+        }
+        if (!res.ok && data.error === undefined) {
+            data.error = `Request failed (${res.status})`;
+        }
         if (data.error) {
-            previewError.value = data.error;
+            previewError.value = String(data.error);
         } else {
-            previewHtml.value    = data.response;
-            previewChoices.value = data.choices ?? [];
+            previewHtml.value    = String(data.response ?? '');
+            previewChoices.value = (data.choices as string[]) ?? [];
         }
     } catch {
         previewError.value = 'Request failed.';
@@ -205,6 +245,16 @@ const updateSplitPart = (index: number, field: keyof SplitPart, value: string | 
                         <span v-if="activating">Activating…</span>
                         <span v-else>Activate</span>
                     </button>
+                    <button
+                        v-if="!isActivated"
+                        class="rounded-lg bg-gray-900 border border-gray-700 px-3 py-1.5 text-sm text-gray-400 hover:text-red-400 hover:border-red-700 transition-all disabled:opacity-40"
+                        :disabled="discarding"
+                        title="Permanently delete this draft"
+                        @click="discard"
+                    >
+                        <span v-if="discarding">Discarding…</span>
+                        <span v-else>Discard</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -264,16 +314,47 @@ const updateSplitPart = (index: number, field: keyof SplitPart, value: string | 
                             ></textarea>
                         </div>
 
+                        <!-- Derived objectives (the same field the runtime narrator reads) -->
+                        <div class="mb-4">
+                            <h3 class="mb-2 text-xs uppercase tracking-widest text-gray-500">
+                                Objectives
+                                <span class="ml-1 text-gray-700 normal-case tracking-normal">— observable state change at the end of this event</span>
+                            </h3>
+                            <textarea
+                                v-model="editForm.derived_objectives"
+                                :disabled="isActivated"
+                                rows="3"
+                                placeholder="Subject + observable state change. E.g. &quot;Alice followed the White Rabbit through the hall and discovered a small door hidden behind a curtain.&quot;"
+                                class="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-sm text-gray-200 leading-relaxed focus:border-primary-500 focus:outline-none resize-none disabled:opacity-60"
+                            ></textarea>
+                        </div>
+
+                        <!-- Derived attributes (6-category facts, one line per category) -->
+                        <div class="mb-4">
+                            <h3 class="mb-2 text-xs uppercase tracking-widest text-gray-500">
+                                Attributes
+                                <span class="ml-1 text-gray-700 normal-case tracking-normal">— one category per line, pipe-separate facts within a category</span>
+                            </h3>
+                            <textarea
+                                v-model="attributesText"
+                                :disabled="isActivated"
+                                rows="6"
+                                placeholder="Location: hall of doors&#10;Characters physically present: Alice | White Rabbit&#10;Objects: small door hidden behind curtain | golden key on glass table"
+                                class="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-sm text-gray-200 leading-relaxed font-mono focus:border-primary-500 focus:outline-none resize-none disabled:opacity-60"
+                            ></textarea>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label class="mb-1 block text-xs text-gray-500">Beat Type</label>
-                                <input
+                                <select
                                     v-model="editForm.beat_type"
                                     :disabled="isActivated"
-                                    type="text"
-                                    placeholder="setup / escalation / breath…"
                                     class="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-300 focus:border-primary-500 focus:outline-none disabled:opacity-60"
-                                />
+                                >
+                                    <option value="">— (not classified) —</option>
+                                    <option v-for="b in BEAT_TYPES" :key="b" :value="b">{{ b }}</option>
+                                </select>
                             </div>
                             <div class="flex items-center gap-2 mt-5">
                                 <input
@@ -287,9 +368,12 @@ const updateSplitPart = (index: number, field: keyof SplitPart, value: string | 
                             </div>
                         </div>
 
-                        <!-- Canonical anchors checklist (read-only) -->
-                        <div v-if="draft.canonical_anchors && draft.canonical_anchors.length > 0" class="mb-4">
-                            <h3 class="mb-2 text-xs uppercase tracking-widest text-gray-500">Canonical Anchors</h3>
+                        <!-- Canonical anchors checklist (read-only audit list) -->
+                        <div v-if="draft.canonical_anchors && draft.canonical_anchors.length > 0" class="mb-4 rounded-xl border border-gray-800 bg-gray-900/40 p-4">
+                            <h3 class="mb-2 text-xs uppercase tracking-widest text-gray-500">
+                                Canonical Anchors
+                                <span class="ml-1 text-gray-700 normal-case tracking-normal">— must each survive in the rewrite above</span>
+                            </h3>
                             <ul class="space-y-1">
                                 <li
                                     v-for="anchor in draft.canonical_anchors"

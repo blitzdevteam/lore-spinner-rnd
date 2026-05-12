@@ -356,7 +356,7 @@ final class PromptController extends Controller
                 'attributes'      => $currentEvent->attributes,
                 'requires_choice' => $currentEvent->requires_choice ?? true,
             ],
-            'nextEvents' => $this->getNextEvents($currentEvent, 2),
+            'nextEvents' => $this->getNextEvents($currentEvent, 3),
             'turnCount' => $turnCount,
             'isFirstTurnInEvent' => $turnCount === 0,
             'sessionAdaptation' => $sessionAdaptation,
@@ -941,7 +941,7 @@ final class PromptController extends Controller
      *
      * @return array<int, array{position: int, title: string}>
      */
-    private function getNextEvents(Event $currentEvent, int $take = 2): array
+    private function getNextEvents(Event $currentEvent, int $take = 3): array
     {
         $events = Event::query()
             ->where('chapter_id', $currentEvent->chapter_id)

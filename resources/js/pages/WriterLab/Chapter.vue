@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
 import { computed, reactive, ref, watch } from 'vue';
+import PlaygroundDrawer from './components/PlaygroundDrawer.vue';
+import SuggestionPills from './components/SuggestionPills.vue';
+import HelpHint from './components/HelpHint.vue';
+import NotesPanel from './components/NotesPanel.vue';
+import { wlTrace } from '@/lib/wlTrace';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface Event {
@@ -63,7 +68,16 @@ const props = defineProps<{
     events: Event[];
     sessionAdaptations: Record<number, SessionAdaptation>;
     activeDrafts: ActiveDraft[];
+    auth?: { writer?: { name?: string } | null };
 }>();
+
+// ── Notes drawer ───────────────────────────────────────────────────────────
+const notesOpen = ref(false);
+const openNotes = () => {
+    notesOpen.value = true;
+    wlTrace('chapter.notes.open', { chapter_id: props.chapter.id });
+};
+const closeNotes = () => { notesOpen.value = false; };
 
 // ── CSRF helper ────────────────────────────────────────────────────────────
 const csrf = (): string =>
@@ -131,8 +145,58 @@ const scriptRewritten = computed(() =>
     editContent.value.trim() !== originalContent.value.trim()
 );
 
-// Track which fields were AI-filled so they render with amber highlight
-const aiFilledFields = reactive<Record<string, boolean>>({});
+// ── Per-field three-state AI suggestion tracking ──────────────────────────
+//   clean    — no AI suggestion, field is in its baseline state
+//   pending  — AI has filled this field with a new value; writer hasn't acted
+//   accepted — writer clicked Accept; suggestion is now part of the edit
+// A pending suggestion stashes the original so Undo restores it.
+type AiState = 'pending' | 'accepted';
+interface AiSuggestion { original: unknown; suggested: unknown; status: AiState }
+const aiSuggestions = reactive<Record<string, AiSuggestion>>({});
+
+const aiState = (key: string): 'clean' | AiState =>
+    aiSuggestions[key]?.status ?? 'clean';
+
+const aiBorderClass = (key: string, fallback = 'border-gray-700 focus:border-primary-500'): string => {
+    const s = aiState(key);
+    if (s === 'pending')  return 'border-sky-500/70 ring-1 ring-sky-500/30';
+    if (s === 'accepted') return 'border-emerald-500/60 ring-1 ring-emerald-500/20';
+    return fallback;
+};
+
+const acceptSuggestion = (key: string) => {
+    const s = aiSuggestions[key];
+    if (!s || s.status === 'accepted') return;
+    s.status = 'accepted';
+    editDirty.value = true;
+    wlTrace('analyse.suggestion.accept', { key });
+};
+
+const undoSuggestion = (key: string) => {
+    const s = aiSuggestions[key];
+    if (!s) return;
+    // Restore the original to whichever underlying ref this key points to
+    if (key === 'content')                  editContent.value      = s.original as string;
+    else if (key === 'objectives')          editObjectives.value   = s.original as string;
+    else if (key === 'attributes')          editAttributes.value   = [...(s.original as string[])];
+    else if (key === 'beat_type')           editBeatType.value     = s.original as string;
+    else if (key === 'beat_moment')         editBeatMoment.value   = s.original as string;
+    else if (key.startsWith('choice_'))     editChoiceSlots[key.replace('choice_', '')] = s.original as SlotEdit;
+    else if (key.startsWith('consequence_')) editConsequences[key.replace('consequence_', '')] = s.original as ConsequenceEdit;
+    else if (key === 'cross_session_seed')  editCrossSessionSeed.value = s.original as string;
+    delete aiSuggestions[key];
+    wlTrace('analyse.suggestion.undo', { key });
+};
+
+const recordSuggestion = (key: string, original: unknown, suggested: unknown) => {
+    aiSuggestions[key] = { original: clone(original), suggested: clone(suggested), status: 'pending' };
+};
+
+const clone = <T>(v: T): T => {
+    if (v === null || v === undefined) return v;
+    if (typeof v !== 'object') return v;
+    return JSON.parse(JSON.stringify(v)) as T;
+};
 
 // Inline attribute tag editing
 const attrInput = ref('');
@@ -160,6 +224,23 @@ interface SlotEdit {
 }
 const editChoiceSlots = reactive<Record<string, SlotEdit>>({});
 const choiceSlotsDirty = ref(false);
+
+// Beat-moment text (editorial description) — drawn from session_architecture.beat_map
+const editBeatMoment = ref<string>('');
+
+// Per-option consequence override for the slot AI flagged; not persisted unless edited.
+interface ConsequenceEdit {
+    option_a: string;
+    option_b: string;
+    option_c: string;
+}
+const editConsequences = reactive<Record<string, ConsequenceEdit>>({});
+const consequencesDirty = ref(false);
+
+// Optional revised "seed for next session" surfaced by analyse-impact
+const editCrossSessionSeed = ref<string>('');
+const editCrossSessionTarget = ref<number | null>(null);
+const crossSessionDirty = ref(false);
 
 const initChoiceSlots = (sessionNum: number | null) => {
     for (const slot of choiceSlots) {
@@ -190,10 +271,16 @@ const resetEditState = (event: Event) => {
     editBeatType.value       = existing?.beat_type ?? event.beat_type ?? '';
     editObjectives.value     = (existing?.derived_objectives as string | null) ?? event.objectives ?? '';
     editAttributes.value     = [...((existing?.derived_attributes as string[] | null) ?? (event.attributes as string[] | null) ?? [])];
+    editBeatMoment.value     = event.beat_moment ?? '';
     editDirty.value          = false;
     saveDraftId.value        = existing?.id ?? null;
     saveError.value          = null;
-    Object.keys(aiFilledFields).forEach(k => { aiFilledFields[k] = false; });
+    Object.keys(aiSuggestions).forEach(k => { delete aiSuggestions[k]; });
+    Object.keys(editConsequences).forEach(k => { delete editConsequences[k]; });
+    consequencesDirty.value  = false;
+    editCrossSessionSeed.value = '';
+    editCrossSessionTarget.value = null;
+    crossSessionDirty.value    = false;
 
     // Load choice design for this event's session
     initChoiceSlots(event.session_number);
@@ -217,33 +304,73 @@ const resetEditState = (event: Event) => {
     }
 };
 
-watch(editContent, () => { editDirty.value = true; aiFilledFields.content = false; });
+watch(editContent, () => {
+    editDirty.value = true;
+    // If writer manually edits a pending suggestion, drop the pending state
+    if (aiSuggestions.content?.status === 'pending') delete aiSuggestions.content;
+});
 watch(editRequiresChoice, () => { editDirty.value = true; });
-watch(editBeatType, () => { editDirty.value = true; aiFilledFields.beat_type = false; });
-watch(editObjectives, () => { editDirty.value = true; aiFilledFields.objectives = false; });
+watch(editBeatType, () => {
+    editDirty.value = true;
+    if (aiSuggestions.beat_type?.status === 'pending') delete aiSuggestions.beat_type;
+});
+watch(editObjectives, () => {
+    editDirty.value = true;
+    if (aiSuggestions.objectives?.status === 'pending') delete aiSuggestions.objectives;
+});
+watch(editBeatMoment, () => {
+    if (aiSuggestions.beat_moment?.status === 'pending') delete aiSuggestions.beat_moment;
+});
 
-const buildChoicePatch = () => {
-    // Build a full updated session_choice_design from editChoiceSlots
+const buildAdaptationPatch = () => {
+    // Build a full updated session_choice_design from editChoiceSlots, plus any
+    // edits to choice_consequence_map. Both columns live on session_adaptations
+    // and the back-end activate() merges them recursively when the draft fires.
     const session    = focusedEvent.value?.session_number ?? null;
     const sa         = session !== null ? props.sessionAdaptations[session] ?? null : null;
     const original   = sa?.session_choice_design ?? {};
-    const updated: Record<string, any> = {};
+    const patch: Record<string, any> = {};
 
-    for (const slot of choiceSlots) {
-        const orig = original[slot] ?? {};
-        const edit = editChoiceSlots[slot];
-        if (!edit) continue;
-        updated[slot] = {
-            ...orig,
-            what_this_choice_tracks: edit.tracked_dimension,
-            choice_question:         edit.question,
-            option_a: { ...(orig.option_a ?? {}), text: edit.option_a },
-            option_b: { ...(orig.option_b ?? {}), text: edit.option_b },
-            option_c: { ...(orig.option_c ?? {}), text: edit.option_c },
-        };
+    if (choiceSlotsDirty.value) {
+        const updated: Record<string, any> = {};
+        for (const slot of choiceSlots) {
+            const orig = original[slot] ?? {};
+            const edit = editChoiceSlots[slot];
+            if (!edit) continue;
+            updated[slot] = {
+                ...orig,
+                what_this_choice_tracks: edit.tracked_dimension,
+                choice_question:         edit.question,
+                option_a: { ...(orig.option_a ?? {}), text: edit.option_a },
+                option_b: { ...(orig.option_b ?? {}), text: edit.option_b },
+                option_c: { ...(orig.option_c ?? {}), text: edit.option_c },
+            };
+        }
+        patch.session_choice_design = updated;
     }
-    return { session_choice_design: updated };
+
+    if (consequencesDirty.value) {
+        const originalCmap = sa?.choice_consequence_map ?? {};
+        const updatedCmap: Record<string, any> = {};
+        for (const slot of choiceSlots) {
+            const edit = editConsequences[slot];
+            if (!edit) continue;
+            const orig = (originalCmap as any)[slot] ?? {};
+            updatedCmap[slot] = {
+                ...orig,
+                option_a: { ...(orig.option_a ?? {}), consequence: edit.option_a },
+                option_b: { ...(orig.option_b ?? {}), consequence: edit.option_b },
+                option_c: { ...(orig.option_c ?? {}), consequence: edit.option_c },
+            };
+        }
+        patch.choice_consequence_map = updatedCmap;
+    }
+
+    return patch;
 };
+
+// Legacy alias kept so previous callers compile
+const buildChoicePatch = buildAdaptationPatch;
 
 const saveEdit = async () => {
     if (!focusedEvent.value) return;
@@ -259,9 +386,21 @@ const saveEdit = async () => {
         attributes:      editAttributes.value,
     };
 
-    if (choiceSlotsDirty.value) {
-        payload.adaptation_patch = buildChoicePatch();
+    if (choiceSlotsDirty.value || consequencesDirty.value) {
+        const patch = buildAdaptationPatch();
+        if (Object.keys(patch).length > 0) {
+            payload.adaptation_patch = patch;
+        }
     }
+
+    wlTrace('chapter.save_edit', {
+        event_id: focusedEvent.value.id,
+        content_dirty:  editContent.value !== originalContent.value,
+        choice_dirty:   choiceSlotsDirty.value,
+        cons_dirty:     consequencesDirty.value,
+        cross_seed_dirty: crossSessionDirty.value,
+        accepted_keys: Object.keys(aiSuggestions).filter(k => aiSuggestions[k].status === 'accepted'),
+    });
 
     const url = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/edit`;
     const data = await apiPost(url, payload);
@@ -270,40 +409,48 @@ const saveEdit = async () => {
 
     if (data.error) {
         saveError.value = data.error;
-    } else {
-        saveDraftId.value = data.draft_id;
-        editDirty.value   = false;
-        // Refresh the activeDrafts list without leaving the page
-        router.reload({ only: ['activeDrafts'] });
+        return;
     }
+    saveDraftId.value = data.draft_id;
+    editDirty.value   = false;
+
+    // If a cross-session seed was accepted, persist it onto the target session
+    // as a separate adaptation-only draft so it joins the activate cycle there.
+    if (crossSessionDirty.value
+        && editCrossSessionSeed.value
+        && editCrossSessionTarget.value !== null
+        && aiSuggestions.cross_session_seed?.status !== 'pending') {
+        await apiPost(`/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/adaptation`, {
+            session_number:   editCrossSessionTarget.value,
+            adaptation_patch: {
+                session_architecture: {
+                    next_session_awareness: {
+                        seed_for_next_session: editCrossSessionSeed.value,
+                    },
+                },
+            },
+        });
+        crossSessionDirty.value = false;
+        wlTrace('chapter.cross_session_seed.persisted', {
+            target_session: editCrossSessionTarget.value,
+        });
+    }
+
+    // Refresh the activeDrafts list without leaving the page
+    router.reload({ only: ['activeDrafts'] });
 };
 
-// ── Preview ────────────────────────────────────────────────────────────────
-const previewing     = ref(false);
-const previewHtml    = ref<string | null>(null);
-const previewChoices = ref<string[]>([]);
-const previewError   = ref<string | null>(null);
-
-const resetPreview = () => {
-    previewHtml.value    = null;
-    previewChoices.value = [];
-    previewError.value   = null;
-};
-
-const runPreview = async () => {
-    if (!saveDraftId.value) return;
-    previewing.value = true;
-    resetPreview();
-
-    const url = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${saveDraftId.value}/preview`;
-    const data = await apiPost(url);
-
-    previewing.value = false;
-    if (data.error) previewError.value = data.error;
-    else {
-        previewHtml.value    = data.response;
-        previewChoices.value = data.choices ?? [];
-    }
+// ── Preview (now routes into the Playground drawer for the focused event) ──
+// The old standalone preview panel below the editor is gone — Playground IS
+// the preview experience because it uses the exact runtime narrator and
+// supports multi-turn interaction.
+const previewing = ref(false);
+const resetPreview = () => { /* no-op kept so callers don't have to change */ };
+const runPreview = () => {
+    if (!focusedEvent.value) return;
+    playgroundEventIds.value = [focusedEvent.value.id];
+    playgroundOpen.value     = true;
+    wlTrace('chapter.preview.open_via_playground', { event_id: focusedEvent.value.id });
 };
 
 // ── Script change impact analysis → fills form fields in place ─────────────
@@ -326,8 +473,13 @@ interface ImpactAnalysis {
     choice_tracked_dimension: string;
     consequence_map_needs_review: boolean;
     consequence_map_note: string;
+    consequence_option_a_revised: string;
+    consequence_option_b_revised: string;
+    consequence_option_c_revised: string;
     cross_session_concern: boolean;
     cross_session_note: string;
+    cross_session_seed_revised: string;
+    cross_session_target_session: number;
 }
 
 const analysing          = ref(false);
@@ -369,47 +521,83 @@ const analyseImpact = async () => {
     impactSeverity.value = r.severity;
 
     // ── Fill only the fields the AI flagged as stale ───────────────────────
-    // Objectives and attributes: the extracted metadata about WHAT happened
+    // Each fill stores the writer's existing value as `original` so Undo works.
+    // Status starts as 'pending' — writer must Accept or Undo each field.
+
     if (r.objectives_needs_update && r.objectives_revised) {
-        editObjectives.value      = r.objectives_revised;
-        aiFilledFields.objectives = true;
-        editDirty.value           = true;
+        recordSuggestion('objectives', editObjectives.value, r.objectives_revised);
+        editObjectives.value = r.objectives_revised;
+        editDirty.value      = true;
     }
     if (r.attributes_needs_update && r.attributes_revised?.length) {
-        editAttributes.value       = [...r.attributes_revised];
-        aiFilledFields.attributes  = true;
-        editDirty.value            = true;
+        recordSuggestion('attributes', [...editAttributes.value], [...r.attributes_revised]);
+        editAttributes.value = [...r.attributes_revised];
+        editDirty.value      = true;
     }
-    // Beat type: only if the dramatic register shifted
     if (r.beat_map_needs_update && r.beat_type_revised) {
-        editBeatType.value         = r.beat_type_revised.toLowerCase();
-        aiFilledFields.beat_type   = true;
-        editDirty.value            = true;
+        recordSuggestion('beat_type', editBeatType.value, r.beat_type_revised.toLowerCase());
+        editBeatType.value = r.beat_type_revised.toLowerCase();
+        editDirty.value    = true;
     }
+    if (r.beat_map_needs_update && r.beat_moment_revised) {
+        recordSuggestion('beat_moment', editBeatMoment.value, r.beat_moment_revised);
+        editBeatMoment.value = r.beat_moment_revised;
+    }
+
     // Choice design: ONLY the single slot whose source_moment ties to this event.
-    // The other two slots are NOT touched — writer handles those directly.
     if (r.choice_design_needs_update && r.choice_slot_affected && r.choice_slot_affected !== 'none') {
         const slot = r.choice_slot_affected;
-        // Preserve tracked_dimension unless AI explicitly changed it
-        editChoiceSlots[slot] = {
+        const before = clone(editChoiceSlots[slot]) ?? {
+            question: '', option_a: '', option_b: '', option_c: '', tracked_dimension: '',
+        };
+        const after: SlotEdit = {
             question:          r.choice_question_revised,
             option_a:          r.choice_option_a_revised,
             option_b:          r.choice_option_b_revised,
             option_c:          r.choice_option_c_revised,
-            tracked_dimension: r.choice_tracked_dimension || editChoiceSlots[slot]?.tracked_dimension || '',
+            tracked_dimension: r.choice_tracked_dimension || before.tracked_dimension || '',
         };
-        aiFilledFields[`choice_${slot}`] = true;
+        recordSuggestion(`choice_${slot}`, before, after);
+        editChoiceSlots[slot]  = after;
         choiceSlotsDirty.value = true;
         editDirty.value        = true;
+
+        // Consequence per option — only for the same slot, only if review needed
+        if (r.consequence_map_needs_review && (
+            r.consequence_option_a_revised || r.consequence_option_b_revised || r.consequence_option_c_revised
+        )) {
+            const consBefore: ConsequenceEdit = clone(editConsequences[slot]) ?? { option_a: '', option_b: '', option_c: '' };
+            const consAfter:  ConsequenceEdit = {
+                option_a: r.consequence_option_a_revised || consBefore.option_a,
+                option_b: r.consequence_option_b_revised || consBefore.option_b,
+                option_c: r.consequence_option_c_revised || consBefore.option_c,
+            };
+            recordSuggestion(`consequence_${slot}`, consBefore, consAfter);
+            editConsequences[slot]  = consAfter;
+            consequencesDirty.value = true;
+        }
     }
 
-    // ── Warnings that require manual action (no auto-fill) ─────────────────
-    if (r.consequence_map_needs_review) {
+    // Cross-session seed: AI proposes the actual revised seed wording
+    if (r.cross_session_concern && r.cross_session_seed_revised) {
+        recordSuggestion('cross_session_seed', editCrossSessionSeed.value, r.cross_session_seed_revised);
+        editCrossSessionSeed.value   = r.cross_session_seed_revised;
+        editCrossSessionTarget.value = r.cross_session_target_session || null;
+        crossSessionDirty.value      = true;
+    }
+
+    // ── Non-actionable warnings (kept as informational) ───────────────────
+    if (r.consequence_map_needs_review && r.consequence_map_note) {
         impactWarnings.value.push({ type: 'consequence', note: r.consequence_map_note });
     }
-    if (r.cross_session_concern) {
+    if (r.cross_session_concern && r.cross_session_note) {
         impactWarnings.value.push({ type: 'cross_session', note: r.cross_session_note });
     }
+
+    wlTrace('analyse.suggestions.applied', {
+        severity:        r.severity,
+        suggested_keys:  Object.keys(aiSuggestions),
+    });
 };
 
 const severityColor = (s: string) => ({
@@ -633,6 +821,63 @@ const canSplit   = computed(() => selectedIds.value.length === 1);
 const combining  = ref(false);
 const splitting  = ref(false);
 
+// ── Multi-event Playground ─────────────────────────────────────────────────
+// Opens a drawer that mirrors the runtime narrator, sequencing through the
+// selected events (or the focused event if no selection). Auto-advances on
+// AI advance_event=true. Stays open until the writer quits.
+const playgroundOpen = ref(false);
+const playgroundEventIds = ref<number[]>([]);
+
+const canPlayground = computed(() =>
+    selectedIds.value.length >= 1 || focusedEvent.value !== null
+);
+
+// ── Discard draft ──────────────────────────────────────────────────────────
+const discardDraft = async (draftId: number) => {
+    if (!confirm('Discard this draft? Any unsaved work in it will be lost.')) return;
+    const csrf = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
+    const res = await fetch(
+        `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${draftId}`,
+        {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+        }
+    );
+    const data = await res.json().catch(() => ({}));
+    if (data?.error) {
+        alert(data.error);
+        return;
+    }
+    wlTrace('chapter.discard_draft', { draft_id: draftId });
+
+    // If this was the open save-draft, clear local refs too
+    if (saveDraftId.value === draftId) {
+        saveDraftId.value = null;
+    }
+    router.reload({ only: ['activeDrafts'] });
+};
+
+const openPlayground = () => {
+    let ids: number[];
+    if (selectedIds.value.length > 0) {
+        // Use selection in chapter order
+        const sel = new Set(selectedIds.value);
+        ids = props.events.filter(e => sel.has(e.id)).map(e => e.id);
+    } else if (focusedEvent.value) {
+        ids = [focusedEvent.value.id];
+    } else {
+        return;
+    }
+    playgroundEventIds.value = ids;
+    playgroundOpen.value = true;
+    wlTrace('chapter.playground.open', { event_ids: ids });
+};
+
+const closePlayground = () => {
+    playgroundOpen.value = false;
+    playgroundEventIds.value = [];
+};
+
 const submitCombine = () => {
     combining.value = true;
     router.post(`/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/combine`,
@@ -713,7 +958,22 @@ const eventDraftLink = (eventId: number) => {
                     <button v-if="selectedIds.length > 0"
                         class="text-xs text-gray-600 hover:text-gray-400 transition-colors ml-1"
                         @click="selectedIds = []">clear</button>
+
+                    <!-- Playground: runs the runtime narrator on the selected events (or focused) -->
+                    <button :disabled="!canPlayground"
+                        class="rounded-lg px-3 py-1.5 font-medium transition-all disabled:opacity-30"
+                        :class="canPlayground ? 'bg-primary-700 hover:bg-primary-600 text-white' : 'bg-gray-800 text-gray-500'"
+                        :title="canPlayground ? 'Open multi-event playground for the selected or focused event(s)' : 'Select or focus an event to play'"
+                        @click="openPlayground">
+                        ▶ Playground
+                        <span v-if="selectedIds.length > 0" class="ml-1 text-xs text-primary-100/80">({{ selectedIds.length }})</span>
+                    </button>
+
                     <div class="flex-1"></div>
+                    <button class="rounded-lg bg-gray-800 px-3 py-1.5 text-gray-400 hover:bg-gray-700 hover:text-white transition-all"
+                        @click="openNotes" title="Open collaboration notes for this chapter">
+                        ✎ Notes
+                    </button>
                     <button class="rounded-lg bg-gray-800 px-3 py-1.5 text-gray-400 hover:bg-gray-700 hover:text-white transition-all"
                         @click="enableReorder">⇅ Reorder</button>
                 </template>
@@ -810,10 +1070,12 @@ const eventDraftLink = (eventId: number) => {
                                     <span v-else-if="saveDraftId && !editDirty">✓ Saved</span>
                                     <span v-else>Save Draft</span>
                                 </button>
-                                <button v-if="saveDraftId"
-                                    class="rounded-lg bg-gray-800 px-3 py-1.5 text-xs text-gray-300 hover:bg-gray-700 transition-all disabled:opacity-40"
-                                    :disabled="previewing" @click="runPreview">
-                                    <span v-if="previewing">…</span><span v-else>▶ Preview</span>
+                                <!-- Preview = launch the Playground drawer with just this focused event -->
+                                <button
+                                    class="rounded-lg bg-gray-800 px-3 py-1.5 text-xs text-gray-300 hover:bg-gray-700 transition-all"
+                                    title="Open the playground for this event (uses the live runtime narrator)"
+                                    @click="runPreview">
+                                    ▶ Preview
                                 </button>
                                 <!-- Only available after the script content itself was changed.
                                      Editing objectives/attributes/choices directly costs nothing — no AI needed. -->
@@ -862,10 +1124,12 @@ const eventDraftLink = (eventId: number) => {
 
                         <!-- ── SECTION 1: Event Script ── -->
                         <div class="rounded-xl border border-gray-800 bg-gray-900/30 p-4 space-y-3">
-                            <h3 class="text-xs uppercase tracking-widest text-gray-500">Event Script</h3>
+                            <h3 class="text-xs uppercase tracking-widest text-gray-500 flex items-center gap-1.5">
+                                Event Script <HelpHint term="event_content" />
+                            </h3>
                             <textarea v-model="editContent" rows="9"
                                 class="w-full rounded-xl border bg-gray-950 px-4 py-3 text-sm text-gray-200 leading-relaxed focus:outline-none resize-none transition-colors"
-                                :class="aiFilledFields.content ? 'border-amber-600/60' : 'border-gray-700 focus:border-primary-500'"
+                                :class="aiBorderClass('content')"
                                 placeholder="Edit the event's screenplay content…"></textarea>
 
                             <div class="flex items-center gap-5 flex-wrap">
@@ -877,21 +1141,38 @@ const eventDraftLink = (eventId: number) => {
                                             :class="editRequiresChoice ? 'translate-x-4' : 'translate-x-0.5'"></div>
                                     </div>
                                     <span class="text-sm text-gray-300">Requires player choice</span>
+                                    <HelpHint term="event_requires_choice" />
                                 </label>
-                                <div class="flex items-center gap-2">
-                                    <label class="text-xs text-gray-500">Beat type</label>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <label class="text-xs text-gray-500 inline-flex items-center gap-1">Beat type <HelpHint term="event_beat_type" /></label>
                                     <select v-model="editBeatType"
                                         class="rounded-lg border bg-gray-950 px-2 py-1 text-sm text-gray-300 focus:outline-none transition-colors"
-                                        :class="aiFilledFields.beat_type ? 'border-amber-600/60' : 'border-gray-700 focus:border-primary-500'"
+                                        :class="aiBorderClass('beat_type')"
                                         @change="editDirty = true">
                                         <option value="">—</option>
                                         <option v-for="bt in BEAT_TYPES" :key="bt" :value="bt">{{ bt }}</option>
                                     </select>
-                                    <span v-if="aiFilledFields.beat_type" class="text-xs text-amber-400">AI</span>
-                                    <span v-else-if="focusedEvent.beat_type"
+                                    <SuggestionPills :state="aiState('beat_type')"
+                                        @accept="acceptSuggestion('beat_type')"
+                                        @undo="undoSuggestion('beat_type')" />
+                                    <span v-if="aiState('beat_type') === 'clean' && focusedEvent.beat_type"
                                         class="text-xs text-gray-600"
                                         :title="focusedEvent.beat_moment ?? ''">from beat map</span>
                                 </div>
+                            </div>
+
+                            <!-- Beat moment (editorial one-liner from session_architecture.beat_map) -->
+                            <div v-if="editBeatMoment || aiState('beat_moment') !== 'clean'">
+                                <label class="mb-1 block text-xs text-gray-500 flex items-center gap-2">
+                                    Beat moment <HelpHint term="event_beat_moment" />
+                                    <span class="text-gray-600">(editorial one-line description)</span>
+                                    <SuggestionPills :state="aiState('beat_moment')"
+                                        @accept="acceptSuggestion('beat_moment')"
+                                        @undo="undoSuggestion('beat_moment')" />
+                                </label>
+                                <input v-model="editBeatMoment" type="text"
+                                    class="w-full rounded-lg border bg-gray-950 px-3 py-1.5 text-sm text-gray-300 focus:outline-none transition-colors"
+                                    :class="aiBorderClass('beat_moment')" />
                             </div>
                         </div>
 
@@ -899,31 +1180,38 @@ const eventDraftLink = (eventId: number) => {
                         <div class="rounded-xl border border-gray-800 bg-gray-900/30 p-4 space-y-3">
                             <h3 class="text-xs uppercase tracking-widest text-gray-500 flex items-center gap-2">
                                 Event Metadata
-                                <span v-if="aiFilledFields.objectives || aiFilledFields.attributes"
-                                    class="rounded-full bg-amber-900/40 border border-amber-700/30 px-2 py-0.5 text-xs text-amber-300">AI updated</span>
                             </h3>
 
                             <div>
-                                <label class="mb-1 block text-xs text-gray-500">Objectives <span class="text-gray-600">(past-tense factual summary)</span></label>
+                                <label class="mb-1 block text-xs text-gray-500 flex items-center gap-2">
+                                    <span>Objectives <span class="text-gray-600">(past-tense factual summary)</span></span>
+                                    <HelpHint term="event_objectives" />
+                                    <SuggestionPills :state="aiState('objectives')"
+                                        @accept="acceptSuggestion('objectives')"
+                                        @undo="undoSuggestion('objectives')" />
+                                </label>
                                 <textarea v-model="editObjectives" rows="2"
                                     class="w-full rounded-lg border px-3 py-2 text-sm text-gray-200 bg-gray-950 focus:outline-none resize-none transition-colors"
-                                    :class="aiFilledFields.objectives ? 'border-amber-600/60' : 'border-gray-700 focus:border-primary-500'"
+                                    :class="aiBorderClass('objectives')"
                                     placeholder="e.g. Alice committed to following the White Rabbit into the hole despite uncertainty."></textarea>
                             </div>
 
                             <div>
-                                <label class="mb-1.5 block text-xs text-gray-500">
-                                    Attributes <span class="text-gray-600">(canonical objects, characters, locations)</span>
-                                    <span v-if="aiFilledFields.attributes" class="ml-1 text-amber-400">AI</span>
+                                <label class="mb-1.5 block text-xs text-gray-500 flex items-center gap-2">
+                                    <span>Attributes <span class="text-gray-600">(canonical objects, characters, locations)</span></span>
+                                    <HelpHint term="event_attributes" />
+                                    <SuggestionPills :state="aiState('attributes')"
+                                        @accept="acceptSuggestion('attributes')"
+                                        @undo="undoSuggestion('attributes')" />
                                 </label>
-                                <div class="flex flex-wrap gap-1.5 mb-2 min-h-[1.5rem]">
+                                <div class="flex flex-wrap gap-1.5 mb-2 min-h-[1.5rem] p-1 rounded-lg border transition-colors"
+                                     :class="aiBorderClass('attributes', 'border-transparent')">
                                     <span v-for="(attr, i) in editAttributes" :key="attr"
-                                        class="flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs transition-colors"
-                                        :class="aiFilledFields.attributes ? 'bg-amber-950/30 border-amber-700/30 text-amber-200' : 'bg-gray-800 border-gray-700 text-gray-300'">
+                                        class="flex items-center gap-1 rounded-full border bg-gray-800 border-gray-700 px-2.5 py-0.5 text-xs text-gray-300">
                                         {{ attr }}
                                         <button class="text-gray-500 hover:text-red-400 transition-colors" @click="removeAttribute(i)">✕</button>
                                     </span>
-                                    <span v-if="editAttributes.length === 0" class="text-xs text-gray-700">no attributes yet</span>
+                                    <span v-if="editAttributes.length === 0" class="text-xs text-gray-700 px-2">no attributes yet</span>
                                 </div>
                                 <div class="flex gap-2">
                                     <input v-model="attrInput" type="text"
@@ -944,57 +1232,90 @@ const eventDraftLink = (eventId: number) => {
                             </h3>
 
                             <div v-for="slot in choiceSlots" :key="slot"
-                                class="rounded-lg border p-3.5 space-y-2.5 transition-colors"
-                                :class="aiFilledFields[`choice_${slot}`] ? 'border-amber-700/40 bg-amber-950/10' : 'border-gray-800 bg-gray-950/50'">
+                                class="rounded-lg border p-3.5 space-y-2.5 transition-colors bg-gray-950/50"
+                                :class="aiBorderClass(`choice_${slot}`, 'border-gray-800')">
 
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-2 flex-wrap">
                                     <span class="text-xs font-medium text-gray-400">{{ choiceLabel(slot) }}</span>
-                                    <span v-if="aiFilledFields[`choice_${slot}`]"
-                                        class="rounded-full bg-amber-900/40 border border-amber-700/30 px-1.5 py-0.5 text-xs text-amber-300">AI</span>
+                                    <SuggestionPills :state="aiState(`choice_${slot}`)"
+                                        @accept="acceptSuggestion(`choice_${slot}`)"
+                                        @undo="undoSuggestion(`choice_${slot}`)" />
                                     <span v-if="editChoiceSlots[slot]?.tracked_dimension" class="text-xs text-gray-600">· {{ editChoiceSlots[slot].tracked_dimension }}</span>
                                 </div>
 
                                 <div>
-                                    <label class="mb-1 block text-xs text-gray-600">Tracked Dimension</label>
+                                    <label class="mb-1 block text-xs text-gray-600 inline-flex items-center gap-1">Tracked Dimension <HelpHint term="choice_tracked_dimension" /></label>
                                     <input v-model="editChoiceSlots[slot].tracked_dimension" type="text"
                                         class="w-full rounded-lg border border-gray-700 bg-gray-900 px-2.5 py-1.5 text-xs text-gray-400 focus:border-primary-500 focus:outline-none"
-                                        @input="choiceSlotsDirty = true; editDirty = true; aiFilledFields[`choice_${slot}`] = false" />
+                                        @input="choiceSlotsDirty = true; editDirty = true" />
                                 </div>
                                 <div>
-                                    <label class="mb-1 block text-xs text-gray-600">Choice Question</label>
+                                    <label class="mb-1 block text-xs text-gray-600 inline-flex items-center gap-1">Choice Question <HelpHint term="choice_question" /></label>
                                     <input v-model="editChoiceSlots[slot].question" type="text"
                                         class="w-full rounded-lg border bg-gray-900 px-2.5 py-1.5 text-sm text-gray-200 focus:outline-none transition-colors"
-                                        :class="aiFilledFields[`choice_${slot}`] ? 'border-amber-600/50' : 'border-gray-700 focus:border-primary-500'"
-                                        @input="choiceSlotsDirty = true; editDirty = true; aiFilledFields[`choice_${slot}`] = false" />
+                                        :class="aiBorderClass(`choice_${slot}`)"
+                                        @input="choiceSlotsDirty = true; editDirty = true" />
                                 </div>
                                 <div class="grid grid-cols-3 gap-2">
                                     <div v-for="opt in ['option_a', 'option_b', 'option_c'] as const" :key="opt">
                                         <label class="mb-1 block text-xs text-gray-600">{{ opt.replace('_', ' ').toUpperCase() }}</label>
                                         <textarea v-model="editChoiceSlots[slot][opt]" rows="3"
                                             class="w-full rounded-lg border bg-gray-900 px-2 py-1.5 text-xs text-gray-300 focus:outline-none resize-none transition-colors"
-                                            :class="aiFilledFields[`choice_${slot}`] ? 'border-amber-600/50' : 'border-gray-700 focus:border-primary-500'"
-                                            @input="choiceSlotsDirty = true; editDirty = true; aiFilledFields[`choice_${slot}`] = false">
+                                            :class="aiBorderClass(`choice_${slot}`)"
+                                            @input="choiceSlotsDirty = true; editDirty = true">
                                         </textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Consequence per-option (AI-fillable, optional) -->
+                                <div v-if="editConsequences[slot] || aiState(`consequence_${slot}`) !== 'clean'"
+                                     class="rounded-md border bg-gray-900/30 p-2.5 space-y-1.5 transition-colors"
+                                     :class="aiBorderClass(`consequence_${slot}`, 'border-gray-800')">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] uppercase tracking-wider text-gray-500">World-state consequence per option</span>
+                                        <HelpHint term="consequence_per_option" size="xs" />
+                                        <SuggestionPills :state="aiState(`consequence_${slot}`)"
+                                            @accept="acceptSuggestion(`consequence_${slot}`)"
+                                            @undo="undoSuggestion(`consequence_${slot}`)" />
+                                    </div>
+                                    <div v-for="opt in ['option_a', 'option_b', 'option_c'] as const" :key="opt"
+                                         class="flex items-start gap-2">
+                                        <span class="mt-1.5 text-[10px] font-mono text-gray-700 w-3">{{ opt.slice(-1).toUpperCase() }}</span>
+                                        <textarea v-model="editConsequences[slot][opt]" rows="2"
+                                                  class="w-full rounded-md border border-gray-800 bg-gray-950 px-2 py-1 text-xs text-gray-400 focus:border-primary-500 focus:outline-none resize-none"
+                                                  placeholder="World-state shift this option triggers…"
+                                                  @input="consequencesDirty = true; editDirty = true"></textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- ── Preview result ── -->
-                        <div v-if="previewHtml || previewError" class="rounded-xl border border-gray-700 bg-gray-900 p-5">
-                            <h3 class="mb-3 text-xs uppercase tracking-widest text-gray-500">Narrator Preview</h3>
-                            <div v-if="previewError" class="text-sm text-red-400">{{ previewError }}</div>
-                            <template v-else>
-                                <div class="prose prose-invert prose-sm max-w-none" v-html="previewHtml"></div>
-                                <div v-if="previewChoices.length" class="mt-4 grid grid-cols-3 gap-2">
-                                    <div v-for="(c, i) in previewChoices" :key="i"
-                                        class="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-xs text-gray-300">
-                                        {{ i + 1 }}. {{ c }}
-                                    </div>
-                                </div>
-                            </template>
+                        <!-- ── SECTION 4: Cross-session seed (AI-fillable) ── -->
+                        <div v-if="editCrossSessionSeed || aiState('cross_session_seed') !== 'clean'"
+                             class="rounded-xl border bg-gray-900/30 p-4 space-y-2 transition-colors"
+                             :class="aiBorderClass('cross_session_seed', 'border-gray-800')">
+                            <h3 class="text-xs uppercase tracking-widest text-gray-500 flex items-center gap-2">
+                                Cross-session seed
+                                <HelpHint term="cross_session_seed" />
+                                <span v-if="editCrossSessionTarget" class="text-gray-600 normal-case tracking-normal">
+                                    → Session {{ editCrossSessionTarget }}
+                                </span>
+                                <SuggestionPills :state="aiState('cross_session_seed')"
+                                    @accept="acceptSuggestion('cross_session_seed')"
+                                    @undo="undoSuggestion('cross_session_seed')" />
+                            </h3>
+                            <textarea v-model="editCrossSessionSeed" rows="3"
+                                      class="w-full rounded-lg border bg-gray-950 px-3 py-2 text-sm text-gray-300 focus:outline-none resize-none transition-colors"
+                                      :class="aiBorderClass('cross_session_seed')"
+                                      placeholder="Planted anchor / emotional residue the next session references…"
+                                      @input="crossSessionDirty = true"></textarea>
+                            <p class="text-[11px] text-gray-600 leading-relaxed">
+                                A short paragraph the next session's cold open will pick up. Keep the original
+                                seed's vocabulary so downstream awareness stays aligned.
+                            </p>
                         </div>
 
+                        <!-- Preview / Playground is now a dedicated drawer (mounted at root); no inline panel here. -->
                     </div>
                 </template>
 
@@ -1215,19 +1536,39 @@ const eventDraftLink = (eventId: number) => {
                 <div v-if="activeDrafts.length > 0" class="flex-none border-t border-gray-800 bg-gray-900/30 px-5 py-3">
                     <div class="flex items-center gap-2 overflow-x-auto">
                         <span class="flex-none text-xs text-gray-600">Drafts:</span>
-                        <Link v-for="draft in activeDrafts" :key="draft.id"
-                            :href="`/writer/writer-lab/${story.id}/chapters/${chapter.id}/drafts/${draft.id}`"
-                            class="flex flex-none items-center gap-1.5 rounded-lg bg-gray-900 border border-gray-800 px-3 py-1 text-xs hover:border-gray-600 transition-all">
-                            <span class="text-gray-400">{{ draft.type }}</span>
-                            <span :class="['rounded px-1.5 py-0.5 text-xs', draftStatusColor(draft.status)]">
-                                {{ draft.status.replace('_', ' ') }}
-                            </span>
-                        </Link>
+                        <div v-for="draft in activeDrafts" :key="draft.id"
+                             class="flex flex-none items-center gap-1.5 rounded-lg bg-gray-900 border border-gray-800 px-2 py-1 text-xs hover:border-gray-600 transition-all">
+                            <Link :href="`/writer/writer-lab/${story.id}/chapters/${chapter.id}/drafts/${draft.id}`"
+                                class="flex items-center gap-1.5">
+                                <span class="text-gray-400">{{ draft.type }}</span>
+                                <span :class="['rounded px-1.5 py-0.5 text-xs', draftStatusColor(draft.status)]">
+                                    {{ draft.status.replace('_', ' ') }}
+                                </span>
+                            </Link>
+                            <button class="ml-1 rounded px-1 text-gray-700 hover:text-red-400 transition-colors"
+                                    title="Discard this draft"
+                                    @click.stop="discardDraft(draft.id)">✕</button>
+                        </div>
                     </div>
                 </div>
 
             </div>
         </div>
+
+        <!-- Multi-event Playground drawer -->
+        <PlaygroundDrawer v-if="playgroundOpen"
+            :story-id="story.id"
+            :chapter-id="chapter.id"
+            :event-ids="playgroundEventIds"
+            @close="closePlayground" />
+
+        <!-- Collaboration notes drawer -->
+        <NotesPanel v-if="notesOpen"
+            :story-id="story.id"
+            :chapter-id="chapter.id"
+            :default-author="auth?.writer?.name ?? ''"
+            :context-event-id="focusedEvent?.id ?? null"
+            @close="closeNotes" />
     </div>
 </template>
 

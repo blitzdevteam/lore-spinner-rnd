@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Writer\WriterLab;
 
+use App\Ai\Agents\EventObjectiveAndAttributesExtractor;
 use App\Ai\Agents\WriterLab\ChoiceAlignmentAgent;
 use App\Ai\Agents\WriterLab\EventCombinerAgent;
+use App\Ai\Agents\WriterLab\ScriptChangeImpactAgent;
 use App\Ai\Agents\NarrationAgent;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Http\Controllers\Controller;
@@ -15,6 +17,8 @@ use App\Models\SessionAdaptation;
 use App\Models\Story;
 use App\Models\WriterLabDraft;
 use App\Models\WriterLabVersion;
+use App\Support\WriterLab\WriterLabLog;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -80,7 +84,51 @@ final class DraftController extends Controller
             ])->all(),
         ])->render();
 
-        $result = EventCombinerAgent::make()->prompt($prompt)->toArray();
+        $logContext = [
+            'story_id'      => $story->id,
+            'chapter_id'    => $chapter->id,
+            'session_number' => $sessionNumber,
+            'event_ids'     => $events->pluck('id')->all(),
+            'event_count'   => $events->count(),
+        ];
+
+        // 1) Run the editorial compressor — produces only rewritten_content
+        //    and canonical_anchors. Derived fields are obtained downstream.
+        $result = WriterLabLog::track('combine.compressor', $logContext, fn () =>
+            EventCombinerAgent::make()->prompt($prompt)->toArray()
+        );
+
+        $rewrittenContent = (string) ($result['rewritten_content'] ?? '');
+        $aiAnchors        = is_array($result['canonical_anchors'] ?? null)
+            ? $result['canonical_anchors']
+            : $canonicalAnchors;
+
+        // 2) Derive objectives + attributes via the SAME pipeline agent that
+        //    populated the originals — so the schema and conventions match
+        //    exactly. We feed the surrounding events as context so the
+        //    extractor knows what was already established/changed.
+        $derived = $this->extractObjectivesAndAttributes(
+            $story,
+            $chapter,
+            $events,
+            $rewrittenContent,
+            $events->first()?->title ?? 'Combined event',
+        );
+
+        // 3) Derive beat_type heuristically from the source events (the pipeline
+        //    beat assignment is session-level, not per-event — so the most
+        //    faithful per-event answer is "the dominant beat the source events
+        //    were already assigned to"). Writer can override in the editor.
+        $beatType = $this->dominantBeatType($events, $beatMap);
+        if (is_string($beatType) && $beatType !== '') {
+            $beatType = strtolower($beatType);
+        } else {
+            $beatType = null;
+        }
+
+        // 4) requires_choice: if any source event was authored as a choice
+        //    beat, the combined block inherits it. Conservative default true.
+        $requiresChoice = $events->contains(fn (Event $e): bool => (bool) ($e->requires_choice ?? true));
 
         $draft = WriterLabDraft::create([
             'story_id'           => $story->id,
@@ -88,14 +136,24 @@ final class DraftController extends Controller
             'session_number'     => $sessionNumber,
             'type'               => 'combine',
             'source_event_ids'   => $events->pluck('id')->all(),
-            'rewritten_content'  => $result['rewritten_content'] ?? '',
-            'derived_objectives' => $result['derived_objectives'] ?? null,
-            'derived_attributes' => $result['derived_attributes'] ?? null,
-            'beat_type'          => $result['beat_type'] ?? null,
-            'requires_choice'    => $result['requires_choice'] ?? true,
-            'canonical_anchors'  => $result['canonical_anchors'] ?? $canonicalAnchors,
+            'rewritten_content'  => $rewrittenContent,
+            'derived_objectives' => $derived['objectives'],
+            'derived_attributes' => $derived['attributes'],
+            'beat_type'          => $beatType,
+            'requires_choice'    => $requiresChoice,
+            'canonical_anchors'  => $aiAnchors,
             'previous_state'     => $previousState,
             'status'             => 'ai_written',
+        ]);
+
+        WriterLabLog::info('combine.draft_created', $logContext + [
+            'draft_id'         => $draft->id,
+            'rewritten_bytes'  => strlen($rewrittenContent),
+            'anchors_count'    => count($aiAnchors),
+            'derived_objectives_present' => $derived['objectives'] !== null,
+            'derived_attributes_count'   => is_array($derived['attributes']) ? count($derived['attributes']) : 0,
+            'beat_type'        => $beatType,
+            'requires_choice'  => $requiresChoice,
         ]);
 
         return to_route('writer.writer-lab.drafts.show', [
@@ -103,6 +161,178 @@ final class DraftController extends Controller
             'chapter' => $chapter->id,
             'draft'   => $draft->id,
         ]);
+    }
+
+    /**
+     * Runs the pipeline's EventObjectiveAndAttributesExtractor against a
+     * synthetic event whose content is the rewrite. Mirrors the exact
+     * surrounding-events context the original pipeline uses.
+     *
+     * @param  EloquentCollection<int, Event>  $sourceEvents
+     * @return array{objectives: ?string, attributes: ?array<int, string>}
+     */
+    private function extractObjectivesAndAttributes(
+        Story $story,
+        Chapter $chapter,
+        EloquentCollection $sourceEvents,
+        string $newContent,
+        string $newTitle,
+    ): array {
+        if (trim($newContent) === '') {
+            return ['objectives' => null, 'attributes' => null];
+        }
+
+        // Pull 5 events before the first source and 5 events after the last
+        // source, scoped to the chapter — same as the original adaptation pipeline.
+        $first = $sourceEvents->first();
+        $last  = $sourceEvents->last();
+        if (! $first || ! $last) {
+            return ['objectives' => null, 'attributes' => null];
+        }
+
+        $previousEvents = Event::query()
+            ->where('chapter_id', $chapter->id)
+            ->where('position', '<', $first->position)
+            ->orderByDesc('position')
+            ->take(5)
+            ->get()
+            ->sortBy('position')
+            ->values();
+
+        $nextEvents = Event::query()
+            ->where('chapter_id', $chapter->id)
+            ->where('position', '>', $last->position)
+            ->orderBy('position')
+            ->take(5)
+            ->get();
+
+        // Synthetic target — never persisted. Carries the rewrite as content.
+        $target = new Event([
+            'title'   => $newTitle,
+            'content' => $newContent,
+        ]);
+
+        $prompt = view('ai.agents.event-objective-and-attribute-extractor.prompt', [
+            'previousEvents' => $previousEvents,
+            'targetEvent'    => $target,
+            'nextEvents'     => $nextEvents,
+        ])->render();
+
+        try {
+            $result = WriterLabLog::track('combine.extractor', [
+                'story_id'   => $story->id,
+                'chapter_id' => $chapter->id,
+                'prev_count' => $previousEvents->count(),
+                'next_count' => $nextEvents->count(),
+                'content_bytes' => strlen($newContent),
+            ], fn () => EventObjectiveAndAttributesExtractor::make()->prompt($prompt)->toArray());
+
+            // The agent returns `objective` (singular). DB column is `objectives`.
+            $objectivesText = isset($result['objective']) && is_string($result['objective'])
+                ? trim($result['objective'])
+                : null;
+
+            $attributes = isset($result['attributes']) && is_array($result['attributes'])
+                ? array_values(array_filter(array_map(
+                    static fn ($a): string => is_string($a) ? trim($a) : '',
+                    $result['attributes'],
+                )))
+                : null;
+
+            return [
+                'objectives' => $objectivesText !== '' ? $objectivesText : null,
+                'attributes' => ($attributes && count($attributes) > 0) ? $attributes : null,
+            ];
+        } catch (Throwable $e) {
+            WriterLabLog::error('combine.extractor.failed', [
+                'story_id'   => $story->id,
+                'chapter_id' => $chapter->id,
+            ], $e);
+            return ['objectives' => null, 'attributes' => null];
+        }
+    }
+
+    /**
+     * Picks the most representative beat_type for a combined block by counting
+     * which beat_map entry each source event matches best. Tie-breaks toward
+     * the later-position beat (pacing collapses forward).
+     *
+     * @param  EloquentCollection<int, Event>  $events
+     * @param  array<int, array<string, mixed>>|null  $beatMap
+     */
+    private function dominantBeatType(EloquentCollection $events, ?array $beatMap): ?string
+    {
+        if (! is_array($beatMap) || count($beatMap) === 0) {
+            return null;
+        }
+
+        $counts = [];
+        $latest = null;
+        foreach ($events as $event) {
+            $match = $this->bestBeatMatch($event, $beatMap);
+            if ($match === null) continue;
+            $key = $match['beat_type'] ?? null;
+            if (! is_string($key) || $key === '') continue;
+            $counts[$key] = ($counts[$key] ?? 0) + 1;
+            $latest = $key;
+        }
+
+        if (empty($counts)) return null;
+
+        arsort($counts);
+        $top      = array_keys($counts);
+        $topCount = $counts[$top[0]];
+        $tied     = array_filter($top, fn (string $k): bool => $counts[$k] === $topCount);
+
+        return count($tied) > 1 && $latest !== null && in_array($latest, $tied, true)
+            ? $latest
+            : $top[0];
+    }
+
+    /**
+     * Mirrors WriterLabController::bestBeatMatch — returns the beat_map entry
+     * whose moment/type text shares the most word overlap with the event content.
+     *
+     * @param  array<int, array<string, mixed>>  $beatMap
+     * @return array<string, mixed>|null
+     */
+    private function bestBeatMatch(Event $event, array $beatMap): ?array
+    {
+        // Match WriterLabController: overlap title + content against beat_map `moment`
+        // (the pipeline schema uses `moment`, not `beat_moment`).
+        $eventTokens = $this->tokenize((string) ($event->title ?? '') . ' ' . (string) ($event->content ?? ''));
+        if (count($eventTokens) === 0) {
+            return null;
+        }
+
+        $best = null;
+        $bestScore = 0;
+        foreach ($beatMap as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+            $haystack = (string) ($entry['moment'] ?? '') . ' ' . (string) ($entry['beat_type'] ?? '');
+            $score    = count(array_intersect($eventTokens, $this->tokenize($haystack)));
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $best      = $entry;
+            }
+        }
+
+        return $best;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function tokenize(string $text): array
+    {
+        $clean = strtolower(preg_replace('/[^a-z0-9\s]/i', ' ', $text) ?? '');
+        $parts = preg_split('/\s+/', $clean) ?: [];
+        return array_values(array_unique(array_filter(
+            $parts,
+            static fn (string $w): bool => mb_strlen($w) >= 4,
+        )));
     }
 
     // ── Split ─────────────────────────────────────────────────────────────────
@@ -238,11 +468,71 @@ final class DraftController extends Controller
             'adaptation_patch'   => ['nullable', 'array'],
             'requires_choice'    => ['nullable', 'boolean'],
             'beat_type'          => ['nullable', 'string'],
+            'derived_objectives' => ['nullable', 'string'],
+            'derived_attributes' => ['nullable', 'array'],
+            'derived_attributes.*' => ['string'],
         ]);
+
+        // Normalise empties — beat_type and objectives can be cleared by the writer
+        if (isset($data['beat_type']) && trim($data['beat_type']) === '') {
+            $data['beat_type'] = null;
+        }
+        if (isset($data['derived_objectives']) && trim($data['derived_objectives']) === '') {
+            $data['derived_objectives'] = null;
+        }
+        if (isset($data['derived_attributes']) && count($data['derived_attributes']) === 0) {
+            $data['derived_attributes'] = null;
+        }
 
         $draft->update(array_merge($data, ['status' => 'draft']));
 
+        WriterLabLog::info('draft.update', [
+            'story_id'   => $story->id,
+            'chapter_id' => $chapter->id,
+            'draft_id'   => $draft->id,
+            'fields'     => array_keys($data),
+        ]);
+
         return back()->with('success', 'Draft saved.');
+    }
+
+    // ── Discard ───────────────────────────────────────────────────────────────
+
+    /**
+     * Discard a draft. Allowed for any non-activated draft — activated drafts
+     * must go through Versions to roll back. Soft-protective: requires the
+     * draft to belong to the current chapter (route-model binding already
+     * scoped) and refuses if status is 'activated'.
+     */
+    public function destroy(Request $request, Story $story, Chapter $chapter, WriterLabDraft $draft): JsonResponse|RedirectResponse
+    {
+        if ($draft->status === 'activated') {
+            $msg = 'Activated drafts cannot be discarded — use the Versions page to roll back.';
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $msg], 422);
+            }
+            return back()->withErrors(['draft' => $msg]);
+        }
+
+        $context = [
+            'story_id'   => $story->id,
+            'chapter_id' => $chapter->id,
+            'draft_id'   => $draft->id,
+            'type'       => $draft->type,
+            'status'     => $draft->status,
+        ];
+
+        $draft->delete();
+
+        WriterLabLog::info('draft.discard', $context);
+
+        if ($request->wantsJson()) {
+            return response()->json(['ok' => true]);
+        }
+        return to_route('writer.writer-lab.chapter', [
+            'story'   => $story->id,
+            'chapter' => $chapter->id,
+        ])->with('success', 'Draft discarded.');
     }
 
     // ── Approve ───────────────────────────────────────────────────────────────
@@ -282,23 +572,50 @@ final class DraftController extends Controller
         DB::transaction(function () use ($draft, $chapter, $story): void {
             $sessionAdaptation = $this->resolveSessionAdaptation($story, $draft->session_number);
 
-            // Snapshot before any write
-            $affectedEvents = $draft->source_event_ids
-                ? Event::whereIn('id', $draft->source_event_ids)->get()
-                : collect();
+            // ── Full-chapter snapshot ─────────────────────────────────────
+            // Always capture EVERY event in the chapter and EVERY session
+            // adaptation whose events touch the chapter. This lets restore
+            // recover from combine/split/reorder operations idempotently
+            // even if the draft only listed a subset of events.
+            $allEvents = Event::query()
+                ->where('chapter_id', $chapter->id)
+                ->orderBy('position')
+                ->get();
+
+            $sessionNumbers = $allEvents->pluck('session_number')->filter()->unique()->values()->all();
+
+            $allAdaptations = empty($sessionNumbers)
+                ? collect()
+                : SessionAdaptation::query()
+                    ->whereHas('storyAdaptation', fn ($q) => $q->where('story_id', $story->id))
+                    ->whereIn('session_number', $sessionNumbers)
+                    ->get();
 
             $nextVersionNumber = (WriterLabVersion::where('story_id', $story->id)
-                ->where('session_number', $draft->session_number ?? 0)
+                ->where('chapter_id', $chapter->id)
                 ->max('version_number') ?? 0) + 1;
 
             WriterLabVersion::create([
-                'story_id'            => $story->id,
-                'session_number'      => $draft->session_number ?? 0,
-                'version_number'      => $nextVersionNumber,
-                'snapshot_events'     => $affectedEvents->toArray(),
-                'snapshot_adaptation' => $sessionAdaptation?->toArray(),
-                'is_active'           => false,
-                'note'                => "Activated draft #{$draft->id} ({$draft->type})",
+                'story_id'             => $story->id,
+                'chapter_id'           => $chapter->id,
+                'snapshot_kind'        => 'chapter',
+                'session_number'       => $draft->session_number ?? 0,
+                'version_number'       => $nextVersionNumber,
+                'snapshot_events'      => $allEvents->toArray(),
+                'snapshot_adaptation'  => $sessionAdaptation?->toArray(),
+                'snapshot_adaptations' => $allAdaptations->map(fn (SessionAdaptation $a) => $a->toArray())->all(),
+                'is_active'            => false,
+                'note'                 => "Activated draft #{$draft->id} ({$draft->type})",
+            ]);
+
+            WriterLabLog::info('activate.snapshot', [
+                'story_id'           => $story->id,
+                'chapter_id'         => $chapter->id,
+                'draft_id'           => $draft->id,
+                'draft_type'         => $draft->type,
+                'version_number'     => $nextVersionNumber,
+                'snapshotted_events' => $allEvents->count(),
+                'snapshotted_adapts' => $allAdaptations->count(),
             ]);
 
             match ($draft->type) {
@@ -367,27 +684,45 @@ final class DraftController extends Controller
 
         // Use the survivor event's position context, or the first source event
         $sourceEventId = $draft->source_event_ids[0] ?? null;
-        $sourceEvent   = $sourceEventId ? Event::find($sourceEventId) : null;
+        $sourceEvent   = $sourceEventId ? Event::with('chapter')->find($sourceEventId) : null;
 
         $sessionAdaptation = $this->resolveSessionAdaptation($story, $draft->session_number);
         $storyData         = $story->system_prompt ?? [];
 
-        $nextEvents = $sourceEvent
-            ? Event::where('chapter_id', $chapter->id)
-                ->where('position', '>', $sourceEvent->position)
-                ->orderBy('position')
-                ->take(2)
-                ->get()
-                ->map(fn (Event $e): array => ['position' => $e->position, 'title' => $e->title])
-                ->all()
-            : [];
+        $previousEvents = $sourceEvent ? $this->previewGetPreviousEvents($sourceEvent, 3) : [];
+        $nextEvents      = $sourceEvent ? $this->previewGetNextEvents($sourceEvent, 3) : [];
+
+        $isSessionStart = false;
+        if ($sessionAdaptation?->entry_point_diagnosis && $sourceEvent) {
+            $startEventId = $sessionAdaptation->entry_point_diagnosis['start_event_id'] ?? null;
+            $isSessionStart = $startEventId !== null && $sourceEvent->id === (int) $startEventId;
+        }
+
+        $isSessionEnd       = false;
+        $sessionCloseDesign = null;
+        if ($sessionAdaptation?->session_close_design && $sourceEvent) {
+            $closeDesign    = $sessionAdaptation->session_close_design;
+            $triggerEventId = $closeDesign['session_close_trigger_event_id'] ?? null;
+            if ($triggerEventId !== null) {
+                $isSessionEnd = $sourceEvent->id === (int) $triggerEventId;
+            } else {
+                $sessionEventRange = $sessionAdaptation->entry_point_diagnosis['session_event_range'] ?? null;
+                if (is_string($sessionEventRange) && str_contains($sessionEventRange, '-')) {
+                    [, $rangeEnd] = array_map('intval', explode('-', $sessionEventRange, 2));
+                    $isSessionEnd = $sourceEvent->position >= ($rangeEnd - 4);
+                }
+            }
+            if ($isSessionEnd) {
+                $sessionCloseDesign = $closeDesign;
+            }
+        }
 
         // Render the exact same system prompt view used by the runtime narrator
         $systemPrompt = view('ai.agents.narration.system-prompt', [
             'characterName'      => $storyData['character_name'] ?? null,
             'worldRules'         => $storyData['world_rules'] ?? [],
             'toneAndStyle'       => $storyData['tone_and_style'] ?? null,
-            'previousEvents'     => [],
+            'previousEvents'     => $previousEvents,
             'currentEvent'       => [
                 'position'        => $sourceEvent?->position ?? 1,
                 'title'           => $draft->type === 'combine'
@@ -405,9 +740,9 @@ final class DraftController extends Controller
             'turnCount'          => 0,
             'isFirstTurnInEvent' => true,
             'sessionAdaptation'  => $sessionAdaptation,
-            'isSessionStart'     => true,
-            'isSessionEnd'       => false,
-            'sessionCloseDesign' => null,
+            'isSessionStart'     => $isSessionStart,
+            'isSessionEnd'       => $isSessionEnd,
+            'sessionCloseDesign' => $sessionCloseDesign,
             'worldState'         => [],
             'deterministicMatch' => null,
             'playerChoiceEchoes' => [],
@@ -610,9 +945,13 @@ final class DraftController extends Controller
         $sessionNumber     = $draft->session_number ?? $sourceEvent->session_number;
         $sessionAdaptation = $this->resolveSessionAdaptation($story, $sessionNumber);
 
-        // Original content comes from previous_state snapshot
+        // Original content comes from previous_state snapshot.
+        // buildPreviousState() stores a flat list of event rows: [[...], ...] — NOT ['events' => ...].
         $previousState   = $draft->previous_state ?? [];
-        $originalContent = $previousState['events'][0]['content'] ?? $sourceEvent->content;
+        $firstSnap       = is_array($previousState) ? ($previousState[0] ?? null) : null;
+        $originalContent = is_array($firstSnap) && isset($firstSnap['content'])
+            ? (string) $firstSnap['content']
+            : (string) $sourceEvent->content;
 
         // Attempt to find the downstream session adaptation for cross-session seeding
         $nextSessionAdaptation = null;
@@ -637,12 +976,34 @@ final class DraftController extends Controller
             'nextSessionColdOpen' => $nextSessionAdaptation?->entry_point_diagnosis['cold_open'] ?? null,
         ])->render();
 
+        $logContext = [
+            'story_id'        => $story->id,
+            'chapter_id'      => $chapter->id,
+            'draft_id'        => $draft->id,
+            'session_number'  => $sessionNumber,
+            'event_id'        => $sourceEvent->id,
+            'orig_bytes'      => strlen((string) $originalContent),
+            'edit_bytes'      => strlen((string) $draft->rewritten_content),
+        ];
+
         try {
-            $agent  = \App\Ai\Agents\WriterLab\ScriptChangeImpactAgent::make();
-            $result = $agent->prompt($prompt)->toArray();
+            $result = WriterLabLog::track('analyse_impact', $logContext, fn () =>
+                ScriptChangeImpactAgent::make()->prompt($prompt)->toArray()
+            );
+
+            WriterLabLog::debug('analyse_impact.summary', $logContext + [
+                'severity'                 => $result['severity'] ?? null,
+                'objectives_needs_update'  => (bool) ($result['objectives_needs_update'] ?? false),
+                'beat_map_needs_update'    => (bool) ($result['beat_map_needs_update'] ?? false),
+                'choice_design_needs_update' => (bool) ($result['choice_design_needs_update'] ?? false),
+                'choice_slot_affected'     => $result['choice_slot_affected'] ?? null,
+                'consequence_map_needs_review' => (bool) ($result['consequence_map_needs_review'] ?? false),
+                'cross_session_concern'    => (bool) ($result['cross_session_concern'] ?? false),
+            ]);
 
             return response()->json(['impact' => $result]);
         } catch (Throwable $e) {
+            WriterLabLog::error('analyse_impact.failed', $logContext, $e);
             return response()->json(['error' => 'Impact analysis failed: ' . $e->getMessage()], 500);
         }
     }
@@ -807,5 +1168,79 @@ final class DraftController extends Controller
             ->where('session_number', 1)
             ->where('session_status', SessionAdaptationStatusEnum::COMPLETED)
             ->first();
+    }
+
+    /**
+     * Mirrors PromptController::getPreviousEvents for Draft preview parity.
+     *
+     * @return array<int, array{position: int, title: string, objectives: string|null}>
+     */
+    private function previewGetPreviousEvents(Event $currentEvent, int $take): array
+    {
+        $events = Event::query()
+            ->where('chapter_id', $currentEvent->chapter_id)
+            ->where('position', '<', $currentEvent->position)
+            ->orderByDesc('position')
+            ->take($take)
+            ->get();
+
+        if ($events->count() < $take) {
+            $remaining = $take - $events->count();
+            $prevChapter = Chapter::query()
+                ->where('story_id', $currentEvent->chapter->story_id)
+                ->where('position', '<', $currentEvent->chapter->position)
+                ->orderByDesc('position')
+                ->first();
+
+            if ($prevChapter) {
+                $events = $events->merge(
+                    $prevChapter->events()->orderByDesc('position')->take($remaining)->get()
+                );
+            }
+        }
+
+        return $events->sortBy('position')
+            ->map(fn (Event $e): array => [
+                'position'   => $e->position,
+                'title'      => $e->title,
+                'objectives' => $e->objectives,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Mirrors PromptController::getNextEvents for Draft preview parity.
+     *
+     * @return array<int, array{position: int, title: string}>
+     */
+    private function previewGetNextEvents(Event $currentEvent, int $take): array
+    {
+        $events = Event::query()
+            ->where('chapter_id', $currentEvent->chapter_id)
+            ->where('position', '>', $currentEvent->position)
+            ->orderBy('position')
+            ->take($take)
+            ->get();
+
+        if ($events->count() < $take) {
+            $remaining = $take - $events->count();
+            $nextChapter = Chapter::query()
+                ->where('story_id', $currentEvent->chapter->story_id)
+                ->where('position', '>', $currentEvent->chapter->position)
+                ->orderBy('position')
+                ->first();
+
+            if ($nextChapter) {
+                $events = $events->merge(
+                    $nextChapter->events()->orderBy('position')->take($remaining)->get()
+                );
+            }
+        }
+
+        return $events->map(fn (Event $e): array => [
+            'position' => $e->position,
+            'title'    => $e->title,
+        ])->all();
     }
 }

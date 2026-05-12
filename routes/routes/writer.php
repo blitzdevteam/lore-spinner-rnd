@@ -41,6 +41,7 @@ Route::prefix('writer')->name('writer.')->group(function (): void {
 
             Route::get('{draft}', [Writer\WriterLab\DraftController::class, 'show'])->name('show');
             Route::patch('{draft}', [Writer\WriterLab\DraftController::class, 'update'])->name('update');
+            Route::delete('{draft}', [Writer\WriterLab\DraftController::class, 'destroy'])->name('destroy');
             Route::post('{draft}/approve', [Writer\WriterLab\DraftController::class, 'approve'])->name('approve');
             Route::post('{draft}/activate', [Writer\WriterLab\DraftController::class, 'activate'])->name('activate');
             Route::post('{draft}/preview', [Writer\WriterLab\DraftController::class, 'preview'])->name('preview');
@@ -48,6 +49,20 @@ Route::prefix('writer')->name('writer.')->group(function (): void {
             Route::post('{draft}/suggest-choices', [Writer\WriterLab\DraftController::class, 'suggestChoices'])->name('suggest-choices');
             // Comprehensive script-change impact analysis across all adaptation layers
             Route::post('{draft}/analyse-impact', [Writer\WriterLab\DraftController::class, 'analyseImpact'])->name('analyse-impact');
+        });
+
+        // Playground — multi-event preview that mirrors runtime narrator
+        Route::prefix('writer-lab/{story}/chapters/{chapter}/playground')->name('writer-lab.playground.')->group(function (): void {
+            Route::post('start', [Writer\WriterLab\PlaygroundController::class, 'start'])->name('start');
+            Route::post('turn', [Writer\WriterLab\PlaygroundController::class, 'turn'])->name('turn');
+        });
+
+        // Collaboration notes
+        Route::prefix('writer-lab/{story}/chapters/{chapter}/notes')->name('writer-lab.notes.')->group(function (): void {
+            Route::get('/',  [Writer\WriterLab\NoteController::class, 'index'])->name('index');
+            Route::post('/', [Writer\WriterLab\NoteController::class, 'store'])->name('store');
+            Route::patch('{note}/toggle', [Writer\WriterLab\NoteController::class, 'toggleResolved'])->name('toggle');
+            Route::delete('{note}', [Writer\WriterLab\NoteController::class, 'destroy'])->name('destroy');
         });
 
         // Version history

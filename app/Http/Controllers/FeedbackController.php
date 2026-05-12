@@ -14,11 +14,18 @@ final class FeedbackController extends Controller
     {
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:5000'],
+            'screenshot' => ['nullable', 'file', 'image', 'max:8192'],
         ]);
+
+        $screenshotPath = null;
+        if ($request->hasFile('screenshot')) {
+            $screenshotPath = $request->file('screenshot')->store('feedback-screenshots', 'public');
+        }
 
         Feedback::create([
             'user_id' => $request->user()?->id,
             'content' => $validated['content'],
+            'screenshot_path' => $screenshotPath,
             'page_url' => $request->header('referer'),
             'user_agent' => $request->userAgent(),
         ]);

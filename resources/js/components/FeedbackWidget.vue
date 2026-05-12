@@ -17,38 +17,68 @@ const close = () => {
     content.value = '';
 };
 
-const submit = () => {
+const capturePageScreenshot = async (): Promise<File | null> => {
+    try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(document.documentElement, {
+            useCORS: true,
+            logging: false,
+            scale: Math.min(window.devicePixelRatio || 1, 2),
+            ignoreElements: (element: Element) => Boolean(element.closest('.feedback-widget-root')),
+        });
+
+        const blob = await new Promise<Blob | null>((resolve) =>
+            canvas.toBlob((b) => resolve(b), 'image/png', 0.92),
+        );
+
+        if (!blob) {
+            return null;
+        }
+
+        return new File([blob], 'screenshot.png', { type: 'image/png' });
+    } catch {
+        return null;
+    }
+};
+
+const submit = async () => {
     if (!content.value.trim() || isSubmitting.value) return;
 
     isSubmitting.value = true;
 
-    router.post(
-        '/feedback',
-        { content: content.value },
-        {
-            preserveScroll: true,
-            onSuccess: () => {
-                close();
-            },
-            onFinish: () => {
-                isSubmitting.value = false;
-            },
+    const screenshot = await capturePageScreenshot();
+
+    const formData = new FormData();
+    formData.append('content', content.value);
+    if (screenshot) {
+        formData.append('screenshot', screenshot);
+    }
+
+    router.post('/feedback', formData, {
+        preserveScroll: true,
+        forceFormData: true,
+        onSuccess: () => {
+            close();
         },
-    );
+        onFinish: () => {
+            isSubmitting.value = false;
+        },
+    });
 };
 </script>
 
 <template>
     <Teleport to="body">
-        <Transition name="fade">
-            <div v-if="isOpen" class="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm" @click="close" />
-        </Transition>
+        <div class="feedback-widget-root">
+            <Transition name="fade">
+                <div v-if="isOpen" class="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm" @click="close" />
+            </Transition>
 
-        <Transition name="feedback-slide">
-            <div
-                v-if="isOpen"
-                class="fixed right-4 bottom-44 left-4 z-[1000] max-w-sm rounded-2xl border border-primary-400/20 bg-gray-900 p-6 shadow-2xl shadow-primary-400/5 md:right-6 md:bottom-24 md:left-auto md:w-full"
-            >
+            <Transition name="feedback-slide">
+                <div
+                    v-if="isOpen"
+                    class="fixed right-4 bottom-44 left-4 z-[1000] max-w-sm rounded-2xl border border-primary-400/20 bg-gray-900 p-6 shadow-2xl shadow-primary-400/5 md:right-6 md:bottom-24 md:left-auto md:w-full"
+                >
                 <div class="flex items-start justify-between">
                     <h3 class="text-xl font-semibold text-primary-300">Feedback</h3>
                     <button class="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-800 hover:text-white" @click="close">
@@ -77,13 +107,14 @@ const submit = () => {
                         Send Feedback
                     </BaseButton>
                 </div>
-            </div>
-        </Transition>
+                </div>
+            </Transition>
 
-        <div class="fixed right-4 bottom-28 z-[998] md:right-6 md:bottom-6">
-            <BaseButton severity="glass" :icon-only="true" class="size-12! shadow-lg shadow-black/30 md:size-14!" @click="open">
-                <LucideMessageSquare class="size-6 text-primary-300" />
-            </BaseButton>
+            <div class="fixed right-4 bottom-28 z-[998] md:right-6 md:bottom-6">
+                <BaseButton severity="glass" :icon-only="true" class="size-12! shadow-lg shadow-black/30 md:size-14!" @click="open">
+                    <LucideMessageSquare class="size-6 text-primary-300" />
+                </BaseButton>
+            </div>
         </div>
     </Teleport>
 </template>
