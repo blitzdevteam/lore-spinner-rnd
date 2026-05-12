@@ -82,7 +82,11 @@ const apiPost = async (url: string, body: Record<string, unknown> = {}, signal?:
         data = { error: raw.slice(0, 280) || `HTTP ${res.status}` };
     }
     if (!res.ok && data.error === undefined) {
-        data.error = `Request failed (${res.status})`;
+        // Laravel validation errors come back as {message, errors} — surface the human message.
+        const msg = (data.message as string | undefined)
+            ?? (data.errors ? JSON.stringify(data.errors) : null)
+            ?? `Request failed (${res.status})`;
+        data.error = msg;
     }
     return data;
 };

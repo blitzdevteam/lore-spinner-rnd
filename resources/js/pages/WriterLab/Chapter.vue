@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { computed, reactive, ref, watch } from 'vue';
+
+const flashError = computed<string | null>(() => {
+    const errs = (usePage().props as any).flash?.error as string[] | undefined;
+    return (errs && errs.length > 0) ? errs[0] : null;
+});
 import PlaygroundDrawer from './components/PlaygroundDrawer.vue';
 import SuggestionPills from './components/SuggestionPills.vue';
 import HelpHint from './components/HelpHint.vue';
@@ -918,6 +923,11 @@ const eventDraftLink = (eventId: number) => {
 
 <template>
     <div class="flex h-screen flex-col overflow-hidden bg-gray-950 text-white">
+
+        <!-- Flash error banner (e.g. combine AI failure) -->
+        <div v-if="flashError" class="flex-none border-b border-red-800/60 bg-red-950/50 px-6 py-2 text-sm text-red-300">
+            {{ flashError }}
+        </div>
 
         <!-- ── Top bar ──────────────────────────────────────────────────────── -->
         <header class="flex-none border-b border-gray-800 px-6 py-3">

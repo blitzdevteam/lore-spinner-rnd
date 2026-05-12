@@ -92,11 +92,18 @@ final class DraftController extends Controller
             'event_count'   => $events->count(),
         ];
 
-        // 1) Run the editorial compressor — produces only rewritten_content
-        //    and canonical_anchors. Derived fields are obtained downstream.
-        $result = WriterLabLog::track('combine.compressor', $logContext, fn () =>
-            EventCombinerAgent::make()->prompt($prompt)->toArray()
-        );
+        try {
+            // 1) Run the editorial compressor — produces only rewritten_content
+            //    and canonical_anchors. Derived fields are obtained downstream.
+            $result = WriterLabLog::track('combine.compressor', $logContext, fn () =>
+                EventCombinerAgent::make()->prompt($prompt)->toArray()
+            );
+        } catch (Throwable $e) {
+            WriterLabLog::error('combine.compressor.failed', $logContext, $e);
+            return redirect()
+                ->to("/writer/writer-lab/{$story->id}/chapters/{$chapter->id}")
+                ->with('error', 'Combine AI step failed: ' . $e->getMessage());
+        }
 
         $rewrittenContent = (string) ($result['rewritten_content'] ?? '');
         $aiAnchors        = is_array($result['canonical_anchors'] ?? null)
