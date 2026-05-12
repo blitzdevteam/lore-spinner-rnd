@@ -8,7 +8,7 @@
  * Stateless backend — this component owns the conversation history and the
  * accumulated world_state (state_delta merges).
  */
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { wlError, wlTrace } from '@/lib/wlTrace';
 
 interface PlaygroundEvent {
@@ -333,7 +333,13 @@ const scrollToBottom = async () => {
 // Boot on mount
 watch(() => props.eventIds, () => { void start(); }, { immediate: true });
 
-onBeforeUnmount(() => { if (inFlight) inFlight.abort(); });
+// Shift the floating feedback button to the left while the playground is open
+// so it doesn't obscure the Send button.
+onMounted(() => document.body.classList.add('wl-playground-open'));
+onBeforeUnmount(() => {
+    if (inFlight) inFlight.abort();
+    document.body.classList.remove('wl-playground-open');
+});
 </script>
 
 <template>

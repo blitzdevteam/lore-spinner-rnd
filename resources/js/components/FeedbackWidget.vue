@@ -124,7 +124,7 @@ const submit = async () => {
                 </div>
             </Transition>
 
-            <div class="fixed right-4 bottom-28 z-[998] md:right-6 md:bottom-6">
+            <div data-feedback-btn class="fixed right-4 bottom-28 z-[998] transition-[left,right] duration-200 md:right-6 md:bottom-6">
                 <BaseButton severity="glass" :icon-only="true" class="size-12! shadow-lg shadow-black/30 md:size-14!" @click="open">
                     <LucideMessageSquare class="size-6 text-primary-300" />
                 </BaseButton>

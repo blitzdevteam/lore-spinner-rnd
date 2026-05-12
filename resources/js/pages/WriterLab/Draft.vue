@@ -217,7 +217,7 @@ const updateSplitPart = (index: number, field: keyof SplitPart, value: string | 
                         @click="runPreview"
                     >
                         <span v-if="previewing">Generating…</span>
-                        <span v-else>▶ Preview</span>
+                        <span v-else>▶ Playground</span>
                     </button>
                     <button
                         v-if="!isActivated"

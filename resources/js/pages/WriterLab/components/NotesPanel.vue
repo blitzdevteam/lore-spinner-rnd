@@ -28,8 +28,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (e: 'close'): void }>();
 
-const csrf = (): string =>
-    (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
+const xsrfToken = (): string => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+};
 
 const notes      = ref<Note[]>([]);
 const loading    = ref(false);
@@ -64,9 +66,11 @@ const submit = async () => {
     try {
         const res = await fetch(baseUrl, {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrf(),
+                'X-XSRF-TOKEN': xsrfToken(),
+                'X-Requested-With': 'XMLHttpRequest',
                 Accept: 'application/json',
             },
             body: JSON.stringify({
@@ -93,9 +97,11 @@ const submit = async () => {
 const toggleResolved = async (n: Note) => {
     const res = await fetch(`${baseUrl}/${n.id}/toggle`, {
         method: 'PATCH',
+        credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrf(),
+            'X-XSRF-TOKEN': xsrfToken(),
+            'X-Requested-With': 'XMLHttpRequest',
             Accept: 'application/json',
         },
     });
@@ -109,7 +115,12 @@ const destroy = async (n: Note) => {
     if (!confirm('Delete this note?')) return;
     await fetch(`${baseUrl}/${n.id}`, {
         method: 'DELETE',
-        headers: { 'X-CSRF-TOKEN': csrf(), Accept: 'application/json' },
+        credentials: 'same-origin',
+        headers: {
+            'X-XSRF-TOKEN': xsrfToken(),
+            'X-Requested-With': 'XMLHttpRequest',
+            Accept: 'application/json',
+        },
     });
     notes.value = notes.value.filter(x => x.id !== n.id);
 };

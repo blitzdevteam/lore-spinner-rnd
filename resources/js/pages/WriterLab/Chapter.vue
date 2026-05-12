@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 
 const flashError = computed<string | null>(() => {
     const errs = (usePage().props as any).flash?.error as string[] | undefined;
@@ -102,7 +102,17 @@ const apiPost = async (url: string, body: Record<string, unknown> = {}) => {
         },
         body: JSON.stringify(body),
     });
-    return res.json();
+    const raw = await res.text();
+    let data: Record<string, unknown> = {};
+    try { data = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}; }
+    catch { data = { error: raw.slice(0, 280) || `HTTP ${res.status}` }; }
+    if (!res.ok && data.error === undefined) {
+        const msg = (data.message as string | undefined)
+            ?? (data.errors ? JSON.stringify(data.errors) : null)
+            ?? `Request failed (${res.status})`;
+        data.error = msg;
+    }
+    return data;
 };
 
 // ── Focus state (single event open for edit) ───────────────────────────────
@@ -887,6 +897,24 @@ const closePlayground = () => {
     playgroundEventIds.value = [];
 };
 
+// Warn writer if they try to leave the page with unsaved draft changes.
+const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    if (editDirty.value) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+};
+onMounted(() => window.addEventListener('beforeunload', handleBeforeUnload));
+onBeforeUnmount(() => window.removeEventListener('beforeunload', handleBeforeUnload));
+
+// Warn on in-app Inertia navigation with unsaved changes (returns false to cancel).
+const offBefore = router.on('before', () => {
+    if (editDirty.value) {
+        return confirm('You have unsaved draft changes. Leave without saving?');
+    }
+});
+onBeforeUnmount(() => offBefore());
+
 const submitCombine = () => {
     combining.value = true;
     router.post(`/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/combine`,
@@ -1084,12 +1112,12 @@ const eventDraftLink = (eventId: number) => {
                                     <span v-else-if="saveDraftId && !editDirty">✓ Saved</span>
                                     <span v-else>Save Draft</span>
                                 </button>
-                                <!-- Preview = launch the Playground drawer with just this focused event -->
+                                <!-- Opens the Playground drawer for this focused event -->
                                 <button
                                     class="rounded-lg bg-gray-800 px-3 py-1.5 text-xs text-gray-300 hover:bg-gray-700 transition-all"
                                     title="Open the playground for this event (uses the live runtime narrator)"
                                     @click="runPreview">
-                                    ▶ Preview
+                                    ▶ Playground
                                 </button>
                                 <!-- Only available after the script content itself was changed.
                                      Editing objectives/attributes/choices directly costs nothing — no AI needed. -->

@@ -1,0 +1,1068 @@
+{
+    "user": {
+        "id": 3,
+        "email": "thomas@lorespinner.com",
+        "username": "lorespinner",
+        "first_name": "Thomas",
+        "last_name": "Wittmer",
+        "created_at": "2026-04-16T01:05:54+00:00"
+    },
+    "exported_at": "2026-05-12T14:14:13+00:00",
+    "total_games": 1,
+    "games": [
+        {
+            "game_id": "01kp9x6crk9ccvzrrm5t6s16gc",
+            "story": {
+                "id": 1,
+                "title": "Alice's Adventures in Wonderland",
+                "slug": "alices-adventures-in-wonderland"
+            },
+            "current_event": "Dinah talk scares birds away",
+            "current_session_number": 1,
+            "current_beat_type": "ESCALATION",
+            "branching_choices_taken": [
+                {
+                    "session_number": 1,
+                    "event_id": 1,
+                    "option": "A",
+                    "choice_id": "S1_C1",
+                    "player_input_first_120": "You sprint after him and dive for the rabbit-hole the instant you see it.",
+                    "classification": "authored_choice",
+                    "advanced": true,
+                    "taken_at": "2026-05-11T22:17:18+00:00"
+                },
+                {
+                    "session_number": 1,
+                    "event_id": 13,
+                    "option": "C",
+                    "choice_id": "S1_C3",
+                    "player_input_first_120": "Continue forward",
+                    "classification": "authored_choice",
+                    "advanced": true,
+                    "taken_at": "2026-05-11T23:14:02+00:00"
+                }
+            ],
+            "tracked_dimensions": {
+                "impulse_vs_deliberation": [
+                    "A"
+                ],
+                "rule_following_vs_rule_testing": [
+                    "C"
+                ]
+            },
+            "branch_resolution_log": [
+                {
+                    "at": "2026-05-11T22:17:18+00:00",
+                    "session_number": 1,
+                    "event_before": 1,
+                    "event_after": 2,
+                    "classification": "authored_choice",
+                    "option": "A",
+                    "choice_id": "S1_C1",
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T22:19:49+00:00",
+                    "session_number": 1,
+                    "event_before": 2,
+                    "event_after": 2,
+                    "classification": "unsupported",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:22:54+00:00",
+                    "session_number": 1,
+                    "event_before": 2,
+                    "event_after": 3,
+                    "classification": "unsupported",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T22:25:14+00:00",
+                    "session_number": 1,
+                    "event_before": 3,
+                    "event_after": 3,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:28:21+00:00",
+                    "session_number": 1,
+                    "event_before": 3,
+                    "event_after": 4,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T22:30:02+00:00",
+                    "session_number": 1,
+                    "event_before": 4,
+                    "event_after": 4,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:33:05+00:00",
+                    "session_number": 1,
+                    "event_before": 4,
+                    "event_after": 5,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T22:35:02+00:00",
+                    "session_number": 1,
+                    "event_before": 5,
+                    "event_after": 5,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:37:14+00:00",
+                    "session_number": 1,
+                    "event_before": 5,
+                    "event_after": 6,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T22:39:37+00:00",
+                    "session_number": 1,
+                    "event_before": 6,
+                    "event_after": 6,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:42:48+00:00",
+                    "session_number": 1,
+                    "event_before": 6,
+                    "event_after": 6,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:43:52+00:00",
+                    "session_number": 1,
+                    "event_before": 6,
+                    "event_after": 7,
+                    "classification": "emergent",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T22:44:52+00:00",
+                    "session_number": 1,
+                    "event_before": 7,
+                    "event_after": 7,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:49:36+00:00",
+                    "session_number": 1,
+                    "event_before": 7,
+                    "event_after": 7,
+                    "classification": "unsupported",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:50:00+00:00",
+                    "session_number": 1,
+                    "event_before": 7,
+                    "event_after": 8,
+                    "classification": "unsupported",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T22:50:20+00:00",
+                    "session_number": 1,
+                    "event_before": 8,
+                    "event_after": 8,
+                    "classification": "unsupported",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:53:02+00:00",
+                    "session_number": 1,
+                    "event_before": 8,
+                    "event_after": 9,
+                    "classification": "unsupported",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T22:56:05+00:00",
+                    "session_number": 1,
+                    "event_before": 9,
+                    "event_after": 9,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T22:57:31+00:00",
+                    "session_number": 1,
+                    "event_before": 9,
+                    "event_after": 10,
+                    "classification": "unsupported",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T23:01:12+00:00",
+                    "session_number": 1,
+                    "event_before": 10,
+                    "event_after": 11,
+                    "classification": "unsupported",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T23:03:53+00:00",
+                    "session_number": 1,
+                    "event_before": 11,
+                    "event_after": 11,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-11T23:05:25+00:00",
+                    "session_number": 1,
+                    "event_before": 11,
+                    "event_after": 12,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T23:07:22+00:00",
+                    "session_number": 1,
+                    "event_before": 12,
+                    "event_after": 13,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-11T23:14:02+00:00",
+                    "session_number": 1,
+                    "event_before": 13,
+                    "event_after": 14,
+                    "classification": "authored_choice",
+                    "option": "C",
+                    "choice_id": "S1_C3",
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-12T00:26:35+00:00",
+                    "session_number": 1,
+                    "event_before": 14,
+                    "event_after": 15,
+                    "classification": "unsupported",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-12T00:32:16+00:00",
+                    "session_number": 1,
+                    "event_before": 15,
+                    "event_after": 15,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-12T00:44:31+00:00",
+                    "session_number": 1,
+                    "event_before": 15,
+                    "event_after": 15,
+                    "classification": "emergent",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-12T00:48:03+00:00",
+                    "session_number": 1,
+                    "event_before": 15,
+                    "event_after": 16,
+                    "classification": "branch_aligned",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-12T00:50:13+00:00",
+                    "session_number": 1,
+                    "event_before": 16,
+                    "event_after": 17,
+                    "classification": "branch_aligned",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-12T00:53:08+00:00",
+                    "session_number": 1,
+                    "event_before": 17,
+                    "event_after": 17,
+                    "classification": "opening",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-12T00:57:41+00:00",
+                    "session_number": 1,
+                    "event_before": 17,
+                    "event_after": 18,
+                    "classification": "emergent",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-12T01:00:46+00:00",
+                    "session_number": 1,
+                    "event_before": 18,
+                    "event_after": 18,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-12T01:03:39+00:00",
+                    "session_number": 1,
+                    "event_before": 18,
+                    "event_after": 18,
+                    "classification": "emergent",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-12T01:06:03+00:00",
+                    "session_number": 1,
+                    "event_before": 18,
+                    "event_after": 19,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-12T01:08:40+00:00",
+                    "session_number": 1,
+                    "event_before": 19,
+                    "event_after": 19,
+                    "classification": "emergent",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-12T01:10:50+00:00",
+                    "session_number": 1,
+                    "event_before": 19,
+                    "event_after": 20,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-12T01:14:44+00:00",
+                    "session_number": 1,
+                    "event_before": 20,
+                    "event_after": 20,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-12T01:17:06+00:00",
+                    "session_number": 1,
+                    "event_before": 20,
+                    "event_after": 21,
+                    "classification": "emergent",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                },
+                {
+                    "at": "2026-05-12T01:18:55+00:00",
+                    "session_number": 1,
+                    "event_before": 21,
+                    "event_after": 21,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": false
+                },
+                {
+                    "at": "2026-05-12T01:26:10+00:00",
+                    "session_number": 1,
+                    "event_before": 21,
+                    "event_after": 22,
+                    "classification": "freeform",
+                    "option": null,
+                    "choice_id": null,
+                    "advanced": true
+                }
+            ],
+            "world_state": {
+                "objects": {
+                    "tiny golden key": {
+                        "qualifier": "",
+                        "contains": []
+                    },
+                    "little bottle": {
+                        "qualifier": "empty (labelled “DRINK ME”)",
+                        "contains": []
+                    },
+                    "white kid gloves": {
+                        "qualifier": "damp from tears",
+                        "contains": []
+                    },
+                    "large fan": {
+                        "qualifier": "wet with tear-water",
+                        "contains": []
+                    }
+                },
+                "conditions": {
+                    "upset": "Cried after failing to climb the slippery table leg.",
+                    "more than nine feet high": "Your head struck the roof of the hall as you grew.",
+                    "crying": "You began crying again, flooding the hall with tears.",
+                    "calmer": "You stop reciting and regulate yourself by watching your breath, hands, and voice.",
+                    "shorebound": "You have climbed out of the pool onto the bank with the others."
+                },
+                "knowledge": [
+                    "The fall is into a very deep well lined with cupboards, book-shelves, and pegs holding maps and pictures.",
+                    "A jar labelled “ORANGE MARMALADE” was empty and has been placed into a cupboard rather than dropped.",
+                    "The White Rabbit was briefly in sight ahead in the passage but vanished after turning a corner.",
+                    "The hall is long and low, lit by a row of lamps hanging from the roof.",
+                    "The White Rabbit said, \"Oh my ears and whiskers, how late it’s getting!\"",
+                    "There is no obvious sign of the White Rabbit in the lamp-lit hall.",
+                    "A tiny golden key does not open the larger doors in the hall.",
+                    "A low curtain conceals a little door about fifteen inches high.",
+                    "The tiny golden key fits the lock of the little door.",
+                    "The glass table appears empty aside from your own distorted reflection in its surface.",
+                    "There is no latch, panel, or mechanism under the glass table; its underside and legs are smooth and seamless.",
+                    "A little bottle labelled “DRINK ME” has appeared on the glass table where it was not before.",
+                    "The little door cannot be opened any wider than it is now.",
+                    "The drink caused you to shrink to about ten inches high.",
+                    "The table leg is too slippery to climb at your current size.",
+                    "The tiny golden key is on top of the glass table and out of reach.",
+                    "A little glass box is lying under the glass table within reach.",
+                    "The little door cannot be passed at your current size; the opening still stops your shoulders.",
+                    "Your tears have formed a pool around you about four inches deep, reaching half down the hall.",
+                    "The White Rabbit returned splendidly dressed, carrying white kid gloves and a large fan.",
+                    "The White Rabbit dropped the white kid gloves and the large fan when startled.",
+                    "The White Rabbit skurried away into the darkness as hard as he could go.",
+                    "Your breath, hands, and voice feel consistent even when your memory and size do not.",
+                    "The water around you is the pool of tears you cried when you were nine feet high.",
+                    "A mouse is swimming in the pool nearby and reacts with fright to talk of cats.",
+                    "The Dodo proposes a Caucus-race as the best way to get everyone dry.",
+                    "The Dodo claims the best way to explain a Caucus-race is to do it."
+                ],
+                "relationships": {
+                    "the Mouse": "less panicked, cautiously cooperative",
+                    "Dodo": "more offended but assertive",
+                    "Mouse": "more offended and withdrawn",
+                    "Eaglet": "more impatient and mocking"
+                },
+                "flags": [
+                    "committed_to_chase_sprinted_dived",
+                    "called_out_demanded_stop_no_reply",
+                    "landed_on_leaf_heap",
+                    "entered_lamp_lit_hall_lost_sight_of_rabbit",
+                    "ran_hall_search_no_sign_of_rabbit",
+                    "found_tiny_golden_key",
+                    "unlocked_little_door",
+                    "opened_little_door",
+                    "rechecked_glass_table_found_nothing",
+                    "inspected_table_underside_found_no_mechanism",
+                    "found_drink_me_bottle",
+                    "said_bottle_not_here_before",
+                    "checked_for_poison_intent",
+                    "carried_bottle_to_little_door_compared_scale",
+                    "opened_little_door_fully_checked_hinge",
+                    "drank_from_drink_me_bottle",
+                    "shrunk_to_ten_inches",
+                    "forgot_key_on_table",
+                    "attempted_climb_table_leg_failed",
+                    "cried_on_floor",
+                    "spotted_little_glass_box_under_table",
+                    "crawled_under_table_toward_glass_box",
+                    "reached_glass_box_under_table",
+                    "tried_to_go_through_little_door_failed",
+                    "hit_roof_grew_large_took_key",
+                    "hurried_to_garden_door_too_big",
+                    "cried_flooded_hall_pool_formed",
+                    "white_rabbit_returned_dropped_gloves_and_fan_fled",
+                    "picked_up_dropped_gloves_and_fan",
+                    "identity_crisis_test_prompted",
+                    "heard_pattering_footsteps_returning",
+                    "tested_identity_by_observation_not_recitation",
+                    "fell_into_pool_of_tears",
+                    "used_fan_to_steady_in_pool",
+                    "spoke_to_mouse_asked_way_out",
+                    "said_ou_est_ma_chatte_mouse_frightened",
+                    "apologized_mentioned_cats_disliked",
+                    "offered_fan_as_float_to_mouse",
+                    "promised_no_cats_or_dogs_to_mouse",
+                    "led_party_to_shore_with_fan_float",
+                    "clambered_onto_shore_pulled_fan_up",
+                    "backed_dodo_more_energetic_plan",
+                    "asked_group_where_am_i_dodo_proposed_caucus_race",
+                    "asked_mouse_name_of_place_quietly",
+                    "joined_caucus_race_began_running",
+                    "matched_mouse_pace_attempted_conversation_during_caucus_race",
+                    "stopped_running_watched_party",
+                    "asked_mouse_where_to_go_wants_to_see_world",
+                    "apologized_asked_mouse_to_continue_story"
+                ],
+                "location": "near the ring’s edge where the Mouse is walking away",
+                "updated_at": "2026-05-12T01:26:10+00:00"
+            },
+            "created_at": "2026-04-16T01:06:25+00:00",
+            "updated_at": "2026-05-12T01:26:10+00:00",
+            "prompts": [
+                {
+                    "id": "01krchr9cdtfjxsa2sbmp2mg5z",
+                    "event": "Alice notices the White Rabbit",
+                    "prompt": "You sprint after him and dive for the rabbit-hole the instant you see it.",
+                    "response": "<p>Heat shimmers off the river stones, and your stockings stick to the back of your knees as you lean over the grass, half-listening to your sister’s page-turning.</p><p>Then a White Rabbit flashes past so close you catch the clean, sharp scent of crushed clover—and it mutters, plainly, like a person: “Oh dear! Oh dear! I shall be late!”</p><p>You don’t freeze. You lunge up, skirt snagging on a thistle, because the Rabbit has a waistcoat-pocket. Because it pulls out a watch and checks it with frantic dignity, as if being late could matter to a rabbit. Is this a trick? A dream? Or the first real thing that’s happened all day? The Rabbit darts toward the hedge, and the shadow beneath it looks like a mouth. You break into a run before you can talk yourself out of it.</p>",
+                    "choices": [
+                        "You sprint after him and dive for the rabbit-hole the instant you see it.",
+                        "You keep him in sight but slow just long enough to clock landmarks and the shape of the hedge.",
+                        "You call out to him first and watch how he reacts before you commit to the hole."
+                    ],
+                    "created_at": "2026-05-11T22:15:35+00:00"
+                },
+                {
+                    "id": "01krchve6q8z7tn932xrqg5g6z",
+                    "event": "Alice notices the White Rabbit",
+                    "prompt": "Call after the White Rabbit and demand he stop.",
+                    "response": "<p>The hedge rises up in a green blur—and you <em>throw yourself</em> at the dark opening beneath it before your courage can reconsider. Cool earth kisses your palms; grass scratches your wrists; then the ground simply gives way, and your stomach lifts as if the world has been snatched out from under you. Behind you, the riverbank and your sister’s quiet certainty vanish in a single gulp of shadow.</p><p>For a breath you are nothing but falling and the rush of your own blood. The rim of the rabbit-hole slides past your shoulders, past your shoes, and the light becomes a narrow, wavering ribbon above. Somewhere ahead—below?—the White Rabbit’s haste is a pale flicker, and the absurdity of it tries to turn into laughter, or panic, or both at once. <strong>You have committed now.</strong></p><p>Air presses along your cheeks, tugging loose strands of hair into your mouth. Your hands paw at the slick sides for anything to catch, but it is all packed earth and roots, smooth where countless small bodies have hurried. You can still hear your own breath, loud and human in a place made for burrows, and you have just enough time to choose what sort of person you are while you drop.</p>",
+                    "choices": [
+                        "Reach out and try to grab the roots to slow your fall.",
+                        "Call after the White Rabbit and demand he stop.",
+                        "Tuck in tight and aim your body to fall as safely as you can."
+                    ],
+                    "created_at": "2026-05-11T22:17:18+00:00"
+                },
+                {
+                    "id": "01krcj01121vckm6feh5gwz918",
+                    "event": "Alice falls down the well",
+                    "prompt": "__continue__",
+                    "response": "<p>Your voice tears out of you and ricochets down the shaft—thin at first, then suddenly loud as the walls throw it back. The sound feels brave for half a heartbeat… and then it feels <em>lonely</em>, because nothing answers. No scolding, no apology—only your own words chasing you, tumbling after you into the dark.</p><p>The tunnel that had seemed like a sensible burrow betrays you; it runs on and then drops away so sharply your stomach lurches, and you are no longer sliding but falling—falling with enough time to notice how impossible it is to have time at all. The air is cool and tastes faintly of dust. When you twist, the sides of the well are close enough to touch: cupboards and book-shelves packed into the earth as neatly as if someone expected visitors. Maps and little pictures hang from pegs, swaying gently in the wake of your descent.</p><p>You snatch at a shelf as you pass and your fingers close around a jar. The label flashes in and out of view: <em>“ORANGE MARMALADE”</em>. Hope rises absurdly—then collapses when you feel how light it is. Empty. You keep hold of it for a frantic second, imagination supplying a person far below, and you shove it into the nearest cupboard instead of letting it drop. The cupboard door flutters as you fall away, and the darkness below remains stubbornly unreadable.</p><p>Down, down, down—your thoughts try to turn the terror into a story you can tell later. Your mouth forms the beginnings of a boast to yourself, and then you catch yourself talking into the void, practicing bravery because there is no one else to hear it.</p>",
+                    "choices": [
+                        "Scan the shelves and grab something useful as you fall past.",
+                        "Press your palms to the wall and try to slow yourself against the earth.",
+                        "Call out again—louder—and listen hard for any answer below."
+                    ],
+                    "created_at": "2026-05-11T22:19:49+00:00"
+                },
+                {
+                    "id": "01krcj5pc1trgch47deqb9eqh7",
+                    "event": "Alice falls down the well",
+                    "prompt": "__continue__",
+                    "response": "<p><strong>Your shoulder meets the heap first</strong>—a brisk, papery crunch of sticks and dry leaves that steals your breath and then gives it back all at once. The falling stops so abruptly your teeth click; dust blooms up around your face, tasting of old bark and earth.</p><p>You lie for a beat in the dim, limbs splayed, listening for anything—footsteps, the Rabbit’s frantic muttering, even the echo of your own voice returning late. Nothing. Above, the well-mouth is a distant, wavering coin of light; along the walls, the cupboard faces and shelves you flashed past are now only darker rectangles against darker soil. When you push yourself up, the leaves slide and whisper under your palms, and your skirt comes away sprinkled with brittle bits like confetti from a very ill-mannered party.</p><p>The air is cooler down here, close and still. You can’t see far, but you can feel space opening ahead of you—somewhere to go that isn’t straight down. Your body wants to do what it has done all day: <em>lurch first, think later</em>.</p>",
+                    "choices": [
+                        "Get to your feet and move toward the open darkness ahead.",
+                        "Feel along the wall for cupboards or shelves within reach.",
+                        "Call out for the White Rabbit and listen hard for an answer."
+                    ],
+                    "created_at": "2026-05-11T22:22:54+00:00"
+                },
+                {
+                    "id": "01krcj9yqccs6msrwpmmq2thgp",
+                    "event": "Alice chases the Rabbit into the hall",
+                    "prompt": "Run down the hall and search for where the Rabbit could have gone.",
+                    "response": "<p>Your shoes skid through dry leaves and find firmer ground, and the dimness ahead <em>unfolds</em> into a corridor as if it had been waiting for you to stand up. Overhead is nothing but dark—no ceiling you can trust, only a thickness of shadow that swallows the little light there is.</p><p>Then—there. A flash of pale fur and hurried dignity, just far enough ahead to make your legs move before your thoughts can vote. You fling yourself after it, breath rasping, the passage stretching long and straight as a ribbon pulled tight. The White Rabbit turns a corner, and you are just in time to hear it say, “Oh my ears and whiskers, how late it’s getting!”</p><p>You whip around the same corner—too close, too fast—and the space changes under you. The Rabbit is gone as if it slipped between your blinks. In its place: a long, low hall washed in lamplight, a row of lamps hanging from the roof like steady, watchful eyes. The air feels different here—less earthy, more like dust warmed by glass—and the bright emptiness of the hall makes your sudden aloneness <strong>louder</strong>.</p><p>You stand there with your heart still running, staring down the lit length of the hall, as if the Rabbit might reappear simply because you refuse to believe it could vanish so neatly.</p>",
+                    "choices": [
+                        "Run down the hall and search for where the Rabbit could have gone.",
+                        "Scan the hall methodically for openings, shadows, or anything out of place.",
+                        "Approach the nearest hanging lamp and test the space beneath it for drafts or hidden turns."
+                    ],
+                    "created_at": "2026-05-11T22:25:14+00:00"
+                },
+                {
+                    "id": "01krcjfnad11vy6v0zxkcby7kg",
+                    "event": "Alice chases the Rabbit into the hall",
+                    "prompt": "__continue__",
+                    "response": "<p>Your feet slap the hard floor and the lamplight jolts with you, throwing your shadow long and thin across the low hall as you tear forward. The air dries your throat; your breath comes sharp, too loud for a place this neat and empty. You skim the walls with your eyes as if a rabbit-sized gap might announce itself out of politeness—anything, any scuff of fur, any flutter of a coat-tail.</p><p>But the hall offers only its length, its low roof, and the steady stare of hanging lamps. No footsteps answer yours. No muttering. The silence has a way of feeling <em>arranged</em>, as if you’ve run into the middle of someone else’s tidy idea of indoors. You slow—not from calm, but because there is simply nowhere obvious for him to be, and the bright, lamplit emptiness gives your chasing nowhere to land.</p>",
+                    "choices": [
+                        "Scan the hall for any openings or passages along the walls",
+                        "Sprint to the far end of the hall and check for a turn or exit",
+                        "Press your ear to the nearest wall and listen for movement beyond it"
+                    ],
+                    "created_at": "2026-05-11T22:28:21+00:00"
+                },
+                {
+                    "id": "01krcjjrcv8ynvkst6wszw0z2r",
+                    "event": "Alice finds key and unlocks small door",
+                    "prompt": "__continue__",
+                    "response": "<p>Your next step brings your toe against something hard and delicate—glass, cool even under the warm lamplight. The sound is a tiny, clean <em>tink</em> that seems far too polite for how ragged your breathing feels.</p><p>When you look down, there it is: a little three-legged table, all solid glass, waiting in the middle of the hall as if it has been set out for someone with better manners. On top lies a <strong>tiny golden key</strong>, so small it seems made for a doll’s pocket. Your hands move before you can scold them; you snatch it up and hurry to the nearest doors—then the next—then the next, tugging and testing with that same frantic certainty you used in the fall. Each lock refuses you in its own way: too wide, too stubborn, too indifferent. The key is always wrong by just enough to sting.</p><p>On your second sweep along the wall, a fold in the lamplight looks oddly thick. You catch it—<em>a low curtain</em> you hadn’t noticed before—and pull it aside. Behind it crouches a little door no higher than fifteen inches, ridiculous as a joke told with a straight face. Your fingers tremble as you guide the golden key toward the lock.</p><p>It slides in as if it has been waiting for you. The turn is smooth—almost eager—and the lock yields with a soft click that feels like a secret agreeing to be told. The little door is now yours to open.</p>",
+                    "choices": [
+                        "Open the little door and peer through before you commit your body to it.",
+                        "Kneel and examine the tiny doorframe and lock closely for any trick or catch.",
+                        "Test the other locked doors again with the key, just to be certain nothing has changed."
+                    ],
+                    "created_at": "2026-05-11T22:30:02+00:00"
+                },
+                {
+                    "id": "01krcjraz82afvaz12cws9wv4f",
+                    "event": "Alice finds key and unlocks small door",
+                    "prompt": "Back away from the little door and check the glass table again for anything else you missed.",
+                    "response": "<p>The little door gives under your hand with a stubborn, miniature resistance—then loosens, as if it has decided you are allowed. A thin seam of darker air slips out against your fingers, cool as cellar-breath, carrying a faint, clean scent that doesn’t belong to this lamplit hall.</p><p>You crouch—too quickly, still all chase and momentum—and angle your face toward the opening. The world beyond is <em>there</em>, but the doorway is so meanly small that even your curiosity has to squeeze itself. The golden key bites into your palm as you balance, and the absurdity presses in: you have unlocked something perfectly, and your own body is suddenly the wrong size for your success.</p><p>Behind you, the hall’s lamps keep their steady, indifferent glow; in front of you, that narrow gap promises space and brightness you can’t quite claim. Your breath fogs the edge of the tiny door for a moment, then clears, as if the place beyond refuses to be smudged by you.</p>",
+                    "choices": [
+                        "Press your eye to the crack and peer as far as you can into the space beyond.",
+                        "Test the door wider with your fingertips and see how far it will open without forcing it.",
+                        "Back away from the little door and check the glass table again for anything else you missed."
+                    ],
+                    "created_at": "2026-05-11T22:33:05+00:00"
+                },
+                {
+                    "id": "01krcjvwq1bbdzna94ad5ggs6e",
+                    "event": "Alice glimpses garden beyond the door",
+                    "prompt": "Get down on the floor and inspect the table’s underside and legs for a latch, panel, or mechanism.",
+                    "response": "<p>Your knees uncoil with a stiff little protest as you back away from the tiny doorway, and the cool breath from the passage stops touching your fingers. The golden key shifts in your hand—warm now from your grip—as you retreat into the hall’s steady lamplight.</p><p>The glass table waits exactly where it waited before, innocent as a well-behaved lie. You lean in close, eyes skimming its clear surface and the three spindly legs, hunting for a second glint, a hidden notch, anything you might have been too hurried to notice. But the table offers you only its smooth emptiness and your own reflection warped in the glass—your face stretched, then narrowed, as if even your features can’t agree on a proper shape in this place.</p><p>Over your shoulder, the little door remains open behind the low curtain, the strip of darkness beyond it leading to that impossible brightness you saw. In your head, the thought rises with a tight, aching wish: <em>“and even if my head would go through,”</em> you think, <em>“it would be of very little use without my shoulders. Oh, how I wish I could shut up like a telescope! I think I could, if I only knew how to begin.”</em></p>",
+                    "choices": [
+                        "Return to the little door and peer down the passage again, searching for any clue to how you might fit.",
+                        "Get down on the floor and inspect the table’s underside and legs for a latch, panel, or mechanism.",
+                        "Test the tiny golden key against the glass table itself, probing for a hidden keyhole or seam."
+                    ],
+                    "created_at": "2026-05-11T22:35:02+00:00"
+                },
+                {
+                    "id": "01krcjzxje75jm03gjf1yvsfvd",
+                    "event": "Alice glimpses garden beyond the door",
+                    "prompt": "__continue__",
+                    "response": "<p>Your palms meet the cold floor first, and the chill runs straight up your wrists as you flatten yourself to the hall like a spy in a storybook. The glass table’s legs loom above you—thin, precise, and maddeningly innocent—each one catching lamplight and sending it sliding away in pale streaks.</p><p>You crane your neck and peer up beneath the tabletop, searching for the sort of sensible secret a sensible table might keep: a latch to thumb, a panel to pry, a hidden catch that would make everything click into place. But there’s nothing—no hinge-line, no seam, not even a roughness to suggest a trapdoor. Only smooth, transparent glass and your own upside-down face hovering faintly in it, as if the table is calmly reflecting your desperation back at you.</p><p>From down here, the open little door behind the curtain feels farther away—still breathing that cooler air into the hall—while the key sits heavy in your hand, a perfect answer to a question your body can’t yet ask correctly. If there is a trick, it isn’t in the table’s joints; it’s elsewhere, waiting for you to notice it.</p>",
+                    "choices": [
+                        "Crawl back to the little door and try to push your arm through the opening.",
+                        "Stand and test the golden key on the nearest full-sized door once more, slowly and carefully.",
+                        "Pull the curtain wider and examine the tiny doorway’s frame and threshold for any clue or hidden catch."
+                    ],
+                    "created_at": "2026-05-11T22:37:14+00:00"
+                },
+                {
+                    "id": "01krck496xsx6spc37e0venrt1",
+                    "event": "Alice finds bottle and drinks it",
+                    "prompt": "Carry the bottle to the little door and compare it to the doorway as if it might be meant for that problem.",
+                    "response": "<p>Your shoulder bumps the glass table as you push yourself up, and the contact makes the whole thing give a quick, bright <em>chime</em>—not loud, just pointed, as if the hall clears its throat at you. You step around it anyway, drawn back by the stubborn fact of that little door and the strip of cooler air it breathes into the lamplight.</p><p>But when you reach the tabletop again, it isn’t as innocent as it was a moment ago. Where your warped reflection used to be the only thing waiting, there now stands a little bottle—small enough to be overlooked until you’re close, solid enough to make you doubt your own eyes. A paper label is tied neatly round its neck, the words <strong>“DRINK ME,”</strong> beautifully printed, too cheerful to be trusted.</p><p>The sight of it makes your pulse do an impatient little hop—your body remembers rushing, remembers grabbing at answers mid-fall and missing them. You hear yourself say, very distinctly, “which certainly was not here before,” and the complaint feels ridiculous the instant it leaves you, because the bottle does not look like a thing that ever explains itself.</p><p>You lift it, feeling the cool glass and the slight give of the tied label under your thumb. Your mouth almost makes the shape of obedience—then you stop yourself, the way a sensible child stops just short of a hot stove. “No, I’ll look first,” you say, “and see whether it’s marked ‘poison’ or not”; and you turn the bottle slowly in the lamplight, searching for the one word that would make the decision easy.</p>",
+                    "choices": [
+                        "Taste the drink to test it and decide whether to swallow more.",
+                        "Inspect the bottle carefully for any warning besides the label.",
+                        "Carry the bottle to the little door and compare it to the doorway as if it might be meant for that problem."
+                    ],
+                    "created_at": "2026-05-11T22:39:37+00:00"
+                },
+                {
+                    "id": "01krcka45qsjn89z6zcar2e381",
+                    "event": "Alice finds bottle and drinks it",
+                    "prompt": "make sure the little door is wide open",
+                    "response": "<p>The bottle stays cold against your fingers as you cross the few steps back to the curtain, the label’s crisp paper brushing your knuckle with each small swing of your hand. You crouch beside the little doorway and hold the bottle up to it like a tailor offering fabric to a pattern—glass against darkness, your own breath briefly clouding both.</p><p>It fits the problem in a way that makes your stomach tighten: the bottle is small enough to belong to this door’s scale, neat enough to feel like an answer someone has placed on purpose. The passage beyond gives its faint, clean scent again, as if encouraging you without actually speaking. In the lamplight, the words <em>DRINK ME</em> look almost impudent—an instruction pretending to be good manners.</p><p>You turn the bottle once more, slow and thorough, willing a second label to appear—something sensible, something stern. There’s only the cheerful command at its neck, and the steady patience of the tiny opening waiting for a body that can match it. The golden key sits warm in your other hand, suddenly precious in a new way: not just a tool, but a thing you might have to keep safe while you do something foolish.</p>",
+                    "choices": [
+                        "Drink from the bottle.",
+                        "Test the bottle by touching a single drop to your lips.",
+                        "Set the bottle down by the little door and free both hands."
+                    ],
+                    "created_at": "2026-05-11T22:42:48+00:00"
+                },
+                {
+                    "id": "01krckc2dszknz4h8e50nbga7e",
+                    "event": "Alice finds bottle and drinks it",
+                    "prompt": "Drink from the bottle.",
+                    "response": "<p>The little door yields a fraction more under your fingertips—wood scraping softly against its own frame—until it cannot open any farther without snapping itself. You hold it there a moment, testing its stubborn miniature hinge, and feel the cool breath of the passage wash cleanly over your knuckles.</p><p>Crouched low, you angle your head to peer through the full opening as if width alone might solve everything. The bright, impossible neatness beyond stays just out of reach, and the doorway—now as wide as it will ever be—still looks made for a different-sized you. Behind you, the glass table’s lamplight glints; in your hands, the tiny golden key is warm with being clutched too tightly, while the little bottle stays <em>cold</em>, its polite label brushing your thumb as if to remind you what it wants.</p><p>For a heartbeat you are perfectly positioned between answers: a door that will not grow, a key you cannot afford to lose, and a bottle that might be a solution—or a lesson.</p>",
+                    "choices": [
+                        "Drink from the bottle.",
+                        "Set the key down carefully by the door before doing anything else.",
+                        "Test the bottle by tipping a single drop onto your fingertip and smelling it."
+                    ],
+                    "created_at": "2026-05-11T22:43:52+00:00"
+                },
+                {
+                    "id": "01krckdxftm39t4sz4w2kt37p0",
+                    "event": "Alice shrinks and forgets the key",
+                    "prompt": "__continue__",
+                    "response": "<p>The bottle’s lip touches your mouth, and the first swallow goes down <em>cool</em>—so ordinary, so harmless, that you almost resent it for pretending this is a sensible thing to do.</p><p>Then the world shifts its distances. Your sleeves loosen; the golden key in your other hand suddenly feels heavier than it ought; the door’s threshold lifts as though the floor is sinking away from it. “What a curious feeling!” said Alice; “I must be shutting up like a telescope.” The sensation keeps drawing you inward—bones and breath and certainty folding smaller—until, with a quiet finality, you are no taller than a doll, steadied on the tiles with your heart beating much too loud for such a little body.</p><p>You stay very still for a few minutes, half expecting to go on dwindling—nervous in that particular, prickling way that makes you imagine impossible endings. Nothing more happens. The garden’s clean, bright promise pulls at you; you turn at once for the little door—only to realize, with a sick drop in your stomach, that the tiny golden key is no longer with you. When you scramble back toward the glass table, you see it at once, lying plainly there above you, cruelly close and utterly unreachable through the clear surface.</p><p>You try anyway. You set your hands to one of the table’s legs and start to climb, but the glass is slick as ice; your feet skid, your grip slides, and you come down hard on the floor with stinging palms. You try again until your arms tremble and the leg might as well be a smooth cliff. At last you collapse onto the cold tiles, the air tasting thin, and tears spill out of you in hot, helpless beads.</p>",
+                    "choices": [
+                        "Wipe your face and search the floor around the table for anything you can use as a foothold.",
+                        "Circle the table and test a different leg, looking for any tiny flaw or texture your fingers can catch.",
+                        "Call out toward the empty hall for help, forcing your small voice to carry."
+                    ],
+                    "created_at": "2026-05-11T22:44:52+00:00"
+                },
+                {
+                    "id": "01krckpjeengm42k1an97mkrk0",
+                    "event": "Alice shrinks and forgets the key",
+                    "prompt": "__continue__",
+                    "response": "<p>Your hands push against the tiles—and the tiles do not budge, and neither does the problem. You slide a few inches forward on your knees anyway, the cold biting through your stockings, and the glass table’s leg flashes beside you like a pale pillar you can’t climb.</p><p>The little door is only a short crawl away, its open mouth breathing that clean, cool air as if it could swallow you whole—if only you had the right small certainty in your hand. Through the glass above, the tiny golden key lies in plain sight, bright and indifferent. Your tears make the lamplight wobble; every time you blink, the hall swims, and the table seems to float farther away than it ought to in such a narrow room.</p><p>You’re ten inches of girl in a great empty hall, with an empty little bottle near you and a door that waits like a joke you almost understand. The key is there. Your body is here. The distance between them feels <em>invented</em>—and yet it holds.</p>",
+                    "choices": [
+                        "Wipe your face and try to climb the table leg again with a different grip",
+                        "Crawl to the little door and press your face to the passage, searching for any way to hook or snag the key from below",
+                        "Grab the empty bottle and shove it hard against the table leg to test whether it can shift or topple"
+                    ],
+                    "created_at": "2026-05-11T22:49:36+00:00"
+                },
+                {
+                    "id": "01krckq9h00h8ptp0h4g9hpc3j",
+                    "event": "Alice shrinks and forgets the key",
+                    "prompt": "__continue__",
+                    "response": "<p>Your knees scrape over a ridge between tiles as you inch closer, and the sting snaps you briefly out of your tears—only to drop you straight back into the same cruel geometry: glass above, key beyond, your small hands empty of anything that matters.</p><p>You press your palms to the base of the table leg again, feeling the chill of it, trying to will friction into existence. It stays slick, politely refusing you. The little door’s open crack draws your gaze like a thread; the garden’s cool breath brushes your cheek and then vanishes, as if it’s teasing you for not bringing the one bright thing you need. The empty bottle lies where you left it, light as a lie, while your own hiccupping breaths make the hall’s lamplight tremble.</p><p>Nothing in the room changes to meet you. <em>You</em> have to change something—angle, leverage, courage, or manners—because the key is still up there, plain as day, and you’re still down here.</p>",
+                    "choices": [
+                        "Drag the empty bottle to the table leg and try to use it for grip or leverage",
+                        "Run to the little door and call through it for help from the other side",
+                        "Throw yourself against the curtain and doorframe to see if anything shifts or falls loose"
+                    ],
+                    "created_at": "2026-05-11T22:50:00+00:00"
+                },
+                {
+                    "id": "01krckqxm38047pg9frd7h3vyj",
+                    "event": "Alice finds cake and eats it",
+                    "prompt": "__continue__",
+                    "response": "<p>Your foot slides in your own tears as you try to crawl on, and the skid steals what little dignity you had left—leaving you sprawled, palms flat, breath catching in a thin, angry hiccup. The hall doesn’t give you anything for the effort; it only gives you the same hard facts from a slightly different angle.</p><p>You’re still ten inches high. The glass table’s leg rises beside you like a smooth, pale column that refuses every grip. Above, through the cold, clear sheet, the tiny golden key lies bright and perfectly useless—near enough to sting your eyes, far enough to mock your reach. The little door remains gaped open as it can be, breathing that clean, cool thread of garden-air across your cheek as if it’s trying to coax you to do something clever at last.</p><p>And under the table—where your gaze drops, because staring upward hurts—you catch it: a little glass box lying low in the shadow. It’s close enough that you can stretch a hand to it without standing. The sight lands like a sudden, practical thought interrupting a sob.</p>",
+                    "choices": [
+                        "Open the little glass box under the table.",
+                        "Wipe your face and crawl to the little door to judge the gap again.",
+                        "Stand and call out sharply into the hall for anyone to answer you."
+                    ],
+                    "created_at": "2026-05-11T22:50:20+00:00"
+                },
+                {
+                    "id": "01krckwvszvvetfer1sm882zc8",
+                    "event": "Alice finds cake and eats it",
+                    "prompt": "__continue__",
+                    "response": "<p>Your shoulder bumps the underside of the glass table as you crawl, and the dull <em>thunk</em> shivers up your small frame—enough to make you flinch, enough to make the tears pause on your lashes without quite stopping.</p><p>The shadow under here is cooler, close and cramped in a way the hall never was. Dust lies in thin, pale strokes along the tiles where even lamplight seems unwilling to reach. The little glass box sits just ahead of your fingers, its edges catching a faint glint as you inch nearer; above it, the world is all wrong proportions—your own distorted face in the tabletop, and beyond that, the tiny golden key shining where you cannot possibly touch it.</p><p>The open little door still breathes that clean garden-air across the floor, but it can’t reach you under the table. The empty bottle is light where you left it, and your scraped knees burn with every movement. Here, though—here is something you can actually <em>take</em>, something that doesn’t ask you to climb a wall of glass.</p>",
+                    "choices": [
+                        "Open the little glass box.",
+                        "Drag the empty bottle closer and use it to nudge the box toward you.",
+                        "Crawl back out from under the table and try the table leg again from a new angle."
+                    ],
+                    "created_at": "2026-05-11T22:53:02+00:00"
+                },
+                {
+                    "id": "01krcm2dxh4yxbaaa1hkh5qtne",
+                    "event": "Alice grows and talks to her feet",
+                    "prompt": "I run to the open little door and go through it.",
+                    "response": "<p>Your fingertips brush cold glass—sharp-edged in a careful way—and the little box slides a fraction across the tile with a tiny, stubborn squeak. It’s real. It’s <em>reachable</em>. After all that slick, impossible climbing, the simple certainty of something that will actually move under your hand feels like a rope thrown down into a well.</p><p>You inch closer until your chest nearly touches it, the underside of the table pressing the air low above your back. The box’s lid sits snug, its neat seam catching lamplight in a thin line; you can see just enough through the glass to know there’s something inside, but not enough to make out what without bringing it nearer. Above you, your reflection warps and wavers in the tabletop—tear-bright eyes, a small mouth set too hard for a child—while, farther off through the clear sheet, the tiny golden key keeps its bright, indifferent pose on the table’s surface.</p><p>The hall beyond remains enormous and unmoved by your distress: the little door still stands open as far as it ever will, leaking that clean thread of garden-air you can almost taste, and your empty bottle lies where you abandoned it, its label turned away like a polite refusal. Under here, though, you have a choice you didn’t a moment ago: you can <em>do</em> something.</p>",
+                    "choices": [
+                        "Open the glass box.",
+                        "Drag the glass box out from under the table.",
+                        "Stand and shout up at the key as if it might answer you."
+                    ],
+                    "created_at": "2026-05-11T22:56:05+00:00"
+                },
+                {
+                    "id": "01krcm52tb1wwb7psns5m9gban",
+                    "event": "Alice grows and talks to her feet",
+                    "prompt": "__continue__",
+                    "response": "<p>You bolt for the little doorway—and your shoulders meet the frame with a blunt, humiliating stop. The opening is still only that narrow crack; it takes you in no farther than a pressed cheek and a gasp of cool, green-scented air before the wood holds you fast.</p><p>For a second you wriggle, certain that if you just <em>try</em> harder the world will give way—like the table-leg never did. But the door is as unyielding as a rule invented for the pleasure of being obeyed. All you can do is drink in that bright breath of garden you cannot enter, then back yourself out again, palms sliding on the floor as you retreat into the lamplight.</p><p>The hall feels wider when you turn from the glimpse. Under the glass table, the little box waits where you left it, close enough to touch; above, the tiny golden key still lies on the tabletop, shining with the calm of something that doesn’t have to hurry.</p>",
+                    "choices": [
+                        "Grab the little glass box and open it.",
+                        "Drag the little glass box out from under the table into the open hall.",
+                        "Return to the table leg and try climbing again with your shoes for grip."
+                    ],
+                    "created_at": "2026-05-11T22:57:31+00:00"
+                },
+                {
+                    "id": "01krcmbt94mhbgyyf3tnp5t76v",
+                    "event": "Alice hits roof and cries",
+                    "prompt": "__continue__",
+                    "response": "<p>Your skull meets the hall’s roof with a sudden, hard certainty—<strong>wood and plaster don’t care how brave you feel</strong>—and the impact jars your teeth together before you can even draw a full breath.</p><p>The world has changed its mind about your size. You are no longer a small, scrabbling thing under a table: you are <em>more than nine feet high</em>, cramped into a long, low room that suddenly seems built to insult you. The lamps hang uncomfortably close; their light skates across your knees and the curve of your shoulder as you fumble upright and, at once, snatch up the tiny golden key—so tiny now it looks like a toy pinched between two fingers. You hurry to the garden door and try it anyway, because the cool green promise is still there—only now your body is too much of everything, and the little entrance is too little of anything.</p><p>There’s no clever angle. Lying on your side, you manage to peer through with one eye: a slice of brightness, a hint of leaves, a breath of clean air that makes the hall smell stale by comparison. Hopelessness settles like weight. You sit back—carefully, awkwardly—then it breaks out of you again, hot and childish and unstoppable. “You ought to be ashamed of yourself,” you tell yourself, “a great girl like you,” and then, as if sternness could fix the shape of the world, “Stop this moment, I tell you!” But the tears keep coming, spilling and spreading until they become a shallow pool around you, rippling lamplight and creeping farther down the hall.</p>",
+                    "choices": [
+                        "Clutch the key and try the little door again from this new height, testing every angle you can reach.",
+                        "Shift onto your side and scan the hall through the tear-waves for anything floating or within reach.",
+                        "Wade your hands through the pooling tears to feel how deep it’s become and whether it’s still rising."
+                    ],
+                    "created_at": "2026-05-11T23:01:12+00:00"
+                },
+                {
+                    "id": "01krcmgqe75rm5avt6fa5kpx7a",
+                    "event": "White Rabbit flees as Alice asks",
+                    "prompt": "Grab the dropped gloves and fan before the tears carry them away.",
+                    "response": "<p>The patter reaches you first—quick, decisive little steps skimming the edge of your spreading tears—until the sound resolves into a figure you know too well. The White Rabbit comes trotting back through the dim, <em>splendidly dressed</em> now, a pair of white kid gloves bunched in one hand and a large fan in the other. He’s in such a hurry his finery looks borrowed from panic itself, and his voice leaks out ahead of him as if he can’t keep it inside: “Oh! the Duchess, the Duchess! Oh! won’t she be savage if I’ve kept her waiting!”</p><p>Your throat tightens with sheer need. The hall is all wrong proportions—your head near the lamps, your tears turning the floor into a shining hazard—and still you find yourself reaching for manners like a handrail. When he draws near enough that you could almost be mistaken for part of the furniture, you force your voice low and small, as though softness might make you less frightening. “If you please, sir—”</p><p><strong>He startles as if struck.</strong> The gloves slip free; the fan clatters and skids; and in the same breath he’s gone—skurrying away into the darkness as hard as he can go, leaving only the dropped whiteness on the wet floor and the sudden emptiness where help might have been.</p>",
+                    "choices": [
+                        "Chase after the Rabbit into the darkness, calling “sir” for help.",
+                        "Shout after him and demand he stop running from you.",
+                        "Grab the dropped gloves and fan before the tears carry them away."
+                    ],
+                    "created_at": "2026-05-11T23:03:53+00:00"
+                },
+                {
+                    "id": "01krcmkhf57jzdn4tderqx1v6c",
+                    "event": "White Rabbit flees as Alice asks",
+                    "prompt": "__continue__",
+                    "response": "<p>Your fingers close on damp kid leather just as the current tugs—slick, cold water trying to steal the white gloves away from you. You snatch them up in a clumsy fist, then lunge for the fan as it skims and spins along the shining surface; its edge bumps your knuckles, and you hook it fast before it can drift out of reach.</p><p>The pool around you shivers from the effort, rippling lamplight into broken bands across the tiles. The Rabbit’s retreating footfalls thin into the darkness, leaving you with the absurd, intimate proof of his hurry: soft gloves gone limp in your hand, and the large fan—too small for you now, yet suddenly the only tool in the room that feels like it might <em>do</em> something. Water beads on the fan’s ribs; the gloves smell faintly of clean cloth and panic.</p><p>You sit there towering in the low hall, tears lapping at your legs, clutching another creature’s costume like a borrowed permission. The little door still breathes its thread of garden-air through the crack—bright, indifferent, impossibly near.</p>",
+                    "choices": [
+                        "Chase into the darkness after the White Rabbit while clutching the fan and gloves.",
+                        "Fan yourself hard with the large fan, testing whether it can steady you—or change anything at all.",
+                        "Put on the white kid gloves carefully, one hand at a time, to see if they fit or hinder you at this size."
+                    ],
+                    "created_at": "2026-05-11T23:05:25+00:00"
+                },
+                {
+                    "id": "01krcmq3ms23xa85tg3xjk5z2b",
+                    "event": "Alice questions identity while fanning",
+                    "prompt": "__continue__",
+                    "response": "<p>You scoop up the dropped fan and gloves, and for a moment the hall feels less like a trap and more like a stage you can move across. The fan is cool against your fingers; it smells faintly of powder and something sharp—like crushed mint. You flutter it at your face and the heat eases, but your thoughts don’t. The garden’s bright promise still waits behind its tiny door, yet the word <em>WAIT</em> is suddenly louder than the lamps’ hum.</p>\n<p>You try to anchor yourself the old way—facts, recitations, the tidy little hooks of schoolroom certainty—and they come loose in your mouth. Numbers refuse to line up. Capitals swap places as if they’ve been playing while you weren’t looking. Even your own voice sounds borrowed, as though it belongs to whichever girl you might be mistaken for.</p>\n<p>Still, you are here. You are breathing. The fan keeps time. And the question that matters won’t be pushed back behind any curtain: if the world won’t agree on your name, what will you use to prove it to yourself?</p>\n<p>For one quiet beat, you simply feel the air move—fan, breath, fan—like a small mercy you can control. Then, far down the passage, pattering footsteps return, quick and nervous, and you realize you may have to decide who you are before anyone else decides for you. <strong>Choose your proof, and meet whoever comes next as that version of you.</strong></p>",
+                    "choices": [
+                        "Cling to the old rules and recite what you were taught until something finally comes out correct.",
+                        "Treat the wrong answers as clues and start experimenting with new patterns instead of old lessons.",
+                        "Stop reciting and simply watch yourself—breath, hands, voice—waiting to see what stays consistent."
+                    ],
+                    "created_at": "2026-05-11T23:07:22+00:00"
+                },
+                {
+                    "id": "01krcn3a2k1wqt6ggkfgh1w5rf",
+                    "event": "Alice shrinks and drops the fan",
+                    "prompt": "__continue__",
+                    "response": "<p>You let the half-formed lessons fall away before they can snag in your throat. Instead, you hold the fan a little lower and watch your own hands—how the damp glove clings, how your fingers tremble and then, slowly, <em>decide</em> to steady. Air moves across your lips in a clean rhythm: in, out; fan, pause; fan again. Your voice—when you test it on nothing more than a breathy hum—sounds like yours even in this strange, stretched body, as if the sound remembers you better than your thoughts do.</p><p>The hall stays vast and low and unfair, the lamps glaring at your shoulders, the tear-water tugging gently at anything loose. But inside that pull you find a small fixed point: the way you flinch at your own sniffle, the way you swallow, the way your chest tightens when you glance at the little door and then eases when you look away. Not facts, not sums—just the plain, stubborn continuity of being the one who notices. You fan once more, slower, and the wet air cools against your skin as the distant patter of footsteps seems to stitch itself into the same pulse you’ve chosen to follow.</p><p>You don’t name yourself. You don’t have to—yet. You simply keep watching, breathing, feeling the weight of the borrowed gloves, the slick handle of the fan, and the thin thread of garden-scent that refuses to be anything but tempting.</p>",
+                    "choices": [
+                        "Stride to the glass table and reach for the tiny golden key despite your cramped size.",
+                        "Wade toward the little door and test the opening again with careful, measured pressure.",
+                        "Gather the fan and gloves close and climb onto the nearest dry stretch to keep them from drifting in the tear-pool."
+                    ],
+                    "created_at": "2026-05-11T23:14:02+00:00"
+                },
+                {
+                    "id": "01krcs84wq4b04ewezpbgxw97a",
+                    "event": "Alice runs to door and falls into pool",
+                    "prompt": "Lift the fan above the water and use it to steady yourself as you tread and orient.",
+                    "response": "<p>Your next step finds nothing solid—only your own tears, slick as oil underfoot—and you pitch forward with a sudden, helpless skid. The fan jerks in your grip, the damp gloves twist, and then <strong>splash!</strong> cold salt water climbs your chest and snaps at your chin before you can haul a breath.</p>\n<p>For one ridiculous heartbeat you’re certain you’ve tumbled into the sea, and your mind, desperate for ordinary routes, offers up rails and stations as if you might simply <em>go back by railway</em>. Lamplight wobbles above you in broken coins as you paddle, and the truth settles in with the brine: this is your own flood, the very pool you made when you were nine feet high—only now it’s deep enough to swallow you to the mouth.</p>\n<p>You kick and scull in place, trying to find the edge with your toes, the air tasting of salt and shame. “<em>I wish I hadn’t cried so much!</em>” you blurt aloud, and the words seem to hang over the water like a rule you’ve sentenced yourself under. The little door is somewhere beyond the shimmer; the glass table and its unreachable height feel like a memory you can’t quite touch—while the fan and gloves, absurdly, are with you, wet and real.</p>",
+                    "choices": [
+                        "Swim toward where you last saw the little door and feel for the wall.",
+                        "Lift the fan above the water and use it to steady yourself as you tread and orient.",
+                        "Call out into the hall for help, forcing your voice to carry over the splashing."
+                    ],
+                    "created_at": "2026-05-12T00:26:35+00:00"
+                },
+                {
+                    "id": "01krcsjhwrnsv1bm7n2y7c3shc",
+                    "event": "Alice meets Mouse in the pool",
+                    "prompt": "Offer the Mouse the fan’s edge as a floating rest while you keep your distance.",
+                    "response": "<p>The fan’s wet ribs creak as you thrust it up into the air, and for a moment it’s like raising a tiny parasol against drowning. You kick harder, forcing your chin up, and use the fan’s handle as a steadying point—something to <em>hold</em> that isn’t water. The surface slaps at your wrists; the gloves cling and drag, heavy with tears, but your breathing finds a rhythm again: quick, panicked sips that gradually lengthen.</p>\n<p>Off to one side, a new sound stitches itself into the pool’s hush—splashes that are too deliberate to be your own flailing. You angle your face toward it, blinking salt away. At first, the dark shape bobbing there looks enormous in the wobbling lamplight—something like a walrus, something like a hippopotamus—until your mind catches up with your size and the distance. It’s only a mouse, paddling as awkwardly as you are, whiskers slicked flat, ears shining with water.</p>\n<p>Your heart gives a small, hopeful lurch—because in a place where doors won’t behave and bodies won’t keep their promises, even a mouse might be worth speaking to. You edge nearer with careful strokes, keeping the fan high. “O Mouse, do you know the way out of this pool? I am very tired of swimming about here, O Mouse!” The Mouse turns its head and studies you with a sharp, bright stillness, as if weighing whether you are sensible enough to answer—and gives what looks very much like a wink. But it offers no words.</p>\n<p>You try again, grasping for politeness in the only foreign phrase that leaps up through the brine and confusion. “Où est ma chatte?” The effect is instant and violent: the Mouse springs almost clear of the water and quivers all over with fright. Your apology tumbles out on the spot, urgent as another breath. “Oh, I beg your pardon! I quite forgot you didn’t like cats.”</p>",
+                    "choices": [
+                        "Call out \"Mouse dear! Do come back again, and we won’t talk about cats or dogs either, if you don’t like them!\"",
+                        "Swim closer with your hands open, keeping the fan raised to look less threatening.",
+                        "Offer the Mouse the fan’s edge as a floating rest while you keep your distance."
+                    ],
+                    "created_at": "2026-05-12T00:32:16+00:00"
+                },
+                {
+                    "id": "01krct904a02bcj7naw13pvb6s",
+                    "event": "Alice meets Mouse in the pool",
+                    "prompt": "Call softly after the Mouse and promise you won’t speak of cats or dogs again.",
+                    "response": "<p>The fan dips until its edge kisses the surface, and it immediately wants to drift away from you—water tugging at it like a greedy hand. You tighten your grip and extend it anyway, careful not to crowd the Mouse, letting the ribs and paper make a little wavering platform between you.</p><p>The Mouse’s whole body stays keyed up, quivering as if the word you spoke is still in the water. It doesn’t climb onto the fan, but it stops fleeing for the length of a breath, staring at your offering with bright suspicion. You keep your arms long, your voice smaller than your panic, and the pool’s lamplight shatters over the fan’s wet arc as you tread in place.</p><p>For a heartbeat you feel the difference your manners can make down here: not a door opening, not a rule obeyed—just a creature deciding whether you are danger or merely strange. The Mouse turns slightly toward you, pale-faced with passion, and you sense that if you can get both of you out of this water, it has something it’s braced to say.</p>",
+                    "choices": [
+                        "Swim toward the nearest wall and guide the Mouse alongside you using the fan as a buffer.",
+                        "Call softly after the Mouse and promise you won’t speak of cats or dogs again.",
+                        "Offer your damp glove as an extra float and inch the fan closer without touching the Mouse."
+                    ],
+                    "created_at": "2026-05-12T00:44:31+00:00"
+                },
+                {
+                    "id": "01krctff9ttxsk11gz0q29rtdy",
+                    "event": "Alice meets Mouse in the pool",
+                    "prompt": "Lead the way toward the nearest edge, keeping the fan between you as a float.",
+                    "response": "<p>Your voice carries low across the slick surface, and the Mouse’s frantic strokes falter mid-splash. The little body slews around in the water, not fleeing now but hovering—tail trembling like a thin cord pulled tight—while your offered fan wobbles between you, half raft and half apology.</p><p>It swims back slowly, as if every inch is a decision. Up close, its face looks washed-out with feeling, whiskers plastered to its snout; it keeps just far enough that your wake can’t bump it. When it speaks at last, the words come small and shaken, but sharp enough to cut through the slap of water: <em>“Let us get to the shore, and then I’ll tell you my history, and you’ll understand why it is I hate cats and dogs.”</em></p><p>The pool rocks you both in its salty cradle. You’re still soaked to the chin, gloves dragging at your wrists, and the fan’s edge keeps trying to wander—yet the Mouse is no longer running. It’s waiting on you to make <em>shore</em> mean something.</p>",
+                    "choices": [
+                        "Lead the way toward the nearest edge, keeping the fan between you as a float.",
+                        "Ask the Mouse where it thinks the shore is before you start swimming.",
+                        "Offer your gloved hand as a steady guide-point and invite the Mouse to keep close to it."
+                    ],
+                    "created_at": "2026-05-12T00:48:03+00:00"
+                },
+                {
+                    "id": "01krctke72htw1s4jdnz2yxbbp",
+                    "event": "Animals gather and swim to shore",
+                    "prompt": "Clamber onto the shore and pull the fan up after you.",
+                    "response": "<p>The water thins under your kicking feet—first a hopeful brush, then a firmer scrape—and you angle your body toward it, hauling the fan along like a stubborn little boat that keeps trying to yaw sideways. The paper sags and gleams; your damp gloves slip on the handle; but you keep it between you and the Mouse, a floating boundary that says <em>I’m not going to lunge</em> even while your lungs insist on hurry.</p>\n<p>As you push on, the pool reveals its true trouble: it isn’t empty. Shapes bob up around you—feathers slicked into spikes, small heads and beaks and bright eyes—creatures paddling with offended determination as if they’ve been dropped into this salt-water meeting by mistake. A Duck cuts across your path with a sharp, efficient wake; a Dodo rides the surface like a pompous cork; a Lory and an Eaglet churn along in flustered little bursts. The crowded water presses close, everyone swimming at once, and for a moment you’re back in that frantic habit of <em>trying first, thinking later</em>—except now you have to think, because there are bodies everywhere.</p>\n<p>You keep leading anyway, threading through the living clutter, the fan skimming ahead as a guide and a courtesy. One by one, the others fall into your line without being asked, and the shore—solid, blessedly not-water—comes up to meet your hands. You can feel the change in the air right at the edge: less brine in the breath, more of whatever dry land smells like in a place that shouldn’t exist. Behind you, the Mouse stays close enough to follow, far enough not to trust.</p>",
+                    "choices": [
+                        "Clamber onto the shore and pull the fan up after you.",
+                        "Turn back in the shallows and gesture the others toward the same landing spot.",
+                        "Call softly to the Mouse and offer it the fan again for the last few strokes."
+                    ],
+                    "created_at": "2026-05-12T00:50:13+00:00"
+                },
+                {
+                    "id": "01krctrrth2zs7w5jf4fkarb80",
+                    "event": "Wet party debates and hears Mouse read",
+                    "prompt": "Support the Dodo by insisting on a more energetic plan to get dry.",
+                    "response": "<p>Your knees hit something that is finally <em>not</em> water—gritty bank, stubborn and cold—and you scramble up with a gasp that tastes less like salt. The fan follows with a wet slap as you yank it clear, its paper sagging and shining; droplets fling off in a little arc that lands on your own sleeves like an accusation.</p>\n<p>As you get your feet under you, the rest of the company gathers in a miserable heap along the edge: birds with feathers dragged into dark, stringy points; animals with fur plastered tight to their ribs. Everyone drips, everyone shivers, everyone looks offended by the very idea of having a body that holds water. And yet—absurdly—conversation starts as if this were a perfectly ordinary sort of morning. You find yourself answering and arguing on instinct, words coming before you can decide whether you know these creatures at all; the Lory’s pride goes rigid and sulky behind the declaration, “I am older than you, and must know better;” and when you press for how much older, it shuts down like a snapped fan-stave.</p>\n<p>Then the Mouse—small, soaked, and suddenly weighty with authority—calls the whole dripping parliament to order: “Sit down, all of you, and listen to me! <em>I’ll</em> soon make you dry enough!” They obey at once, forming a ring with the Mouse in the middle, as though the shape itself might squeeze the water out. Your gloves are heavy, your hair clings, and your skin already has that ache that promises a cold. The Mouse clears its throat with ceremony. “Ahem!” it says, and begins, “are you all ready? This is the driest thing I know. Silence all round, if you please! ‘William the Conqueror, whose cause was favoured by the pope, was soon submitted to by the English, who wanted leaders…’”</p>\n<p>The words fall like dry dust—and do nothing at all to the wet. When the Mouse turns its sharp little face toward you to check your progress—“How are you getting on now, my dear?”—you can only answer honestly, “As wet as ever,” and, because honesty seems to require proof, add, “it doesn’t seem to dry me at all.” The circle tightens with discomfort. The Dodo rises with solemn importance, chest out, dripping from the beak, and declares, “I move that the meeting adjourn, for the immediate adoption of more energetic”</p>",
+                    "choices": [
+                        "Support the Dodo by insisting on a more energetic plan to get dry.",
+                        "Appeal to the Mouse and ask it to try something other than reading.",
+                        "Confront the Lory and demand it tell you its age."
+                    ],
+                    "created_at": "2026-05-12T00:53:08+00:00"
+                },
+                {
+                    "id": "01krcv13rj20kygfdgxvs8bv0q",
+                    "event": "Wet party debates and hears Mouse read",
+                    "prompt": "ask the group where am I",
+                    "response": "<p>Your insistence lands like a thrown pebble in the ring—every dripping head tilts, and the Mouse’s reading stutters into a brittle pause. The Dodo, already upright and ceremonial, seems to swell with satisfaction at having an ally; its wet feathers hang like a judge’s robes that have been rained on, but it holds itself as if the very posture could make everyone drier.</p><p>A few of the smaller creatures shuffle and squeeze their paws and wings, eager for anything that isn’t listening to history while water runs down their backs. The Mouse’s whiskers twitch, its politeness tightening into something thin; it looks from the Dodo to you, as though deciding whether your interruption is <em>rudeness</em> or merely <em>common sense</em>. Around you, the bank is a patchwork of damp fur and draggled feathers, and your own white kid gloves cling coldly to your fingers while the fan droops, heavy with tear-water.</p><p>The Dodo holds the floor, waiting to be followed—waiting for the ring to become an action instead of a lesson. The Mouse remains in the middle, small and authoritative, as if daring anyone to propose an energy that doesn’t insult its dignity.</p>",
+                    "choices": [
+                        "Press the Dodo to outline exactly what “more energetic” means and volunteer to start.",
+                        "Appeal to the Mouse politely and ask permission to try a different way to get everyone dry.",
+                        "Step into the ring and demonstrate a vigorous shake-and-flap routine with your fan and sleeves."
+                    ],
+                    "created_at": "2026-05-12T00:57:41+00:00"
+                },
+                {
+                    "id": "01krcv6qx8kynq299a5ywvqq6f",
+                    "event": "Dodo proposes and runs a Caucus-race",
+                    "prompt": "Pull your wet gloves tighter and ask the Mouse, quietly, if it knows what this place is called.",
+                    "response": "<p>Your question lands into the dripping ring like a coin dropped into a well—every head turns at once, measuring you. The Eaglet’s beak lifts, sharp with impatience, and it snaps, <em>“Speak English!”</em> Then, as if that weren’t enough, it adds, <em>“I don’t know the meaning of half those long words, and, what’s more, I don’t believe you do either!”</em> A couple of the birds bend their necks and titter, trying to hide it and failing.</p><p>The Dodo’s dignity tightens as though you’ve pinched it. With an offended little huff, it insists, <em>“What I was going to say… was, that the best thing to get us dry would be a Caucus-race.”</em> You feel the absurdity of it—the way this place answers a plain need (warmth, dryness, direction) with a word that sounds like a rule you were never taught. The wet bank smells of feathers and pond-mud and your own tears; your gloves chill your fingers; the fan hangs heavy in your hand, as if even it is tired of being sensible.</p><p>When you press for meaning, the Dodo only leans into certainty: <em>“Why… the best way to explain it is to do it.”</em> It begins fussing a rough circle into a “course” on the ground, as if drawing a boundary can make order appear. The others shuffle into place, still dripping, eyes bright with the hope of motion. No one answers your question of <em>where</em> you are—not in the way you meant. Here, apparently, you are wherever the meeting decides you stand.</p>",
+                    "choices": [
+                        "Step onto the course and start running when you like.",
+                        "Question the Dodo directly about what a Caucus-race is supposed to accomplish.",
+                        "Pull your wet gloves tighter and ask the Mouse, quietly, if it knows what this place is called."
+                    ],
+                    "created_at": "2026-05-12T01:00:46+00:00"
+                },
+                {
+                    "id": "01krcvc1dkr0qwxc5be8ezcphb",
+                    "event": "Dodo proposes and runs a Caucus-race",
+                    "prompt": "Step onto the course and begin running when you like, committing to the race.",
+                    "response": "<p>Your damp gloves squeak as you tug them tighter, the cold kid-skin cinching to your fingers like a polite little shiver. You lean toward the Mouse at the ring’s edge, keeping your voice tucked low so it won’t become another public thing to be argued over.</p><p>The Mouse’s whiskers twitch at the intimacy of being singled out. It doesn’t look at you at first—its eyes stay fixed on the Dodo’s busy importance as the circle on the ground is fussed into existence—but its tail gives a small, impatient lash. Then it turns its sharp face just enough to let you see how guarded it still is, as though a name might be a trap. It gives you a tight, clipped answer in the same tone it used to keep order on the water: not unkind, but not yielding either—more a refusal to be made useful than ignorance.</p><p>Around you, the party continues to arrange itself “here and there” along the rough-marked course; wet feathers and fur scrape against the bank as everyone spreads out with the hungry hope that movement will do what speeches didn’t. The Dodo pauses mid-gesture as if listening for dissent, then carries on, satisfied with the attention. The Mouse stays close enough that you can feel its caution like heat off a stone, waiting to see whether you’ll press it—or run.</p>",
+                    "choices": [
+                        "Step onto the course and begin running when you like, committing to the race.",
+                        "Press the Mouse for a clearer name, asking what people call this place when they’re not arguing.",
+                        "Challenge the Dodo by asking who decided a circle counts as a race-course."
+                    ],
+                    "created_at": "2026-05-12T01:03:39+00:00"
+                },
+                {
+                    "id": "01krcvge3h1zvm36qjqdgp2h10",
+                    "event": "Dodo proposes and runs a Caucus-race",
+                    "prompt": "Angle toward the Mouse as you pass and match its pace for a lap, trying to draw it into talk while you run.",
+                    "response": "<p>Your first step bites into the damp earth—and then you’re off, the chill in your gloves turning into a thin, brisk burn as your arms begin to swing. The “course” is nothing but a scuffed circle and a collective agreement, yet the moment you commit, the others commit too: a scatter of feet, claws, and little paddling motions on land, all starting at different moments as though everyone’s listening to a different invisible signal.</p><p>The fan drags at your hand, heavy with water, but you keep hold of it anyway; it flaps once with a sodden sigh as you run, spraying a few cold drops against your wrist. The Dodo circles with grave energy, watching bodies move as if movement itself were a vote cast correctly. Behind you, the Mouse keeps to its own pace, wary even while it runs—still close enough to be part of the same ridiculous solution, still guarded as a locked drawer.</p><p>Breath begins to warm in your chest. Mud yields, then firms; the bank’s grit gives way to a rhythm. With each loop, the wet weight on you feels less like drowning and more like mere weather—feathers shake, fur fluffs in tiny increments, and your own sleeves stop clinging quite so viciously. No one calls time; no one agrees on progress; yet the circle slowly does what the history lesson couldn’t.</p>",
+                    "choices": [
+                        "Push your pace and run a few more hard laps, daring the damp to give up.",
+                        "Call to the Dodo mid-stride and ask how you’ll know when to stop.",
+                        "Angle toward the Mouse as you pass and match its pace for a lap, trying to draw it into talk while you run."
+                    ],
+                    "created_at": "2026-05-12T01:06:04+00:00"
+                },
+                {
+                    "id": "01krcvn77755xp1h2mtq86zjpv",
+                    "event": "Alice hands out prizes and receives thimble",
+                    "prompt": "I stop and watch everyone",
+                    "response": "<p>You cut inward on the next pass and the Mouse’s eyes flick sideways—sharp as a pin—before it adjusts its line to keep the same careful distance, even while your feet keep time together for a few strides. The closeness makes the air between you feel narrower, as if a private conversation is another kind of trap.</p><p>Around you, the race remains gloriously lawless: bodies start and stop when they please, cutting across the circle, veering “here and there” with the earnestness of people pretending they know the rules. Your damp gloves are beginning to lose their cling; the fan in your hand still drags, but each swing sheds a little more water, turning weight into a spray. The Dodo patrols the muddied ring with grave satisfaction, watching everyone run as though the mere act of motion is a verdict.</p><p>You try to shape words while you breathe—something gentle, something that won’t mention cats, something that won’t sound like a command. The Mouse keeps its mouth set, whiskers quivering with restraint, as if it’s decided that running is safer than answering. Still, it doesn’t bolt. It stays beside you for the lap—guarded, but present—letting your pace become the question you’re asking.</p>",
+                    "choices": [
+                        "Speak softly to the Mouse and ask its name, keeping your tone strictly polite.",
+                        "Signal to the Dodo that you think everyone is drying off and ask what happens when the race ends.",
+                        "Break away from the Mouse and quicken your pace, using the fan to shake off more water as you run."
+                    ],
+                    "created_at": "2026-05-12T01:08:40+00:00"
+                },
+                {
+                    "id": "01krcvs5pk3wby9r5a8s58s9mx",
+                    "event": "Alice hands out prizes and receives thimble",
+                    "prompt": "say to the group, you all did so well and you all are winners",
+                    "response": "<p>Your shoes skid and settle as you drop out of the churn of feet—breath still hot in your throat while the air against your damp sleeves goes suddenly cold again. The circle keeps moving without you, a disorderly little universe that refuses to notice any single planet has paused.</p><p>The Dodo’s gaze swings past like a magistrate’s lantern and catches you standing still; its beak tightens, offended by idleness in the middle of a “system.” The Mouse, still trotting with that cautious, measured economy, flicks one quick look your way—more relief than concern—before it angles a fraction farther off, as if your stillness might be a net. Around them, feathers begin to lift from spines; fur shakes itself into something less miserable; even your sodden fan feels a shade lighter in your grip as droplets finally stop flinging from its edge.</p><p>Then the motion falters—one runner slows, another bumps into a third, and the whole company begins to bunch toward the Dodo as though the end of a thing has been announced, even though no one ever agreed when it began. Wet eyes turn toward you again, expectant and hungry: if everyone has “won,” someone must decide what that means.</p>",
+                    "choices": [
+                        "Step forward and ask who is meant to give the prizes.",
+                        "Approach the Dodo and offer to help make order of the crowd.",
+                        "Call softly to the Mouse and ask what it thinks should happen next."
+                    ],
+                    "created_at": "2026-05-12T01:10:50+00:00"
+                },
+                {
+                    "id": "01krcw0a1714wrkkdantfdx9t6",
+                    "event": "Comfits are eaten and Mouse is questioned",
+                    "prompt": "ask the mouse - so what now - can we go somewhere - I want to see this world",
+                    "response": "<p>Your praise ripples across the damp ring—feathers lift, ears prick, and the last few stragglers slow as if your words have <em>tapped the invisible bell</em> they were all pretending to hear. A couple of the smaller creatures brighten at once, the kind who look as though they’ve been waiting to be told what to feel; one of the larger birds gives a disgruntled cough, as if winning without tasting anything is hardly winning at all.</p><p>The Dodo draws itself up, delighted to have the sentiment spoken aloud; it holds your approval the way it held its own importance, like a sash. Around you, hands and wings fidget toward the little pile of comfits as if the very idea of “winners” has made them edible. The Mouse stays a half-step apart—still guarded, still watching faces—yet it doesn’t swim away from the moment. The air smells of mud and drying fur; your white kid gloves, still damp, cling less cruelly now, and the fan in your hand feels merely heavy instead of hopeless.</p><p>As the company begins to settle back into a ring again, attention tilts—inevitably—toward the Mouse, the only one who looks as if it might turn all this disorder into a story. You can feel the group’s hunger shift from movement to meaning, as if they mean to be paid twice: once in sweets, once in secrets.</p>",
+                    "choices": [
+                        "Ask the Mouse to tell you its history and why it hates—C and D.",
+                        "Hand out the comfits to the nearest creatures and help soothe the choking ones.",
+                        "Lean toward the Mouse and whisper an apology for prying, inviting it to speak only if it wishes."
+                    ],
+                    "created_at": "2026-05-12T01:14:44+00:00"
+                },
+                {
+                    "id": "01krcw4mvd7avb2rs9ewnec05q",
+                    "event": "Comfits are eaten and Mouse is questioned",
+                    "prompt": "Soften your tone and ask the Mouse to tell you something—anything—without naming cats or places.",
+                    "response": "<p>The Mouse’s tail gives a quick, irritated twitch at your words, as if you’ve tugged on it without permission. It doesn’t answer at once; it lets the ring’s attention press in, lets your eagerness hang there—<em>I want to see this world</em>—like a request that might become a demand.</p><p>A few of the birds shift, half-ready to be offended on someone else’s behalf. The Dodo’s posture firms, as though “somewhere” ought to require a committee. The Mouse finally turns its narrow face more fully toward you, eyes bright and cautious, weighing whether you’re asking for guidance… or for possession.</p><p>You can feel the moment trying to tip: the comfits’ sticky sweetness still on tongues, the last dampness lifting from feathers, and now the sudden appetite for <em>more</em>. The Mouse draws in a thin breath, preparing to speak—yet its gaze keeps darting, as if one wrong word could make the whole ring bristle again.</p>",
+                    "choices": [
+                        "Press the Mouse for its history and why it hates “C and D.”",
+                        "Soften your tone and ask the Mouse to tell you something—anything—without naming cats or places.",
+                        "Appeal to the Dodo and ask what the group will do next now that everyone is dry."
+                    ],
+                    "created_at": "2026-05-12T01:17:06+00:00"
+                },
+                {
+                    "id": "01krcw7zg4ksvddrw65m5xh7yw",
+                    "event": "Mouse recites tale and storms off",
+                    "prompt": "Apologize at once and ask it to go on from where it left off.",
+                    "response": "<p>Your voice drops into something small enough to fit between its whiskers and its pride. The Mouse’s ears tilt—just a fraction—at the carefulness of it, the way you leave <em>cats</em> and <em>where</em> neatly untouched. For a heartbeat the ring feels like it’s holding its breath with you, waiting to see whether the Mouse will be cornered… or courted.</p><p>It answers by turning away from everyone at once and giving you words that run like a narrow path, quick and slantwise—an old, sharp little verse about a fury and a mouse, about law and prosecution and a trial that has no judge until someone decides to be all of it. The cadence is brisk enough that you can almost forget how damp your gloves still are, how the fan’s ribs press cold lines into your palm.</p><p>But your mind snags—on the shape of it, on a bend you can’t quite follow—and the Mouse’s head snaps toward you, severe as a schoolmaster. <strong>“You are not attending!”</strong> it says, and the air in the circle tightens as if attention is a rule you’ve broken aloud.</p>",
+                    "choices": [
+                        "Apologize at once and ask it to go on from where it left off.",
+                        "Explain carefully what confused you and ask what it meant by the bend.",
+                        "Call after it if it starts to leave, asking it to finish the story."
+                    ],
+                    "created_at": "2026-05-12T01:18:55+00:00"
+                },
+                {
+                    "id": "01krcwn8kptjth430st9aaetaq",
+                    "event": "Mouse recites tale and storms off",
+                    "prompt": null,
+                    "response": "<p>The apology leaves your mouth quickly—too quickly to dress itself up—and the Mouse’s whiskers tremble as if your breath has brushed them. For a moment it simply stares, rigid with offence, then its small body gathers itself like a knot pulled tight.</p><p>“I had <em>not!</em>” it cries, sharp and very angrily, as though your attempt to help has only proved the charge. It rises onto its feet, turns its back on the ring, and starts away with brisk, offended steps. “I shall do nothing of the sort,” it says, walking off as if the ground itself has insulted it. “You insult me by talking such nonsense!”</p><p>The others surge with you in a wet, pleading chorus—voices and beaks and paws all leaning after that retreating tail—while you stand there with the fan heavy in your hand and your damp gloves suddenly feeling far too conspicuous. The Mouse does not slow; it only gives a low, dissatisfied sound in its throat and shakes its head impatiently, quickening as if escape were the only proper punctuation.</p>",
+                    "choices": [
+                        "Hurry after the Mouse and block its path with your body, then offer a calmer apology without adding explanations.",
+                        "Call after the Mouse again and ask it to return, keeping your words as short and plain as possible.",
+                        "Turn to the others and suggest giving the Mouse space, then start leading the ring away from where it’s walking off."
+                    ],
+                    "created_at": "2026-05-12T01:26:10+00:00"
+                }
+            ]
+        }
+    ]
+}
