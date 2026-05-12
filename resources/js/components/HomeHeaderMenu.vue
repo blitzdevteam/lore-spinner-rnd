@@ -3,7 +3,7 @@ import { index } from '@/wayfinder/routes';
 import { index as creatorsIndex } from '@/wayfinder/routes/creators';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, House, LucideIcon, Mic, Users } from 'lucide-vue-next';
+import { BookOpen, House, LucideIcon, Mic, PenLine, Users } from 'lucide-vue-next';
 
 const menu: {
     title: string;
@@ -29,6 +29,11 @@ const menu: {
         title: 'XEN',
         link: '/user/voice-lab',
         icon: Mic,
+    },
+    {
+        title: 'Writer Lab',
+        link: '/writer/writer-lab',
+        icon: PenLine,
     },
 ];
 
