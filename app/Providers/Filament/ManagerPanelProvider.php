@@ -43,11 +43,12 @@ final class ManagerPanelProvider extends PanelProvider
         // Register the nav item on every manager request. FeedbackResource uses
         // $isDiscovered = false so it never enters getResources(), meaning
         // mountNavigation() would skip it. This serving() callback adds it back.
-        Filament::serving(function (): void {
-            if (Filament::getCurrentPanel()?->getId() !== 'manager') {
-                return;
-            }
-
+        //
+        // NOTE: Do NOT guard on getCurrentPanel() here — DispatchServingFilamentEvent
+        // fires before SetUpPanel middleware, so getCurrentPanel() is always null at
+        // this point. getCurrentOrDefaultPanel() (used inside registerNavigationItems)
+        // falls back to the default panel, which is the manager panel.
+        Filament::serving(static function (): void {
             FeedbackResource::registerNavigationItems();
         });
     }
