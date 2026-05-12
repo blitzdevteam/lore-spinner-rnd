@@ -109,9 +109,14 @@ final class PlaygroundController extends Controller
             'conversation_history.*.role' => ['required', 'string'],
             'conversation_history.*.text' => ['required', 'string'],
             'world_state'          => ['present', 'array'],
-            'player_action'        => ['present', 'string'],
+            // Allow null/empty — ConvertEmptyStringsToNull turns "" into null.
+            // The opening auto-fire turn always sends an empty action.
+            'player_action'        => ['present', 'nullable', 'string'],
             'turn_count'           => ['required', 'integer', 'min:0'],
         ]);
+
+        // Normalise: null (from ConvertEmptyStringsToNull) → empty string
+        $data['player_action'] = $data['player_action'] ?? '';
 
         $event = Event::query()
             ->with('chapter')
