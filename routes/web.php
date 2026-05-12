@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Route;
 require __DIR__.'/routes/user.php';
 require __DIR__.'/routes/writer.php';
 
+// Manager — login as writer (accessible only while manager is authenticated)
+Route::middleware(['auth:manager'])
+    ->get('manager/writers/{writer}/login-as', App\Http\Controllers\Manager\LoginAsWriterController::class)
+    ->name('manager.login-as-writer');
+
 Route::get('/', Controllers\IndexController::class)->name('index');
 
 Route::get('design-rnd', fn () => inertia('DesignRnd'))->name('design-rnd');

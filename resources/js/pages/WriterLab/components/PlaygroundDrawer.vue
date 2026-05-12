@@ -56,8 +56,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (e: 'close'): void }>();
 
-const csrf = (): string =>
-    (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
+const xsrfToken = (): string => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+};
 
 const apiPost = async (url: string, body: Record<string, unknown> = {}, signal?: AbortSignal) => {
     const res = await fetch(url, {
@@ -65,7 +67,7 @@ const apiPost = async (url: string, body: Record<string, unknown> = {}, signal?:
         credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrf(),
+            'X-XSRF-TOKEN': xsrfToken(),
             Accept: 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
         },

@@ -130,7 +130,7 @@ const runPreview = async () => {
                 credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '',
+                    'X-XSRF-TOKEN': (() => { const m = document.cookie.match(/XSRF-TOKEN=([^;]+)/); return m ? decodeURIComponent(m[1]) : ''; })(),
                     Accept: 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                 },

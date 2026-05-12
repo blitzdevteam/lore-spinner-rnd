@@ -80,16 +80,20 @@ const openNotes = () => {
 const closeNotes = () => { notesOpen.value = false; };
 
 // ── CSRF helper ────────────────────────────────────────────────────────────
-const csrf = (): string =>
-    (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
+const xsrfToken = (): string => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+};
 
 const apiPost = async (url: string, body: Record<string, unknown> = {}) => {
     const res = await fetch(url, {
         method: 'POST',
+        credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrf(),
+            'X-XSRF-TOKEN': xsrfToken(),
             Accept: 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify(body),
     });
@@ -835,12 +839,12 @@ const canPlayground = computed(() =>
 // ── Discard draft ──────────────────────────────────────────────────────────
 const discardDraft = async (draftId: number) => {
     if (!confirm('Discard this draft? Any unsaved work in it will be lost.')) return;
-    const csrf = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
     const res = await fetch(
         `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/${draftId}`,
         {
             method: 'DELETE',
-            headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+            credentials: 'same-origin',
+            headers: { 'X-XSRF-TOKEN': xsrfToken(), 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         }
     );
     const data = await res.json().catch(() => ({}));
