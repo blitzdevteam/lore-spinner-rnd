@@ -643,6 +643,7 @@ const sessionAdaptation = computed(() =>
 const coldOpenEdit  = ref('');
 const coldOpenDirty = ref(false);
 const savingColdOpen = ref(false);
+const coldOpenBannerExpanded = ref(false);
 
 watch(activeSession, (n) => {
     const sa = n !== null ? props.sessionAdaptations[n] ?? null : null;
@@ -1137,6 +1138,32 @@ const eventDraftLink = (eventId: number) => {
 
                         <p v-if="saveError" class="text-xs text-red-400">{{ saveError }}</p>
 
+                        <!-- Cold Open banner — always visible when event has a session cold open -->
+                        <div v-if="focusedEvent.session_number !== null && sessionAdaptations[focusedEvent.session_number]?.cold_open"
+                            class="rounded-xl border border-gray-800/60 bg-gray-900/20 px-4 py-3">
+                            <div class="flex items-start gap-2 justify-between">
+                                <div class="flex items-center gap-2 flex-none">
+                                    <span class="text-xs font-medium text-gray-500 uppercase tracking-widest">S{{ focusedEvent.session_number }} Cold Open</span>
+                                </div>
+                                <div class="flex items-center gap-3 flex-none">
+                                    <button class="text-xs text-gray-600 hover:text-primary-400 transition-colors"
+                                        @click="coldOpenBannerExpanded = !coldOpenBannerExpanded">
+                                        {{ coldOpenBannerExpanded ? 'collapse ▲' : 'expand ▼' }}
+                                    </button>
+                                    <button class="text-xs text-gray-600 hover:text-white transition-colors"
+                                        @click="activeSession = focusedEvent.session_number; focusedEvent = null; adaptationTab = 'cold_open'">
+                                        Edit →
+                                    </button>
+                                </div>
+                            </div>
+                            <p v-if="!coldOpenBannerExpanded" class="mt-1.5 text-xs text-gray-500 leading-relaxed line-clamp-2 italic">
+                                {{ sessionAdaptations[focusedEvent.session_number]?.cold_open }}
+                            </p>
+                            <p v-else class="mt-1.5 text-xs text-gray-400 leading-relaxed whitespace-pre-wrap italic">
+                                {{ sessionAdaptations[focusedEvent.session_number]?.cold_open }}
+                            </p>
+                        </div>
+
                         <!-- AI fill status bar -->
                         <div v-if="impactSummary" class="rounded-lg border border-gray-700/50 bg-gray-900/40 px-4 py-2.5 flex items-start gap-2.5">
                             <span :class="['flex-none mt-px text-sm', severityColor(impactSeverity ?? '')]">{{ severityIcon(impactSeverity ?? '') }}</span>
@@ -1587,9 +1614,12 @@ const eventDraftLink = (eventId: number) => {
                                     {{ draft.status.replace('_', ' ') }}
                                 </span>
                             </Link>
-                            <button class="ml-1 rounded px-1 text-gray-700 hover:text-red-400 transition-colors"
-                                    title="Discard this draft"
-                                    @click.stop="discardDraft(draft.id)">✕</button>
+                            <button class="ml-1 rounded px-1.5 py-0.5 text-red-500/70 hover:text-red-400 hover:bg-red-950/30 transition-colors flex items-center gap-0.5"
+                                    title="Discard this draft (undo)"
+                                    @click.stop="discardDraft(draft.id)">
+                                <span>✕</span>
+                                <span class="text-red-400/60 hover:text-red-400">Discard</span>
+                            </button>
                         </div>
                     </div>
                 </div>

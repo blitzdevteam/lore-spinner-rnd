@@ -576,6 +576,7 @@ final class DraftController extends Controller
             return back()->with('error', 'Only writer-approved drafts can be activated.');
         }
 
+        try {
         DB::transaction(function () use ($draft, $chapter, $story): void {
             $sessionAdaptation = $this->resolveSessionAdaptation($story, $draft->session_number);
 
@@ -662,6 +663,29 @@ final class DraftController extends Controller
 
             $draft->update(['status' => 'activated', 'activated_at' => now()]);
         });
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Most likely cause: writer_lab_versions migration not yet run.
+            // The full-chapter snapshot needs chapter_id / snapshot_kind / snapshot_adaptations
+            // columns added by 2026_05_12_000001_extend_writer_lab_versions_full_chapter.
+            WriterLabLog::error('activate.db_error', [
+                'story_id'   => $story->id,
+                'chapter_id' => $chapter->id,
+                'draft_id'   => $draft->id,
+                'error'      => $e->getMessage(),
+            ]);
+            $hint = str_contains($e->getMessage(), 'chapter_id') || str_contains($e->getMessage(), 'snapshot_kind')
+                ? ' (pending migration: run "sail artisan migrate")'
+                : '';
+            return back()->with('error', 'Could not activate draft — database error' . $hint . '. Check server logs.');
+        } catch (\Throwable $e) {
+            WriterLabLog::error('activate.error', [
+                'story_id'   => $story->id,
+                'chapter_id' => $chapter->id,
+                'draft_id'   => $draft->id,
+                'error'      => $e->getMessage(),
+            ]);
+            return back()->with('error', 'Could not activate draft: ' . $e->getMessage());
+        }
 
         return to_route('writer.writer-lab.chapter', [
             'story'   => $story->id,
