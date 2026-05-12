@@ -181,8 +181,12 @@ final class GameController extends Controller
             'isFirstTurnInEvent' => true,
             'sessionAdaptation' => $sessionAdaptation,
             'isSessionStart' => true,
+            'isSessionEnd' => false,
+            'sessionCloseDesign' => null,
             'worldState' => [],
             'deterministicMatch' => null,
+            'playerChoiceEchoes' => [],
+            'isContinue' => false,
         ])->render();
 
         try {

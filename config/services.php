@@ -43,4 +43,14 @@ return [
         'model_id' => env('ELEVENLABS_MODEL_ID', 'eleven_v3'),
     ],
 
+    'deepgram' => [
+        'api_key' => env('DEEPGRAM_API_KEY'),
+        // Aura voices — see https://developers.deepgram.com/docs/tts-models
+        // e.g. aura-2-thalia-en, aura-2-orion-en, aura-2-zeus-en
+        'voice_model' => env('DEEPGRAM_VOICE_MODEL', 'aura-2-thalia-en'),
+    ],
+
+    // Set TTS_PROVIDER to "deepgram" or "elevenlabs" (default: elevenlabs)
+    'tts_provider' => env('TTS_PROVIDER', 'elevenlabs'),
+
 ];

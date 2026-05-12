@@ -96,6 +96,7 @@ final class PromptController extends Controller
             sessionAdaptation: $sessionAdaptation,
             worldState: $game->world_state ?? [],
             deterministicMatch: $deterministicMatch,
+            isContinue: $isContinue,
         );
 
         try {
@@ -307,6 +308,7 @@ final class PromptController extends Controller
         ?SessionAdaptation $sessionAdaptation = null,
         array $worldState = [],
         ?array $deterministicMatch = null,
+        bool $isContinue = false,
     ): string {
         $storyData = $story->system_prompt ?? [];
 
@@ -366,6 +368,7 @@ final class PromptController extends Controller
             'worldState' => $worldState,
             'deterministicMatch' => $deterministicMatch,
             'playerChoiceEchoes' => $this->resolvePlayerChoiceEchoes($game, $sessionAdaptation),
+            'isContinue' => $isContinue,
         ])->render();
     }
 
@@ -607,6 +610,13 @@ final class PromptController extends Controller
             }
         }
 
+        // Trim knowledge to the 40 most recent entries. Earlier facts from completed events
+        // are already covered by previousEvents[].objectives passed in the system prompt,
+        // so retaining them here duplicates context and inflates token cost.
+        if (count($worldState['knowledge']) > 40) {
+            $worldState['knowledge'] = array_slice($worldState['knowledge'], -40);
+        }
+
         foreach (($stateDelta['relationship_changes'] ?? []) as $rel) {
             $character = (string) ($rel['character'] ?? '');
             $shift = (string) ($rel['shift'] ?? '');
@@ -619,6 +629,33 @@ final class PromptController extends Controller
             if (is_string($flag) && $flag !== '' && ! in_array($flag, $worldState['flags'], true)) {
                 $worldState['flags'][] = $flag;
             }
+        }
+
+        // Flags are anti-loop markers only. Keep the 25 most recent — older ones come from
+        // long-past events where the event has already advanced, so the loop they guarded
+        // against can no longer occur. This caps the per-turn token cost of the flags block.
+        if (count($worldState['flags']) > 25) {
+            $worldState['flags'] = array_slice($worldState['flags'], -25);
+        }
+
+        // Normalise relationship keys: deduplicate case-insensitive variants that refer to
+        // the same character (e.g. "the Mouse" vs "Mouse"). Keep the last-written value.
+        if (! empty($worldState['relationships'])) {
+            $normalised = [];
+            foreach ($worldState['relationships'] as $character => $shift) {
+                $key = mb_strtolower(ltrim((string) $character, 'tT he '));
+                $canonical = $character;
+                // If a normalised form already exists, prefer the shorter/cleaner key
+                foreach (array_keys($normalised) as $existing) {
+                    if (mb_strtolower(ltrim($existing, 'tT he ')) === $key) {
+                        $canonical = strlen($existing) <= strlen((string) $character) ? $existing : $character;
+                        unset($normalised[$existing]);
+                        break;
+                    }
+                }
+                $normalised[$canonical] = $shift;
+            }
+            $worldState['relationships'] = $normalised;
         }
 
         return $worldState;

@@ -157,7 +157,7 @@ class NarrationAgent implements Agent, HasStructuredOutput
                     ->array()
                     ->required()
                     ->title('Knowledge Gained')
-                    ->description('Discrete facts the player now knows. Each fact is a short declarative sentence. Empty array if none.')
+                    ->description('Player-specific discoveries from THIS turn only — facts the player found through their own exploration or testing that are NOT already established in the canonical event content. Do NOT include: (1) facts that appear in the event screenplay/objectives, (2) things already in OBJECTS HELD or ACTIVE CONDITIONS, (3) canonical story events that would have happened regardless of player action. Only include: failed attempts the player tested (e.g. "The table leg is too slippery to climb"), character behaviour the player triggered (e.g. "The Mouse reacts with fright to talk of cats"), or hidden details discovered through player-driven investigation. Empty array if nothing new was player-discovered this turn.')
                     ->items($schema->string()->required()),
                 'relationship_changes' => $schema
                     ->array()
@@ -197,7 +197,7 @@ class NarrationAgent implements Agent, HasStructuredOutput
                     ->array()
                     ->required()
                     ->title('Flags Set')
-                    ->description('Write-once flags raised by this turn (e.g. "tried_drink_me_bottle"). Empty array if none.')
+                    ->description('Write-once anti-loop markers ONLY. Set a flag when: (1) the player tested something that failed and could be tried again (e.g. "tried_climb_table_leg_failed", "tried_little_door_too_small"), or (2) a one-time trigger fired that must not repeat. Do NOT set flags for: standard narrative progression, things already captured in objects/conditions/knowledge, or canonical story events. Maximum 1-2 flags per turn. Empty array if nothing was attempted that needs loop-prevention.')
                     ->items($schema->string()->required()),
             ])
                 ->required()

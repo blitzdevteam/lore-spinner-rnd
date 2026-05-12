@@ -18,10 +18,14 @@ final class TextToSpeechController extends Controller
         abort_unless($prompt->game_id === $game->id, 404);
         abort_unless(filled($prompt->response), 404);
 
-        $path = "tts/{$prompt->id}.mp3";
+        $provider = (string) config('services.tts_provider', 'elevenlabs');
+        $path = "tts/{$provider}/{$prompt->id}.mp3";
 
         if (! Storage::disk('local')->exists($path)) {
-            $this->generate($prompt, $path);
+            match ($provider) {
+                'deepgram' => $this->generateDeepgram($prompt, $path),
+                default    => $this->generateElevenLabs($prompt, $path),
+            };
         }
 
         return new BinaryFileResponse(Storage::disk('local')->path($path), 200, [
@@ -32,7 +36,7 @@ final class TextToSpeechController extends Controller
         ]);
     }
 
-    private function generate(Prompt $prompt, string $path): void
+    private function generateElevenLabs(Prompt $prompt, string $path): void
     {
         $text = strip_tags($prompt->response);
         $voiceId = config('services.elevenlabs.voice_id');
@@ -55,6 +59,34 @@ final class TextToSpeechController extends Controller
 
         if (! $response->successful()) {
             logger()->warning('ElevenLabs TTS failed', [
+                'status' => $response->status(),
+                'prompt_id' => $prompt->id,
+            ]);
+
+            abort($response->status() === 403 ? 502 : $response->status(), 'Voice generation unavailable.');
+        }
+
+        Storage::disk('local')->put($path, $response->body());
+    }
+
+    private function generateDeepgram(Prompt $prompt, string $path): void
+    {
+        $text = strip_tags($prompt->response);
+        $apiKey = (string) config('services.deepgram.api_key');
+        $voiceModel = (string) config('services.deepgram.voice_model', 'aura-2-thalia-en');
+
+        abort_unless(filled($apiKey), 503, 'Deepgram voice generation is not configured.');
+
+        // Deepgram TTS REST endpoint — returns audio/mpeg directly
+        $response = Http::withHeaders([
+            'Authorization' => "Token {$apiKey}",
+            'Content-Type'  => 'application/json',
+        ])->timeout(60)->post("https://api.deepgram.com/v1/speak?model={$voiceModel}&encoding=mp3", [
+            'text' => $text,
+        ]);
+
+        if (! $response->successful()) {
+            logger()->warning('Deepgram TTS failed', [
                 'status' => $response->status(),
                 'prompt_id' => $prompt->id,
             ]);
