@@ -29,11 +29,11 @@ final class FeedbackResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Feedback submissions';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Platform';
+    protected static string|UnitEnum|null $navigationGroup = 'Moderation';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleOvalLeftEllipsis;
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 50;
 
     public static function getNavigationBadge(): string
     {
