@@ -23,6 +23,14 @@ final class FeedbackResource extends Resource
 {
     protected static ?string $model = Feedback::class;
 
+    /**
+     * Opt out of auto-discovery so we control registration entirely via
+     * ManagerPanelProvider::authenticatedRoutes() and Filament::serving().
+     * This prevents duplicate route/nav registration regardless of whether
+     * a Filament component cache exists or not.
+     */
+    protected static bool $isDiscovered = false;
+
     protected static ?string $navigationLabel = 'Beta feedback';
 
     protected static ?string $modelLabel = 'Feedback submission';

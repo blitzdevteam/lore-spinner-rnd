@@ -8,6 +8,7 @@ use App\Filament\Manager\Resources\Feedback\FeedbackResource;
 use App\Filament\Manager\Resources\Feedback\Pages\ListFeedbacks;
 use App\Filament\Manager\Resources\Feedback\Pages\ViewFeedback;
 use App\Filament\Manager\Widgets;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -28,10 +29,8 @@ final class ManagerPanelProvider extends PanelProvider
 {
     public function boot(): void
     {
-        // Force-register feedback page Livewire components directly so they are
-        // always available regardless of any stale Filament component cache on
-        // the server. hasCachedComponents() bypasses the normal discovery when
-        // a cache file exists, which would otherwise exclude these new pages.
+        // Register Livewire components directly — bypasses Filament's component
+        // cache which would otherwise skip these pages if the cache predates them.
         Livewire::component(
             'app.filament.manager.resources.feedback.pages.list-feedbacks',
             ListFeedbacks::class,
@@ -40,6 +39,17 @@ final class ManagerPanelProvider extends PanelProvider
             'app.filament.manager.resources.feedback.pages.view-feedback',
             ViewFeedback::class,
         );
+
+        // Register the nav item on every manager request. FeedbackResource uses
+        // $isDiscovered = false so it never enters getResources(), meaning
+        // mountNavigation() would skip it. This serving() callback adds it back.
+        Filament::serving(function (): void {
+            if (Filament::getCurrentPanel()?->getId() !== 'manager') {
+                return;
+            }
+
+            FeedbackResource::registerNavigationItems();
+        });
     }
 
     public function panel(Panel $panel): Panel
@@ -56,9 +66,12 @@ final class ManagerPanelProvider extends PanelProvider
             ])
             ->topbar(false)
             ->discoverResources(in: app_path('Filament/Manager/Resources'), for: 'App\Filament\Manager\Resources')
-            ->resources([
-                FeedbackResource::class,
-            ])
+            // authenticatedRoutes() is NOT stored in the Filament component cache,
+            // so this closure always runs regardless of cache state — this is the
+            // reliable path to get /manager/feedback routes registered.
+            ->authenticatedRoutes(function (Panel $panel): void {
+                FeedbackResource::registerRoutes($panel);
+            })
             ->discoverPages(in: app_path('Filament/Manager/Pages'), for: 'App\Filament\Manager\Pages')
             ->discoverWidgets(in: app_path('Filament/Manager/Widgets'), for: 'App\Filament\Manager\Widgets')
             ->pages([
