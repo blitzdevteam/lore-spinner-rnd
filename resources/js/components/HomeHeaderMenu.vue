@@ -2,14 +2,18 @@
 import { index } from '@/wayfinder/routes';
 import { index as creatorsIndex } from '@/wayfinder/routes/creators';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, House, LucideIcon, Mic, PenLine, Users } from 'lucide-vue-next';
+import { computed } from 'vue';
 
-const menu: {
-    title: string;
-    link: string;
-    icon: LucideIcon;
-}[] = [
+const page = usePage();
+const writerLoggedIn = computed(() => (page.props as Record<string, unknown>).writerLoggedIn as boolean);
+
+const writerLabLink = computed(() =>
+    writerLoggedIn.value ? '/writer/writer-lab' : '/writer/authentication/login',
+);
+
+const menu = computed<{ title: string; link: string; icon: LucideIcon }[]>(() => [
     {
         title: 'Home',
         link: index().url,
@@ -32,14 +36,14 @@ const menu: {
     },
     {
         title: 'Writer Lab',
-        link: '/writer/writer-lab',
+        link: writerLabLink.value,
         icon: PenLine,
     },
-];
+]);
 
 const getMenuLinkClass = (link: string): string => {
     const activeClass =
-        window.location.pathname === link
+        window.location.pathname === link || window.location.pathname.startsWith('/writer/writer-lab')
             ? 'text-primary-400 before:bg-primary-400'
             : 'border-transparent text-muted-foreground hover:text-primary-400';
 
