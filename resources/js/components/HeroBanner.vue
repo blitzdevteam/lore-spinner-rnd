@@ -30,20 +30,16 @@ const storyUrl = computed(() => show(props.story.slug).url);
             />
         </div>
 
-        <!-- Bottom scrim — just enough to lift the UI chrome off the image -->
-        <div class="absolute right-0 bottom-0 left-0 h-48 bg-gradient-to-t from-black/70 via-black/30 to-transparent md:h-56" />
-        <!-- Page-bg bleed at very bottom edge -->
-        <div class="absolute right-0 bottom-0 left-0 h-16 bg-gradient-to-t from-[var(--color-background)] to-transparent sm:h-20" />
+        <!-- Only the page-bg bleed — no full-width scrim so LEWIS CARROLL stays clean -->
+        <div class="absolute right-0 bottom-0 left-0 h-14 bg-gradient-to-t from-[var(--color-background)] to-transparent sm:h-18" />
 
         <!--
-            UI chrome — sits at the bottom of the banner, center-aligned.
-            Image title lives top-left; author lives bottom-left.
-            We claim the bottom-center zone (the dark spiral entrance area)
-            which is the natural compositional breathing room.
+            UI chrome — bottom-left, sitting above LEWIS CARROLL.
+            No wide gradient; shadow is contained to the block itself.
         -->
         <div class="relative z-10 flex h-full items-end">
-            <div class="container pb-10 sm:pb-12 md:pb-14">
-                <div class="hero-ui mx-auto flex flex-col items-center gap-3 text-center md:gap-4">
+            <div class="container pb-16 sm:pb-20 md:pb-24">
+                <div class="hero-ui inline-flex flex-col items-start gap-3 rounded-2xl px-5 py-4 md:gap-4">
 
                     <!-- Editor's Choice badge -->
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-primary-500/20 px-3 py-1 text-[10px] font-semibold tracking-wider text-primary-300 uppercase backdrop-blur-sm sm:text-xs">
@@ -52,12 +48,12 @@ const storyUrl = computed(() => show(props.story.slug).url);
                     </span>
 
                     <!-- Teaser -->
-                    <p class="hero-text line-clamp-2 max-w-sm text-xs leading-relaxed text-gray-200 sm:text-sm md:max-w-md md:text-base">
+                    <p class="hero-text line-clamp-2 max-w-xs text-xs leading-relaxed text-gray-200 sm:text-sm md:max-w-sm">
                         {{ story.teaser }}
                     </p>
 
                     <!-- CTAs -->
-                    <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                         <BaseButton
                             severity="primary"
                             type="internal-link"
@@ -79,7 +75,7 @@ const storyUrl = computed(() => show(props.story.slug).url);
                     </div>
 
                     <!-- Meta tags -->
-                    <div v-if="story.chapters_count || story.category || story.rating" class="flex flex-wrap items-center justify-center gap-2 text-[10px] text-gray-400 sm:gap-3 sm:text-xs">
+                    <div v-if="story.chapters_count || story.category || story.rating" class="flex flex-wrap items-center gap-2 text-[10px] text-gray-400 sm:gap-3 sm:text-xs">
                         <span v-if="story.category" class="rounded bg-white/10 px-2 py-0.5">{{ story.category.title }}</span>
                         <span v-if="story.chapters_count">{{ story.chapters_count }} Chapters</span>
                         <span v-if="story.rating" class="border border-gray-600 px-1.5 py-0.5 text-[10px] uppercase">{{ story.rating.label }}</span>
@@ -102,10 +98,15 @@ const storyUrl = computed(() => show(props.story.slug).url);
     min-height: 480px;
 }
 
-/* Small text-shadow so UI chrome pops off the image without a heavy card */
+/* Contained shadow under the block only — no wide gradient needed */
+.hero-ui {
+    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55));
+}
+
+/* Subtle text-shadow for individual elements */
 .hero-text,
 .hero-ui p,
 .hero-ui span {
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
 }
 </style>
