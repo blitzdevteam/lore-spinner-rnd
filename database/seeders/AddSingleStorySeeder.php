@@ -248,14 +248,14 @@ final class AddSingleStorySeeder extends Seeder
     private function getStoryConfig(): array
     {
         return [
-            'title' => "Alice's Adventures in Wonderland",
-            'slug' => 'alices-adventures-in-wonderland',
-            'category' => 'Fantasy Adventure',
-            'script' => "Alice's Adventures in Wonderland_script.txt",
-            'source_pdf' => "RnD/Alice's Adventures in Wonderland.pdf",
-            'teaser' => 'A curious girl tumbles down a rabbit hole into a fantastical underground world where nothing is quite what it seems, and every encounter grows curiouser and curiouser.',
-            'rating' => StoryRatingEnum::EVERYONE->value,
-            'opening' => '<strong>Alice\'s Adventures<br>in Wonderland.</strong><br><br><em>A summer afternoon.</em><br><em>A riverbank. A book with no pictures.</em><br><em>The particular boredom of a day</em><br><em>that feels like it will never become anything.</em><br><br><strong>You are Alice.</strong><br><br>Curious in the way that\'s gotten you into trouble before.<br>Brave in the way you don\'t quite know yet.<br>A girl who follows her curiosity<br>without once stopping to ask if she should.<br><br>Then — <em>a rabbit.</em><br><br>White. Pink eyes. A waistcoat.<br>A pocket watch it actually checks.<br>The words — spoken aloud, to no one —<br><br><em>"Oh dear. I shall be late."</em><br><br>Any sensible person would have let it go.<br>You are not, at this particular moment,<br>feeling very sensible.<br><br>Down here, nothing follows the rules<br>you were taught.<br>Things grow when they shouldn\'t.<br>Shrink without warning.<br>Speak when they have no business speaking.<br><br><strong>Wonderland doesn\'t care how sensible you are.</strong><br>It only cares how far<br>you\'re willing to fall.<br><br><em>This is the moment, Alice.</em><br><em>The one that splits everything</em><br><em>into before and after.</em><br><br><strong>"Curiouser and curiouser."</strong>',
+            'title' => 'The Adventure of the Speckled Band',
+            'slug' => 'the-adventure-of-the-speckled-band',
+            'category' => 'Mystery & Detective',
+            'script' => 'THE ADVENTURE OF THE SPECKLED BAND_script.txt',
+            'source_pdf' => 'RnD/THE ADVENTURE OF THE SPECKLED BAND.pdf',
+            'teaser' => 'A terrified young woman arrives at Baker Street with a tale of a dying sister, a sinister stepfather, and a final whisper no one can explain. Sherlock Holmes is on the case — and the game is afoot.',
+            'rating' => StoryRatingEnum::TEEN->value,
+            'opening' => null,
             'creator' => [
                 'first_name' => 'The Classics, Unbound',
                 'last_name' => '',
