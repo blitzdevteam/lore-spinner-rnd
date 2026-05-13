@@ -1,26 +1,20 @@
 # Adding a New Story — Runbook
 
-Documented from the Sherlock Holmes onboarding (May 2026).
+Documented from the Sherlock Holmes onboarding (May 2026).  
+All commands are in the exact order they must be run.
 
 ---
 
-## Overview
+## Prerequisites
 
-Three pipelines run in sequence:
-
-1. **PDF → TXT** — locally, committed to git
-2. **Extraction pipeline** — chapters, events, system prompt, opening (Laravel Cloud CLI)
-3. **Adaptation pipeline** — full session architecture (Laravel Cloud CLI, queue-based)
-
-Image generation runs separately after extraction.
+- Place the source PDF under `database/stories/RnD/`
+- Have Laravel Cloud CLI access ready
 
 ---
 
-## Step 1 — Convert PDF to TXT (local)
+## Command 1 — Convert PDF → TXT (LOCAL)
 
-Place the source PDF under `database/stories/RnD/`.
-
-Run locally via tinker:
+Run this on your local machine:
 
 ```bash
 php artisan tinker --execute="
@@ -38,9 +32,11 @@ echo 'Done: ' . basename(\$out) . ' (' . mb_strlen(\$text) . ' bytes)' . PHP_EOL
 "
 ```
 
-The output TXT file must be named `<TITLE>_script.txt` and saved directly under `database/stories/` (not in a subfolder).
+The output TXT must be named `<TITLE>_script.txt` and saved directly under `database/stories/` (not in a subfolder).
 
-Commit and push the TXT:
+---
+
+## Command 2 — Commit & Push TXT (LOCAL)
 
 ```bash
 git add "database/stories/YOUR FILE_script.txt"
@@ -50,20 +46,20 @@ git push
 
 ---
 
-## Step 2 — Configure the Seeder
+## Command 3 — Update Seeder Config (LOCAL)
 
 Edit `database/seeders/AddSingleStorySeeder.php` → `getStoryConfig()`:
 
 ```php
 return [
     'title'      => 'Your Story Title',
-    'slug'       => 'your-story-title',          // Str::slug of title
-    'category'   => 'Mystery & Detective',        // must match or create a Category
-    'script'     => 'YOUR FILE_script.txt',       // relative to database/stories/
-    'source_pdf' => 'RnD/YOUR FILE.pdf',          // only needed as fallback if TXT missing
+    'slug'       => 'your-story-title',           // Str::slug of title
+    'category'   => 'Mystery & Detective',         // must match or create a Category
+    'script'     => 'YOUR FILE_script.txt',        // relative to database/stories/
+    'source_pdf' => 'RnD/YOUR FILE.pdf',           // fallback only — TXT should already exist
     'teaser'     => 'One-sentence hook shown on the story card.',
-    'rating'     => StoryRatingEnum::TEEN->value, // EVERYONE | TEEN | MATURE
-    'opening'    => null,                         // null = AI generates it; or pass HTML string
+    'rating'     => StoryRatingEnum::TEEN->value,  // EVERYONE | TEEN | MATURE
+    'opening'    => null,                          // null = AI generates it; or pass HTML string
     'creator'    => [
         'first_name' => 'The Classics, Unbound',
         'last_name'  => '',
@@ -75,7 +71,7 @@ return [
 ];
 ```
 
-Commit and push:
+Then commit and push:
 
 ```bash
 git add database/seeders/AddSingleStorySeeder.php
@@ -85,34 +81,37 @@ git push
 
 ---
 
-## Step 3 — Run Extraction Pipeline (Laravel Cloud CLI)
+## Command 4 — Run Extraction Pipeline (LARAVEL CLOUD CLI)
 
 ```bash
 php artisan db:seed --class="Database\Seeders\AddSingleStorySeeder" --force
 ```
 
-This runs **synchronously** and prints progress for each step:
+Runs fully synchronously. Watch the output for each step:
 
-- PDF → TXT (skipped if TXT already exists)
-- Chapter extraction
-- Event extraction per chapter
-- System prompt generation
-- Cinematic opening generation (skipped if `opening` is set in config)
-- Story published
+```
+Converting PDF → TXT...       ← skipped if TXT already exists
+Extracting chapters...
+X chapters extracted.
+Extracting events: <Chapter Title>
+  X events.
+...
+Generating system prompt...
+Generating cinematic opening...
+Published!
+```
 
-Expect 5–20 minutes depending on chapter/event count.
+Expect 5–20 minutes depending on chapter/event count. Wait for `Published!` before continuing.
 
 ---
 
-## Step 4 — Run Adaptation Pipeline (Laravel Cloud CLI)
-
-Run after extraction prints `Published!`:
+## Command 5 — Run Adaptation Pipeline (LARAVEL CLOUD CLI)
 
 ```bash
 php artisan stories:run-adaptation your-story-slug
 ```
 
-This dispatches `RunAdaptationPipelineJob` to the `adaptation` queue. The full chain:
+Dispatches `RunAdaptationPipelineJob` to the `adaptation` queue. The chain runs async:
 
 ```
 FormatDetection → IpAudit → StorySessionMap
@@ -121,7 +120,15 @@ FormatDetection → IpAudit → StorySessionMap
 AdaptationStatusReconciliationJob
 ```
 
-Monitor progress by dumping the adaptation JSON:
+To re-run from scratch (wipes existing adaptation and restarts):
+
+```bash
+php artisan stories:run-adaptation your-story-slug --force
+```
+
+---
+
+## Command 6 — Check Adaptation Progress (LARAVEL CLOUD CLI)
 
 ```bash
 php artisan tinker --execute="
@@ -135,30 +142,22 @@ echo json_encode([
     'story_session_map' => \$a->story_session_map,
   ],
   'sessions' => \$a->sessionAdaptations->sortBy('session_number')->map(fn(\$s)=>[
-    'session_number'        => \$s->session_number,
-    'session_status'        => \$s->session_status->value,
-    'entry_point_diagnosis' => \$s->entry_point_diagnosis,
-    'session_architecture'  => \$s->session_architecture,
-    'session_choice_design' => \$s->session_choice_design,
-    'choice_consequence_map'=> \$s->choice_consequence_map,
-    'session_close_design'  => \$s->session_close_design,
-    'editorial_verification'=> \$s->editorial_verification,
+    'session_number'         => \$s->session_number,
+    'session_status'         => \$s->session_status->value,
+    'entry_point_diagnosis'  => \$s->entry_point_diagnosis,
+    'session_architecture'   => \$s->session_architecture,
+    'session_choice_design'  => \$s->session_choice_design,
+    'choice_consequence_map' => \$s->choice_consequence_map,
+    'session_close_design'   => \$s->session_close_design,
+    'editorial_verification' => \$s->editorial_verification,
   ])->values(),
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 "
 ```
 
-To re-run adaptation from scratch (wipes and restarts):
-
-```bash
-php artisan stories:run-adaptation your-story-slug --force
-```
-
 ---
 
-## Step 5 — Image Generation (Laravel Cloud CLI)
-
-Dispatch image jobs for the story and all its chapters:
+## Command 7 — Dispatch Image Generation Jobs (LARAVEL CLOUD CLI)
 
 ```bash
 php artisan tinker --execute="
@@ -172,22 +171,21 @@ echo 'All image jobs dispatched for: ' . \$story->title . PHP_EOL;
 "
 ```
 
-Check how many are pending:
+---
+
+## Command 8 — Process the Image Queue (LARAVEL CLOUD CLI)
+
+Image jobs sit on the `image-generation` queue. Run the worker to process them:
 
 ```bash
-php artisan tinker --execute="
-\$pending = DB::table('jobs')->where('payload', 'like', '%CoverGenerator%')->orWhere('payload', 'like', '%BannerGenerator%')->count();
-echo 'Pending image jobs: ' . \$pending . PHP_EOL;
-"
+php artisan queue:work --queue=image-generation --stop-when-empty --tries=3
 ```
 
-If the worker isn't running automatically, flush the queue manually:
+Stops automatically when the queue is empty. Each job takes ~10–30s so expect 2–4 minutes for a full story.
 
-```bash
-php artisan queue:work --queue=default --stop-when-empty --tries=3
-```
+---
 
-Verify all images attached:
+## Command 9 — Verify Images Attached (LARAVEL CLOUD CLI)
 
 ```bash
 php artisan tinker --execute="
@@ -202,17 +200,31 @@ foreach (\$story->chapters()->orderBy('position')->get() as \$ch) {
 "
 ```
 
+If anything shows `MISSING`, check for failed jobs:
+
+```bash
+php artisan tinker --execute="
+\$failed = DB::table('failed_jobs')->orderByDesc('failed_at')->get();
+echo \$failed->count() . ' total failed jobs' . PHP_EOL . PHP_EOL;
+foreach(\$failed->take(10) as \$f) {
+  \$p = json_decode(\$f->payload, true);
+  echo '[' . \$f->failed_at . '] ' . (\$p['displayName'] ?? '?') . PHP_EOL;
+  echo Str::limit(\$f->exception, 300) . PHP_EOL . PHP_EOL;
+}
+"
+```
+
 ---
 
 ## Wipe and Restart
 
-To delete a story and all its data and start over:
+To delete all stories and start over:
 
 ```bash
 php artisan stories:wipe --force
 ```
 
-This wipes **all** stories. There is no per-story wipe command — re-seed selectively if needed.
+There is no per-story wipe — this clears everything.
 
 ---
 
