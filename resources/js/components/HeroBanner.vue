@@ -16,12 +16,13 @@ const storyUrl = computed(() => show(props.story.slug).url);
 
 <template>
     <section class="hero-banner relative overflow-hidden">
+        <!-- Full-bleed image — shifted right so subject stays visible while text lives in the dark left zone -->
         <div class="absolute inset-0">
             <img
                 v-if="hasImage"
                 :src="heroImage"
                 :alt="story.title"
-                class="h-full w-full object-cover object-center md:object-[50%_20%]"
+                class="hero-img h-full w-full object-cover"
             />
             <div
                 v-else
@@ -29,17 +30,18 @@ const storyUrl = computed(() => show(props.story.slug).url);
             />
         </div>
 
-        <!-- Mobile: strong bottom gradient for text readability over full-width image -->
-        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/20 md:hidden" />
-        <!-- Desktop: left-to-right gradient to keep text area readable -->
-        <div class="absolute inset-0 hidden bg-gradient-to-r from-black/90 via-black/60 to-transparent md:block" />
-        <!-- Shared: top vignette + bottom fade into page background -->
-        <div class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-black/30" />
-        <div class="absolute right-0 bottom-0 left-0 h-24 bg-gradient-to-t from-[var(--color-background)] to-transparent sm:h-32" />
+        <!-- Mobile: heavy bottom-up black for text legibility -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/10 md:hidden" />
+        <!-- Desktop: wide cinematic left panel — dense at edge, fades at ~65% -->
+        <div class="absolute inset-0 hidden md:block hero-gradient-desktop" />
+        <!-- Shared: top edge darkening + bottom bleed into page bg -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent" />
+        <div class="absolute right-0 bottom-0 left-0 h-28 bg-gradient-to-t from-[var(--color-background)] to-transparent sm:h-36" />
 
-        <div class="relative z-10 flex h-full items-end pb-10 sm:pb-14 md:items-center md:pb-0">
+        <!-- Text column — pinned to lower-left on mobile, vertical-center on desktop -->
+        <div class="relative z-10 flex h-full items-end pb-12 sm:pb-16 md:items-center md:pb-0">
             <div class="container">
-                <div class="flex max-w-[90%] flex-col gap-3 sm:max-w-lg md:max-w-xl md:gap-5">
+                <div class="hero-text flex max-w-[85%] flex-col gap-3 sm:max-w-md md:max-w-lg md:gap-4">
                     <div class="flex items-center gap-2">
                         <span class="inline-flex items-center gap-1.5 rounded-full bg-primary-500/20 px-2.5 py-0.5 text-[10px] font-semibold tracking-wider text-primary-300 uppercase backdrop-blur-sm sm:px-3 sm:py-1 sm:text-xs">
                             <LucideStar class="size-3 fill-current" />
@@ -47,15 +49,15 @@ const storyUrl = computed(() => show(props.story.slug).url);
                         </span>
                     </div>
 
-                    <h1 class="font-gill-sans text-2xl leading-tight font-bold text-white sm:text-3xl md:text-5xl lg:text-6xl">
+                    <h1 class="hero-title font-gill-sans text-3xl leading-[1.1] font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] sm:text-4xl md:text-5xl lg:text-6xl">
                         {{ story.title }}
                     </h1>
 
-                    <p v-if="story.creator" class="text-xs font-medium text-primary-300 sm:text-sm">
+                    <p v-if="story.creator" class="text-xs font-medium tracking-wide text-primary-300 drop-shadow-md sm:text-sm">
                         By {{ story.creator.full_name }}
                     </p>
 
-                    <p class="line-clamp-2 text-xs leading-relaxed text-gray-300 sm:line-clamp-3 sm:text-sm md:text-base">
+                    <p class="line-clamp-2 text-xs leading-relaxed text-gray-300 drop-shadow-md sm:line-clamp-3 sm:text-sm md:text-base">
                         {{ story.teaser }}
                     </p>
 
@@ -92,25 +94,46 @@ const storyUrl = computed(() => show(props.story.slug).url);
 </template>
 
 <style scoped>
+/* Image anchored to the right so the scenic focal point stays visible */
+.hero-img {
+    object-position: 65% center;
+}
+
+@media (min-width: 768px) {
+    .hero-img {
+        object-position: 60% 25%;
+    }
+}
+
+/* Cinematic gradient: pure black at left edge → transparent at ~65% width */
+.hero-gradient-desktop {
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.97) 0%,
+        rgba(0, 0, 0, 0.88) 25%,
+        rgba(0, 0, 0, 0.65) 45%,
+        rgba(0, 0, 0, 0.20) 62%,
+        transparent 72%
+    );
+}
+
+/* Banner fills the viewport — no max-height cap */
 .hero-banner {
-    height: 56vh;
-    min-height: 340px;
-    max-height: 520px;
+    height: 60vh;
+    min-height: 360px;
 }
 
 @media (min-width: 640px) {
     .hero-banner {
-        height: 65vh;
-        min-height: 400px;
-        max-height: 620px;
+        height: 70vh;
+        min-height: 440px;
     }
 }
 
 @media (min-width: 768px) {
     .hero-banner {
-        height: 80vh;
-        min-height: 480px;
-        max-height: 720px;
+        height: 88vh;
+        min-height: 540px;
     }
 }
 </style>
