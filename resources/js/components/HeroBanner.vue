@@ -32,10 +32,8 @@ const storyUrl = computed(() => show(props.story.slug).url);
 
         <!-- Mobile: heavy bottom-up black for text legibility -->
         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/10 md:hidden" />
-        <!-- Desktop: wide cinematic left panel — dense at edge, fades at ~65% -->
-        <div class="absolute inset-0 hidden md:block hero-gradient-desktop" />
         <!-- Shared: top edge darkening + bottom bleed into page bg -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent" />
         <div class="absolute right-0 bottom-0 left-0 h-28 bg-gradient-to-t from-[var(--color-background)] to-transparent sm:h-36" />
 
         <!-- Text column — pinned to lower-left on mobile, vertical-center on desktop -->
@@ -48,10 +46,6 @@ const storyUrl = computed(() => show(props.story.slug).url);
                             Editor's Choice
                         </span>
                     </div>
-
-                    <h1 class="hero-title font-gill-sans text-3xl leading-[1.1] font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] sm:text-4xl md:text-5xl lg:text-6xl">
-                        {{ story.title }}
-                    </h1>
 
                     <p v-if="story.creator" class="text-xs font-medium tracking-wide text-primary-300 drop-shadow-md sm:text-sm">
                         By {{ story.creator.full_name }}
@@ -103,18 +97,6 @@ const storyUrl = computed(() => show(props.story.slug).url);
     .hero-img {
         object-position: 60% 25%;
     }
-}
-
-/* Cinematic gradient: pure black at left edge → transparent at ~65% width */
-.hero-gradient-desktop {
-    background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, 0.97) 0%,
-        rgba(0, 0, 0, 0.88) 25%,
-        rgba(0, 0, 0, 0.65) 45%,
-        rgba(0, 0, 0, 0.20) 62%,
-        transparent 72%
-    );
 }
 
 /* Banner fills the viewport — no max-height cap */
