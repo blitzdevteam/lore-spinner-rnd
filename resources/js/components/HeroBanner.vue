@@ -38,8 +38,8 @@ const storyUrl = computed(() => show(props.story.slug).url);
             No wide gradient; shadow is contained to the block itself.
         -->
         <div class="relative z-10 flex h-full items-end">
-            <div class="container pb-16 sm:pb-20 md:pb-24">
-                <div class="hero-ui inline-flex flex-col items-start gap-3 rounded-2xl px-5 py-4 md:gap-4">
+            <div class="container pb-16 ps-4 sm:pb-20 sm:ps-6 md:pb-24 md:ps-8">
+                <div class="hero-ui inline-flex flex-col items-start gap-3 rounded-xl px-5 py-5 md:gap-4">
 
                     <!-- Editor's Choice badge -->
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-primary-500/20 px-3 py-1 text-[10px] font-semibold tracking-wider text-primary-300 uppercase backdrop-blur-sm sm:text-xs">
@@ -98,15 +98,18 @@ const storyUrl = computed(() => show(props.story.slug).url);
     min-height: 480px;
 }
 
-/* Contained shadow under the block only — no wide gradient needed */
+/* Frosted glass card — dark enough to read against, light enough to feel open */
 .hero-ui {
-    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55));
+    background: rgba(0, 0, 0, 0.30);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.40);
 }
 
-/* Subtle text-shadow for individual elements */
+/* Light text-shadow for extra crispness */
 .hero-text,
 .hero-ui p,
 .hero-ui span {
-    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 </style>
