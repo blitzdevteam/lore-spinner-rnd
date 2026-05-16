@@ -31,6 +31,17 @@ Route::resource('stories', Controllers\StoryController::class)
 
 Route::post('feedback', [Controllers\FeedbackController::class, 'store'])->name('feedback.store');
 
+// ─── Chaos Mode — experimental open runtime for Alice in Wonderland ───────────
+// Isolated from the production game runtime. Stateless server; all session state
+// is owned by the client. No auth required — this is a public experiment.
+// To revert: remove this block and delete app/Http/Controllers/ChaosMode/,
+// app/Ai/Agents/Chaos/, resources/views/ai/agents/chaos/, and resources/js/pages/ChaosMode.vue
+Route::prefix('chaos-mode')->name('chaos-mode.')->group(function () {
+    Route::get('/', [App\Http\Controllers\ChaosMode\ChaosModeController::class, 'show'])->name('show');
+    Route::post('/start', [App\Http\Controllers\ChaosMode\ChaosModeController::class, 'start'])->name('start');
+    Route::post('/turn', [App\Http\Controllers\ChaosMode\ChaosModeController::class, 'turn'])->name('turn');
+});
+
 Route::get('expansion-status', function () {
     $symlink = public_path('storage');
     $symlinkExists = file_exists($symlink);
