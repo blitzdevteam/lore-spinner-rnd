@@ -22,13 +22,15 @@ const props = defineProps<{
 }>();
 
 const MODELS = [
+    { value: 'gpt-5.5', label: 'GPT-5.5', provider: 'OpenAI' },
+    { value: 'gpt-5.4', label: 'GPT-5.4', provider: 'OpenAI' },
     { value: 'gpt-5.2', label: 'GPT-5.2', provider: 'OpenAI' },
     { value: 'gpt-4.1', label: 'GPT-4.1', provider: 'OpenAI' },
     { value: 'claude-opus-4-7', label: 'Claude Opus 4.7', provider: 'Anthropic' },
     { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', provider: 'Anthropic' },
 ];
 
-const selectedModel = ref('gpt-5.2');
+const selectedModel = ref('gpt-5.5');
 const started = ref(false);
 const loading = ref(false);
 const playerInput = ref('');

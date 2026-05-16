@@ -8,6 +8,8 @@ use App\Ai\Agents\Chaos\ChaosNarrationAgent;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeOpus;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeSonnet;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt41;
+use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt54;
+use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt55;
 use App\Http\Controllers\Controller;
 use App\Models\Story;
 use Illuminate\Http\JsonResponse;
@@ -42,7 +44,7 @@ final class ChaosModeController extends Controller
     public function start(Request $request): JsonResponse
     {
         $request->validate([
-            'model' => ['nullable', 'string', 'in:gpt-5.2,gpt-4.1,claude-opus-4-7,claude-sonnet-4-6'],
+            'model' => ['nullable', 'string', 'in:gpt-5.5,gpt-5.4,gpt-5.2,gpt-4.1,claude-opus-4-7,claude-sonnet-4-6'],
         ]);
 
         $model = $request->string('model', 'gpt-5.2')->toString();
@@ -156,6 +158,8 @@ final class ChaosModeController extends Controller
         ])->render();
 
         $agent = match ($model) {
+            'gpt-5.5'          => ChaosNarrationAgentGpt55::make(customInstructions: $systemPrompt),
+            'gpt-5.4'          => ChaosNarrationAgentGpt54::make(customInstructions: $systemPrompt),
             'gpt-4.1'          => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt),
             'claude-opus-4-7'  => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt),
             'claude-sonnet-4-6' => ChaosNarrationAgentClaudeSonnet::make(customInstructions: $systemPrompt),
