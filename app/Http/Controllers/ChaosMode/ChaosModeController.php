@@ -42,7 +42,7 @@ final class ChaosModeController extends Controller
     public function start(Request $request): JsonResponse
     {
         $request->validate([
-            'model' => ['nullable', 'string', 'in:gpt-5.2,gpt-4.1,claude-opus-4-5,claude-sonnet-4-5'],
+            'model' => ['nullable', 'string', 'in:gpt-5.2,gpt-4.1,claude-opus-4-7,claude-sonnet-4-6'],
         ]);
 
         $model = $request->string('model', 'gpt-5.2')->toString();
@@ -157,8 +157,8 @@ final class ChaosModeController extends Controller
 
         $agent = match ($model) {
             'gpt-4.1'          => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt),
-            'claude-opus-4-5'  => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt),
-            'claude-sonnet-4-5' => ChaosNarrationAgentClaudeSonnet::make(customInstructions: $systemPrompt),
+            'claude-opus-4-7'  => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt),
+            'claude-sonnet-4-6' => ChaosNarrationAgentClaudeSonnet::make(customInstructions: $systemPrompt),
             default            => ChaosNarrationAgent::make(customInstructions: $systemPrompt),
         };
 

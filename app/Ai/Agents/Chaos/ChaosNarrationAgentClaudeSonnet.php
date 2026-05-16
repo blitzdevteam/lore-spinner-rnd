@@ -13,7 +13,7 @@ use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-#[Model('claude-sonnet-4-5')]
+#[Model('claude-sonnet-4-6')]
 #[Temperature(1.0)]
 #[Timeout(90)]
 class ChaosNarrationAgentClaudeSonnet implements Agent, HasStructuredOutput

@@ -13,7 +13,7 @@ use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-#[Model('claude-opus-4-5')]
+#[Model('claude-opus-4-7')]
 #[Temperature(1.0)]
 #[Timeout(90)]
 class ChaosNarrationAgentClaudeOpus implements Agent, HasStructuredOutput
