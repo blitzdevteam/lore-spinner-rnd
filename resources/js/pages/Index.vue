@@ -118,13 +118,13 @@ onBeforeUnmount(() => {
                         </h2>
                         <p class="chaos-feature-body">
                             A full-agency narration engine. No rails, no event gates — just you,
-                            the Narrator, and Wonderland's own logic. Session 1 is live now.
+                            the Narrator, and Wonderland's own logic. Live now.
                         </p>
                         <div class="chaos-feature-actions">
                             <button class="chaos-feature-btn-primary" @click.stop="goToChaosMode">
                                 Enter Wonderland
                             </button>
-                            <span class="chaos-feature-meta">Alice's Adventures · Session 1 · Full AI Narration</span>
+                            <span class="chaos-feature-meta">Alice's Adventures · Full AI Narration</span>
                         </div>
                     </div>
 

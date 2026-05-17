@@ -6,6 +6,7 @@ namespace App\Ai\Agents\Chaos;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\Model;
+use Laravel\Ai\Attributes\Provider;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Attributes\Timeout;
 use Laravel\Ai\Contracts\Agent;
@@ -13,7 +14,8 @@ use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-#[Model('claude-opus-4-7')]
+#[Provider('anthropic')]
+#[Model('claude-opus-4-6')]
 #[Temperature(1.0)]
 #[Timeout(90)]
 class ChaosNarrationAgentClaudeOpus implements Agent, HasStructuredOutput

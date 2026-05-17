@@ -29,13 +29,15 @@ defineProps<{
 }>();
 
 const MODELS = [
-    { value: 'gpt-5.5', label: 'GPT-5.5', provider: 'OpenAI' },
-    { value: 'gpt-5.4', label: 'GPT-5.4', provider: 'OpenAI' },
-    { value: 'gpt-5.2', label: 'GPT-5.2', provider: 'OpenAI' },
-    { value: 'gpt-4.1', label: 'GPT-4.1', provider: 'OpenAI' },
-    { value: 'claude-opus-4-7', label: 'Claude Opus 4.7', provider: 'Anthropic' },
-    { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', provider: 'Anthropic' },
+    { value: 'gpt-5.5',          label: 'GPT-5.5',          provider: 'OpenAI',    est: '~$1.70' },
+    { value: 'gpt-5.4',          label: 'GPT-5.4',          provider: 'OpenAI',    est: '~$0.85' },
+    { value: 'gpt-5.2',          label: 'GPT-5.2',          provider: 'OpenAI',    est: '~$0.45' },
+    { value: 'gpt-4.1',          label: 'GPT-4.1',          provider: 'OpenAI',    est: '~$0.65' },
+    { value: 'claude-opus-4-6',  label: 'Claude Opus 4.6',  provider: 'Anthropic', est: '~$1.65' },
+    { value: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5', provider: 'Anthropic', est: '~$1.00' },
 ];
+
+const selectedModelMeta = computed(() => MODELS.find((m) => m.value === selectedModel.value));
 
 const tts = useChaosTextToSpeech();
 
@@ -193,13 +195,18 @@ function resetAdventure(): void {
                     Alice's Adventures<br />in Wonderland
                 </h1>
                 <p class="chaos-mode-lede mb-6 text-sm">
-                    Session 1 — full agency. Type anything; Wonderland absorbs everything.
+                    Full agency. Type anything; Wonderland absorbs everything.
                 </p>
 
                 <div class="mb-6 text-left">
-                    <label class="chaos-mode-field-label mb-2 block text-xs uppercase tracking-widest">
-                        Narrator model
-                    </label>
+                    <div class="mb-2 flex items-baseline justify-between">
+                        <label class="chaos-mode-field-label text-xs uppercase tracking-widest">
+                            Narrator model
+                        </label>
+                        <span class="chaos-mode-cost-est text-[10px]">
+                            {{ selectedModelMeta?.est }} / session
+                        </span>
+                    </div>
                     <select
                         v-model="selectedModel"
                         class="chaos-mode-select w-full rounded-lg border px-3 py-2.5 text-sm outline-none"
@@ -210,10 +217,13 @@ function resetAdventure(): void {
                                 :key="m.value"
                                 :value="m.value"
                             >
-                                {{ m.label }}
+                                {{ m.label }} — {{ m.est }}
                             </option>
                         </optgroup>
                     </select>
+                    <p class="chaos-mode-cost-note mt-1.5 text-[10px] leading-relaxed">
+                        Estimate based on ~20 turns with full session context. Actual cost varies.
+                    </p>
                 </div>
 
                 <BaseButton
@@ -247,7 +257,7 @@ function resetAdventure(): void {
                 </BaseButton>
 
                 <p class="text-center text-xs uppercase tracking-widest text-[color:rgba(229,173,83,0.65)]">
-                    {{ sessionComplete ? 'Session 1 — Complete' : 'Session 1 — Down the Rabbit-Hole' }}
+                    {{ sessionComplete ? 'Session Complete' : 'Down the Rabbit-Hole' }}
                 </p>
 
                 <div class="flex items-center gap-2">
@@ -355,7 +365,7 @@ function resetAdventure(): void {
                         v-if="sessionComplete"
                         class="my-8 rounded-2xl border p-6 text-center backdrop-blur-sm border-[rgba(229,173,83,0.35)] bg-[rgba(229,173,83,0.07)]"
                     >
-                        <p class="mb-1 text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.55)]">Session 1 — Complete</p>
+                        <p class="mb-1 text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.55)]">Session Complete</p>
                         <p class="mb-2 text-xl font-medium text-[var(--chaos-brand)]">Alice has crossed the threshold.</p>
                         <p class="mb-6 text-sm leading-relaxed text-gray-400">
                             The first arc is complete. Wonderland's logic has taken hold. Session 2 awaits beyond the looking glass.
@@ -462,6 +472,16 @@ function resetAdventure(): void {
 
 .chaos-mode-field-label {
     color: rgba(var(--chaos-brand-rgb), 0.62);
+}
+
+.chaos-mode-cost-est {
+    color: rgba(var(--chaos-brand-rgb), 0.5);
+    font-variant-numeric: tabular-nums;
+}
+
+.chaos-mode-cost-note {
+    color: rgba(229, 217, 192, 0.28);
+    font-style: italic;
 }
 
 .chaos-mode-select {

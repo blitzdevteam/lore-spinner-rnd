@@ -66,8 +66,8 @@ final class ChaosModeController extends Controller
         'gpt-5.4',
         'gpt-5.2',
         'gpt-4.1',
-        'claude-opus-4-7',
-        'claude-sonnet-4-6',
+        'claude-opus-4-6',
+        'claude-sonnet-4-5',
     ];
 
     /**
@@ -379,12 +379,12 @@ final class ChaosModeController extends Controller
         ])->render();
 
         $agent = match ($model) {
-            'gpt-5.5'           => ChaosNarrationAgentGpt55::make(customInstructions: $systemPrompt),
-            'gpt-5.4'           => ChaosNarrationAgentGpt54::make(customInstructions: $systemPrompt),
-            'gpt-4.1'           => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt),
-            'claude-opus-4-7'   => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt),
-            'claude-sonnet-4-6' => ChaosNarrationAgentClaudeSonnet::make(customInstructions: $systemPrompt),
-            default             => ChaosNarrationAgent::make(customInstructions: $systemPrompt),
+            'gpt-5.5'          => ChaosNarrationAgentGpt55::make(customInstructions: $systemPrompt),
+            'gpt-5.4'          => ChaosNarrationAgentGpt54::make(customInstructions: $systemPrompt),
+            'gpt-4.1'          => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt),
+            'claude-opus-4-6'  => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt),
+            'claude-sonnet-4-5' => ChaosNarrationAgentClaudeSonnet::make(customInstructions: $systemPrompt),
+            default            => ChaosNarrationAgent::make(customInstructions: $systemPrompt),
         };
 
         /** @var \Laravel\Ai\Responses\StructuredAgentResponse $response */
