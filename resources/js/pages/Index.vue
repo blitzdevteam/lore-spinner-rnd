@@ -102,25 +102,46 @@ onBeforeUnmount(() => {
             </div>
         </div>
 
-        <!-- Continue Stories — only shown when user has an active game -->
-        <ContinueStories v-if="lastGame" :game="lastGame" />
-
-        <!-- Chaos Mode banner -->
-        <div class="chaos-mode-banner" @click="goToChaosMode">
-            <div class="container">
-                <div class="chaos-mode-banner-inner">
-                    <div class="chaos-mode-banner-left">
-                        <span class="chaos-mode-suits" aria-hidden="true">♠ ♥ ♦ ♣</span>
-                        <div class="chaos-mode-banner-text">
-                            <span class="chaos-mode-banner-tag">Experimental</span>
-                            <span class="chaos-mode-banner-title">Chaos Mode</span>
-                            <span class="chaos-mode-banner-subtitle">Alice's Adventures in Wonderland — Full Agency Edition</span>
+        <!-- Chaos Mode feature section — immediately below the hero -->
+        <div class="chaos-feature" @click="goToChaosMode">
+            <div class="chaos-feature-glow" aria-hidden="true" />
+            <div class="container relative z-[1]">
+                <div class="chaos-feature-inner">
+                    <!-- Left: text -->
+                    <div class="chaos-feature-copy">
+                        <div class="chaos-feature-tag">
+                            <span class="chaos-feature-tag-dot" aria-hidden="true" />
+                            New Experience
+                        </div>
+                        <h2 class="chaos-feature-headline">
+                            Try Alice in<br /><em>Chaos Mode</em>
+                        </h2>
+                        <p class="chaos-feature-body">
+                            A full-agency narration engine. No rails, no event gates — just you,
+                            the Narrator, and Wonderland's own logic. Session 1 is live now.
+                        </p>
+                        <div class="chaos-feature-actions">
+                            <button class="chaos-feature-btn-primary" @click.stop="goToChaosMode">
+                                Enter Wonderland
+                            </button>
+                            <span class="chaos-feature-meta">Alice's Adventures · Session 1 · Full AI Narration</span>
                         </div>
                     </div>
-                    <span class="chaos-mode-banner-cta">Enter Wonderland ♦</span>
+
+                    <!-- Right: decorative suits -->
+                    <div class="chaos-feature-art" aria-hidden="true">
+                        <span class="chaos-suit chaos-suit-1">♠</span>
+                        <span class="chaos-suit chaos-suit-2">♥</span>
+                        <span class="chaos-suit chaos-suit-3">♦</span>
+                        <span class="chaos-suit chaos-suit-4">♣</span>
+                        <span class="chaos-suit chaos-suit-5">♦</span>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Continue Stories — only shown when user has an active game -->
+        <ContinueStories v-if="lastGame" :game="lastGame" />
 
         <div class="py-10 md:py-18">
             <div class="container">
@@ -210,76 +231,210 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* ─── Chaos Mode banner ─────────────────────────────────────────────────────── */
-.chaos-mode-banner {
-    border-top: 1px solid rgba(229, 173, 83, 0.15);
-    border-bottom: 1px solid rgba(229, 173, 83, 0.15);
-    background: linear-gradient(90deg, rgba(229, 173, 83, 0.06) 0%, rgba(7, 7, 15, 0.0) 100%);
+/* ─── Chaos Mode feature section ────────────────────────────────────────────── */
+.chaos-feature {
+    position: relative;
+    overflow: hidden;
     cursor: pointer;
-    transition: background 0.25s;
+    border-top: 1px solid rgba(229, 173, 83, 0.14);
+    border-bottom: 1px solid rgba(229, 173, 83, 0.14);
+    background:
+        linear-gradient(135deg, rgba(229, 173, 83, 0.08) 0%, transparent 60%),
+        linear-gradient(to bottom, rgba(7, 6, 4, 0.0) 0%, rgba(229, 173, 83, 0.04) 100%);
+    transition: background 0.3s;
 }
-.chaos-mode-banner:hover {
-    background: linear-gradient(90deg, rgba(229, 173, 83, 0.11) 0%, rgba(7, 7, 15, 0.0) 100%);
+.chaos-feature:hover {
+    background:
+        linear-gradient(135deg, rgba(229, 173, 83, 0.14) 0%, transparent 60%),
+        linear-gradient(to bottom, rgba(7, 6, 4, 0.0) 0%, rgba(229, 173, 83, 0.07) 100%);
 }
-.chaos-mode-banner-inner {
+
+.chaos-feature-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 60% 120% at 0% 50%, rgba(229, 173, 83, 0.12), transparent 65%),
+        radial-gradient(ellipse 40% 80% at 85% 50%, rgba(229, 173, 83, 0.06), transparent 60%);
+    transition: opacity 0.3s;
+}
+.chaos-feature:hover .chaos-feature-glow {
+    opacity: 1.4;
+}
+
+.chaos-feature-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    padding: 16px 0;
+    gap: 32px;
+    padding: 48px 0;
 }
-.chaos-mode-banner-left {
+
+@media (max-width: 639px) {
+    .chaos-feature-inner {
+        padding: 36px 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+}
+
+.chaos-feature-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 560px;
+}
+
+.chaos-feature-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: rgba(229, 173, 83, 0.65);
+    font-family: Georgia, serif;
+}
+
+.chaos-feature-tag-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(229, 173, 83, 0.7);
+    box-shadow: 0 0 6px 2px rgba(229, 173, 83, 0.35);
+    animation: chaos-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes chaos-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.8); }
+}
+
+.chaos-feature-headline {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 500;
+    line-height: 1.15;
+    color: rgba(250, 246, 239, 0.92);
+    letter-spacing: -0.01em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.chaos-feature-headline em {
+    font-style: normal;
+    color: #e5ad53;
+    text-shadow: 0 0 40px rgba(229, 173, 83, 0.35), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.chaos-feature-body {
+    font-size: 14px;
+    line-height: 1.75;
+    color: rgba(229, 217, 192, 0.5);
+    max-width: 460px;
+}
+
+.chaos-feature-actions {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 20px;
+    flex-wrap: wrap;
 }
-.chaos-mode-suits {
-    font-size: 18px;
-    letter-spacing: 10px;
-    color: rgba(229, 173, 83, 0.35);
+
+.chaos-feature-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 28px;
+    background: #e5ad53;
+    color: #1f160d;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: filter 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.chaos-feature-btn-primary:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 8px 28px -4px rgba(229, 173, 83, 0.45);
+    transform: translateY(-1px);
+}
+.chaos-feature-btn-primary:active {
+    transform: translateY(0);
+}
+
+.chaos-feature-meta {
+    font-size: 11px;
+    color: rgba(229, 217, 192, 0.28);
+    letter-spacing: 0.04em;
+    font-style: italic;
+}
+
+/* Decorative suits */
+.chaos-feature-art {
+    position: relative;
+    width: 180px;
+    height: 160px;
     flex-shrink: 0;
     display: none;
 }
-@media (min-width: 640px) {
-    .chaos-mode-suits { display: block; }
+
+@media (min-width: 768px) {
+    .chaos-feature-art {
+        display: block;
+    }
 }
-.chaos-mode-banner-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-.chaos-mode-banner-tag {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: rgba(229, 173, 83, 0.5);
+
+.chaos-suit {
+    position: absolute;
     font-family: Georgia, serif;
+    line-height: 1;
+    user-select: none;
+    transition: opacity 0.3s;
 }
-.chaos-mode-banner-title {
-    font-size: 17px;
-    font-weight: 600;
-    color: rgba(229, 173, 83, 0.9);
-    letter-spacing: 0.04em;
+
+.chaos-suit-1 {
+    font-size: 80px;
+    top: 0;
+    left: 20px;
+    color: rgba(229, 173, 83, 0.12);
+    transform: rotate(-12deg);
 }
-.chaos-mode-banner-subtitle {
-    font-size: 12px;
-    color: rgba(229, 217, 192, 0.42);
-    font-style: italic;
+.chaos-suit-2 {
+    font-size: 56px;
+    top: 20px;
+    right: 10px;
+    color: rgba(229, 173, 83, 0.18);
+    transform: rotate(8deg);
 }
-.chaos-mode-banner-cta {
-    font-size: 13px;
-    color: rgba(229, 173, 83, 0.6);
-    border: 1px solid rgba(229, 173, 83, 0.25);
-    padding: 6px 16px;
-    border-radius: 2px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    transition: color 0.2s, border-color 0.2s;
+.chaos-suit-3 {
+    font-size: 40px;
+    bottom: 10px;
+    left: 50px;
+    color: rgba(229, 173, 83, 0.28);
+    transform: rotate(-5deg);
 }
-.chaos-mode-banner:hover .chaos-mode-banner-cta {
-    color: rgba(229, 173, 83, 0.9);
-    border-color: rgba(229, 173, 83, 0.5);
+.chaos-suit-4 {
+    font-size: 28px;
+    bottom: 30px;
+    right: 0;
+    color: rgba(229, 173, 83, 0.15);
+    transform: rotate(15deg);
 }
+.chaos-suit-5 {
+    font-size: 18px;
+    top: 60px;
+    left: 0;
+    color: rgba(229, 173, 83, 0.35);
+    transform: rotate(-20deg);
+}
+
+.chaos-feature:hover .chaos-suit-1 { color: rgba(229, 173, 83, 0.2); }
+.chaos-feature:hover .chaos-suit-2 { color: rgba(229, 173, 83, 0.28); }
+.chaos-feature:hover .chaos-suit-3 { color: rgba(229, 173, 83, 0.4); }
+.chaos-feature:hover .chaos-suit-5 { color: rgba(229, 173, 83, 0.5); }
 
 /* ─── Existing transitions ──────────────────────────────────────────────────── */
 .fade-enter-active,

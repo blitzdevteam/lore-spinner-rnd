@@ -2,8 +2,9 @@
 import BaseBackgroundGradient from '@/components/BaseBackgroundGradient.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import GameplayInput from '@/components/GameplayInput.vue';
-import { LucideChevronLeft, LucideRefreshCw } from 'lucide-vue-next';
-import { nextTick, ref } from 'vue';
+import { useChaosTextToSpeech } from '@/composables/useChaosTextToSpeech';
+import { LucideChevronLeft, LucideLoader, LucidePause, LucidePlay, LucideRefreshCw, LucideX } from 'lucide-vue-next';
+import { computed, nextTick, ref } from 'vue';
 
 defineOptions({ layout: null });
 
@@ -36,6 +37,8 @@ const MODELS = [
     { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', provider: 'Anthropic' },
 ];
 
+const tts = useChaosTextToSpeech();
+
 const selectedModel = ref('gpt-5.5');
 const started = ref(false);
 const loading = ref(false);
@@ -46,6 +49,18 @@ const choicesBuffer = ref<string[]>([]);
 const worldState = ref<WorldState>(emptyWorldState());
 const errorMessage = ref('');
 const scrollEl = ref<HTMLElement | null>(null);
+
+// Maps each turn array index → narrator-only index (for TTS endpoint)
+const narratorIndexMap = computed(() => {
+    const map = new Map<number, number>();
+    let count = 0;
+    turns.value.forEach((turn, idx) => {
+        if (turn.role === 'narrator') {
+            map.set(idx, count++);
+        }
+    });
+    return map;
+});
 
 function emptyWorldState(): WorldState {
     return {
@@ -148,6 +163,7 @@ async function takeTurn(action: string): Promise<void> {
 }
 
 function resetAdventure(): void {
+    tts.dismiss();
     started.value = false;
     sessionId.value = null;
     sessionComplete.value = false;
@@ -169,20 +185,24 @@ function resetAdventure(): void {
             <div
                 class="chaos-mode-config-card w-full max-w-md rounded-2xl border p-8 text-center backdrop-blur-sm"
             >
-                <p class="mb-3 text-xs uppercase tracking-widest text-[var(--chaos-brand)]">Experimental — Chaos Mode</p>
+                <p class="chaos-mode-eyebrow mb-3 text-xs uppercase tracking-widest">
+                    Experimental — Chaos Mode
+                </p>
 
-                <h1 class="mb-1 text-2xl font-medium text-gray-100 sm:text-3xl">
+                <h1 class="chaos-mode-title mb-1 text-2xl font-medium sm:text-3xl">
                     Alice's Adventures<br />in Wonderland
                 </h1>
-                <p class="mb-6 text-sm text-gray-500">Session 1 — full agency. Type anything; Wonderland absorbs everything.</p>
+                <p class="chaos-mode-lede mb-6 text-sm">
+                    Session 1 — full agency. Type anything; Wonderland absorbs everything.
+                </p>
 
-                <div class="mb-6">
-                    <label class="mb-2 block text-left text-xs uppercase tracking-widest text-gray-500">
+                <div class="mb-6 text-left">
+                    <label class="chaos-mode-field-label mb-2 block text-xs uppercase tracking-widest">
                         Narrator model
                     </label>
                     <select
                         v-model="selectedModel"
-                        class="chaos-mode-select w-full rounded-lg border bg-gray-900/90 px-3 py-2.5 text-sm text-gray-200 outline-none"
+                        class="chaos-mode-select w-full rounded-lg border px-3 py-2.5 text-sm outline-none"
                     >
                         <optgroup v-for="provider in ['OpenAI', 'Anthropic']" :key="provider" :label="provider">
                             <option
@@ -197,13 +217,13 @@ function resetAdventure(): void {
                 </div>
 
                 <BaseButton
-                    class="w-full"
+                    class="chaos-mode-cta w-full"
                     severity="primary"
                     :disabled="loading"
                     @click="startWithChoices"
                 >
-                    <span v-if="loading" class="flex items-center justify-center gap-2">
-                        <span class="size-4 animate-spin rounded-full border-2 border-[rgba(229,173,83,0.25)] border-t-[var(--chaos-brand)]" />
+                    <span v-if="loading" class="flex items-center justify-center gap-2 text-[#1f160d]">
+                        <span class="chaos-mode-cta-spinner size-4 animate-spin rounded-full border-2 border-[#1f160d]/25 border-t-[#1f160d]/85" />
                         Falling down the rabbit-hole...
                     </span>
                     <span v-else>Begin the Adventure</span>
@@ -211,7 +231,7 @@ function resetAdventure(): void {
 
                 <p v-if="errorMessage" class="mt-4 text-sm text-red-400">{{ errorMessage }}</p>
 
-                <a href="/" class="mt-6 block text-xs text-gray-600 hover:text-gray-400 transition-colors">← Back to LoreSpinner</a>
+                <a href="/" class="chaos-mode-back-link mt-6 block text-xs transition-colors">← Back to LoreSpinner</a>
             </div>
         </div>
 
@@ -242,12 +262,75 @@ function resetAdventure(): void {
                 </div>
             </div>
 
+            <!-- Floating TTS media player -->
+            <div class="pointer-events-none sticky top-20 z-20 flex justify-center">
+                <Transition name="player-slide">
+                    <div
+                        v-if="tts.isActive.value"
+                        class="pointer-events-auto relative flex items-center gap-3 overflow-hidden rounded-full border border-gray-700/60 py-2 pe-3 ps-2 shadow-2xl backdrop-blur-xl bg-gray-900/80! border-[rgba(229,173,83,0.25)]!"
+                    >
+                        <!-- Play / Pause -->
+                        <button
+                            class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full transition-transform hover:scale-105 active:scale-95 bg-[var(--chaos-brand)]"
+                            @click="tts.togglePause"
+                        >
+                            <LucidePause v-if="tts.isPlaying.value" class="size-4 text-[#1f160d]" fill="currentColor" />
+                            <LucidePlay v-else-if="!tts.isLoading.value" class="size-4 text-[#1f160d]" fill="currentColor" />
+                            <LucideLoader v-else class="size-4 animate-spin text-[#1f160d]" />
+                        </button>
+                        <!-- Time -->
+                        <span class="min-w-16 text-sm font-medium tabular-nums text-gray-200">
+                            {{ tts.formattedCurrentTime.value }}
+                            <span class="text-gray-500">/</span>
+                            {{ tts.formattedDuration.value }}
+                        </span>
+                        <!-- Speed -->
+                        <button
+                            class="rounded-full border px-2.5 py-0.5 text-xs font-semibold tabular-nums transition-colors border-[rgba(229,173,83,0.35)] text-[rgba(229,173,83,0.85)] hover:border-[rgba(229,173,83,0.6)] hover:bg-[rgba(229,173,83,0.1)]"
+                            @click="tts.cycleSpeed"
+                        >
+                            {{ tts.playbackRate.value }}x
+                        </button>
+                        <!-- Close -->
+                        <button
+                            class="grid size-7 shrink-0 place-items-center rounded-full text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200"
+                            @click="tts.dismiss"
+                        >
+                            <LucideX class="size-4" />
+                        </button>
+                    </div>
+                </Transition>
+            </div>
+
             <!-- Scrollable story -->
             <div ref="scrollEl" class="flex-1 overflow-y-auto">
                 <div class="mx-auto flex max-w-3xl flex-col divide-y divide-gray-100/20 px-4 pb-4 sm:px-8">
 
                     <template v-for="(turn, idx) in turns" :key="idx">
                         <div v-if="turn.role === 'narrator'" class="chaos-prose py-8">
+                            <div class="mb-3 flex items-center gap-3">
+                                <span class="text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.45)]">Narrator</span>
+                                <button
+                                    v-if="sessionId"
+                                    class="chaos-tts-btn flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium transition-all"
+                                    :class="{
+                                        'active': tts.activeKey.value === `${sessionId}:${narratorIndexMap.get(idx)}`,
+                                    }"
+                                    @click="tts.toggle(sessionId!, narratorIndexMap.get(idx)!)"
+                                >
+                                    <LucideLoader
+                                        v-if="tts.isLoading.value && tts.activeKey.value === `${sessionId}:${narratorIndexMap.get(idx)}`"
+                                        class="size-3 animate-spin"
+                                    />
+                                    <LucidePause
+                                        v-else-if="tts.isPlaying.value && tts.activeKey.value === `${sessionId}:${narratorIndexMap.get(idx)}`"
+                                        class="size-3"
+                                        fill="currentColor"
+                                    />
+                                    <LucidePlay v-else class="size-3" fill="currentColor" />
+                                    <span>{{ tts.isPlaying.value && tts.activeKey.value === `${sessionId}:${narratorIndexMap.get(idx)}` ? 'Pause' : 'Listen' }}</span>
+                                </button>
+                            </div>
                             <!-- eslint-disable-next-line vue/no-v-html -->
                             <div v-html="turn.html ?? turn.text" />
                         </div>
@@ -267,15 +350,24 @@ function resetAdventure(): void {
                         </div>
                     </div>
 
-                    <!-- Session complete banner -->
+                    <!-- Session complete banner — only when AI returns session_complete:true -->
                     <div
+                        v-if="sessionComplete"
                         class="my-8 rounded-2xl border p-6 text-center backdrop-blur-sm border-[rgba(229,173,83,0.35)] bg-[rgba(229,173,83,0.07)]"
                     >
-                        <p class="mb-2 text-xs uppercase tracking-widest text-[var(--chaos-brand)]">Session 1 — Complete</p>
-                        <p class="mb-4 text-sm text-gray-400">Alice has reached the end of this session's arc. Session 2 awaits.</p>
-                        <BaseButton severity="primary" :disabled="true" class="opacity-60">
-                            Continue to Session 2 (coming soon)
-                        </BaseButton>
+                        <p class="mb-1 text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.55)]">Session 1 — Complete</p>
+                        <p class="mb-2 text-xl font-medium text-[var(--chaos-brand)]">Alice has crossed the threshold.</p>
+                        <p class="mb-6 text-sm leading-relaxed text-gray-400">
+                            The first arc is complete. Wonderland's logic has taken hold. Session 2 awaits beyond the looking glass.
+                        </p>
+                        <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                            <BaseButton class="chaos-mode-cta w-full sm:w-auto" severity="primary" @click="resetAdventure">
+                                Begin a New Adventure
+                            </BaseButton>
+                            <BaseButton severity="glass" class="w-full sm:w-auto" @click="resetAdventure">
+                                Continue to Session 2
+                            </BaseButton>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -345,22 +437,81 @@ function resetAdventure(): void {
     border-color: rgba(var(--chaos-brand-rgb), 0.35);
     background: linear-gradient(
         165deg,
-        rgba(var(--chaos-brand-rgb), 0.12) 0%,
-        rgba(17, 24, 39, 0.72) 38%,
-        rgba(17, 24, 39, 0.55) 100%
+        rgba(var(--chaos-brand-rgb), 0.14) 0%,
+        rgba(14, 12, 9, 0.82) 42%,
+        rgba(10, 9, 7, 0.72) 100%
     );
     box-shadow:
-        0 0 0 1px rgba(var(--chaos-brand-rgb), 0.06) inset,
-        0 24px 48px -24px rgba(0, 0, 0, 0.5);
+        0 0 0 1px rgba(var(--chaos-brand-rgb), 0.08) inset,
+        0 28px 56px -28px rgba(0, 0, 0, 0.55);
+}
+
+.chaos-mode-eyebrow {
+    color: rgba(var(--chaos-brand-rgb), 0.92);
+    text-shadow: 0 0 24px rgba(var(--chaos-brand-rgb), 0.25);
+}
+
+.chaos-mode-title {
+    color: #faf6ef;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.chaos-mode-lede {
+    color: rgba(245, 236, 216, 0.58);
+}
+
+.chaos-mode-field-label {
+    color: rgba(var(--chaos-brand-rgb), 0.62);
 }
 
 .chaos-mode-select {
-    border-color: rgba(var(--chaos-brand-rgb), 0.3);
+    color: #f3ebe0;
+    background-color: rgba(8, 7, 5, 0.92);
+    border-color: rgba(var(--chaos-brand-rgb), 0.32);
 }
 
 .chaos-mode-select:focus {
     border-color: rgba(var(--chaos-brand-rgb), 0.65);
-    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.25);
+    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.28);
+}
+
+.chaos-mode-select option,
+.chaos-mode-select optgroup {
+    background-color: #141210;
+    color: #f3ebe0;
+}
+
+/* Gold CTA — replaces default primary-400 so the card stays on-brand */
+.chaos-mode-config-card :deep(.chaos-mode-cta) {
+    background-color: var(--chaos-brand) !important;
+    color: #1f160d !important;
+    border-color: rgba(31, 22, 13, 0.12) !important;
+    outline-color: rgba(var(--chaos-brand-rgb), 0.35) !important;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.chaos-mode-config-card :deep(.chaos-mode-cta:not(.pointer-events-none)) {
+    opacity: 1;
+}
+
+.chaos-mode-config-card :deep(.chaos-mode-cta:not(.pointer-events-none):hover) {
+    filter: brightness(1.06);
+    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.45), 0 12px 28px -8px rgba(var(--chaos-brand-rgb), 0.35);
+}
+
+.chaos-mode-config-card :deep(.chaos-mode-cta.pointer-events-none) {
+    background-color: rgba(var(--chaos-brand-rgb), 0.42) !important;
+    color: rgba(31, 22, 13, 0.72) !important;
+    opacity: 1 !important;
+}
+
+.chaos-mode-back-link {
+    color: rgba(var(--chaos-brand-rgb), 0.45);
+}
+
+.chaos-mode-back-link:hover {
+    color: rgba(var(--chaos-brand-rgb), 0.88);
 }
 
 .chaos-mode-game-header {
@@ -390,5 +541,32 @@ function resetAdventure(): void {
 .chaos-prose :deep(strong) {
     color: var(--chaos-brand);
     font-weight: 500;
+}
+
+/* TTS listen button */
+.chaos-tts-btn {
+    border-color: rgba(229, 173, 83, 0.18);
+    color: rgba(229, 173, 83, 0.5);
+}
+.chaos-tts-btn:hover {
+    border-color: rgba(229, 173, 83, 0.45);
+    color: rgba(229, 173, 83, 0.85);
+    background: rgba(229, 173, 83, 0.07);
+}
+.chaos-tts-btn.active {
+    border-color: rgba(229, 173, 83, 0.45);
+    color: rgba(229, 173, 83, 0.9);
+    background: rgba(229, 173, 83, 0.1);
+}
+
+/* Floating player slide */
+.player-slide-enter-active,
+.player-slide-leave-active {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.player-slide-enter-from,
+.player-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.95);
 }
 </style>
