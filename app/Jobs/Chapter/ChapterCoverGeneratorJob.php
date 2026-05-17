@@ -117,21 +117,19 @@ final class ChapterCoverGeneratorJob implements ShouldQueue
     {
         $chapterTitle = $this->chapter->title;
         $storyTitle = $this->chapter->story?->title ?? 'Unknown Story';
-        $category = $this->chapter->story?->category?->title ?? 'Fantasy';
+        $category = $this->chapter->story?->category?->title ?? 'Fiction';
 
         return <<<PROMPT
-        Create a vintage storybook scene illustration for a chapter called "{$chapterTitle}" in a {$category} story called "{$storyTitle}".
+        Create a cinematic scene image for a chapter called "{$chapterTitle}" from the {$category} story "{$storyTitle}".
 
         STYLE REQUIREMENTS:
-        - Flat vector illustration, minimal shading
-        - Limited harmonious color palette, soft gradient background glow
-        - Strong silhouettes, simple shapes
-        - Retro editorial illustration style, 1960s poster aesthetic
-        - Nostalgic and magical mood, clean storytelling design
-        - High clarity, visually striking composition
+        - Cinematic photorealistic or painterly-realist style — no flat vector, no cartoon
+        - Dramatic atmospheric lighting appropriate to the genre
+        - A single evocative moment: an environment, an object, or a figure in shadow
+        - Rich mood and depth — foreground, midground, and atmospheric background
+        - Square composition (1:1 aspect ratio) suitable as a chapter thumbnail
         - No text, no letters, no words, no titles, no watermarks
         - No UI elements, no borders, no frames
-        - Square composition (1:1 aspect ratio) suitable as a chapter thumbnail
         PROMPT;
     }
 
@@ -139,38 +137,34 @@ final class ChapterCoverGeneratorJob implements ShouldQueue
     {
         $chapterTitle = $this->chapter->title;
         $chapterTeaser = mb_substr($this->chapter->teaser ?? '', 0, 500);
-        $chapterContent = mb_substr($this->chapter->content ?? '', 0, 2000);
+        $chapterContent = mb_substr($this->chapter->content ?? '', 0, 1500);
         $storyTitle = $this->chapter->story?->title ?? 'Unknown Story';
         $storyTeaser = mb_substr($this->chapter->story?->teaser ?? '', 0, 300);
-        $category = $this->chapter->story?->category?->title ?? 'Fantasy';
+        $category = $this->chapter->story?->category?->title ?? 'Fiction';
 
         $storySystemPromptData = $this->chapter->story?->system_prompt;
         $toneAndStyle = mb_substr($storySystemPromptData['tone_and_style'] ?? '', 0, 300);
 
         return <<<PROMPT
-        Create a vintage storybook scene illustration for a chapter in an interactive story.
+        Create a cinematic chapter thumbnail image for an interactive story.
 
         STORY: "{$storyTitle}" — {$storyTeaser}
         CHAPTER: "{$chapterTitle}"
         CHAPTER TEASER: {$chapterTeaser}
-        CHAPTER SETTING: {$chapterContent}
+        CHAPTER CONTENT EXCERPT: {$chapterContent}
         GENRE: {$category}
         TONE: {$toneAndStyle}
 
-        STYLE REQUIREMENTS:
-        - Vintage storybook illustration, centered composition
-        - An iconic scene that captures this chapter's key moment
-        - Characters posed in a symbolic and visually clear way
-        - Environment reflecting the chapter setting
-        - Flat vector illustration, minimal shading
-        - Limited harmonious color palette, soft gradient background glow
-        - Strong silhouettes, simple shapes
-        - Retro editorial illustration style, 1960s poster aesthetic
-        - Nostalgic and magical mood, clean storytelling design
-        - High clarity, visually striking composition
+        VISUAL REQUIREMENTS:
+        - Cinematic photorealistic or painterly-realist rendering — NO flat vector, NO cartoon, NO icon art
+        - Capture the defining moment, location, or atmosphere of this specific chapter
+        - Dramatic, motivated lighting that reflects the chapter's emotional beat
+        - Rich environmental detail — the setting should be immediately legible and atmospheric
+        - The image should feel like a still from a prestige film adaptation of this story
+        - Visual style consistent with the story's genre and tone described above
+        - Square composition (1:1 aspect ratio) suitable as a chapter thumbnail
         - No text, no letters, no words, no titles, no watermarks
         - No UI elements, no borders, no frames
-        - Square composition (1:1 aspect ratio) suitable as a chapter thumbnail
         PROMPT;
     }
 }
