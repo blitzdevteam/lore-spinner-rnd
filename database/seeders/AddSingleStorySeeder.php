@@ -248,21 +248,21 @@ final class AddSingleStorySeeder extends Seeder
     private function getStoryConfig(): array
     {
         return [
-            'title' => 'The Tell-Tale Heart',
-            'slug' => 'the-tell-tale-heart',
-            'category' => 'Horror & Suspense',
-            'script' => 'TellTaleHeart_Premium_script.txt',
-            'source_pdf' => 'RnD/TellTaleHeart_Premium.pdf',
-            'teaser' => 'A man insists he is not mad — yet something beneath the floorboards will not let him rest. Edgar Allan Poe\'s masterpiece of guilt, paranoia, and the sound that never stops.',
+            'title' => 'Driftheart',
+            'slug' => 'driftheart',
+            'category' => 'Science Fiction',
+            'script' => 'DRIFTHEART_INTERACTIVE_TEASE_v3_script.txt',
+            'source_pdf' => 'RnD/DRIFTHEART_INTERACTIVE_TEASE_v3.pdf',
+            'teaser' => 'A shattered world. Six salvagers threading the ruins of a planet torn apart. Something alive in the fragments — and it knows they\'re here.',
             'rating' => StoryRatingEnum::MATURE->value,
             'opening' => null,
             'creator' => [
-                'first_name' => 'The Classics, Unbound',
-                'last_name' => '',
-                'username' => 'theclassicsunbound',
-                'email' => 'classics@lorespinner.com',
-                'bio' => "Enter the world's most iconic classic stories—now immersive, interactive adventures where your choices reshape timeless legends.",
-                'avatar' => 'THE CLASSICS, UNBOUND - PROFILE PIC.jpg',
+                'first_name' => 'LoreSpinner',
+                'last_name' => 'Originals',
+                'username' => 'lorespinner',
+                'email' => 'originals@lorespinner.com',
+                'bio' => 'Original interactive stories crafted for choice-driven narrative experiences.',
+                'avatar' => 'lorespinner-originals-avatar.jpg',
             ],
         ];
     }
