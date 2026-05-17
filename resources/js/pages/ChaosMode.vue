@@ -8,9 +8,11 @@ import { nextTick, ref } from 'vue';
 defineOptions({ layout: null });
 
 interface WorldState {
-    size_condition: string;
-    items: string[];
     location: string;
+    conditions: string[];
+    items: string[];
+    relationships: string[];
+    knowledge: string[];
     notes: string[];
 }
 
@@ -37,15 +39,26 @@ const MODELS = [
 const selectedModel = ref('gpt-5.5');
 const started = ref(false);
 const loading = ref(false);
-const sceneNote = ref('Chapter I — Down the Rabbit-Hole');
+const sessionId = ref<string | null>(null);
+const sessionComplete = ref(false);
 const turns = ref<Turn[]>([]);
 const choicesBuffer = ref<string[]>([]);
-const worldState = ref<WorldState>({ size_condition: '', items: [], location: '', notes: [] });
+const worldState = ref<WorldState>(emptyWorldState());
 const errorMessage = ref('');
 const scrollEl = ref<HTMLElement | null>(null);
 
+function emptyWorldState(): WorldState {
+    return {
+        location: '',
+        conditions: [],
+        items: [],
+        relationships: [],
+        knowledge: [],
+        notes: [],
+    };
+}
+
 // ─── CSRF: read Laravel's XSRF-TOKEN cookie, send as X-XSRF-TOKEN ─────────────
-// app.blade.php has no csrf meta tag; this is the correct approach for raw fetch
 function getCsrf(): string {
     const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
     return match ? decodeURIComponent(match[1]) : '';
@@ -74,22 +87,19 @@ function stripHtml(html: string): string {
     return div.textContent ?? '';
 }
 
-function historyForApi(): Array<{ role: string; text: string }> {
-    return turns.value.map((t) => ({ role: t.role, text: t.text }));
-}
-
-function applyWorldUpdate(update: Partial<WorldState>): void {
-    if (update.size_condition) worldState.value.size_condition = update.size_condition;
-    if (update.items !== undefined) worldState.value.items = update.items;
-    if (update.location) worldState.value.location = update.location;
-    if (update.notes?.length) worldState.value.notes = [...worldState.value.notes, ...update.notes];
-}
-
 async function scrollToBottom(): Promise<void> {
     await nextTick();
     if (scrollEl.value) {
         scrollEl.value.scrollTo({ top: scrollEl.value.scrollHeight, behavior: 'smooth' });
     }
+}
+
+function applyResponse(data: any): void {
+    if (data.session_id) sessionId.value = data.session_id;
+    if (data.world_state) worldState.value = { ...emptyWorldState(), ...data.world_state };
+    if (typeof data.session_complete === 'boolean') sessionComplete.value = data.session_complete;
+    turns.value.push({ role: 'narrator', html: data.response, text: stripHtml(data.response) });
+    choicesBuffer.value = data.choices ?? [];
 }
 
 async function startWithChoices(): Promise<void> {
@@ -100,13 +110,11 @@ async function startWithChoices(): Promise<void> {
 
     try {
         const data = await apiFetch('/chaos-mode/start', { model: selectedModel.value });
-        turns.value = [{ role: 'narrator', html: data.response, text: stripHtml(data.response) }];
-        sceneNote.value = data.scene_note ?? sceneNote.value;
-        choicesBuffer.value = data.choices ?? [];
-        if (data.world_update) applyWorldUpdate(data.world_update);
+        turns.value = [];
+        applyResponse(data);
         started.value = true;
         await scrollToBottom();
-    } catch (e: any) {
+    } catch {
         errorMessage.value = 'Wonderland is currently unavailable. Please try again.';
     } finally {
         loading.value = false;
@@ -115,7 +123,7 @@ async function startWithChoices(): Promise<void> {
 
 async function takeTurn(action: string): Promise<void> {
     const trimmed = action.trim();
-    if (!trimmed || loading.value) return;
+    if (!trimmed || loading.value || sessionComplete.value || !sessionId.value) return;
 
     loading.value = true;
     errorMessage.value = '';
@@ -125,18 +133,13 @@ async function takeTurn(action: string): Promise<void> {
 
     try {
         const data = await apiFetch('/chaos-mode/turn', {
+            session_id: sessionId.value,
             player_action: trimmed,
             model: selectedModel.value,
-            conversation_history: historyForApi().slice(-12),
-            world_state: worldState.value,
         });
-
-        turns.value.push({ role: 'narrator', html: data.response, text: stripHtml(data.response) });
-        sceneNote.value = data.scene_note ?? sceneNote.value;
-        choicesBuffer.value = data.choices ?? [];
-        if (data.world_update) applyWorldUpdate(data.world_update);
+        applyResponse(data);
         await scrollToBottom();
-    } catch (e: any) {
+    } catch {
         turns.value.pop();
         errorMessage.value = 'Wonderland hiccuped — please try again.';
     } finally {
@@ -146,36 +149,40 @@ async function takeTurn(action: string): Promise<void> {
 
 function resetAdventure(): void {
     started.value = false;
+    sessionId.value = null;
+    sessionComplete.value = false;
     turns.value = [];
     choicesBuffer.value = [];
-    worldState.value = { size_condition: '', items: [], location: '', notes: [] };
-    sceneNote.value = 'Chapter I — Down the Rabbit-Hole';
+    worldState.value = emptyWorldState();
     errorMessage.value = '';
 }
 </script>
 
 <template>
-    <div class="relative h-svh overflow-hidden">
+    <div class="chaos-mode-root relative h-svh overflow-hidden">
         <BaseBackgroundGradient />
+        <!-- Chaos Mode brand tint (#E5AD53) — landing + playthrough -->
+        <div class="chaos-mode-brand-bg pointer-events-none absolute inset-0" aria-hidden="true" />
 
         <!-- ── Start screen ──────────────────────────────────────────────────── -->
-        <div v-if="!started" class="relative flex h-full flex-col items-center justify-center px-4">
-            <div class="w-full max-w-md rounded-2xl border border-gray-700/50 bg-gray-800/40 p-8 text-center backdrop-blur-sm">
-                <p class="mb-3 text-xs uppercase tracking-widest text-primary-400">Experimental — Chaos Mode</p>
+        <div v-if="!started" class="relative z-[1] flex h-full flex-col items-center justify-center px-4">
+            <div
+                class="chaos-mode-config-card w-full max-w-md rounded-2xl border p-8 text-center backdrop-blur-sm"
+            >
+                <p class="mb-3 text-xs uppercase tracking-widest text-[var(--chaos-brand)]">Experimental — Chaos Mode</p>
 
                 <h1 class="mb-1 text-2xl font-medium text-gray-100 sm:text-3xl">
                     Alice's Adventures<br />in Wonderland
                 </h1>
-                <p class="mb-6 text-sm text-gray-500">Full Agency Edition — type any action, Wonderland absorbs everything.</p>
+                <p class="mb-6 text-sm text-gray-500">Session 1 — full agency. Type anything; Wonderland absorbs everything.</p>
 
-                <!-- Model selector -->
                 <div class="mb-6">
                     <label class="mb-2 block text-left text-xs uppercase tracking-widest text-gray-500">
                         Narrator model
                     </label>
                     <select
                         v-model="selectedModel"
-                        class="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2.5 text-sm text-gray-200 outline-none focus:border-primary-500"
+                        class="chaos-mode-select w-full rounded-lg border bg-gray-900/90 px-3 py-2.5 text-sm text-gray-200 outline-none"
                     >
                         <optgroup v-for="provider in ['OpenAI', 'Anthropic']" :key="provider" :label="provider">
                             <option
@@ -196,7 +203,7 @@ function resetAdventure(): void {
                     @click="startWithChoices"
                 >
                     <span v-if="loading" class="flex items-center justify-center gap-2">
-                        <span class="size-4 animate-spin rounded-full border-2 border-gray-900 border-t-transparent" />
+                        <span class="size-4 animate-spin rounded-full border-2 border-[rgba(229,173,83,0.25)] border-t-[var(--chaos-brand)]" />
                         Falling down the rabbit-hole...
                     </span>
                     <span v-else>Begin the Adventure</span>
@@ -209,21 +216,24 @@ function resetAdventure(): void {
         </div>
 
         <!-- ── Game screen ───────────────────────────────────────────────────── -->
-        <div v-else class="flex h-full flex-col">
+        <div v-else class="relative z-[1] flex h-full flex-col">
 
             <!-- Sticky header -->
-            <div class="sticky top-0 z-10 flex h-20 shrink-0 items-center justify-between px-4 bg-linear-to-b from-gray-950 via-gray-950/80 to-transparent sm:px-8">
-                <!-- Left: back -->
+            <div
+                class="chaos-mode-game-header sticky top-0 z-10 flex h-20 shrink-0 items-center justify-between px-4 sm:px-8"
+            >
                 <BaseButton severity="glass" :icon-only="true" class="size-12!" @click="resetAdventure">
                     <LucideChevronLeft class="size-6 text-gray-300" :stroke-width="1.5" />
                 </BaseButton>
 
-                <!-- Centre: scene note -->
-                <p class="text-center text-xs uppercase tracking-widest text-gray-500">{{ sceneNote }}</p>
+                <p class="text-center text-xs uppercase tracking-widest text-[color:rgba(229,173,83,0.65)]">
+                    {{ sessionComplete ? 'Session 1 — Complete' : 'Session 1 — Down the Rabbit-Hole' }}
+                </p>
 
-                <!-- Right: model chip + reset -->
                 <div class="flex items-center gap-2">
-                    <span class="hidden rounded-full border border-gray-700/50 bg-gray-800/60 px-3 py-1 text-xs text-gray-500 sm:block">
+                    <span
+                        class="hidden rounded-full border px-3 py-1 text-xs sm:block border-[rgba(229,173,83,0.25)] bg-[rgba(229,173,83,0.08)] text-[rgba(229,173,83,0.85)]"
+                    >
                         {{ MODELS.find((m) => m.value === selectedModel)?.label }}
                     </span>
                     <BaseButton severity="glass" :icon-only="true" class="size-10!" title="New adventure" @click="resetAdventure">
@@ -237,20 +247,17 @@ function resetAdventure(): void {
                 <div class="mx-auto flex max-w-3xl flex-col divide-y divide-gray-100/20 px-4 pb-4 sm:px-8">
 
                     <template v-for="(turn, idx) in turns" :key="idx">
-                        <!-- Narrator turn -->
                         <div v-if="turn.role === 'narrator'" class="chaos-prose py-8">
                             <!-- eslint-disable-next-line vue/no-v-html -->
                             <div v-html="turn.html ?? turn.text" />
                         </div>
 
-                        <!-- Player turn -->
                         <div v-else class="flex items-baseline gap-3 py-4">
                             <span class="shrink-0 text-[10px] uppercase tracking-widest text-gray-600">Alice</span>
                             <p class="text-sm italic text-gray-500">{{ turn.text }}</p>
                         </div>
                     </template>
 
-                    <!-- Loading skeleton -->
                     <div v-if="loading" class="py-8">
                         <div class="flex animate-pulse flex-col gap-4">
                             <div class="h-4 w-full rounded bg-gray-700/50" />
@@ -259,18 +266,36 @@ function resetAdventure(): void {
                             <div class="h-4 w-4/6 rounded bg-gray-700/40" />
                         </div>
                     </div>
+
+                    <!-- Session complete banner -->
+                    <div
+                        class="my-8 rounded-2xl border p-6 text-center backdrop-blur-sm border-[rgba(229,173,83,0.35)] bg-[rgba(229,173,83,0.07)]"
+                    >
+                        <p class="mb-2 text-xs uppercase tracking-widest text-[var(--chaos-brand)]">Session 1 — Complete</p>
+                        <p class="mb-4 text-sm text-gray-400">Alice has reached the end of this session's arc. Session 2 awaits.</p>
+                        <BaseButton severity="primary" :disabled="true" class="opacity-60">
+                            Continue to Session 2 (coming soon)
+                        </BaseButton>
+                    </div>
                 </div>
             </div>
 
-            <!-- World state + error -->
-            <div v-if="worldState.location || worldState.size_condition || worldState.items.length" class="mx-auto flex w-full max-w-3xl flex-wrap gap-1.5 px-4 pb-1 sm:px-8">
+            <!-- World state chips -->
+            <div
+                v-if="worldState.location || worldState.conditions.length || worldState.items.length"
+                class="mx-auto flex w-full max-w-3xl flex-wrap gap-1.5 px-4 pb-1 sm:px-8"
+            >
                 <span v-if="worldState.location" class="rounded-full border border-gray-800 px-2 py-0.5 text-[10px] text-gray-600">
                     {{ worldState.location }}
                 </span>
-                <span v-if="worldState.size_condition" class="rounded-full border border-gray-800 px-2 py-0.5 text-[10px] text-gray-600">
-                    {{ worldState.size_condition }}
+                <span v-for="cond in worldState.conditions" :key="`c-${cond}`" class="rounded-full border border-gray-800 px-2 py-0.5 text-[10px] text-gray-600">
+                    {{ cond }}
                 </span>
-                <span v-for="item in worldState.items" :key="item" class="rounded-full border border-primary-900/40 px-2 py-0.5 text-[10px] text-primary-700">
+                <span
+                    v-for="item in worldState.items"
+                    :key="`i-${item}`"
+                    class="rounded-full border px-2 py-0.5 text-[10px] border-[rgba(229,173,83,0.35)] text-[var(--chaos-brand)]"
+                >
                     {{ item }}
                 </span>
             </div>
@@ -278,8 +303,7 @@ function resetAdventure(): void {
             <p v-if="errorMessage" class="px-4 pb-1 text-center text-xs text-red-400 sm:px-8">{{ errorMessage }}</p>
 
             <!-- Sticky bottom: choices + input -->
-            <div class="sticky bottom-0 z-10 shrink-0">
-                <!-- Choice pills -->
+            <div v-if="!sessionComplete" class="sticky bottom-0 z-10 shrink-0">
                 <div v-if="choicesBuffer.length && !loading" class="mx-auto max-w-3xl px-4 pb-2 sm:px-8">
                     <div class="flex flex-wrap gap-2">
                         <BaseButton
@@ -295,7 +319,6 @@ function resetAdventure(): void {
                     </div>
                 </div>
 
-                <!-- Text input -->
                 <div class="grid h-28 place-items-center px-4">
                     <GameplayInput :disabled="loading" @submit="takeTurn" />
                 </div>
@@ -305,7 +328,51 @@ function resetAdventure(): void {
 </template>
 
 <style scoped>
-/* Carroll's prose — inherits game typography settings */
+/* Chaos Mode brand: #E5AD53 */
+.chaos-mode-root {
+    --chaos-brand: #e5ad53;
+    --chaos-brand-rgb: 229, 173, 83;
+}
+
+.chaos-mode-brand-bg {
+    background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(var(--chaos-brand-rgb), 0.18), transparent 55%),
+        radial-gradient(ellipse 90% 70% at 100% 50%, rgba(var(--chaos-brand-rgb), 0.1), transparent 50%),
+        radial-gradient(ellipse 80% 60% at 0% 80%, rgba(var(--chaos-brand-rgb), 0.12), transparent 45%);
+}
+
+.chaos-mode-config-card {
+    border-color: rgba(var(--chaos-brand-rgb), 0.35);
+    background: linear-gradient(
+        165deg,
+        rgba(var(--chaos-brand-rgb), 0.12) 0%,
+        rgba(17, 24, 39, 0.72) 38%,
+        rgba(17, 24, 39, 0.55) 100%
+    );
+    box-shadow:
+        0 0 0 1px rgba(var(--chaos-brand-rgb), 0.06) inset,
+        0 24px 48px -24px rgba(0, 0, 0, 0.5);
+}
+
+.chaos-mode-select {
+    border-color: rgba(var(--chaos-brand-rgb), 0.3);
+}
+
+.chaos-mode-select:focus {
+    border-color: rgba(var(--chaos-brand-rgb), 0.65);
+    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.25);
+}
+
+.chaos-mode-game-header {
+    background: linear-gradient(
+        180deg,
+        rgba(3, 7, 18, 0.97) 0%,
+        rgba(3, 7, 18, 0.88) 55%,
+        rgba(var(--chaos-brand-rgb), 0.04) 100%
+    );
+    border-bottom: 1px solid rgba(var(--chaos-brand-rgb), 0.12);
+}
+
 .chaos-prose {
     line-height: 1.85;
     color: inherit;
@@ -321,7 +388,7 @@ function resetAdventure(): void {
     font-style: italic;
 }
 .chaos-prose :deep(strong) {
-    color: var(--color-primary-300, #e9d5a0);
+    color: var(--chaos-brand);
     font-weight: 500;
 }
 </style>

@@ -35,7 +35,13 @@ class ChaosNarrationAgent implements Agent, HasStructuredOutput
     }
 
     /**
-     * Shared schema definition for all chaos narration agent variants.
+     * Shared schema for all chaos narration agent variants.
+     *
+     * Core principle: AI controls narration, pacing, and movement INSIDE the
+     * active session. Runtime controls only which session is loaded and the
+     * boundary between sessions. There is no advance_scene, no scene_note,
+     * no suggested_playhead — the AI is given the full session script and
+     * trusted to move through it naturally.
      */
     public static function chaosSchema(JsonSchema $schema): array
     {
@@ -44,60 +50,75 @@ class ChaosNarrationAgent implements Agent, HasStructuredOutput
                 ->string()
                 ->required()
                 ->title('Response')
-                ->description('Cinematic narration in Carroll\'s voice as an HTML string. Use <p> tags for paragraphs. Use <em> for italics in Carroll\'s style (sparingly). Use <strong> only for single impactful moments. 2–4 paragraphs. Second-person ("you") throughout. Write as Carroll, not as a narrator summarising Carroll.'),
+                ->description('Cinematic narration in Carroll\'s voice as an HTML string. Use <p> tags for paragraphs. Use <em> for italics (sparingly, Carroll-style). Use <strong> only for a single impactful moment. 2–4 paragraphs. Second-person ("you") throughout. Write AS Carroll, not as a narrator summarising Carroll.'),
 
             'choices' => $schema
                 ->array()
                 ->required()
                 ->title('Choices')
-                ->description('Exactly 3 suggested actions. Each begins with a strong verb. Make them surprising, Wonderland-specific, and tempting. They are suggestions — the player may type anything.')
+                ->description('Exactly 3 suggested actions. Each begins with a strong verb. Surprising, Wonderland-specific, tempting. The player may type anything — these are suggestions, not constraints.')
                 ->items(
                     $schema->string()->required()
                 ),
 
-            'advance_scene' => $schema
+            'session_complete' => $schema
                 ->boolean()
                 ->required()
-                ->title('Advance Scene')
-                ->description('True only when the scene has naturally moved into clearly new territory — a new room, a new chapter\'s content, a new major character arrival. False when still in the same scene space.'),
+                ->title('Session Complete')
+                ->description('True ONLY when the current session has reached its natural narrative close — when its dramatic question has resolved and the seed for the next session has been planted in the narration. False on every other turn. The runtime, not the narrator, owns the technical transition to the next session.'),
 
-            'scene_note' => $schema
-                ->string()
-                ->required()
-                ->title('Scene Note')
-                ->description('Short string naming where we are now, e.g. "Chapter I — The Hall of Doors" or "Chapter V — The Mad Tea-Party". Update when advance_scene is true, carry forward unchanged when false.'),
-
-            'world_update' => $schema->object([
-                'size_condition' => $schema
-                    ->string()
+            'state_delta' => $schema->object([
+                'conditions' => $schema
+                    ->array()
                     ->required()
-                    ->title('Size Condition')
-                    ->description('Alice\'s current size. One of: "normal", "tiny (ten inches)", "enormous (filling the room)", "growing", "shrinking", or empty string if unchanged from last turn.'),
+                    ->title('Conditions')
+                    ->description('Complete current list of Alice\'s active physical/mental conditions (e.g. "tiny (ten inches)", "enormous", "soaked", "indignant", "carrying the Rabbit\'s gloves"). Carry forward from previous turn, then add new and remove resolved. Empty array if none.')
+                    ->items($schema->string()->required()),
 
                 'items' => $schema
                     ->array()
                     ->required()
                     ->title('Items')
-                    ->description('Complete list of all items Alice currently holds. Carry forward from previous state plus any gained this turn minus any lost this turn.')
+                    ->description('Complete current list of items Alice holds. Carry forward from previous state, plus any gained this turn, minus any lost. Empty array if she holds nothing.')
                     ->items($schema->string()->required()),
 
                 'location' => $schema
                     ->string()
                     ->required()
                     ->title('Location')
-                    ->description('Current sub-location within the scene, e.g. "hall of doors", "beside the mushroom", "at the tea-table". Update when Alice moves.'),
+                    ->description('Current sub-location, e.g. "riverbank", "falling", "hall of doors", "beside the glass table". Update when Alice moves. Empty string if unchanged.'),
+
+                'relationships' => $schema
+                    ->array()
+                    ->required()
+                    ->title('Relationships')
+                    ->description('Notable shifts in how Wonderland characters regard Alice this turn (e.g. "White Rabbit: startled, fled", "Mouse: offended"). Empty array if no relationship changed.')
+                    ->items($schema->string()->required()),
+
+                'knowledge' => $schema
+                    ->array()
+                    ->required()
+                    ->title('Knowledge')
+                    ->description('Durable facts Alice has now learned about Wonderland from her own action (e.g. "Drinking labelled bottles changes her size", "The garden lies beyond a fifteen-inch door"). Empty array if nothing new was learned.')
+                    ->items($schema->string()->required()),
 
                 'notes' => $schema
                     ->array()
                     ->required()
                     ->title('Notes')
-                    ->description('New facts discovered this turn through Alice\'s own action — things she tested, creature behaviours she triggered, hidden details she found. Empty array if nothing new was discovered.')
+                    ->description('Player-created or emergent facts that are not knowledge or relationships but should survive turns (e.g. "Alice released a strange Nothing from a forbidden jar"). Empty array if none.')
                     ->items($schema->string()->required()),
             ])
                 ->required()
                 ->withoutAdditionalProperties()
-                ->title('World Update')
-                ->description('Current world state after this turn. Every field is required.'),
+                ->title('State Delta')
+                ->description('The full persistent world state AFTER this turn. The runtime stores this and passes it back next turn. Every field is required; carry forward what has not changed.'),
+
+            'session_memory_update' => $schema
+                ->string()
+                ->required()
+                ->title('Session Memory Update')
+                ->description('A single short natural-language sentence describing the most narratively important thing that happened this turn — what should be remembered if the session were resumed cold. Empty string if nothing notable happened. Example: "Alice opened the forbidden jar and released a strange Nothing that now owes her a favour."'),
         ];
     }
 }

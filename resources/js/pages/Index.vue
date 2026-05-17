@@ -212,14 +212,14 @@ onBeforeUnmount(() => {
 <style scoped>
 /* ─── Chaos Mode banner ─────────────────────────────────────────────────────── */
 .chaos-mode-banner {
-    border-top: 1px solid rgba(201, 151, 58, 0.15);
-    border-bottom: 1px solid rgba(201, 151, 58, 0.15);
-    background: linear-gradient(90deg, rgba(201, 151, 58, 0.06) 0%, rgba(7, 7, 15, 0.0) 100%);
+    border-top: 1px solid rgba(229, 173, 83, 0.15);
+    border-bottom: 1px solid rgba(229, 173, 83, 0.15);
+    background: linear-gradient(90deg, rgba(229, 173, 83, 0.06) 0%, rgba(7, 7, 15, 0.0) 100%);
     cursor: pointer;
     transition: background 0.25s;
 }
 .chaos-mode-banner:hover {
-    background: linear-gradient(90deg, rgba(201, 151, 58, 0.11) 0%, rgba(7, 7, 15, 0.0) 100%);
+    background: linear-gradient(90deg, rgba(229, 173, 83, 0.11) 0%, rgba(7, 7, 15, 0.0) 100%);
 }
 .chaos-mode-banner-inner {
     display: flex;
@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
 .chaos-mode-suits {
     font-size: 18px;
     letter-spacing: 10px;
-    color: rgba(201, 151, 58, 0.35);
+    color: rgba(229, 173, 83, 0.35);
     flex-shrink: 0;
     display: none;
 }
@@ -252,24 +252,24 @@ onBeforeUnmount(() => {
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: rgba(201, 151, 58, 0.5);
+    color: rgba(229, 173, 83, 0.5);
     font-family: Georgia, serif;
 }
 .chaos-mode-banner-title {
     font-size: 17px;
     font-weight: 600;
-    color: rgba(201, 151, 58, 0.9);
+    color: rgba(229, 173, 83, 0.9);
     letter-spacing: 0.04em;
 }
 .chaos-mode-banner-subtitle {
     font-size: 12px;
-    color: rgba(229, 217, 192, 0.35);
+    color: rgba(229, 217, 192, 0.42);
     font-style: italic;
 }
 .chaos-mode-banner-cta {
     font-size: 13px;
-    color: rgba(201, 151, 58, 0.6);
-    border: 1px solid rgba(201, 151, 58, 0.25);
+    color: rgba(229, 173, 83, 0.6);
+    border: 1px solid rgba(229, 173, 83, 0.25);
     padding: 6px 16px;
     border-radius: 2px;
     white-space: nowrap;
@@ -277,8 +277,8 @@ onBeforeUnmount(() => {
     transition: color 0.2s, border-color 0.2s;
 }
 .chaos-mode-banner:hover .chaos-mode-banner-cta {
-    color: rgba(201, 151, 58, 0.9);
-    border-color: rgba(201, 151, 58, 0.5);
+    color: rgba(229, 173, 83, 0.9);
+    border-color: rgba(229, 173, 83, 0.5);
 }
 
 /* ─── Existing transitions ──────────────────────────────────────────────────── */
