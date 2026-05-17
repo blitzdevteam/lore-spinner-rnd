@@ -248,13 +248,13 @@ final class AddSingleStorySeeder extends Seeder
     private function getStoryConfig(): array
     {
         return [
-            'title' => 'The Adventure of the Speckled Band',
-            'slug' => 'the-adventure-of-the-speckled-band',
-            'category' => 'Mystery & Detective',
-            'script' => 'THE ADVENTURE OF THE SPECKLED BAND_script.txt',
-            'source_pdf' => 'RnD/THE ADVENTURE OF THE SPECKLED BAND.pdf',
-            'teaser' => 'A terrified young woman arrives at Baker Street with a tale of a dying sister, a sinister stepfather, and a final whisper no one can explain. Sherlock Holmes is on the case — and the game is afoot.',
-            'rating' => StoryRatingEnum::TEEN->value,
+            'title' => 'The Tell-Tale Heart',
+            'slug' => 'the-tell-tale-heart',
+            'category' => 'Horror & Suspense',
+            'script' => 'TellTaleHeart_Premium_script.txt',
+            'source_pdf' => 'RnD/TellTaleHeart_Premium.pdf',
+            'teaser' => 'A man insists he is not mad — yet something beneath the floorboards will not let him rest. Edgar Allan Poe\'s masterpiece of guilt, paranoia, and the sound that never stops.',
+            'rating' => StoryRatingEnum::MATURE->value,
             'opening' => null,
             'creator' => [
                 'first_name' => 'The Classics, Unbound',
