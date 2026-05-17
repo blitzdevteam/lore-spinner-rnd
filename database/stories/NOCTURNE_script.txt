@@ -1,208 +1,137 @@
+=== SESSION 1: THE DOOR THAT ONLY OPENS ONCE ===
+
 NOCTURNE
-After a public scandal shatters her life, a disgraced Japanese
-heiress hires a secretive organization called the Night Movers to
-help her disappear—only to discover she was never meant to survive
-the process, and must unravel a conspiracy of erotic control,
-corporate erasure, and manufactured shame before she’s permanently
-rewritten.
+INTERACTIVE ADAPTATION
+SESSION 1: THE DOOR THAT ONLY
+OPENS ONCE
 Written by
 Thomas Wittmer
-Address
-
-Phone Number
-ii.
 
 FADE IN:
-INT. PROFESSOR SHIN’S APARTMENT – NIGHT
-A sparse, modern Tokyo high-rise. Concrete, teak, and
-tension.
-A single table is set for two. Two ceramic bowls of curry
-steam quietly. A bottle of sake breathes.
-AKIRA (26) sits with her legs crossed, posture precise. Not
-nervous. Not at ease. Her lipstick is too dark for the room.
-Across from her, PROFESSOR SHIN (40s). Married. Respected.
-Calm in the way men are when they’ve never been truly
-cornered.
-They eat in silence. The hum of a distant city rolls through
-the window.
-He refills her sake without asking.
-AKIRA
-You don’t have to pretend we’re
-equals when you pour.
-SHIN
-I’m not pretending.
-She chews. He watches.
-AKIRA
-You heard what they’re saying.
-SHIN
-They always say something.
-AKIRA
-You didn’t deny it.
-SHIN
-(smiling, small)
-That’s not the same as confirming.
-A silence thickens between them. Akira looks down. Steam fogs
-her glasses.
-She pushes her food around. Doesn't eat.
-SHIN(CONT’D)
-I always liked how you ask
-questions like you already know the
-answer.
+[INTERACTIVE COLD OPEN — SECOND PERSON]
+The rain hasn't stopped for hours. You feel it running down
+the back of your neck, soaking through silk into skin. Your
+shoes are somewhere behind you — you stopped noticing when.
+You are Akira Kawasaki. And this is the last building you
+will ever enter as yourself.
+Nocturne Ltd. The facade is corporate. Forgettable. The kind
+of building designed to be passed without seeing. But you see
+it. You've been staring at it for eleven minutes, rain
+pooling around your bare feet, reading the words you already
+memorized from the packet: PARTICIPATION IS VOLUNTARY.
+NOCTURNE LTD. IS NOT LIABLE UNDER NATIONAL OR INTERNATIONAL
+JURISDICTION.
+Your phone is already wiped. Your apartment lease is void.
+The email you sent three hours ago has already detonated
+somewhere inside the Kawasaki Group, and there is no version
+of tomorrow where your name still means what it meant
+yesterday.
+The buzzer glows. A small red eye, waiting.
+Behind you: the city, and everything it now knows about you.
+Ahead: a door that only opens once.
+[BRANCHING CHOICE #1 — THE THRESHOLD]
+The buzzer glows red. A small eye in the concrete, patient
+and unblinking. Behind you, Tokyo hums — wet neon, distant
+trains, the last sounds of a city that already knows your
+name for the wrong reasons.
+You have been standing here for eleven minutes.
+The rain is warm. Your feet are bare against the pavement.
+The packet said to arrive with nothing sentimental. You kept
+the jade cicada anyway — your sister's, pressed against your
+collarbone beneath your shirt.
+The door will open once. It will not open again from the
+inside.
 
-AKIRA
-I already know what I’m worth to
-you.
-SHIN
-That’s not fair.
-AKIRA
-That’s not a denial.
-A beat. He reaches across the table. Gently wipes a drop of
-curry from her lip with his thumb.
-She doesn't flinch.
-SHIN
-You should learn to keep secrets if
-you want to stay important.
-He smiles like he’s offering advice. Not drawing blood.
-Akira’s eyes glass, but never break.
-INT. AKIRA’S APARTMENT – NIGHT
-CLOSE ON, Her fingers opening a folder. Confidential
-documents. Names. Financials. Transfers.
-She slides them into a scanner. Her movements are slow.
-Controlled.
-She opens her email. No subject line. No message body. Just
-an attachment and a recipient.
-A SOUND, barely audible. A LAUGH.
-YOUNG GIRL (O.S.)
-(laughing)
-You always said I’d disappear
-first.
-FLASH: A SLIVER OF MEMORY.
-Two girls. Barefoot in a summer creek. Late afternoon light.
-One chases the other. Breathless joy. Water everywhere.
-BACK- Akira stares at the screen. Still.
-Her mouse hovers over SEND. Eyes, welling slightly.
-The laugh echoes in silence.
-
-A flicker in the dark screen, not a reflection. A braid. A
-shape. Gone before she registers it.
-She closes her eyes.
-AKIRA (V.O.)
-I wanted to be believed.
-(beat)
-But more than that, I wanted to be
-impossible to ignore.
-She clicks.
-INT. BATHROOM – NIGHT
-She holds a match to the folder. The flame climbs fast.
-She drops it in the sink. Watches it blacken, curl, choke.
-The room fills with smoke.
-Her face never changes.
-SMASH CUT TO:
-EXT. TOKYO – NIGHT
-We are back with her, BAREFOOT, walking alone, neon sliding
-off her wet skin.
-CUT TO:
-INT. TRAIN STATION – BATHROOM – NIGHT
-Harsh lights. Echoed emptiness. Akira stands in front of the
-mirror. Her reflection barely holds.
-She peels off her coat. Opens her blouse. Beneath, a long
-scar traces the underside of her ribs.
-She traces it with her fingers. Not ashamed. Not proud. Just
-checking if it’s still there.
-CUT TO:
-INT. SUBWAY CAR – NIGHT
-Akira sits alone. Lights flicker above, a stuttering rhythm,
-like a failing heartbeat.
-
-Her face reflected in the glass, pale, flickering, like it’s
-already vanishing.
-She studies her own eyes. Trying to remember them. Or forget
-them.
-Her jaw tightens. Hands curl into fists on her lap.
-The lights flutter again and for a second, it’s like someone
-else is staring back.
-A fracture.
-Something stirs behind her eyes, vulnerable, unspoken. The
-smallest ghost of a tear that never comes.
-She blinks. Mask on. Armor reset.
-The train pulls forward.
-And she goes with it.
-CUT TO:
-EXT. NOCTURNE LTD. HEADQUARTERS – LATER
-A nondescript building. Corporate. Forgettable.
-She stands outside, soaked, staring at the entrance like it’s
-a coffin, or a door she won’t return from.
-She presses the buzzer.
-A VOICE (O.S.)
-Name?
-AKIRA
-Akira Kawasaki.
-The door clicks open.
-INT. FACILITY – LOBBY – NIGHT
-Fluorescent. Cold. No reception desk.
-REI MIKAMI (30s) waits in a pressed suit. Pen in hand.
-Notebook open. The smile he gives her is thin. Professional.
-Akira steps inside.
-Her eyes flick to the WALL-MOUNTED DISPLAY — a looped digital
-welcome screen glitches faintly.
-
+What do you do?
+A)
+! Rei opens the door to a woman who doesn't hesitate.
+Nocturne logs: "composed, voluntary, no observed distress."
+Intake moves fast. She is categorized before she can be
+curious.
+B)
+! Rei opens the door to a 97-second delay flag on his tablet.
+He studies her face before speaking. Intake slows. They watch
+her more carefully.
+C)
+! Rei hears her name through the intercom before he opens the
+door. Recalibration in his posture. They expected compliance.
+They got a declaration.
+[ALL PATHS CONVERGE: The lobby. Rei. The welcome screen.]
+INT. NOCTURNE LTD. — LOBBY — NIGHT
+Fluorescent. Cold. No reception desk. The air tastes recycled
+— institutional, bloodless.
+A wall-mounted display loops a digital welcome screen. It
+glitches faintly.
 INSERT — THE SCREEN:
 WELCOME TO NOCTURNE LTD.
 PARTICIPATION IS VOLUNTARY.
 NOCTURNE LTD. IS NOT LIABLE UNDER NATIONAL OR INTERNATIONAL
 JURISDICTION.
 Below it, faintly etched in the glass beneath the screen, a
-worn government seal, partially scraped off. As if someone
-tried to erase history... but didn’t finish.
-Akira’s eyes linger on it.
+worn government seal — partially scraped off. As if someone
+tried to erase history but didn't finish.
+REI MIKAMI (30s) waits in a pressed suit. Pen in hand.
+Notebook open. The smile he gives her is thin. Professional.
 REI
-You’re on time.
-Akira nods. Doesn’t sit.
+You're on time.
+Akira nods. Doesn't sit.
+
 AKIRA
 What happens now?
 REI
 We begin.
 He clicks his pen. The sound echoes.
-A flicker on a wall-mounted display. For a split second a
+A flicker on the wall-mounted display. For a split second a
 black glyph, ancient and insect-like, flashes across the
-screen:骸会.
-Akira tenses. Eyes narrow, not recognition, but the instinct
+screen: !".
+Akira tenses. Eyes narrow — not recognition, but the instinct
 to.
-She catches a glance in Rei’s eyes, something small and
-guarded. He masks it, too late.
-REI (CONT’D)
-Ignore that.
+REI(CONT’D)
 (beat)
-Just legacy code. Old systems still
-bleeding through.
-The screen clears. Clean corporate blue.
-Akira says nothing. But she’s seen it.
-INT. FACILITY - HALLWAY - MOMENTS LATER
+Ignore that. Just legacy code. Old
+systems still bleeding through.
+The screen clears. Clean corporate blue. Akira says nothing.
+But she's seen it.
+INT. FACILITY — HALLWAY — MOMENTS LATER
 Long corridor. White tile, stainless steel. The buzz of
-electricity hums beneath the silence.
-
-Akira walks beside Rei. Their footsteps do not echo. This
-place was built not to be remembered.
+electricity hums beneath the silence. Their footsteps do not
+echo. This place was built not to be remembered.
 REI
 Phones. Wallet. Identification.
-Akira hands him everything without protest. Even the
-necklace. A tiny jade cicada. He clocks it.
+Akira hands him everything without protest. He drops each
+item into a plastic envelope.
+He reaches for the necklace. The jade cicada — small, cool,
+worn smooth by years against skin.
 REI(CONT’D)
 Sentimental?
-AKIRA
-It was my sister's.
-REI
-Not anymore.
-He drops it into a plastic envelope. Seals it.
-They walk. Another door hisses open without being touched.
-INT. INDUCTION ROOM - NIGHT
-A room meant to look medical but not sterile. That same cold-
-warm confusion found in hotels and funeral homes.
+[EXPRESSIVE CHOICE — THE JADE CICADA]
+The jade cicada — small, cool, worn smooth by years against
+skin that isn't yours anymore. Your sister wore it the last
+summer you were both still whole.
+"Sentimental?" he asks.
+
+How do you let go?
+A)
+! The cicada disappears into plastic. Rei seals it without
+looking at you. He writes: "compliant, low affect." He's
+wrong, and you let him be.
+B)
+! Rei watches your fingers close and open. He doesn't rush
+you. When you place it in the envelope, his pen pauses over
+the intake form. He writes nothing.
+C)
+! "Not anymore," he says. But his hand hesitates over the
+seal. For half a breath, something human crosses his face —
+then it's gone. He files it. But he heard you.
+[ALL PATHS CONVERGE: The Induction Room.]
+INT. INDUCTION ROOM — NIGHT
+A room meant to look medical but not sterile. That cold-warm
+confusion found in hotels and funeral homes.
 YUMI TAKEDA (late 20s) stands behind a terminal. Unsmiling.
 Her hair is too neat. Her nails too clean.
 YUMI
 Strip down to underclothes.
-Akira doesn’t move.
+Akira doesn't move.
 YUMI(CONT’D)
 I assume you read the packet.
 AKIRA
@@ -220,9 +149,8 @@ AKIRA
 You want a confession?
 YUMI
 No. We want your permission.
-Beat.
-Akira nods once. Yumi steps forward with a scanner. Moves it
-over Akira’s body.
+Beat. Akira nods once. Yumi steps forward with a scanner.
+Moves it over Akira's body.
 The screen behind her flickers with pulsing lines. Brainwave
 graphs. Thermal overlays. Lines of kanji auto-populate in
 red.
@@ -241,10 +169,11 @@ AKIRA
 No.
 Yumi doesn't write it down. She already knows it doesn't
 matter.
+INT. INDUCTION ROOM — CONTINUOUS
 REI
 Akira Kawasaki. Final request
 confirmed.
-He slides a folder toward her. Thick. Paper clipped.
+He slides a folder toward her. Thick. Paper-clipped.
 REI(CONT’D)
 Sign and thumbprint. You may choose
 to speak a final sentence into
@@ -253,228 +182,148 @@ Akira flips through it. Her eyes pause at one section:
 MOTIVE.
 Her pen hovers.
 
-AKIRA
-I was the wrong story in the right
-family.
-She signs. Presses her thumb.
-Yumi clicks something. The lights shift cooler.
-YUMI
-Transfer begins now.
-A door slides open behind them. Faint sound of rain. But no
-exit sign. No escape.
-Akira walks forward, doesn’t look back.
-CUT TO:
-INT. OBSERVATION SUITE – NIGHT
-A bank of monitors. Yumi and Rei watch Akira disappear into
-the corridor beyond.
-The feed flickers. Soundless. Akira, shrinking into the
-vanishing point.
-YUMI
-She doesn’t know.
-REI
-None of them do.
-Yumi closes the terminal. Her hand lingers, a moment too
-long.
-A flicker of something in her eyes. Not regret. Not
-nostalgia. Just the memory of having once been breakable.
-YUMI
-(soft)
-I was like you once.
-Rei looks over. Caught off guard.
-YUMI(CONT’D)
-Before I chose.
-She exhales. Faint. Controlled.
-YUMI(CONT’D)
-They say fear makes you human. But
-it’s obedience that makes you stay
-that way.
-
-Rei doesn’t respond. He’s not sure if it’s a warning. Or a
-confession.
-The monitors buzz quietly.
-YUMI(CONT’D)
-Good.
-She turns. Walks out, leaving only static behind.
-CUT TO:
-INT. TRANSFER CORRIDOR – NIGHT
-Dim, narrow. Metallic hum. The hallway feels endless, a
+[EXPRESSIVE CHOICE — THE MOTIVE]
+The document is thick. Paper-clipped. Legal language designed
+to make consent feel like gravity — inevitable, impersonal,
+already happened.
+Your pen moves through the pages. Signature. Thumbprint.
+Waiver of identity. Waiver of return.
+Then: MOTIVE. A single blank line.
+What do you write?
+A)
+! Yumi's eyes flicker. Not pity — recognition. She's heard
+versions of this before, but something in the way you wrote
+it makes her look at you one beat longer than protocol
+allows.
+B)
+! The pen lifts. The ink dries. Rei reads it and his
+expression doesn't change — but his hand stalls on the page,
+just slightly. You've given them something true.
+C)
+! Yumi tilts her head. Rei glances at the empty line, then at
+you. No one has left it blank before. The system doesn't know
+how to categorize silence.
+[ALL PATHS CONVERGE: Transfer begins.]
+INT. TRANSFER CORRIDOR — NIGHT
+Dim, narrow. Metallic hum. The hallway feels endless — a
 tunnel of waiting.
 Akira walks, flanked by two silent attendants. No words
 exchanged.
 Up ahead, another subject. Male. Mid-30s. SWEATING. SHAKING.
 He looks over his shoulder, sees Akira, and SNAPS.
 SUBJECT
-No—NO! This isn't what they said!
-He SPINS, lands a brutal elbow into one attendant’s throat.
+No — NO! This isn't what they said!
+He SPINS, lands a brutal elbow into one attendant's throat.
 The man crumples.
+
 Chaos erupts. Screams echo down the corridor. A security
-strobe hits, harsh, white, pulsing.
-The other attendant tackles the subject, fists flying. A
+strobe hits — harsh, white, pulsing.
+The other attendant tackles the subject. Fists flying. A
 syringe hits the floor. Shatters.
-Akira stops.
-Unmoving. Watching.
+Akira stops. Unmoving. Watching.
 The subject locks eyes with her. Bloody. Wild.
 SUBJECT(CONT’D)
-Don’t let them—
-He’s yanked backward and out of frame. His scream cuts off.
+Don't let them —
+He's yanked backward and out of frame. His scream cuts off.
 Silence returns. Except for the hum.
 Akira blinks. And keeps walking.
-
 A DOOR opens ahead. Swallowing her.
-CUT TO:
-INT. ORIENTATION ROOM - NIGHT
-Clinical. Soundproofed. Faux warmth. Soft earth-toned walls,
-artificial plants. A screen blinks on the far wall, a
-corporate video frozen mid-frame. The hum of the fluorescent
-lights is the only soundtrack, dull and constant, like the
-inside of a machine.
-Akira sits alone at a round table. Her posture is perfect,
-but her hands are trembling under the table. A SINGLE CAMERA
-blinks red above her, cyclopean and patient.
-REI (O.S.)
-When you're ready, Ms. Kawasaki.
-Akira exhales, steadying her breath. Her voice is flat,
-almost like reading a script.
-AKIRA
-My name is Akira Kawasaki. I am
-willingly undergoing voluntary
-relocation under the protections of
-Nocturne Ltd.
-Akira hesitates.
-REI (O.S.)
-Please proceed.
-She does. Her voice falters now, but she continues.
-AKIRA
-I relinquish legal identity,
-familial ties, and all forms of
-digital presence...
-Behind her, the WHISPER. It’s her sister’s laugh. A memory
-long buried. Soft. Playful. It doesn't belong here.
-Akira turns, reflexive. The room is still.
-INT. COMMON ROOM - LATER
+INT. COMMON ROOM — NIGHT
+[BREATH BEAT — SCHELL RULE: 8-10 MINUTE MARK]
 A cafeteria space. Pale wood. Soft music filtered through
 speakers recessed in the ceiling. Everything is a little too
 clean. People sit in groups of twos and threes. Smiling. Too
 still.
-
 Akira enters. Her shoes make no sound against the vinyl
 floor. The room registers her presence, but no one looks.
 Yumi steps forward from the corner, like she was waiting for
 this moment.
 YUMI
-Relax. They're friendly, in theory.
-Akira doesn’t laugh.
-AKIRA
-Do they speak?
-YUMI
-Only if you already know what
-they'll say.
-Yumi leads her to a small circular table. At it, a WOMAN
-(20s, polite, pretty, blank) sits with her hands folded
-neatly in her lap.
+Relax. They're friendly. In theory.
+Yumi leads her to a small circular table. A WOMAN (20s,
+polite, pretty, blank) sits with her hands folded neatly in
+her lap.
 WOMAN
 Relocation due to stalker
 harassment. Duration, indefinite.
 She smiles. Perfect. Hollow.
 WOMAN(CONT’D)
-I’m grateful to be here.
+I'm grateful to be here.
 Akira nods. Her breath catches.
-As Yumi moves behind the woman just for a beat. The woman’s
-lips shift, a whisper, barely audible.
+
+Yumi moves behind the woman — just for a beat. The woman's
+lips shift. A crack in the glaze.
 WOMAN(CONT’D)
 (whispers)
-Get out, they’re MUKUROKAI.
-Akira freezes. The woman’s eyes don’t move. Her smile
-resumes, as if it never left.
-INT. HALLWAY - NIGHT
-Long. Endless. Fluorescent glow. The hum returns. Akira walks
-alone. Her shadow splits and elongates.
-Rei stands to the side, back to her, facing a panel. His body
-is stiff. He’s listening to something on a hidden earpiece.
-CHILD'S VOICE (VOICEMAIL)
-Did I do good, Papa?
-
-He deletes it instantly as he notices her. Turns. Their eyes
-meet, something unspoken and raw flickers across his face.
-REI
-You’re not cleared for that wing.
-AKIRA
-Then you should lock it.
-A flash of restraint behind Rei’s eyes. Something pulled
-tight, then buried.
-He says nothing. She moves past.
-INT. REASSIGNMENT ROOM - NIGHT
-White. Endless. A standing mirror with no reflection. Or
-maybe it’s just too clean. Too still.
-Yumi enters holding a thin black file. She doesn’t sit. She
-doesn’t blink much.
-YUMI
-Effective immediately, you are
-Shiori Takada. Age, twenty-seven.
-Primary vulnerability, abandonment
-anxiety. Assigned field, art
-handler. Residence, Unit A-713.
-The file opens like a ritual. Akira’s hands shake slightly as
-she takes it. Inside: an ID card. Passport. Lease. All
-pristine. All official.
-AKIRA
-Primary vulnerability, sounds
-clinical.
-YUMI
-It is. The algorithm is impersonal
-by design.
-A beat. A flicker of anger under Akira’s eyes.
-AKIRA
-So I’m a liability profile.
-YUMI
-No. You’re a forecast.
-Their fingers brush as Yumi passes the last document. The
-contact is brief, but electric. Charged.
-
-INT. THE WHISPER ROOM - NIGHT
+Get out. They're MUKUROKAI.
+Her smile resumes, as if it never left. Her eyes never moved.
+A SOUND — somewhere in the walls. A girl's laugh. Breathless,
+joyful, wrong for this space. The laugh of a child chasing
+another child through water on a summer afternoon.
+Akira freezes. She knows that laugh. She grew up chasing it.
+She turns. Nothing. Just the hum of the building, breathing.
+[EXPRESSIVE CHOICE — THE MUKUROKAI WARNING]
+The laugh fades. The woman sits perfectly still. You are
+being watched.
+What do you do?
+A)
+! The woman's smile tightens. Her eyes widen — just enough to
+show white. She doesn't answer. But under the table, her
+fingers brush yours. Brief. Electric. A warning delivered
+through skin. Then she stands and walks away. You never see
+her again.
+B)
+! You catalogue her the way you were taught to study a
+painting — not for beauty, but for what the artist tried to
+conceal. She leaves. But the impression stays — and when you
+see a face like hers again, you'll know where to look.
+C)
+! Something shifts in her expression. Not fear. Surprise. She
+wasn't expecting to be understood. Your smile holds. Hers
+falters. For one second, two real people sit across from each
+other in a room full of ghosts.
+[ALL PATHS CONVERGE: The Whisper Room.]
+INT. THE WHISPER ROOM — NIGHT
 A small booth. Eggshell walls. No mirrors. No visible
-surveillance. But there’s the sense of being watched from
+surveillance. But there's the sense of being watched from
 inside your own skin.
+
 Akira steps in. The door seals behind her with a pneumatic
-hiss.
-The ceiling light dims.
+hiss. The ceiling light dims.
 A speaker embedded somewhere in the walls crackles softly.
-First: SHIN’S VOICE.
+First: SHIN'S VOICE.
 SHIN (V.O.)
-You should learn to keep secrets...
+You should learn to keep secrets if
+you want to stay important...
 She winces.
 Then: her sister.
 SISTER (V.O.)
 Did you forget me?
 A low-frequency hum begins. Deep. Vibrational. Her
-fingernails twitch involuntarily.
-She scratches at her scar. Harder now. Breath short.
-Then, a third voice. Genderless. Timeless. Something
-inhuman...
+fingernails twitch involuntarily. She scratches at her scar.
+Harder now. Breath short.
+Then, a third voice. Genderless. Timeless. Something inhuman.
 VOICE (V.O.)
 MUKUROKAI is watching.
-It sounds like it’s coming from inside her own lungs.
+It sounds like it's coming from inside her own lungs.
 Her body tightens. She presses her hands over her ears, but
-the sound is not in the room. It’s in her.
-The tone escalates. Not louder, deeper. Molecular.
-Then-
-Silence.
-The door slides open.
-Yumi stands there, immaculate. The hallway behind her is a
-tomb.
+the sound is not in the room. It's in her.
+The tone escalates. Not louder — deeper. Molecular.
+Then — silence.
+The door slides open. Yumi stands there, immaculate. The
+hallway behind her is a tomb.
 YUMI
 Longer than most.
-
 Akira says nothing. She steps out.
-CUT TO:
-INT. TRANSITION CHAMBER - NIGHT
-A narrow room of obsidian black. No walls, only reflections.
-The floor pulses faintly beneath Akira’s feet, like it’s
+INT. TRANSITION CHAMBER — NIGHT
+A narrow room of obsidian black. No walls — only reflections.
+The floor pulses faintly beneath Akira's feet, like it's
 breathing.
 A HUM builds from the walls. Not mechanical. Organic. Like a
 throat clearing.
+
 Yumi stands across from her. No file this time. Just her
-presence, like fog. Soft, creeping, cold at the bone.
+presence.
 YUMI
 Final clearance requires silence.
 AKIRA
@@ -493,2148 +342,749 @@ AKIRA
 Akira Kawasaki.
 YUMI
 No. Name?
-A beat.
-AKIRA
-Shiori Takada.
-YUMI
-Purpose?
-AKIRA
-To be forgotten.
+[BRANCHING CHOICE #2 — THE IDENTITY SURRENDER]
+[MORAL-WEIGHT CHOICE — NO CORRECT ANSWER]
+You feel the weight of it — every version of yourself you've
+ever been, pressed into a single syllable. The hum is inside
+your ribs now. Yumi is close enough that you can feel the
+warmth of her breath. She's waiting. The system is waiting.
+The room is waiting.
 
-The HUM stops.
-In the silence: her heartbeat. A flutter. Then stillness.
-Yumi steps forward. Touches Akira's forehead with two
-fingers. A gesture that feels like anointing. Or branding.
-YUMI (SOFT)
-Welcome home.
-INT. SURVEILLANCE ROOM - NIGHT
-Banks of monitors. Silent. A vast grid of faces in hallways,
-bedrooms, restrooms.
-Rei stands in the dark. Only the glow of the screens
-illuminate his face.
-He watches Akira.
-YUMI (V.O.)
-You feel it too, don’t you? Like
-gravity... bending toward her.
-Rei flinches.
-YUMI (V.O.)
-She breaks rules just by existing.
-He zooms in on her face. Frame by frame.
-CLOSE ON: Her lips. Slightly parted. Not afraid. Not yet.
-He turns the screen off.
-INT. AKIRA'S ASSIGNED APARTMENT - NIGHT
+What do you say?
+A)
+   Reflects: PRAGMATISM
+! Yumi presses two fingers to Akira's forehead — anointing or
+branding. "Welcome home," she whispers. But her eyes are
+disappointed. She wanted you to fight. The system accepts
+compliance. But in the obsidian reflection, your image
+lingers one frame longer — as if the reflection refused even
+though you didn't.
+B)
+   Reflects: INTEGRITY
+! The hum fractures. Yumi's composure cracks — not anger,
+something rawer. She steps back. "You will regret this," she
+says, but her voice shakes, and regret is not what lives in
+her eyes. It's hunger. System flags: NONCOMPLIANT. ELEVATED
+RISK. OBSERVE.
+C)
+   Reflects: CUNNING
+! Yumi's breath catches. The protocol has no response. For
+one unguarded second the mask drops — not the professional
+one, the personal one. She was once someone else too. The
+power dynamic between you is no longer vertical.
+[ALL PATHS CONVERGE: First night in the facility.]
+INT. AKIRA'S ASSIGNED APARTMENT — NIGHT
 Spartan. Too clean. Generic feminine touches applied like
-paint. A silk scarf draped, a pink toothbrush, a photo of
+paint. A silk scarf draped. A pink toothbrush. A photo of
 friends she doesn't know.
 Akira sits on the bed, still clothed. The ID card in her
-hand. The name SHIORI TAKADA etched in flawless Helvetica.
+hand. The name on it etched in flawless Helvetica.
 She runs her thumb across it. Again. And again.
 She breathes.
-INT. SHARED HALLWAY - CONTINUOUS
-Yumi stands outside Akira’s door. Listening.
+She moves to the bathroom. Flicks on the light.
+Looks in the mirror —
+Her reflection STARES BACK. But not synchronously. It's
+delayed. A breath behind. Or ahead.
 
-Her fingers twitch once.
-She walks away.
-CUT TO:
-INT. SURVEILLANCE ROOM - NIGHT
-Dim blue glow. Monitors hum, casting ghostlight across Rei’s
-face. Alone, back stiff, eyes locked on one screen.
-ON SCREEN: AKIRA sleeps, barely. Curled on her side, ID card
-clutched in her hand. Stillness so pure it looks posed.
-Rei scrubs back the footage. Slower now. Frame by frame.
-A FLICKER.
-Behind her, a SHADOW. No movement. Just a shape where no
-shape should be.
-He freezes the frame.
-ZOOMS IN. Enhances. Grain explodes. It’s nothing.
-Except, her reflection in the dark glass behind the bed...
-It’s facing the camera.
-REI
-(murmurs)
-No timestamp anomaly... No entry
-log...
-He taps a key.
-Encrypts the file. Labels it: CAT R - 01 / Echo.
-CUT TO:
-INT. DIAGNOSTIC LAB – NIGHT
-Banks of data streams. Pulse charts. Deep mind scans rendered
-in shifting waves.
-The lab hums with a synthetic stillness, lights too white,
-air too quiet.
-Yumi stands alone, surrounded by screens. She scrolls through
-Akira’s WHISPER ROOM neural feedback.
-
-CLICK. CLICK. Two files overlay, one from the session, one
-archival.
-ON-SCREEN: Akira’s scan. Complex. Unstable. But beneath it,
-something too ordered. Too clean.
-An emergent symmetry.
-YUMI
-(quietly)
-That’s not... possible.
-She pinches to isolate the waveform.
-The monitor glitches. Resolves.
-INSERT: An abstract symbol emerges embedded in the EEG
-output. 黒神 KUROKAMI.
-Yumi doesn’t breathe. She stares.
-A TECHNICIAN (20s) enters quietly. Freezes when he sees the
-screen.
-TECHNICIAN
-That embedded? That’s not supposed
-to—
-YUMI
-No one added it.
-(beat)
-It’s recursive. Self-generating.
-She tilts her head slightly. Eyes narrowing.
-YUMI (CONT’D)(CONT’D)
-What’s the control signature?
-TECHNICIAN
-(shaking his head)
-No metadata. It’s clean. Like it
-generated from inside.
-Yumi’s fingers hover over the waveform.
-She magnifies it.
-INSERT: The signal pulses in triplets. Rhythmic. Inverted
-tones, like a melody being played backwards.
-The symbol pulses in rhythm, not chaotic. Composed. Almost...
-elegant.
-
-TECHNICIAN(CONT’D)
-Is that from her?
-YUMI
-I’ve seen this before.
-(beat)
-But it never stabilized. They all
-broke apart. It’s not supposed to
-survive iteration.
-(beat)
-It’s flagged in... legacy audits.
-She clicks deeper.
-Files open. Redacted pages. A glimpse of a pattern. Old
-intakes. Protocols long archived. One word unblurred:
-MUKUROKAI.
-YUMI(CONT’D)
-(whispered)
-Mukurokai... Not again.
-The technician backs away slightly.
-TECHNICIAN
-Should I report this to Tier One?
-Yumi slowly turns to face him. Her expression is unreadable.
-Eyes calculating.
-YUMI
-No.
-(beat)
-It’s an artifact.
-(pause)
-A ghost in the machine.
-TECHNICIAN
-But what if it’s not—
-YUMI
-Then we’re all obsolete.
-She closes the terminal with a soft, final gesture.
-CUT TO:
-INT. AKIRA’S ROOM - NIGHT
-Dark. Only streetlight through blinds. Akira lies still on
-her bed.
-CLOSE ON: Her eyes, OPEN NOW.
-
-Something BUZZES faintly. The hum of fluorescent decay? Or
-something inside the walls?
-She sits up.
-On her nightstand, the jade cicada. Burnt. Ashed around the
-edges.
-She stares.
-Blink.
-It’s gone.
-She breathes in sharply, heartbeat spiking.
-The FRIEND PHOTO on the wall FLICKERS.
-The people inside shift positions. Turn their heads toward
-her. Blink.
-WHISPER (V.O.)
-You brought it back.
-Akira backs away. Her scar throbs under her shirt.
-INT. BATHROOM - CONTINUOUS
-She flicks on the light.
-Looks in the mirror-
-Her reflection STARES BACK, but not synchronously. It’s
-delayed.
-Then, the reflection BLINKS.
-AKIRA (V.O.)
-I didn’t call anything...
-Her reflection SMILES.
+Then — the reflection SMILES.
+But she hasn't.
+She blinks.
+The smile is gone.
 The mirror CRACKS.
-CUT TO:
-INT. MAINTENANCE CORRIDOR - NIGHT
-Harsh overhead lights. Metal underfoot. Yumi and Rei face
-each other in near silence.
-
+SMASH CUT TO:
+INT. TRANSFER CHAMBER — NIGHT
+[RESOLUTION BEAT]
+The Transfer Chamber is circular. Velvet-black. Sound dies at
+the walls. The light beneath your feet pulses in a ring — a
+halo inverted, glowing upward into nothing.
+You've been standing here for what feels like hours. It may
+have been minutes. Time doesn't behave in this room.
+The door hisses.
+Yumi enters carrying a metal briefcase. She opens it without
+ceremony. Inside: a slim surgical device. A syringe. The
+fluid is black and viscous — not still. It shifts inside the
+glass, sluggish, metallic, as if responding to warmth.
 YUMI
-You pulled her footage.
-REI
-It flagged itself.
-YUMI
-She’s carrying something. Or...
-something’s carrying her.
-Rei glances at the security feed. Akira’s room now dark
-again. Still. Normal.
-REI
-Terminate transfer?
-YUMI
-No. We observe. She’s already
-opening it.
-REI
-Opening what?
-Yumi doesn’t answer.
-The lights FLICKER. Buzz.
-A soft, rhythmic HUM builds in the corridor walls.
-Then stops.
-CUT TO:
-INT. SURVEILLANCE ROOM - MOMENTS LATER
-The CAMERA FEED. Akira, sitting up now. Eyes locked forward.
-She turns slowly, makes direct eye contact with the
-surveillance cam.
-CLOSE ON. Her eyes. Reflective. Bottomless.
-For a single frame, they go fully black.
-The screen cuts to static.
-CUT TO:
-
-INT. CONTAINMENT BAY - NIGHT
-Dimly lit. Clinical. Humming machinery and chilled silence.
-Rows of black monitors line the walls. Red indicator lights
-pulse like a slow heartbeat.
-A corrupted feed plays on REI's monitor. It skips, stutters,
-pixelates.
-CLOSE ON: The image. Akira, in her room. Her eyes lock onto
-the camera. Her pupils flood black.
-Then- static.
-Rei watches. Stone still. He plays the clip again. Same
-glitch. Same stare. Same collapse.
-YUMI (O.S.)
-You’ve played it seven times.
-Rei doesn’t turn. Her reflection appears faintly in the
-monitor.
-REI
-It isn’t possible.
-YUMI
-None of this is. That’s not the
-point.
-She steps beside him, gaze locked to the broken feed. Her
-face is unreadable, a calm mask held tight over panic.
+Final conversion.
+Her voice is clinical. Her hands are steady. But she won't
+look at the syringe when she lifts it.
 YUMI(CONT’D)
-It’s her. She’s the breach.
-REI
-We screened her. We wrote her.
-YUMI
-No. We projected. You can’t edit
-what you don’t understand.
-Rei slowly turns to her. Voice low.
-REI
-Then what the fuck is she?
-Yumi’s silence is loaded. She speaks it like a secret a name
-not spoken aloud in years.
-
-YUMI
-Mukurokai used to have another name
-for this. Before the cleanrooms and
-contracts.
-A beat.
-YUMI(CONT’D)
-Kurokami.
-That word lands like a rupture. Rei’s breath shortens.
-REI
-That’s just folklore. A myth
-stitched into training material to
-scare off conscience.
-YUMI
-Or a memory.
-She turns toward the hallway. The light above them flickers.
-YUMI(CONT’D)
-Prep Chamber Three. No assistants.
-No preamble.
-REI
-You want to go in alone?
-YUMI
-I need to see what’s left. Of her.
-Of us.
-She exits. The monitor loops again, Akira's eyes, that stare
-... static.
-SMASH TO:
-INT. INTERVIEW CHAMBER - NIGHT
-Sealed. Windowless. A single bulb swings above a sterile
-steel table. Two chairs. Two lives.
-Yumi enters. Alone. She closes the door behind her like a
-confession.
-On the far side of the table, Akira. Already seated. Still.
-Awake.
-The light flickers. Her hands are folded. Her posture calm,
-but her eyes scan Yumi like a scalpel.
-
-YUMI
-You didn’t sleep.
-AKIRA
-I wasn’t invited to.
-A long silence. Yumi sits slowly. Puts a black folder on the
-table. Doesn’t open it.
-YUMI
-Do you know why you’re here?
-AKIRA
-Because I stared too long.
-Yumi hesitates, then smiles. Brief. Pained.
-YUMI
-Because something’s staring back.
-The room tightens. The hum of the overhead bulb now a drill
-inside the silence.
-AKIRA
-What is this place really?
-YUMI
-A chrysalis. A crime scene. A
-correction.
-AKIRA
-Or a cage?
-YUMI
-Only if you remember the outside.
-They hold each other’s gaze. The air thickens. Something
-unspoken growing between them.
-AKIRA
-I saw it. In the mirror.
-YUMI
-What did you see?
-AKIRA
-Not me. Not her. But something
-waiting to take shape.
-Yumi leans forward. Her voice lowers, almost tender.
-
-YUMI
-They used to say Kurokami wore a
-woman’s face. When the world forgot
-how to mourn.
-Akira doesn’t blink.
-AKIRA
-Do you think that’s me?
-YUMI
-I think you’re remembering what we
-erased.
-Akira smiles now. Not soft. Something sharp, and almost holy.
-AKIRA
-Then you should’ve done a better
-job.
-CUT TO:
-INT. OBSERVATION CORRIDOR - NIGHT
-Dimly lit. Security glass stretches the length of the hall.
-Behind it: identical rooms, each sealed, staged, silent.
-Lives paused mid-edit.
-Rei leans against the glass, arms folded. A cigarette
-dangles, unlit. A flick of hesitation in his thumb. He
-doesn’t light it.
-Yumi approaches from behind. Silent as breath.
-YUMI
-You still think she’s just breaking
-down?
-REI
-No.
-YUMI
-Then what?
-REI
-Breaking through.
-Yumi joins him at the glass. Their reflections float above
-the image of Akira, projected live, sitting again on her bed.
-Still. Alert.
-
-REI(CONT’D)
-Every subject glitches. Dream
-spill, pattern recognition, bleed-
-through. That’s protocol. But her?
-YUMI
-She’s recursive. She looks back.
-REI
-She recognized the surveillance.
-Didn’t pretend she didn’t.
-YUMI
-(small)
-She saw me.
-Rei turns to her.
-REI
-You think she knows who you were?
-Yumi doesn’t answer. Her hand touches the glass, not Akira’s
-cell, but the one beside it. Empty. The interior charred
-black.
-YUMI
-No one’s ever lasted past Phase
-Three.
-REI
-She hasn’t. She’s somewhere else
-entirely.
-Beat.
-YUMI
-She called the mirror. It cracked
-back.
-REI
-So what do we do?
-YUMI
-We give her what she wants.
-Rei raises an eyebrow.
-REI
-Which is?
-YUMI
-To be seen.
-CUT TO:
-
-INT. AKIRA'S ROOM - LATER
-The same room. Same silence. But the air, heavier now. Like
-breath held in a vault.
-Akira sits cross-legged on the floor. She stares at a photo
-of her sister and her, burned at the edges. Still warm.
-A soft KNOCK.
-She doesn’t answer.
-The door opens.
-Yumi steps in, this time without a file. Without a clipboard.
-Just her.
-Akira looks up.
-YUMI
-You said it wasn’t you. In the
-mirror.
-AKIRA
-It smiled.
-YUMI
-Then who was it?
-Akira stands. Slowly. Her voice leveled, grounded, but
-stripped of pretense.
-AKIRA
-Someone I’ll have to become.
-Yumi crosses the room.
-They stand face to face. Breath syncing.
-YUMI
-When I went through... I thought I
-was still me. Until I laughed and
-it didn’t sound like mine.
-Akira looks into her.
-AKIRA
-Is this your laugh now?
-Yumi leans in. Barely a breath between them.
-YUMI
-I don’t laugh anymore.
-
-A moment. The air hums between their bodies. Charged.
-AKIRA
-Then let’s remember how.
-The lights dim.
-CUT TO:
-INT. TRANSFER CHAMBER - NIGHT
-Clinical. Ritualistic. A circular room lined with velvet-
-black soundproofing. Cameras hidden behind mirrored domes.
-The hum of surveillance like breath on glass.
-Akira stands alone in the center.
-Her posture, straight, defiant. She wears the transfer
-whites, sterile, sleeveless. Her scar exposed.
-A circular track of LIGHT ignites beneath her feet, like a
-halo inverted.
-REI (O.S.)
-Stand by.
-A door HISS-OPENS. Yumi enters. Composed, eyes unreadable.
-She carries a polished metal briefcase.
-AKIRA
-Another gift?
-YUMI
-A final confirmation.
-She opens the case. Inside, a slim surgical device. And a
-SYRINGE. Black fluid. Viscous. Metallic.
-AKIRA
-No.
-YUMI
-You agreed. Full conversion.
-AKIRA
-(to herself)
-I didn’t understand the terms.
-Yumi steps closer. Holds the syringe gently, like it’s
-sacred.
-YUMI
 You disappear so you may be remade.
+You stare at the needle.
+AKIRA
+I didn't understand the terms.
+YUMI
+You understood enough.
+She steps closer. The syringe catches light. Her other hand
+reaches for your arm — her fingers warm against your skin.
+Not the grip of a handler. The hold of someone who knows what
+this costs.
 
 AKIRA
-(softly)
-And what do I become?
+What do I become?
 YUMI
 Someone we can trust.
-A beat.
-AKIRA
-Then you made a mistake.
-Without warning, Akira knocks the case aside. The syringe
-shatters. The black liquid hisses against the floor, burning
-faint smoke.
-ALARMS do NOT sound. The system does not react.
-But Yumi’s breath hitches, the first time we’ve seen her lose
-poise.
-YUMI
-Do you think this isn’t part of the
-script?
-AKIRA
-Then rewrite it.
-Akira turns, walks toward the sealed door. It doesn’t open.
-She presses her hand against it. Waits.
-YUMI
-You’re already inside.
-Akira doesn’t look back.
-AKIRA
-Then you should’ve locked the walls
-tighter.
-Her reflection appears in the mirrored dome above. For a
-moment, the glyph 黒神%flickers across the surface, as if
-projected from beneath her skin.
-Yumi sees it.
-For the first time, true fear.
-CUT TO:
+The room hums. The light pulses.
+You look at her hand on your arm. At the syringe. At the
+woman holding it, who has done this before — to others, to
+herself, to someone whose face you keep seeing in mirrors.
+And something in you — not a thought, not a decision,
+something you couldn't stop if you wanted to — says no.
+You move.
+The briefcase hits the floor. The syringe shatters. Black
+fluid hisses against the tile, burning faint smoke.
+No alarms sound.
+No footsteps in the corridor.
+The system does not react.
+You stand in the center of the chamber, barefoot on warm
+tile, shards of glass around your feet, black smoke curling
+upward, and the silence is so complete you can hear your own
+pulse — steady, alive, yours.
+Yumi hasn't moved. Her hand still hangs where Akira's arm
+was. Her face is stripped open — not anger, not protocol, not
+the careful mask she's worn all night. What's behind it is
+fear. Not of Akira.
+Of what she just proved is possible.
+INT. TRANSFER CHAMBER — CONTINUOUS
+[SESSION-END HOOK]
+You breathe. Once. The glass crunches under your feet. Yumi's
+eyes follow you but she doesn't move, doesn't speak, doesn't
+reach for the alarm she should have pulled thirty seconds
+ago.
+You are still here. Still you.
+Above her — the mirrored dome flickers.
+A glyph. Ancient. Insect-like. #$. It pulses once across the
+curved surface — not projected from a machine.
 
-INT. SERVER NODE ROOM - SAME
-A rack of humming machines. Lights pulse in sync. Wires like
-arteries.
-Rei watches the feed. A technician trembles beside him.
-TECHNICIAN
-She wasn’t tagged. Not fully.
-REI
-(frozen)
-Then we lost her the moment she
-signed.
-TECHNICIAN
-Sir... the algorithm’s rewriting
-itself.
-On-screen, Akira’s digital profile begins to corrupt. Names
-vanish. Files erase. Her projected occupation blinks out.
-The tag: SUBJECT STATUS: UNDEFINED.
-REI
-Get me Yumi. Now.
-CUT TO:
-INT. TRANSFER CHAMBER - CONTINUOUS
-Yumi still stands in the middle of the room.
-Akira is gone.
-Only the shattered case remains. And the burned symbol etched
-faintly into the floor.
-Yumi bends. Touches the ashes.
-Her whisper, not to anyone present.
-YUMI
-Kurokami...
-CUT TO:
-INT. TRANSFER OBSERVATION ROOM - NIGHT
-Sterile. Circular. No corners to hide in. The walls hum — not
-with electricity, but memory. Cold metal and warm breath.
+From beneath Akira's skin. She feels it in her scar, in the
+ribs that someone else's knife once opened. A heat that isn't
+pain. Recognition.
+Yumi sees it. Her breath stops.
+The door slides open. Not because someone unlocked it.
+Because the building let her go — the way a body expels
+something it can no longer contain.
+The corridor stretches ahead. Three directions. The facility
+hums, alive and aware.
+[BRANCHING CHOICE #3 — SESSION-END HOOK]
+[THIS CHOICE DOES NOT RESOLVE WITHIN SESSION 1]
+You have broken the only rule they thought was unbreakable.
+You refused to disappear.
+Behind you: the shattered chamber, Yumi frozen in the
+doorway, the smoke still curling from the floor.
+Ahead: the rest of the night. And whatever is waking up
+inside you.
+What do you do?
+A)
+! SESSION 2 OPENS: A terminal flickers in the dark. Rows of
+sealed cabinets stretch into shadow. You're in the archive
+before anyone knows you've moved. A photograph loads on the
+screen: two girls, identical eyes. One slightly older. One
+bruised. The name on the file isn't yours. But the face is.
+B)
+! SESSION 2 OPENS: A room not on any map. Paper screens. Old
+monitors humming with static. Yumi is already here —
+barefoot, white robe, no mask. "You shouldn't be here," she
+says. Her voice is stripped of everything professional.
+What's left underneath is raw and shaking.
+C)
+! SESSION 2 OPENS: A thumbprint scanner glows blue in a
+corridor no one has walked in years. ACCESS GRANTED. The
+elevator sinks. Level B7. Terminals older than the regime
+above them hum like dying lungs. A face appears on a screen —
+yours, but younger. Afraid. Subject 0-KK / Kurokami. Phase 2:
+Reinstatement Failure. Memory Residue: Active.
 
-Yumi stands behind a two-way mirror. Observing.
-On the other side, Akira Kneels on the floor. Eyes closed.
-Breathing slowly. Her palms are flat to the tile, as if
-feeling for something buried beneath.
-She speaks without opening her eyes:
-AKIRA
-It’s quieter when you’re here.
-Yumi doesn’t move.
-AKIRA(CONT’D)
-Not quiet. Just... less screaming.
-Yumi steps into the room.
-The door closes behind her like a vault.
-YUMI
-You shouldn’t be unsupervised.
-AKIRA
-I’m always supervised.
-Akira finally opens her eyes. Looks up.
-AKIRA(CONT’D)
-Just not always seen.
-A beat. Yumi kneels across from her.
-Too close. Not close enough.
-Their knees nearly touch.
-YUMI
-What do you think this place is?
-AKIRA
-A mirror.
-YUMI
-Of what?
-AKIRA
-What you want me to be.
-Yumi swallows. Carefully.
-YUMI
-That’s not true.
+The corridor waits. The hum waits. The thing inside you — the
+thing that shattered the syringe, the thing that made the
+glyph appear, the thing that lives in the gap between your
+reflection and your face — waits.
+You choose.
+THE SESSION ENDS.
+FADE TO BLACK.
+END OF SESSION 1
+"THE DOOR THAT ONLY OPENS ONCE"
+SESSION 2: "THE NAME THEY TRIED TO FORGET" — COMING
 
-AKIRA
-Isn’t it?
-Akira reaches forward. Fingertips almost brushing Yumi’s.
-Static in the space between them.
-AKIRA(CONT’D)
-You knew my sister, didn’t you?
-Yumi doesn’t answer.
-AKIRA(CONT’D)
-Did you erase her... or did you
-love her first?
-Yumi blinks, like a shudder through the spine.
-YUMI
-I don’t remember.
-AKIRA
-Liar.
-Yumi’s hand trembles. Just slightly. She covers it with the
-other.
-YUMI
-You were never supposed to wake up
-like this.
-Akira studies her. Something unspoken. Something broken.
-AKIRA
-Then close your eyes.
-Yumi leans in, breath shallow, and for one charged second, it
-feels like she might. Like she might collapse into whatever
-this is.
-But she doesn’t.
-Instead, she stands.
-Voice gone clinical.
-YUMI
-Protocol resumes at 0600.
-She turns to leave.
-Akira stays kneeling. But her voice follows, soft, searing.
-AKIRA
-You felt her die. Didn’t you?
 
-Yumi freezes. Doesn’t turn around.
-AKIRA(CONT’D)
-I think that’s why you keep
-watching me.
-YUMI
-(soft)
-You want to see if the end looks
-the same.
-The door hisses open.
-Yumi exits.
-Akira lowers her head. For a moment, the hum stops.
-CUT TO:
-INT. LAUNDRY CORRIDOR – NIGHT
-Steam lingers. White sheets ripple faintly on suspended wires
-— institutional, bloodless.
-AKIRA walks slowly, cradling her arms. Barefoot. Disoriented.
-The overhead hum drones like breath held too long.
-She stops.
-At the far end of the corridor a silhouette. Small. Slight.
-Back turned. Dressed in the same facility robe.
-AKIRA
-(soft, involuntary)
-Nami...?
-The silhouette tilts its head. Slowly. Unnaturally. Not
-turning.
-Akira steps forward. The lights BUZZ.
-She reaches out, fingers trembling just above the fabric of a
-hanging sheet.
-The sheet ripples and the silhouette is gone.
-Just another subject, folding laundry in silence.
-But something LINGERS in the frame. A memory misfiled.
+=== SESSION 2: THE NAME THEY TRIED TO FORGET ===
 
-INT. SHOWER ROOM – MOMENTS LATER
-Akira, alone now. Steam swallowing her reflection.
-She stares at the mirror.
-And there, just behind her, in the fogged glass, two faint
-outlines.
-SISTERS. Holding hands.
-Then the condensation drips. And she’s alone again.
-INT. SHOWER ROOM – NIGHT
-Steam hisses.
-The last drops slide from Akira’s skin. She stands,
-motionless. Damp hair clinging to her back. The mirror —
-still fogged — gives no reflection. Or maybe too many.
-CUT TO:
-INT. MEDICAL CORRIDOR – NIGHT
-Bare feet. Wet against tile. Akira walks the corridor alone,
-wrapped in a thin facility robe.
-The LIGHTS above her BUZZ, then FLUTTER, strobing for a half-
-second before stabilizing.
-A pair of NURSES pass her. They speak in hushed Japanese. One
-avoids eye contact. The other stares too long, lips twitching
-like she wants to speak... or confess.
-Akira turns a corner.
-INT. MEAL DISTRIBUTION BAY – MOMENTS LATER
-A line of subjects. Identical robes. Plastic trays. Robotic
-efficiency.
-Akira steps forward. The SERVER, male, young, pauses before
-handing her the tray.
-Her portion is different.
-No rice.
-A cup of thick, grey protein slurry. No utensils.
+NOCTURNE
+INTERACTIVE ADAPTATION
+SESSION 2: THE NAME THEY TRIED TO
+FORGET
+Written by
+Thomas Wittmer
+Based on: NOCTURNE (original screenplay)
+Interactive Adaptation — Lorespinner System
 
-The SERVER glances at the screen behind the counter.
-Something flashes, RED STATUS – PENDING OBSERVATION.
-Akira takes the tray. No reaction. But the subjects behind
-her begin whispering.
-INT. DINING HALL – MOMENTS LATER
-Low drone of fluorescent light. Rows of tables. Structured
-silence.
-Akira sits at the edge.
-Far from the others.
-Across the room, a GROUP OF SUBJECTS freeze mid-bite when
-they see her. One of them, older, eyes sunken, slowly stands.
-SUBJECT
-(softly, in awe)
-Kurokami...
-The others quickly shush him.
-He sits. Trembling.
-Akira doesn’t move. Her reflection in the spoon WARPED, the
-metal curves her face into something unfamiliar.
-INT. DORM HALL – LATER
-She walks past her old room. The door now reads, OCCUPIED.
-She’s been reassigned.
-INT. NEW DORM – NIGHT
-Smaller. No window. Mirror is bolted to the wall, but
-misaligned.
-As she moves, her reflection doesn’t sync. A breath too slow.
-Akira stands perfectly still.
-Then, her reflection SMILES.
-But she hasn’t.
-She blinks.
-
-The smile is gone.
-CUT TO:
-INT. MONITORING HUB – SAME TIME
-Yumi watches the feed.
-Multiple angles of Akira. Each slightly out of sync. Her data
-scrolls beneath: ELEVATED THETA WAVES. ANOMALOUS ACTIVITY.
-IDENTITY VARIANCE FLAGGED.
-Rei enters behind her.
-REI
-You need to detach.
-YUMI
-She shouldn’t be responding this
-quickly.
-REI
-Then she’s not responding.
-YUMI
-She’s adapting.
-REI
-That’s not in the script.
-They watch as Akira slowly lies down on the sterile bed. Arms
-folded across her chest. Eyes wide open.
-REI(CONT’D)
-(cont’d)
-We’ll write her a new one.
-CUT TO:
-INT. CORRIDOR - NIGHT
-A long, fluorescent-lit hallway. The floor waxed to
-sterility. Steam clings to Akira’s damp skin as she walks
-barefoot, her robe clinging to her shoulders like wet paper.
-She passes glass doors.
-Inside each room, subjects. Some sleep. Some stare. One weeps
-into her hands, silently. No one looks up.
-But as Akira passes, their breath syncs. As if a new current
-has entered the bloodstream of the building.
-
-She stops.
-INT. ARCHIVE NOOK - NIGHT
-Not on any map. A tucked-away cubicle of forgotten files.
-Fluorescent lighting flickers above dusty shelves.
-Akira enters.
-A single SUBJECT (19, androgynous, gaunt) is kneeling.
-Restocking boxes. A routine repeated too many times.
-Akira watches them work. Silently.
-SUBJECT
-(quiet)
-This is restricted.
-AKIRA
-Then why are you here?
-The Subject doesn't answer. Doesn’t look up.
-Akira crosses slowly. Reaches for a black folder marked:
-REQUEST: TERMINATION – SUBJECT CLASS D – UNRESOLVED
-SUBJECT
-(distant)
-You shouldn’t touch that.
-Akira opens it anyway.
-Redacted text. Blurred images. A name that isn’t hers, but
-feels like it. Blood seeps through a copied photo. Her own
-eyes, almost.
-She places a hand on the page. Holds it there.
-The Subject turns.
-Their eyes meet.
-A flicker.
-RECOGNITION. Not memory. Something older. Primal.
-SUBJECT(CONT’D)
-(faltering)
-You’re not supposed to be here yet.
-AKIRA
-But I am.
-
-The Subject starts to say something else, then flinches.
-Looks past her.
-Akira turns.
-A camera above them WHIRS.
-Red light blinking. Watching.
-She closes the folder.
-The Subject bows their head. Shame? Prayer?
-SUBJECT
-They’ll come now.
-AKIRA
-Let them.
-She walks out, unhurried.
-The camera follows.
-INT. SANITIZATION STATION - NIGHT
-Akira steps into the white chamber. Places her palms to the
-scanner. It BEEPS.
-Nothing happens.
-She does it again.
-This time, the scanner SPARKS, then goes dark.
-Akira stares at her hands.
-CLOSE ON- Her fingers. Trembling slightly. Skin beginning to
-blister, faintly, chemically, like the building is rejecting
-her.
-CUT TO:
-INT. MONITORING BAY - SAME
-Rei stands over a console.
-TECHNICIAN
-She touched a locked file.
-REI
-(quiet)
-Was it hers?
-
-TECHNICIAN
-Not exactly. But... close enough.
-Yumi enters. Sees the footage.
-On the screen, Akira. Silent. Still.
-REI
-She’s deviating.
-YUMI
-No.
-(beat)
-She’s remembering.
-Off the silence-
-SMASH CUT TO:
-INT. AKIRA’S ROOM – NIGHT
-Akira sits on the bed. Unmoving. But her reflection in the
-one-way glass doesn’t match.
-The reflection BREATHES. Slightly out of sync.
-Her eyes don’t blink. But the image does.
-A fracture.
-CUT TO:
-INT. PSYCHOLOGICAL OBSERVATION CHAMBER – NIGHT
-Clinical white. But not sterile. There’s something indulgent
-in the silence. Like a room made for confessions that never
-leave the floor.
-A table. Two chairs. A sensor wand. Electrodes. A one-way
-mirror.
-Yumi stands by the table. Professional. Composed. Almost
-detached, but not quite.
-Akira enters in silence. Barefoot. Her robe clings in places
-it shouldn’t. Damp from the shower, or the memory of it.
-YUMI
-Take a seat.
-Akira doesn’t obey. She looks around instead, eyes slow,
-measuring.
-
-AKIRA
-Will I be shocked if I lie?
-Yumi doesn’t answer.
-AKIRA(CONT’D)
-No... that would be too obvious.
-Yumi gestures. Akira sits.
-The wand HUMS quietly as Yumi passes it over Akira’s body,
-neck, chest, wrists. Data flickers across the screen beside
-her. Biological readings. Emotion proxies. All red.
-YUMI
-Try to keep your thoughts neutral.
-AKIRA
-Try to stop watching me when I
-sleep.
-Yumi freezes. Just for a beat.
-YUMI
-Begin sequence one.
-A pattern appears on the wall screen. Pulsing. Hypnotic.
-Yumi sits across from her.
-AKIRA
-Why don’t you ever ask me real
-questions?
-YUMI
-This is not about your answers.
-AKIRA
-Then what is it about?
-YUMI
-Control.
-Akira leans forward.
-AKIRA
-Yours... or mine?
-Yumi doesn’t blink.
-Akira places her palms on the table. Slowly spreads her
-fingers. Like an offering.
-The hum in the room deepens.
-
-AKIRA(CONT’D)
-If I’m just a subject... why are
-your hands shaking?
-Yumi’s hand curls into a fist.
-Akira rises. Walks around behind Yumi. Close. Too close.
-She leans down, her breath against Yumi’s neck.
-AKIRA(CONT’D)
-Tell me what you did with her.
-Yumi’s breath catches. She doesn’t turn.
-AKIRA(CONT’D)
-You remember her. I see it. Right
-now. In your skin.
-Beat. Yumi turns suddenly, facing her, almost colliding.
-Inches apart.
-YUMI
-You don’t get to ask me questions.
-AKIRA
-Then punish me.
-A brutal silence.
-Yumi reaches out, grabs Akira’s wrist. Too hard. Her voice
-drops, raw.
-YUMI
-You think this is power?
-AKIRA
-No. This is surrender.
-Beat.
-Yumi’s eyes, wild. Something between panic and desire.
-She kisses her.
-But it’s not release. It’s a shattering.
-Too hard. Too honest.
-Then- Yumi rips herself away. Breath ragged. Looks toward the
-mirror.
-YUMI
-Terminate sequence.
-
-Nothing happens.
-YUMI(CONT’D)
-I said terminate—
-The door opens.
-Rei stands there. Calm. Watching. He saw everything.
-Akira turns. Composed. Not ashamed. Her gaze meets Rei’s like
-a challenge.
-Yumi can’t look at either of them.
-REI
-Yumi. With me.
-Yumi follows. Shaken. Ruined.
-Akira remains behind. Alone.
-The hum of the sensors fades.
-The only sound left... is her breathing.
-CUT TO:
-INT. HALLWAY OUTSIDE OBSERVATION CHAMBER – MOMENTS LATER
-Rei walks. Yumi follows.
-REI
-That was not protocol.
-Yumi doesn’t respond.
-REI(CONT’D)
-Do you know what she is yet?
-YUMI
-(quiet)
-Yes.
-Rei stops. Turns.
-REI
-Then act like it.
-CUT TO:
-
-INT. OBSERVATION CHAMBER – SAME
-Akira sits again. Alone. But not broken.
-She touches her lips. Smiles.
-Not victory. Recognition.
-CUT TO:
-INT. FILE STORAGE - NIGHT
-Cold.
-Aisles of locked cabinets. Metal drawers labeled in Kanji and
-barcode. Fluorescent lights flicker with mechanical
-indifference. No cameras visible.
-Akira enters.
-Her hospital robe clings damply to her back. She walks as if
-she belongs here, though she doesn’t.
-Footsteps echo.
-She passes through rows of classified memory. The place
-smells of toner, rust, and something sweeter, like old blood
-scrubbed with lemon.
-She stops.
-A flicker, not in the lights, but on a terminal screen.
-MONITOR (V.O.)
-Authentication Failed. Clearance
-Required.
-She tilts her head.
-Something’s wrong with the terminal. A soft loop glitch a
-visual stutter in the top-right corner.
-Akira steps closer. Touches a key.
-The screen wavers. Then shifts.
-A file list, names partially redacted, most trailing off into
-corrupted script.
-One entry doesn’t blink. SUBJECT FILE – NOMURA, N.
-Akira freezes.
-
-She presses another key. ACCESS DENIED.
-But the glitch catches again. The screen flickers and for a
-single frame, just long enough to wound, A PHOTOGRAPH. Two
-girls. Young. Identical eyes. One slightly older. One
+FADE IN:
+Session 2 begins differently depending on your final choice
+in Session 1. Three openings converge at the Memory Chamber.
+[INTERACTIVE CHOICE — EXPRESSIVE]
+OPENING — PATH A: THE ARCHIVE
+(If you chose: "Find answers")
+INT. MEMORY INDEX — LEVEL B7 — NIGHT
+The terminal screen is green on black. Old. CRT glass. The
+kind of machine that was obsolete before you were born.
+You don't remember how you got here. Below the facility, past
+a thumbprint scanner that accepted your touch without reason,
+down corridors that smelled like rust and lemon and something
+sweeter — blood, maybe, scrubbed but not forgotten.
+You are Akira Kawasaki. Or you were. The name on the screen
+says something different.
+SUBJECT FILE — NOMURA, N.
+A photograph loads. Slow. Line by line, like a wound opening.
+Two girls. Young. Identical eyes. One slightly older. One
 bruised.
-Then— data fractures. The screen pixelates. Folders re-
-scramble.
-Just before the image collapses entirely, a single glyph
-pulses 黒神, then black.
-Akira breathes. Not shocked. Not scared. Not yet. Just seen.
-Behind her, a faint sound, metal drawer sliding closed. She
-turns, no one there.
-She looks back. The monitor is dead.
-Only her reflection remains, caught in the dark glass. But
-her eyes aren’t hers. Not anymore.
-CUT TO:
-INT. CORRIDOR – NIGHT
-Akira walks back into light.
-The hallway lights don’t flicker. But the hum is louder now.
-Hungrier.
-She doesn’t look back.
-CUT TO:
-INT. LEVEL B6 - SERVICE ELEVATOR – NIGHT
-A thumbprint scanner glows blue. Akira stares at it.
-She holds her breath. Places her finger.
-The scanner pauses. Then- ACCESS GRANTED.
-The elevator shudders, then sinks.
-INT. LEVEL B7 - MAINTENANCE HALLWAY – NIGHT
-Dim. Abandoned. Not forbidden, forgotten.
-
-Rust streaks the corners of elegance. Mold on porcelain. The
-machine’s bowels.
-She moves soundlessly. Until she stops.
-A door marked, MEMORY INDEX / PHASED.
-Painted-over. Scratched open again.
-She pushes.
-INT. MEMORY INDEX – NIGHT
-Rows of obsolete data terminals hum faintly. Like dying
-lungs.
-The air is wet here. Decay in digital form.
-She walks between the aisles. A graveyard of forgotten lives.
-One monitor flickers on, without touch.
-A FACE. Smudged. Flickering. Her face, but younger. Pale.
-Wide-eyed.
-AKIRA
-(softly)
-No...
-The screen distorts, then stabilizes.
-DATA STREAM: Subject 0-KK / 黒神%/%Kurokami. Phase 2:
+You know the older girl's face. You've been wearing it.
+The data scrolls. Subject 0-KK. Kurokami. Phase 2:
 Reinstatement Failure. Emotion Lock: Breach. Memory Residue:
 Active.
-She reaches out. The image glitches again and another face
-overlays hers. Sickly. Hair shorn. Lips sewn.
-Subject 0-KK convulses on the feed. The camera lingers far
-too long.
-Then- a sound. FOOTSTEPS. Not hers.
-She kills the screen. Ducks behind the console.
-Through a crack between consoles, she sees a figure enter,
-not security.
-Another woman. Frail. Silent. Eyes gone glassy.
-A faint moan. Like a song half-remembered.
-
-Akira watches. The woman walks to the screen. Touches it.
-It flashes, shows Akira again.
-But the woman doesn’t flinch.
-She speaks, low.
+A sound. Footsteps. Not yours.
+Another woman enters — frail, silent, eyes gone glassy. She
+walks to the screen. Touches it.
 WOMAN
 (softly)
 Did you bring me back again...?
-Akira rises. Slowly. Cautiously.
 AKIRA
 Do you know me?
-The woman turns.
 WOMAN
 I know the shape of your silence.
-She smiles, too wide.
-Behind her, the screen blinks, SYSTEM ALERT: PRESENCE BREACH.
-The room’s lights shift red.
-Akira backs away- but the woman’s smile fades to something...
-sorrowful.
+She smiles. Too wide. Behind her, the screen flashes: SYSTEM
+ALERT: PRESENCE BREACH.
+
 WOMAN(CONT’D)
-They can’t kill you yet. Not until
-they understand why you’re still
+They can't kill you yet. Not until
+they understand why you're still
 here.
-Her eyes twitch. As if listening to something Akira cannot
-hear.
+Her eyes twitch. Listening to something you cannot hear.
 WOMAN(CONT’D)
 Run.
-Akira bolts.
-INT. SERVICE CORRIDOR – NIGHT
-Alarm lights now strobe softly, not screaming, but pulsing.
-The system isn’t warning her.
-It’s watching.
-
-INT. ELEVATOR SHAFT – NIGHT
-She doesn’t wait for the elevator.
-She climbs.
-Bare hands. Metal rungs. Every breath a warning.
-INT. HER ROOM – NIGHT
-Akira bursts inside. Shuts the door. Leans against it.
-Breath ragged. But not broken.
-In her palm, a stolen shard of circuitry. Still warm.
-From the failed girl. Or the girl who failed to vanish.
-Either way, Akira now carries proof.
-CUT TO:
-INT. BOARDING LIFT – NIGHT
-Yumi stands alone. Elevator walls of black glass reflect her
-in pieces, ractured, refracted.
-A CHIME.
-The doors slide open.
-INT. UPPER ADMINISTRATION – LEVEL ZERO – CONTINUOUS
-Minimal. Opulent. The air smells like old lacquer and quiet
-violence.
-She walks. Her heels echo too loud.
-INT. THE VAULTED COUNCIL ROOM – MOMENTS LATER
-Circular. No windows. Just walls of obsidian stone and three
-slightly elevated chairs, empty.
-One figure stands in the center, Rei. Sharp-suited.
-Emotionless. Ccurated by committee.
+You run. Through corridors that pulse with soft red light —
+not warning, watching. Past the elevator shaft. Climbing.
+Bare hands on metal rungs. Every breath a warning.
+Until you reach it. The Memory Chamber. The door is open. As
+if it was expecting you.
+OPENING — PATH B: YUMI
+(If you chose: "Find Yumi")
+INT. THE FORGOTTEN CHAMBER — NIGHT
+The room is not on any map. You checked. Half-lit, lined with
+paper screens, old monitors humming with static — a place
+designed to be forgotten. Incense coils like breath from a
+dead mouth.
+You are Akira Kawasaki. And the woman standing across from
+you has bare feet and trembling hands and no clipboard.
 YUMI
-You summoned me.
-
-REI
-(pleasant)
-I did.
-He gestures. She walks forward. Slowly.
-REI(CONT’D)
-Do you know the difference between
-privacy and discretion, Yumi?
+(soft)
+You shouldn't be here.
+Neither should you. But you already know that. You knew it
+when the syringe shattered and no alarms sounded and the
+system let you walk. Something is wrong with the script they
+wrote for you, and the woman who helped write it is standing
+three feet away, shaking.
+AKIRA
+You know what Kurokami means.
 YUMI
-One’s an illusion. The other’s a
-privilege.
-REI
-(smiling thinly)
-Good girl.
-He steps closer. A breath too close. Never touches her. Yet
-the threat hums between molecules.
-REI(CONT’D)
-You’ve been watched. Not for
-impropriety. For deviation.
+I know what it costs.
+AKIRA
+Then tell me.
 YUMI
-Protocol has not been broken.
-REI
-Doesn’t need to be. Not if the
-story shifts. Not if your face
-reads differently… to the wrong
-eyes.
-He moves behind her. A pause. A click.
-A mirror wall flickers on. Surveillance feeds, each one
-playing slightly out of sync.
-We see: Yumi kneeling in front of Akira. Yumi’s hand,
-trembling, then resting against her own thigh. The sound of
-Yumi’s breath, too fast.
-REI(CONT’D)
-There is no such thing as off-
-record.
-(leans in)
-Only off-script.
-Yumi stares at the feed. Her shame weaponized. Her image
-corrupted.
+(stepping closer)
+Not here.
+(MORE)
 
-REI(CONT’D)
-You know what happens when the
-Mukurokai suspects… infection.
-He lifts something small and silver from his pocket.
-A SCALPEL.
-YUMI
-(flat)
-Are you going to cut me?
-REI
-Only if you keep bleeding into the
-work.
-A beat.
-YUMI
-She’s not like the others.
-REI
-And that frightens you… or excites
-you?
-Yumi doesn’t answer. Her silence says too much.
-REI(CONT’D)
-You let one remember before. I was
-there. We had to burn an entire
-wing.
-YUMI
-This one’s different.
-REI
-They all are. Until they’re not.
-He places the scalpel in her hand. The blade rests against
-her palm.
-REI(CONT’D)
-Choose your loyalty, Yumi. Or we’ll
-choose for you.
-She stares down at it.
-Doesn’t flinch.
-Doesn’t bleed.
-REI(CONT’D)
-You may go.
+They're still listening in the
+walls. But there's a room — the
+Memory Chamber. It plays back what
+they recorded. What they think you
+consented to.
+(beat)
+I can show you what they did.
+She takes your hand. Her fingers are cold. She leads you
+through corridors that smell like static and old grief, past
+doors that unseal at her badge, until you reach it.
+The Memory Chamber. The holographic fog is already rising.
+OPENING — PATH C: THE DESCENT
+(If you chose: "Go deeper")
+INT. LEVEL B7 — MAINTENANCE HALLWAY — NIGHT
+Level B7. The elevator shuddered getting here, like the
+building didn't want to remember this floor existed.
+You are Akira Kawasaki. And the air is wet. Decay in digital
+form. Rows of obsolete data terminals hum like dying lungs,
+and the smell is rust and mold and the slow rot of
+information left to decompose.
+One monitor flickers on without your touch.
+A face. Smudged. Flickering. Your face — but younger. Pale.
+Wide-eyed. A girl who still believed what they told her.
+DATA STREAM: Subject 0-KK / Kurokami. Phase 2: Reinstatement
+Failure. Emotion Lock: Breach. Memory Residue: Active.
+You reach out. The image glitches — another face overlays
+yours. Sickly. Hair shorn. Lips sewn.
+Subject 0-KK convulses on the feed. The camera lingers far
+too long.
+A sound. Footsteps. Not yours.
+You duck behind a console. Through a crack, you see a figure
+— not security. Another woman. Frail. Glassy-eyed.
+WOMAN
+(softly)
+Did you bring me back again...?
+The alarm lights shift red. She turns to you.
+YUMI (CONT’D)
 
-INT. CORRIDOR – MOMENTS LATER
-Yumi walks out.
-The scalpel still in her hand.
-She doesn’t look back.
-CUT TO:
-INT. SECURITY FEED — UNKNOWN LOCATION
-A figure watches the footage.
-Not Rei. Not anyone we’ve seen before.
-Face in shadow. Fingernail tapping glass.
-MONITOR: Freeze frame of Akira’s face.
-Then a second monitor: Akira’s face, as a child. Same eyes.
-Same defiance.
-The figure leans forward.
-We hear the hum.
-Then— a whisper.
-VOICE (O.S.)
-Kurokami…
-CUT TO:
-INT. DORMITORY HALL – NIGHT
-Muted. Institutional beige.
-Akira moves slowly, barefoot, silent. The air smells faintly
-of antiseptic and warm linen.
-A subject, the one who flinched at her touch, s gone.
-Her bed is stripped. The folded robe rests on the mattress
-like a body-shaped apology.
-No personal items. No name tag. Not even a trace of breath
-left behind.
-Akira steps closer.
+WOMAN(CONT’D)
+They can't kill you yet.
+She points down the corridor. Past the servers. Past the
+dying machines.
+WOMAN(CONT’D)
+The Memory Chamber. Go. See what
+they made you forget.
+You go. Through the machine's bowels, past the graveyard of
+forgotten lives, until the corridor opens into something
+clean and dark and humming.
+The Memory Chamber. The fog is already rising.
+ALL PATHS CONVERGE HERE.
+INT. MEMORY CHAMBER — NIGHT
+Dark. Hushed. A room built for illusion. Holographic
+projectors cast a low fog, suspended like incense smoke. You
+stand at the center — the only motion in the space, your slow
+inhale.
+A voice, clinical, smooth:
+SYSTEM (V.O.)
+Subject 33. Initiation memory.
+Timestamp redacted.
+The fog solidifies. A memory forms.
+A younger you. Smiling. Willing. Standing at the threshold of
+Nocturne. Not dragged. Not drugged. Invited.
+Yumi is there too. Younger. Softer. She touches your hand —
+not with force, but familiarity.
+YUMI (MEMORY)
+You understand what this means.
+AKIRA (MEMORY)
+I want to be clean.
+You flinch. Your own smile — unfamiliar, grotesque — lingers
+in front of you.
+The hologram shifts. A new scene.
+A man's apartment. Sparse. Modern. Tokyo high-rise. Two
+ceramic bowls of curry. A bottle of sake.
 
-INT. DORMITORY HALL – CONTINUOUS
-She walks the line of identical rooms. A ghost through a
-gallery of the living.
-She turns a corner.
-A smear. Something dark, wiped. Almost clean.
-She kneels.
-The floor glistens faintly.
-A faint scent. Metal. Bleach.
-From around the corner, VOICES. Low. Controlled. Footsteps.
-A SECURITY TEAM. Two men. One woman. No insignia. No names.
-They pass her. Not fast. Not slow. Not looking.
-No one speaks.
-No one sees her.
-INT. COMMON AREA – MOMENTS LATER
-Akira sits alone. Center of the room. Nothing in her hands.
-Around her, others speak in whispers. Fold laundry. Stare
-blankly at muted television.
-She watches them.
-But they do not look back.
-INT. DORMITORY – RETURN
-Akira returns to the empty bed.
-She reaches out.
-Touches the folded robe.
-Her fingers curl. Not to hold, to memorize.
-The grain of the fabric. The shape of the collar. The seam
-like a throat.
-She closes her eyes.
-FLASH CUT:
+You recognize the man. Professor Shin. Married. Respected.
+Calm in the way men are when they've never been truly
+cornered.
+But this isn't the memory you lived. In this version, you're
+quiet. Compliant. You eat what he serves. You laugh at what
+he says. You let him wipe the curry from your lip and you
+smile.
+This is the Shin dinner — as the system wants you to remember
+it.
+The hologram shifts again. Your apartment. A keyboard. Your
+finger on the mouse, hovering over SEND.
+But in this version, you hesitate. You close the laptop. You
+don't send the email. You choose silence.
+That's a lie. You sent it. You sent it and the Kawasaki Group
+burned and you stood in the bathroom and watched the evidence
+turn to ash and you never once regretted it.
+They erased the courage. They kept the shame.
+STRANGER (O.S.)
+She begged us. She wanted this.
+Just like the others.
+The voice is not the system. It cuts through the fabrication
+— cold, certain, inhuman.
+The holographic image flickers. Your face. Then someone
+else's. A dozen smiling versions of you.
+SYSTEM (V.O.)
+Please remain calm. Deviation will
+be recorded.
+[INTERACTIVE CHOICE — BRANCHING #1]
+THE MEMORY CHAMBER
+How do you respond to the lie?
+A)
+! Your hand sinks through the hologram. Through yourself.
+Through the fabricated memory. The room flashes white. All
+images burn and collapse. The projector screen shows one
+word: KUROKAMI. The system registers hostile action. But you
+now know the shape of the lie. You can recognize fabrication
+by feel.
+B)
 
-A wall of mirrors. Each shows her reflection slightly
-differently.
-In one, the missing subject stares back.
-In another, her sister.
-In another, no one.
-BACK-
-Akira stands.
-She does not cry.
-She does not speak.
-She walks away. And takes the robe with her.
-CUT TO:
-INT. MONITORING BAY – SAME
-A camera watches her leave the room.
-The screen doesn’t log her name.
-Just one word, VARIANT.
-CUT TO:
-INT. INTERROGATION SUITE – NOCTURNE – DAY
+! The full playback runs. You watch yourself beg for erasure.
+Smile. Sign. You catalogue every edit. When it ends: "You
+missed a frame." The system doesn't know which one.
+C)
+! "I didn't smile. I didn't ask. I was blindfolded. I was
+strapped down." Your voice layers over the fabrication. The
+hologram stutters. Two versions exist simultaneously. The
+Memory Chamber crashes.
+INT. CORRIDOR — MOMENTS LATER
+You walk the corridor. The air tastes different now —
+charged, electric, wrong.
+[INTERACTIVE CHOICE — EXPRESSIVE #1]
+THE CONVERGENCE
+How do you carry yourself toward what comes next?
+A)
+B)
+C)
+INT. TRANSIT CORRIDOR — CONTINUOUS
+The sharp hiss of a mechanized door ahead. You slow.
+A gurney is wheeled across the intersection. Fast. Clinical.
+On the gurney — a woman. Drugged. Pale. Lips trembling.
+She turns her head.
+And she looks exactly like you.
+A beat too long. Then she's gone. Swept around the corner.
+You rush forward. The intersection is empty. No sound of
+wheels. No echoes.
+Behind you, a whisper.
+SUBJECT 47 (O.S.)
+(soft, garbled)
+You're not the first mistake.
+[INTERACTIVE CHOICE — EXPRESSIVE #2]
+
+SUBJECT 47
+How do you respond to the glitch-double?
+A)
+B)
+C)
+INT. INTERROGATION SUITE — NIGHT
 Sterile. Seamless. The kind of white that erases depth.
-Akira sits at a metal table. Her posture is too perfect, the
-stillness of prey deciding whether to strike or surrender.
-Across from her, an unmarked file.
-The door hisses.
-Yumi enters, carrying a black leather folder. No clipboard.
-No cuffs. Just that calm, dangerous poise.
+Mirrors line the walls.
+You sit at a metal table. Across from you, an unmarked file.
+The door hisses. Yumi enters carrying a black leather folder.
 YUMI
-This won’t take long.
+This won't take long.
 AKIRA
 It never does. Until it never ends.
-
-Yumi doesn’t respond. She sits. Opens the folder. Slides a
-single page across the table.
-It’s printed on thick, high-gauge paper. Governmental.
-Judicial.
-Beneath dense redacted blocks and legalese: SIGNATURE:
+Yumi sits. Opens the folder. Slides a single page across the
+table.
+Thick, high-gauge paper. Governmental. Judicial.
+Beneath dense redacted blocks and legalese: a signature line.
 KUROKAMI, AKIRA.
-Akira doesn’t move.
+You stare. The name flickers. For a single frame, it reads:
+NAMIKO.
 YUMI
 You signed this the night of your
 intake.
 AKIRA
-No, I didn’t.
+No, I didn't.
 YUMI
-It’s your name.
+It's your name.
 AKIRA
-That’s not the same thing.
-Yumi watches her. Something stirs beneath the surface.
+That's not the same thing.
+
 AKIRA(CONT’D)
 I remember that night. I remember
 being blindfolded. Strapped down. I
 remember the needle. But not this.
 YUMI
-You don’t remember a lot of things.
-Akira leans forward. Her breath fogs the glass of water Yumi
-didn’t offer.
+You don't remember a lot of things.
 AKIRA
-That’s by design, isn’t it?
+That's by design, isn't it?
+Yumi reaches into the folder. Pulls out a recording chip —
+thin, translucent, with a biometric seal. She places it next
+to the contract.
 YUMI
-Do you deny volunteering?
-AKIRA
-Do you?
-The silence sharpens. A mutual accusation neither of them
-fully understands.
-Yumi reaches into the folder again. Pulls out a recording
-chip- thin, translucent, with a biometric seal. She places it
-next to the contract.
-
-YUMI
-If you’d like to challenge your
+If you'd like to challenge your
 memory, you can authorize the
 playback.
 AKIRA
 And watch a version of me ask for
 this?
 YUMI
-We don’t forge consent. We record
+We don't forge consent. We record
 it.
 AKIRA
 No. You perform it.
-Beat.
-AKIRA(CONT’D)
+(beat)
 Like a script. Like a death
 sentence no one has to sign if the
 actor smiles.
-Yumi looks down.
-YUMI
-You were lucid. Articulate. You
-said you wanted to disappear.
-AKIRA
-I said I wanted out.
-YUMI
-Same thing here.
-Akira touches the edge of the paper.
-AKIRA
-Is it?
-Yumi doesn’t answer. She stands. Begins to gather the items.
-AKIRA(CONT’D)
-If I signed it… then revoke it.
-YUMI
-You can’t revoke absolution.
-Yumi hesitates, just long enough to betray something. Then
-exits.
-Akira is left with the ghost of her own handwriting.
+[INTERACTIVE CHOICE — BRANCHING #2]
+THE CONTRACT — MORAL-WEIGHT CHOICE
+Values in tension: Truth vs. Self-Protection vs.
+Weaponization
+A)
+! The chip plays. A younger you, not drugged, not coerced.
+Smiling. "I want to be clean." The horror: some version of
+you consented. You must carry both truths — victimized AND
+participant.
+B)
+! You crush it. The biometric seal cuts your palm — blood on
+glass. "You can't revoke absolution," Yumi says.
 
-CLOSE ON THE CONTRACT- The signature flickers. For a single
-frame, it reads, NAMIKO.
-CUT TO:
-INT. MEMORY CHAMBER – NIGHT
-Dark. Hushed. A room built for illusion.
-Holographic projectors cast a low fog, suspended like incense
-smoke. At its center, AKIRA stands still, the only motion in
-the space her slow inhale.
-A faint pulse in the air. The machine breathing.
-A voice, clinical, smooth, begins playback.
-SYSTEM (V.O.)
-Subject 33. Initiation memory.
-Timestamp redacted.
-The fog solidifies.
-A memory forms. A YOUNGER AKIRA. Smiling. Willing.
-She stands at the threshold of Nocturne. Not dragged. Not
-drugged.
-Invited.
-Yumi is there too. Younger. Softer. She touches Akira’s hand,
-not with force, but familiarity.
-YUMI (MEMORY)
-You understand what this means.
-AKIRA (MEMORY)
-I want to be clean.
-Real Akira flinches. Just barely. Her own smile, unfamiliar,
-grotesque, lingers in front of her.
-SYSTEM (V.O.)
-Consent logged. Processing entry.
-In the projected memory, Akira steps forward. Fades into
-light.
-STRANGER (O.S.)
-She begged us.
-The voice is not the system. It cuts through the falseness
-like bone through silk.
-
-STRANGER (O.S.)(CONT’D)
-She wanted this. Just like the
-others.
-The image glitches. Akira’s face flickers, now hers, now
-someone else’s... A dozen smiling versions. The Yumi in the
-memory turns away, face unreadable.
-AKIRA
-I never said that.
-The fog begins to ripple. Distort. The system fights back.
-SYSTEM (V.O.)
-Please remain calm. Deviation will
-be recorded.
-AKIRA (LOW)
-You made this.
-She reaches into the holographic projection.
-Her hand sinks through herself. Through the memory. Through
-the lie.
-The room flashes.
-All images burn white, then collapse.
-INT. MEMORY CHAMBER – SECONDS LATER
-Only Akira remains.
-A single word is burned across the projector screen,
-KUROKAMI.
-She breathes. Once. Then exits into silence.
-CUT TO:
-INT. SURVEILLANCE ROOM – SAME
-Rei watches the playback. Expression unreadable.
+"Watch me." You walk out with shards in your fist. You'll
+never know what it showed.
+C)
+! You pocket it. "That's Nocturne property." "Then come take
+it." The chip becomes currency. Physical evidence. You don't
+know what it contains, but neither can they predict what
+you'll do with it.
+INT. MAINTENANCE CORRIDOR — NIGHT
+You find the vent. Or the vent finds you. A gap in the wall
+where metal meets tile, just wide enough to see through into
+the corridor beyond.
+Rei and Yumi. Face to face. Near silence.
+Harsh overhead lights. Metal underfoot.
 REI
-She’s starting to dream in reverse.
-Behind him, a chair creaks.
-But the superior presence never speaks.
-
-Only watches.
-CUT TO:
-INT. NOCTURNE - HALLWAY OUTSIDE ADMIN WING - NIGHT
-Clinical silence. Air recycled to sterility. Yumi walks fast,
-not running, but her heels echo like gunshots. She reaches
-for her keycard.
-It doesn’t beep.
-She swipes again. Nothing. A red light pulses. Watching.
+You pulled her footage.
 YUMI
-(quietly)
-No. Not now.
-A distant hum, like something deep in the walls, shifts tone.
-Yumi exhales, turns and another door down the hall opens for
-her without a sound.
-INT. NOCTURNE - MONITORING BAY - NIGHT
-Banks of screens. Surveillance feeds in clinical monochrome.
-Footage scrolls endlessly. Subjects washing. Sleeping.
-Obeying.
-Yumi approaches a terminal. Types. A login prompt flickers.
-She logs in.
-Multiple feeds populate the screen. She scrolls back — to her
-last session with Akira.
-STATIC.
-She tries again. Another angle. More static.
-Her fingers tremble.
-She tries a hidden backup. An off-grid cache only handlers
-should know.
-This time, an image resolves, Yumi and Akira, mid-session.
-Frozen. Silent.
-Yumi leans in.
-The image glitches. Flickers.
-
-For one frame, Yumi is alone. Talking to nothing. Reaching
-toward the empty chair.
-And then- the screen goes black.
-INT. NOCTURNE - CORPORATE OBSERVATION ROOM - NIGHT
-Rei stands at the far end of the polished obsidian room.
-Behind him, high-backed chairs, faces unseen. The Mukurokai
-council, or the illusion of one.
-Yumi stands opposite, posture perfect. But her pulse is
-visible in her throat.
+It flagged itself.
 REI
-We don’t edit footage, do we?
-YUMI
-No.
-REI
-And we certainly don’t misfile
-sessions. Or redirect subject
-metadata.
-YUMI
-Of course not.
-Rei steps closer. His voice drops to something silk-wrapped
-and serrated.
-REI
-You’re too good for that. Too
-careful.
-He studies her.
+She's carrying something. Or...
+something's carrying her.
+Rei steps closer. His voice drops.
 REI(CONT’D)
-So how do we explain... that you
-spent ninety-three minutes talking
-to an empty chair?
-Yumi doesn’t answer. Her jaw clenches.
-REI(CONT’D)
-(softly)
-You let one remember before.
-A flicker in Yumi’s eyes, guilt, rage, fear. She looks down.
-REI(CONT’D)
-This is your warning, Yumi.
-
-He lifts her chin with a single finger.
-REI(CONT’D)
-Next time, I won’t speak it aloud.
-Beat.
+You know what happens when the
+Mukurokai suspects infection.
+He lifts something small and silver from his pocket. A
+scalpel.
 YUMI
-Understood.
-He steps away.
+(flat)
+Are you going to cut me?
 REI
-Return to protocol. And Yumi...
-She turns slightly. Doesn’t look at him.
+Only if you keep bleeding into the
+work.
+YUMI
+She's not like the others.
+REI
+And that frightens you... or
+excites you?
+
+Yumi doesn't answer. Her silence says too much.
 REI(CONT’D)
-No more ghosts.
-INT. ADMIN CORRIDOR - NIGHT
-Yumi walks. Controlled. Expressionless.
-Her keycard flickers back to green.
-But she doesn’t smile.
-Behind her, a panel in the wall blinks red, unnoticed.
-CUT TO:
-INT. MEDICAL TRANSFER STATION – DAY
-Fluorescent light bleeds from the ceiling. A whirring.
-Hushed, deliberate movement.
-Akira sits in a metal chair, not bound, but unmoving. Her
-posture, perfect. Blank.
-TWO TECHNICIANS hover near her. One inserts a clear syringe
-into a port on her neck. The liquid glows faintly. Too clean
-to be safe.
-TECHNICIAN 1
-Adjusting baseline. Protocol 12C.
-TECHNICIAN 2
-(not looking at her)
-Eyes open. Say your name.
-
-AKIRA
-Akira.
-The second technician nods. No expression. They wheel a small
-tablet into place. Data scrolls. Vitals sync.
-But one waveform trembles, just slightly.
-INT. NEW WING – OBSERVATION CORRIDOR – LATER
-Akira walks, flanked by two silent guards. Her robe is a
-slightly different shade now. Off-white instead of gray.
-Everything here is the same, but wrong. Subjects do not meet
-her eyes. A mirror reflects her… but a frame behind her is
-empty.
-INT. NEW ROOM – NIGHT
-Her new cell is smaller. Sterile. No mirror. No belongings.
-The walls are matte.
-On the cot, a folded robe. Another subject's. Marked with a
-numeric ID. 1098.
-Akira stares at it. Then slowly opens the collar. A data chip
-is sewn into the seam.
-She removes it.
-She knows she is not supposed to.
-INT. CORRIDOR – LATER
-Akira passes a communal console. The guards pause to scan her
-entry band.
-In that fraction of distraction, she slips the chip into the
-input tray.
-SCREEN: UPLOADING... ERROR... DATA CORRUPT.
-Then- a glitch.
-A flash of faces. Hers. Another’s. A moment frozen. Laughter
-in a garden. A child’s voice. The word, NAMIKO.
-SCREEN RESETS: BLANK.
-
-INT. COMMON ROOM – MOMENTS LATER
-A YOUNG SUBJECT stares at Akira from across the room. Not
-fear. Recognition.
-SUBJECT
-(whispers)
-You’re her.
-Akira doesn’t blink.
-AKIRA
-Who?
-The subject turns. Fades into the flow of bodies.
-INT. BACK HALLWAY – NIGHT
-Yumi stands alone. Watching security footage.
-On one feed, static. On another, Akira walking where she
-shouldn’t be.
-VOICE (O.S.)
-Correction begins with permission.
-She turns. Rei stands in the shadows.
-REI
-You gave her yours.
-YUMI
-I follow procedure.
-REI
-No. You follow her.
-She doesn’t answer. Her hands clench.
+You let one remember before. I was
+there. We had to burn an entire
+wing.
+He places the scalpel in her hand. The blade rests against
+her palm.
 REI(CONT’D)
-She’s stolen something. And she
-knew it would cost another.
-Yumi looks down, silent.
+Choose your loyalty, Yumi. Or we'll
+choose for you.
+She doesn't flinch. Doesn't bleed.
 REI(CONT’D)
-Now ask yourself, is that survival?
-Or belief?
-He walks away.
-
-INT. AKIRA’S NEW CELL – NIGHT
-Akira sits alone on the cot. She holds the robe, not as
-comfort. As proof.
-She presses her forehead to it.
-Not crying.
-Remembering.
-CUT TO:
-INT. TRANSIT CORRIDOR – NIGHT
-Cold white lights buzz overhead. The sound, not quite
-fluorescent, carries a heartbeat rhythm, wrong and
-mechanical. A corridor too clean. Too silent.
-Akira walks alone, her slippers catching on the matte
-flooring, too soft to echo. Her eyes linger on each passing
-security panel, each air vent, each surveillance dome.
-Something is missing.
-Ahead, the sharp HISS of a mechanized door.
-She slows.
-A GURNEY is wheeled across the intersection at the end of the
-corridor. Fast, clinical.
-ON THE GURNEY, a woman. Drugged. Pale. Lips trembling.
-Akira steps forward, a sudden compulsion.
-Then— the woman turns her head.
-And she looks exactly like Akira.
-A beat too long. Then she’s gone, swept around the corner.
-Akira rushes forward.
-INT. INTERSECTION – CONTINUOUS
-Nothing. Empty hallway. No sound of wheels.
-No echoes.
-Akira turns. Her breath clouds the air, though it’s not cold.
-
-Behind her, a WHISPER.
-SUBJECT 47 (O.S.)
-(soft, garbled)
-You’re not the first mistake.
-She spins. No one.
-But, down low, a maintenance hatch is half-open. Barely
-visible.
-A red LED blinks inside.
-INT. MAINTENANCE PASSAGE – LATER
-Akira crawls through.
-The walls close around her, ribbed tubing, exposed metal. It
-feels like being swallowed.
-Inside, hidden monitors play black-and-white footage.
-Silence.
-On one screen, a younger Akira. Laughing.
-On another. The Subject from earlier. Shaved head. Silent
-scream. Restrained.
-Overlay text reads, SUBJECT 47: DEACTIVATED / ARCHIVED /
-ERROR.
-Her face glitches. Flickers. Becomes Akira’s. Becomes someone
-else’s. Then back.
-Akira reaches forward. The screen cuts to BLACK.
-A final line blinks, INITIATE KUROKAMI CONTAINMENT.
-Akira stares at the word.
-It doesn't mean fear. It means confirmation.
-She whispers it. Not as name, but as title.
-AKIRA
-(soft)
-Kurokami.
-Behind her, a door she didn’t see opens.
-WARM LIGHT spills in.
-
-FOOTSTEPS approach.
-Not a guard.
-Bare feet.
-CUT TO:
-INT. SURVEILLANCE NODE 3 – NIGHT
-A sterile room lit only by the static glow of wall-sized
-monitors. Grainy feeds play in sync, dozens of subjects
-performing routines. Calm. Controlled.
-Until- the footage begins to DESYNC. A half-second delay.
-Then a flicker. Then full dissonance.
-INSERT: SCREEN 12B. Subject 33 (Akira). She walks a corridor.
-Stops. Looks up, directly at the camera.
-The same feed repeats on SCREEN 12C. And 12D.
-Three timelines. Three slightly different movements.
-ON MONITOR. In one version, Akira smiles. In another, she
-bleeds. In the third, she VANISHES completely.
-INT. CORRIDOR – SAME
-Akira walks. Dazed. Slower than usual. The air feels thick.
-Whispers ahead. A cough.
-SUBJECT 47 (the glitch-double from earlier), stands near the
-wall. Pale. Watching.
-SUBJECT 47
-(softly)
-Akira?
-Akira stops.
-AKIRA
-That’s not my name.
-SUBJECT 47
-But it was.
-The whisper feels forbidden. Like a curse in a cathedral.
-A SECURITY GUARD appears at the end of the hall, but doesn’t
-approach. Just watches. Too still.
-
-INT. SYSTEM CONTROL – SAME
-A lone TECHNICIAN stares at the screen. Types rapidly.
-ON MONITOR: Subject 33 — STATUS: ACTIVE.
-The field glitches. Then updates itself:STATUS: DECEASED —
-ARCHIVED.
-The tech leans in. Confused.
-He blinks.
-Now it reads: STATUS: UNKNOWN.
-And below it: IDENTITY MATCH ERROR.
-Then- the name field updates. NAMIKO 黒神.
-INT. CORRIDOR – SAME
-Akira turns toward Subject 47. But she’s gone. The hallway is
-empty.
-The lights buzz. Harsher now.
-A whisper from behind her-
-SUBJECT 47 (O.S.)
-You remember wrong.
-Akira looks up. Every camera blinks red.
-And for the first time, the hallway mirror does not reflect
-her.
-CUT TO:
-INT. NOCTURNE – PSYCH EVALUATION SUITE – NIGHT
-A ROOM DESIGNED TO REVEAL TRUTH, clinical, immaculate, but
-too symmetrical. Mirrors line the walls. No camera is
-visible, yet everything is seen.
-Yumi stands alone. No makeup. No lab coat. No mask. Just her
-and the terminal.
-INSERT — THE TERMINAL SCREEN: “Experimental Recall Protocol –
-WARNING: Unstable Cognitive Loop Risk.”
-Yumi's finger hovers. Then- clicks.
-
-The room goes dark.
-SOFT HUM. Then FLASH
-— INDUCTION ROOM – MEMORY
-A girl. YOUNGER AKIRA. Fragile. Stripped. Smiling.
-YUMI (O.S.)
-She begged us.
-— OBSERVATION SUITE – MEMORY
-Akira screaming. Restrained. Tubes threading her skin.
-REI (O.S.)
-We offered her peace. She chose
-pain.
-BACK-
-Yumi JERKS in the chair. GASPING.
-Her nose bleeds. She wipes it. Smears it against her white
-blouse. Doesn’t notice. Or doesn’t care.
-She leans back.
-ON SCREEN, A SLOW GLITCH forms. Her own face appears… but
-it’s Akira’s expression.
-FEMALE SUBJECT (V.O.)
-(whisper, overlapping)
-You didn’t stop it. You watched.
-Yumi closes her eyes. A tear. Then another.
-She opens a drawer. Inside, her MASTER KEYCARD. And next to
-it, a single dose syringe, blue-tinted.
-She touches both. Doesn’t choose yet.
-BEHIND HER, A REFLECTION IN THE GLASS.
-Akira. Not physically there. But there.
-AKIRA (V.O.)
-(low, calm)
-They erased you too, didn’t they?
-Yumi turns. No one.
-She looks back to the screen.
-
-FOOTAGE NOW. Akira, from earlier that day. Alone. Walking.
-But, the date stamp reads THREE YEARS AGO.
-YUMI
-(whispers)
-That’s impossible.
-Her hands tremble. She picks up the syringe. Pauses.
-Then- opens the terminal again. Begins typing.
-ON SCREEN: “Override: Subject Profile – Kurokami/Access
-Level: Full.”
-REI (V.O.)
-You’re not here to feel, Yumi.
-YUMI
-I know.
-Beat. Then she looks directly into the glass. Into herself.
-YUMI(CONT’D)
-But I remember now.
-BLACK.
-A SOUND.
-A distorted child’s laugh, processed through static.
-CUT TO:
-INT. CORRECTION CHAMBER - NIGHT
-Silence.
-Not absence, but a wound where sound should be.
-White walls. Surgical lighting. A place built to erase.
-Akira lies supine, wrists and ankles gently strapped. Not
-restrained. Displayed. Her eyes: wide open.
-A READER DEVICE scans her iris. Fails. BEEP.
-SCIENTIST (O.S.)
-Subject unregistered. Begin manual
-override.
-MONITORS glitch. Feed stutters. Her profile appears, then
-blinks away.
-
-Her face replaced by: DATA CORRUPTED. NAMIKO. ACCESS DENIED.
-Akira doesn’t blink. Doesn’t breathe wrong.
-One TECHNICIAN trembles. The other injects a clear fluid into
-her neck. It hits. Hard.
-FLASH:
-- A girl, Namiko, smiling in a mirror that reflects someone
-else.
-- Yumi, younger, whispering: "We chose her because she wanted
-it."
-- A BLACK MASK lowered over Akira’s face.
-INT. CORRECTION OBSERVATION DECK - CONTINUOUS
-Yumi watches behind glass. Her hands are balled white.
-Rei stands beside her. Unblinking.
-REI
-If she forgets herself… she returns
-to us. If she remembers —
-YUMI
-She doesn’t come back.
-REI
-She was never meant to.
-INT. CORRECTION CHAMBER - SAME
-The lights dim. Another injection prepped.
-Then, the hum shifts. A frequency no one hears, but feels.
-Akira lifts her eyes. Direct. Alive.
-The MONITOR next to her heart rate shorts and begins to write
-over itself: AKIRA = NAMIKO. SUBJECT 00. K U R O K A M I.
-She smiles. The second TECH freezes.
-TECHNICIAN 1
-(whispers)
-She’s writing back.
-Akira raises her hand. The straps fall away.
-
-INT. OBSERVATION DECK - SAME
-Rei SLAMS the emergency lockdown.
-REI
-Seal the—
-But the feed is already dead. Static.
-INT. CORRECTION CHAMBER - SAME
-The chamber door is open now. No one opened it.
-Akira steps off the table. Bare feet. No sound.
-One technician begins to sob. The other stares blankly.
-Akira walks past them.
-INT. DATA CORE CORRIDOR - NIGHT
-An overhead CAMERA rotates. Jerks. Sparks.
-The corridor lights fail, one by one, in silence.
-Akira moves forward. Her reflection lags a half-second
-behind.
-Then stops entirely.
-INT. SURVEILLANCE BAY - SAME
-Every monitor now blinks: 黒神 黒神 黒神. BLACK SPIRIT. BLACK
-GOD.
-Yumi stares. Whispers:
-YUMI
-She’s not a subject.
-Beat.
-She’s remembering.
-INT. CORRIDOR - NIGHT
-Akira walks naked into the sterile white corridor.
-She is unrecorded.
-
-Cameras can’t track her.
-Mirrors don’t reflect.
-She has become something they cannot measure.
-Not erasure.
-Not survival.
-CONTAGION.
-A single frame stutters onscreen, an archival glitch.
-NAMIKO + AKIRA. Hands joined. One child. One ghost.
-CUT TO:
-EXT. NOCTURNE - EAST WING - NIGHT
-CLOSE ON. A surveillance monitor. Empty corridor. Static hums
-faint, uncertain. A red light flickers once. Then goes dark.
-INT. NOCTURNE - LEVEL 6 HALLWAY - NIGHT
-Akira steps into frame.
-No camera blinks. No sensor chirps. She’s not supposed to be
-here and yet she is.
-Her footsteps are barefoot. Silent. The corridor doesn’t
-react. The air feels... wrong. Not empty. Listening.
-INT. ADMINISTRATIVE NEXUS - MOMENTS LATER
-The halls of power. Sterile glass. Fingerprint locks. No hum
-of electricity. No security drone.
-Akira walks past.
-Every door she passes... unseals with a hiss. No badge. No
-clearance. No reason.
-She turns her head, a mirror by the wall. Her reflection
-doesn’t follow.
-It stutters. Delays. Then vanishes entirely.
-
-INT. DATA CHAMBER - CONTINUOUS
-Fluorescent white. Ceiling-to-floor servers blink, until she
-steps in.
-The lights dim. One by one.
-She breathes out. Like fog in winter.
-A drawer slides open on its own. Inside, a folded robe. Her
-size. Black silk. Crimson lining. Identical to the one worn
-in the Ghost File.
-She doesn’t reach for it. Not yet.
-INT. SURVEILLANCE ROOM - SIMULTANEOUS
-Three OPERATORS stare at a bank of monitors.
-All feeds running. All systems active. But there’s a gap. A
-shadow in the loop.
-A stretch of hallway that should be lit, is dark.
-A corridor where no one walks, yet things move.
-OPERATOR (WHISPERS)
-Are we... missing someone?
-The screen glitches. For a single frame, it reads, NAMIKO.
-INT. VAULTED ARCHIVES - NIGHT
-Akira stands at the heart of the labyrinth.
-Shelves upon shelves of sealed memories. Digitized.
-Sanitized. Categorized.
-She reaches out, runs a finger along the spine of a case
-labeled: SUBJECT: KUROKAMI.
-Inside. A child’s drawing. Red ink on black paper. A girl
-with no face.
-She exhales. It sounds like a sob. But her eyes remain still.
-She’s not confused. She’s becoming.
-WHISPERS (V.O.)
-You’re not forgotten.
-CUT TO:
-
-INT. SUBLEVEL CORRIDOR – NOCTURNE – NIGHT
-Dim. Not dark, never dark, but the kind of sterile blue where
-breath feels monitored.
-Akira moves like shadow.
-Her hand grazes the wall. Lights dim in sequence, like a
-whisper trailing behind her.
-She stops.
-A LOW-LEVEL ATTENDANT, barely older than her, head shaved,
-badge number 0-5-8, turns a corner carrying a tray of
-sedatives. He sees her.
-Freezes.
-Their eyes meet. Recognition. Shame.
-AKIRA
-(quiet)
-You remember me.
-He says nothing.
-She steps forward. He steps back. The tray trembles in his
-hands.
-AKIRA(CONT’D)
-Say it.
-ATTENDANT 058
-(shaking)
-I— I can’t.
-AKIRA
-You already did.
-She backs him into the wall. Not violent. Intimate. One hand
-over his mouth. The other presses lightly to his chest,
-fingers splayed over his heart.
-AKIRA(CONT’D)
-Say what you saw.
-ATTENDANT 058
-(whispers)
-You… you were smiling. They had
-your arms bound, but you smiled.
-You asked for it.
-Beat.
-
-AKIRA
-And?
-ATTENDANT 058
-They said you were born wrong. That
-to fix you… they had to break you.
-AKIRA
-Was I fixed?
-He breaks. His knees buckle. He slides down the wall, tray
-clattering to the floor, meds rolling like marbles.
-ATTENDANT 058
-I—I watched. I didn’t stop it. I
-wanted to. I couldn’t. I couldn’t
-move.
-Akira kneels with him.
-AKIRA
-You weren’t the only one who wanted
-it.
-He looks at her. Confused. Almost aroused. Almost terrified.
-She leans in. Close.
-AKIRA(CONT’D)
-Guilt is a kind of obedience, too.
-ATTENDANT 058
-I dream about it. The way you
-looked at me, when they—
-AKIRA
-Tell me.
-ATTENDANT 058
-You weren’t afraid. You were…
-choosing it. Like it meant
-something. Like it was yours.
-Akira tilts her head. Listens. Breathes him in.
-AKIRA
-Then you remember the wrong thing.
-She stands. Looks down at him.
-The corridor lights flicker, briefly, in sync with her
-breath.
-
-AKIRA(CONT’D)
-Thank you.
-She walks away.
-Behind her, the attendant stays on the floor.
-The tray of sedatives untouched. But one vial is missing.
-CUT TO:
-INT. FORGOTTEN CHAMBER – NIGHT
+You may go.
+Yumi walks out. The scalpel still in her hand.
+[INTERACTIVE CHOICE — EXPRESSIVE #3]
+WITNESSING REI'S THREAT
+How do you process what you just saw?
+A)
+B)
+C)
+INT. THE FORGOTTEN CHAMBER — NIGHT
 A place not on any map. Faint incense smoke coils like
 ghosts. Half-lit, lined with paper screens, old monitors
 humming with static. A room designed to be forgotten.
-Akira stands center. Still, unreadable. Her reflection split
-across two angled mirrors, neither quite her.
-A DOOR OPENS.
-Yumi enters. Quietly. She’s not in uniform. Bare feet. White
-robe. Hands trembling.
+You stand center. Still. Unreadable. Your reflection split
+across two angled mirrors — neither quite you.
+A door opens.
+Yumi enters. Quietly. Bare feet. White robe. Hands trembling.
 She closes the door behind her.
 YUMI
 (soft)
-You shouldn’t be here.
+You shouldn't be here.
+
 AKIRA
 Neither should you.
 A silence. It breathes.
-Yumi steps forward. Her eyes glassy, not from tears, but
-restraint.
+Yumi steps forward. Her eyes glassy — not tears. Restraint.
 YUMI
-They’re going to find you. Erase
+They're going to find you. Erase
 you. Again.
-Akira doesn’t answer. Instead, she watches Yumi cross the
-threshold, barefoot on cold wood.
 YUMI(CONT’D)
 I remember you. From before. Not
 clearly. Like music behind a wall.
-She stands inches away now. Her fingers twitch.
-
-YUMI(CONT’D)
+(beat)
 But I remember wanting you to
 remember me.
-She reaches up, touches Akira’s cheek with the back of her
+She reaches up. Touches your cheek with the back of her
 fingers. Gentle. Reverent. Not possessive.
 AKIRA
 You helped them break me.
 YUMI
 I watched. I documented. I
 rationalized.
-She lowers her hand. Shame floods her.
-YUMI(CONT’D)
+(beat)
 I told myself protocol was mercy.
-She undoes her robe.
-YUMI(CONT’D)
-I have no right to ask anything.
-The robe slips, not dramatic. Not performed. A quiet
+She undoes her robe. Not dramatic. Not performed. A quiet
 surrender. She kneels.
 YUMI(CONT’D)
+I have no right to ask anything.
 But if part of you still lives...
 if she remembers me, then let me
 give you back what I took.
-Akira kneels in front of her. They are face to face. Bare.
-Broken.
+You kneel in front of her. Face to face. Bare. Broken.
 A long, aching pause.
-Yumi leans in, not to seduce. To confess.
-Their lips touch.
-Not frantic. Not romantic. A press of memory. Of consent. Of
-need.
-Akira pulls away, barely.
+Yumi leans in — not to seduce. To confess.
+Your lips meet. Not frantic. Not romantic. A press of memory.
+Of consent. Of need.
+You pull away. Barely.
 AKIRA
-This won’t save you.
-YUMI
-It’s not to be saved.
-Akira brushes her forehead against Yumi’s.
+This won't save you.
 
+YUMI
+It's not to be saved.
+You brush your forehead against hers.
 AKIRA
 Then remember this.
-Their foreheads stay touching.
-A low alarm hums somewhere far away.
-INT. MONITOR ROOM – SAME
-Several SCREENS show static. Then, briefly-
-TWO WOMEN. Bare. Kneeling. Touching.
-Then black.
-NOCTURNE no longer watches. Or can’t.
-INT. FORGOTTEN CHAMBER – NIGHT
-Yumi is crying now. Silently. Akira holds her. Not as
-comfort. As acknowledgment.
+Your foreheads stay touching. The heat between your bodies
+hums like a frequency only the two of you can hear. Her
+breath catches — and you feel it in your own chest, as if
+your lungs have forgotten how to work independently.
+Her hand moves to your waist. Not pulling. Resting. The
+weight of her palm against your skin is the heaviest thing
+you've ever felt.
+You close your eyes.
+When you open them, the mirrors have fogged. The monitors
+have gone dark. The room has stopped watching.
+For the first time in this place, you are not observed.
+You are only held.
+A low alarm hums somewhere far away. Neither of you moves.
+CUT TO:
+INT. THE FORGOTTEN CHAMBER — LATER
+You lie on the stone floor. Damp. Spent. Alive.
+Yumi rests her head on your chest. Listening to the heart she
+helped quiet.
+Neither of you speaks. Neither of you needs to.
 AKIRA (V.O.)
 We remember in silence. In shame.
-In skin. That’s why they fear us.
+In skin. That's why they fear us.
 CUT TO:
-INT. STERILE WHITE ROOM – PRE-DAWN
-Minimalist. Unforgiving. The kind of room that was never
-meant for sleep.
-Yumi lies alone in the treatment bed. Bare shoulders. The
-sheet beside her, folded with exacting precision. The
-indentation of a body already erased.
-Her fingers drift to the place where Akira had been. Still
-warm. Still present in the way perfume lingers in an
-elevator.
-Her lips, faintly parted. Moist. A memory of a kiss that
-asked nothing but changed everything.
-A soft hum stirs above her. The surveillance monitor
-flickers. Then static. Then nothing.
-Her last session with Akira, ERASED.
-Yumi blinks. The emptiness hits her. But she doesn’t panic.
+INT. CORRECTION CHAMBER — NIGHT
+The Correction Chamber is white. Not clean-white — erasure-
+white. The kind of light designed to dissolve edges, to make
+skin look like paper, to make a body disappear into the room
+that holds it.
 
-She smiles.
-YUMI
-(whisper)
-She’s doing it.
-CUT TO:
-INT. THE ARCHIVE BELOW – NIGHT
-Industrial. Subterranean. A forgotten floor not listed on any
-blueprint.
-Dust trembles beneath humming conduits. Fluorescent panels
-flicker—buzzing like distant insects.
-Akira enters, barefoot. Her gown barely grazes the cold tile.
-She isn’t cold.
-She’s untouchable.
-Security lights don’t register her. No red flash. No beep.
-This place was never meant to be entered. Not even by the
-architects.
+You are lying on the table. Wrists strapped. Ankles strapped.
+Not tight — gentle, even. The restraints are padded. Designed
+for comfort. That's the worst part.
+A reader device scans your iris. Fails. Scans again. Fails
+again. The technician's hand is shaking. His colleague
+injects something clear into the port on your neck. The cold
+of it moves through you like a tide — pulling, receding,
+pulling harder.
+TECHNICIAN 1
+Adjusting baseline. Protocol 12C.
+TECHNICIAN 2
+(not looking at you)
+Eyes open. Say your name.
 AKIRA
-(to herself)
-If they didn’t erase me
-here...
-They never could.
-She moves between rows of decaying servers. Towers of silent
-breath. Machinery older than the current regime. Older than
-her recorded birth.
-Her fingers graze the servers, reverent, sensual. They
-respond.
-Soft whirring. A green light blinks to life.
-Akira stops. Before her- a terminal. CRT monitor. Dust-caked
-keys.
-She sits.
-Her fingers type with unnatural certainty. Lines of code
-scroll.
-Access logs. Names. Images. Death certificates with living
-faces. Stamped lies.
-Then— A FILE. Untitled.
+Akira.
+Your profile appears on the monitor beside you. Your name.
+Your classification. Your status: ACTIVE.
+Then it glitches.
+DECEASED. ARCHIVED. Then: UNKNOWN.
+Then: NAMIKO.
+Then: KUROKAMI.
+TECHNICIAN 1
+(whispers)
+She's writing back.
+And he's right. You can feel it — not in your body, in the
+space between your body and the room. In the hum of the
+machines. In the way the fluorescent light above you flickers
+and doesn't stabilize. The system is reading you, and you're
+reading it back. Overwriting.
+The straps don't release. They fall. Like they forgot what
+they were holding.
+You sit up. The technicians are frozen. Not restrained —
+arrested. By something they can't name and can't look away
+from.
+You raise your hand. The monitor next to your heart rate
+shorts and begins to write over itself: AKIRA = NAMIKO.
+SUBJECT 00. K U R O K A M I.
 
-Click.
-A black and white photo blooms slowly on the screen.
-A CHILD. Seven, maybe eight. Standing in a training corridor.
-Holding a compliance ribbon. Smiling.
-Behind her, Yumi. Much younger. Unscarred.
-Akira doesn’t blink.
-AKIRA (V.O.)
-I was always here.
-Even before I remembered.
-She prints the image. The printer groans, it hasn’t been used
-in years. The paper curls in her hand. Still warm.
-She doesn’t cry.
-She memorizes.
-Her reflection flickers in the monitor. Not synced.
-In it, the child still smiles. But Akira, does not.
-She rises. With the photo in hand, she walks back through the
-server maze, as if leading ghosts.
-The data banks hum louder.
-Wires shiver. Lights dim.
-AKIRA (V.O.) (CONT'D)
-Truth isn’t power.
-(beat)
-Memory is.
-The screen behind her glitches, then cuts to black.
-STATIC. Silence.
-CUT TO:
-INT. NOCTURNE - SUBTERRANEAN COUNCIL CHAMBER - NIGHT
-A black chamber with lacquered walls that reflect no light.
-Ancient, silent, pressurized with ceremony. A long obsidian
-table stretches through the room like a wound.
+You stand. Bare feet on tile. The corridor outside is dark —
+not powered-down dark, but the darkness of a system that no
+longer knows how to see you.
+You walk.
+Behind you, the lights die. One by one. Not failing —
+following. As if the building is closing its eyes wherever
+you've already looked.
+Cameras whir. Then stop. Then spark.
+A mirror at the end of the corridor catches your approach.
+You watch yourself walk toward yourself.
+Your reflection doesn't move.
+Then it does.
+It turns away. Before you do.
+And for the first time, you don't flinch. You don't wonder
+what it means. You don't check if it's real.
+You keep walking.
+[INTERACTIVE CHOICE — BRANCHING #3]
+SESSION 2 END — WHERE DO YOU GO?
+This choice determines how Session 3 begins.
+A)
+! Session 3 opens in the Subterranean Council Chamber. You
+face the holographic sigils of the Mukurokai. The Ancestral
+Presence speaks. You are not a prisoner — you are a witness
+to the architecture of power that built you.
+B)
+! Session 3 opens with the bathing ritual. Yumi washing you.
+Confessional. Intimate. The most emotionally vulnerable
+opening. Will her loyalty to the system break — or will she
+use the scalpel?
+C)
+! Session 3 opens at the Control Nexus. Your hands on the
+screen. Blood. Ink. Memory. The broadcast begins immediately.
+The most aggressive path — you skip confrontation and go
+straight to action.
+FADE OUT.
 
-Rei stands at one end, composed but unsteady. Before him,
-HOLOGRAPHIC SIGILS rotate in silent orbit. Each one linked to
-a voice, disembodied, ageless.
-THE MUKUROKAI SHADOW BOARD.
-Ten voices. No faces. Old dialects, Kansai, Edo, Kyushu,
-fractured beneath layers of modulation. They speak not in
-unison, but as a ritual echo.
+SESSION 2 — COMPLETE
+THE NAME THEY TRIED TO FORGET
+She remembered anyway.
+FADE TO BLACK.
+
+
+=== SESSION 3: KUROKAMI ===
+
+NOCTURNE
+INTERACTIVE ADAPTATION
+SESSION 3: KUROKAMI
+Written by
+Thomas Wittmer
+Based on: NOCTURNE (original screenplay)
+Interactive Adaptation — Lorespinner System
+
+FADE IN:
+Session 3 begins differently depending on your final choice
+in Session 2. Three openings converge at the Naming Chamber.
+OPENING — PATH A: THE COUNCIL
+(If you chose: "Go to the Council")
+INT. SUBTERRANEAN COUNCIL CHAMBER — NIGHT
+The chamber is black. Not dark — black. Lacquered walls that
+reflect no light. An obsidian table stretches through the
+room like a wound.
+You are Akira Kawasaki. Or you were. The name carved into the
+system's bones says something older.
+Holographic sigils rotate in silent orbit above the table.
+Ten of them. Each linked to a voice — disembodied, ageless.
+Old dialects fracturing beneath layers of modulation. They
+speak not in unison, but as ritual echo.
+The Mukurokai Shadow Board.
+Rei stands at the far end. Sharp-suited. Emotionless. He sees
+you enter and his composure fractures — just for a frame.
 MUKUROKAI VOICES
 (overlapping)
 Subject Kurokami has glitched
 protocol. Compromised ritual.
 Defiled code.
-REI
-You taught us the protocol was
-sacred.
-MUKUROKAI VOICES
-And sacred things must not bleed.
-A pause. Then a final sigil lights up.
-Different.
-A SYMBOL, bone-white. Ornate. Older than the others.
-Rei flinches.
-A SCREEN flickers to life. But what appears isn’t a face.
-It’s a RENDITION, ink-stroke shadows. Flowing calligraphy
-that forms and reforms. A MASK of God and Ghost.
-THE ANCESTRAL PRESENCE. Its voice is soft. Feminine. But it
-folds over itself with centuries of weight.
+A final sigil lights up. Different. Bone-white. Ornate. Older
+than the others.
+A screen flickers. What appears isn't a face — it's a
+rendition. Ink-stroke shadows. Flowing calligraphy that forms
+and reforms. A mask of God and Ghost.
+The Ancestral Presence. Its voice is soft. Feminine. Folding
+over itself with centuries of weight.
 ANCESTRAL PRESENCE (V.O.)
 She remembers.
 REI
-That doesn’t make her dangerous. It
+That doesn't make her dangerous. It
 makes her... real.
+
 ANCESTRAL PRESENCE (V.O.)
 Order cannot glitch. Only reality
 can.
-Rei’s hands clench. His breath tightens.
 MUKUROKAI VOICES
 Authorize Black Protocol.
-
-One by one, the sigils flicker RED. Voting. Not with urgency,
-with inevitability.
+One by one, the sigils flicker red. Voting. Not with urgency
+— with inevitability.
 REI
 You made her.
 ANCESTRAL PRESENCE (V.O.)
@@ -2645,508 +1095,436 @@ She was a child.
 ANCESTRAL PRESENCE (V.O.)
 So were we all, before pain became
 clarity.
-Rei trembles, but not only in fear.
+The final sigil turns red. BLACK PROTOCOL: AUTHORIZED.
+Rei stands in silence. His reflection on the obsidian table —
+fractured. Split. Unwhole.
+He turns to you.
 REI
-You erased entire bloodlines in the
-Meiji Restoration, and now a girl
-terrifies you?
-The Presence pauses.
-ANCESTRAL PRESENCE (V.O.)
-We bled into every dynasty. Every
-ministry. Even emperors bowed,
-eventually.
-(beat)
-We restructured Japan four times.
-Every purge. Every rebirth. She’s
-just a deeper cut.
-The FINAL SIGIL turns red.
-BLACK PROTOCOL: AUTHORIZED.
-The screen glows blood-bright. Then fades.
-Rei stands in silence.
-REI
-I was loyal.
-ANCESTRAL PRESENCE (V.O.)
-Loyalty is not divinity.
-MUKUROKAI VOICES
-Black Protocol confirmed.
-Behind him, ritualists in white move like breathless ghosts.
-One hands him a file, the kill directive.
-
-He doesn’t open it.
-He doesn’t have to.
-His reflection on the obsidian table, fractured. Split.
-Unwhole.
-INT. MUKUROKAI ARCHIVE — UNKNOWN LOCATION
-A shrine of violence. Blades preserved in glass. Scrolls
-inked in blood. A library of erasure. Ancient contracts
-singed into silk. Hair samples pressed into lacquer.
-On the back wall, a sprawling TAPESTRY, each panel stitched
-with historical scenes.
-- Samurai bowing before a faceless tribunal.
-- Court nobles vanishing from woodblock prints.
-- Early surveillance diagrams drawn in calligraphy.
-- Executions beneath cherry blossoms, then corporate towers
-rising over the same soil.
-THE ANCESTRAL PRESENCE watches.
-Not through a screen.
-Through a MIRROR.
-Ritualists in bone-white robes encircle a kneeling WOMAN,
-unnamed, compliant. Her lips are painted black. Her chest
-bare. Her eyes closed, not in fear, in worship.
-One ritualist moves behind her. Removes his mask.
-It’s Rei.
-He kneels too. Opposite her.
-His hand trembles as he holds the blade, obsidian, curved,
-ancient.
-The woman opens her eyes. Looks into his. She smiles.
-WOMAN
-May my death restore the balance.
-REI
-May your memory never glitch.
-He kisses her, soft, reverent, holy.
-
-Then draws the blade across her throat with agonizing grace.
-Blood spills like ink across sacred parchment.
-The ritualists bow.
-The mirror doesn’t blink.
-ANCESTRAL PRESENCE (V.O.)
-Order is not eternal. It is
-maintained.
-Rei’s face is sprayed with red.
-He doesn’t flinch.
-Because now, he believes.
-CUT TO:
-EXT. NOCTURNE PERIMETER – NIGHT
-A void between structures, where security lights fail and
-shadows cling like second skin.
-Akira walks. Hood up. Barefoot. She’s silent. Too silent.
-A soft metallic hiss.
-Something stabs her neck.
-A TRANQ DART.
-Her body jerks. Legs falter. She stumbles forward, catching
-herself on the slick steel wall.
-A SHADOW emerges.
-MASKED. WHITE UNIFORM. Surgical gloves. Precise. Cold.
-He doesn’t speak. He doesn’t need to. Two more appear.
-She’s surrounded.
-Her breath shortens. Blood blooms down her spine.
-Her knees hit the concrete. They approach, not with cruelty,
-but ritual calm.
-HOODED AGENT 1
-(softly)
-We honor the glitch.
-
-HOODED AGENT 2
-And restore order.
-They draw a needle, not to sedate. To STOP the heart.
-Akira’s eyes flutter. Limbs weak. But not gone.
-Then- a hand grabs one of the agents.
-SNAP. His neck breaks. Fast. Clean.
-It’s Yumi. Her hair wild. Her eyes wet with terror. She’s not
-trained for this, but she’s decided.
-YUMI
-No.
-Agent 2 lunges. Yumi throws herself forward. A knife misses
-her cheek by millimeters, she twists, kicks desperate,
-ungraceful.
-Akira’s hand twitches. Twitch becomes flex.
-Then- VIOLENCE.
-Her body moves without thought. No strategy. No technique.
-She BITES. Deep into Agent 3’s throat, a wet snap of
-cartilage.
-He gurgles. She doesn’t stop.
-Her teeth come away painted red.
-She rises, blood dripping from her chin.
-Eyes dead.
-Yumi watches, frozen. Horrified. Aroused. Something primal
-flickers.
-Agent 2 goes for a weapon, Akira catches his wrist.
-BREAKS IT. Bone cracks through skin.
-She spins him into the wall. Elbow. Knee. Eyes.
-Every blow is survival. But it’s also release.
-She STRADDLES him, pins him.
-Then, with no expression, she pushes her fingers into his
-windpipe.
-
-Until he stops.
-No one speaks. Just panting. Dripping. Blood pools like ink.
-Yumi steps forward.
-AKIRA (V.O.)
-The first time you kill, they say
-you feel it forever.
-Akira stares at her hands.
-AKIRA (V.O.)
-They’re wrong.
-A bead of blood trails down her thigh. Erotic. Horrific.
-Yumi kneels. Slowly. Offers her hand, not in comfort. In
-submission.
-Akira doesn’t take it.
-But she doesn’t look away.
-CUT TO:
-INT. HIDDEN BATHING CHAMBER – NIGHT
-Red-lit. Geothermal steam. Ancient stone basin cut into the
-earth itself. A forgotten purification room deep beneath
-Nocturne, sacred, untouched by surveillance.
-Yumi enters first. Holding Akira’s hand.
-Akira is still bleeding, slow, dried streaks across her
-thigh. She doesn’t flinch.
-YUMI
-(quietly)
-No one comes here anymore. Not
-since they automated cleansing.
-She seals the door. A hiss. Everything goes still.
-Akira steps forward, unspeaking.
-Yumi approaches, slowly. She unclasps Akira’s belt. Lets it
-fall.
-The robe slips. Silence. Skin, marbled in scar tissue and
-steam. Battle and obedience painted across her.
-Yumi kneels.
-
-She begins to wash Akira with a ceremonial cloth.
-Ritualistic. Erotic. Reverent.
-WATER pours from a bamboo spout, steaming. Every breath
-sounds louder. Every gesture, intentional.
-YUMI(CONT’D)
-(whispering)
-Let me remember you this time.
-Akira’s hand moves, slowly, to lift Yumi’s chin. They stare
-into each other.
-AKIRA
-Then don’t look away.
-Their mouths meet. Not desperate, but deep. The kind of kiss
-that could resurrect a person.
-Hands wander. Steam licks skin. Akira’s breath breaks. Yumi
-exhales into her mouth.
-They move together, into the water.
-INT. STONE BATH – CONTINUOUS
-Their bodies submerge. Languid. Yumi straddles Akira, not
-with dominance, but presence.
-Water ripples. Fingers trace scars. Every kiss is placed like
-a memory being stitched.
-Yumi moves slowly. Deliberately. Akira arches, not in
-performance, but release.
-Steam fogs everything. Except their eyes. Locked.
-YUMI
-Say my name.
-AKIRA
-(softly)
-You don’t need it. I remember you.
-They climax, together. Not loud. Not frantic. But like breath
-held for years finally exhaled.
-INT. POST-BATH – LATER
-Akira lies on the stone floor. Damp. Spent. Alive.
-
-Yumi rests her head on Akira’s chest. Listening to the heart
-she helped quiet.
-They don’t speak.
-They don’t need to.
-CUT TO:
-INT. HIDDEN BATH CHAMBER - NOCTURNE - CONTINUOUS
-Steam coils like breath through red-lit stone. The air hums
-with heat.
-Akira stands in the shallows. Ink bottle in hand. Still damp
-from the ritual with Yumi. Her hair clings to her shoulders.
-Her body — ritual-marked, not broken.
-Yumi kneels behind her. Quiet. Watching. Reverent.
-She dips her fingers into the ink. Black as void.
-YUMI
-(softly)
-You don’t have to do this alone.
-AKIRA
-I’m not.
-Yumi begins painting. Slow, deliberate strokes across Akira’s
-back. Down her spine. Symbols lost to formal language, older
-than programming.
-Akira breathes in. Deep.
-AKIRA(CONT’D)
-Thank you.
-Yumi says nothing. But her fingers tremble. One last stroke.
-She steps back. A final look.
-YUMI
-Remember who you are.
-Akira turns, meets her eyes.
-AKIRA
-I will.
-Yumi exits. Silent. The door slides closed, leaving Akira in
-the hush of steam and sacred heat.
-
-INT. THE NAMING CHAMBER - MINUTES LATER
-A stone circle. Empty but for her.
-Akira steps in. Completely nude. No covering. No armor. Ink-
-slick and glistening.
-Before her, a basin of ink. A blade. A mirror.
-She kneels.
-Breathes.
-Lifts the blade.
-Slow. Purposeful. Not self-harm. Self-claiming.
-She carves the kanji into her thigh, 黒神 - Kurokami.
-She exhales, not in pain. In clarity.
-Blood mixes with ink.
-She stands. Walks to the mirror.
-Her reflection, raw, marked, real.
-She stares. Unblinking.
-A flicker behind her. Lights meant to detect movement, don’t.
-She is no longer a glitch. She is a ghost with a name.
-AKIRA (V.O.)
-Not theirs.
-She walks away. Leaving bloody footprints that vanish in the
-steam.
-AKIRA (V.O.)
-Mine.
-CUT TO:
-INT. RITUAL CHAMBER — NIGHT
-Stone and shadow. The walls pulse with low amber light. A
-ceremonial stillness lingers, like the room is holding its
-breath.
-Rei stands alone, clad in black silk robes. Regal. Composed.
-Waiting.
-
-The double doors open.
-Akira enters, bare-armed, inked, unblinking.
-REI
-(firm but quiet)
 You look like prophecy. But I
 wonder if you understand what that
 costs.
 AKIRA
 It cost everything.
 REI
-No. It gifted clarity.
-(beat)
-You didn’t break the system. You
-completed its loop.
-Akira steps closer. The ink on her skin glistens.
-REI(CONT’D)
-We don’t need to erase you now. We
-can elevate you. Name you. Seat you
-beside us.
-He gestures behind him, a raised dais with a vacant black
+No. It gifted clarity. You didn't
+break the system. You completed its
+loop.
+He gestures behind him — a raised dais with a vacant black
 cushion. Untouched.
 REI(CONT’D)
 No more rooms. No more numbers. You
-become the code.
-She watches him. Still.
-REI(CONT’D)
-And I will kneel with you, in
-worship, in power. As we rewrite
-the future from the inside.
-He begins to disrobe.
-First the robe. Then the sash. Each movement deliberate.
-Sensual. Reverent.
-REI(CONT’D)
-No more obedience. Just evolution.
-Just us.
-He steps toward her, bare-chested. Vulnerable but unashamed.
-REI(CONT’D)
-Let me show you what surrender
-means when no one’s watching.
+become the code. And I will kneel
+with you, in worship, in power. As
+we rewrite the future from the
+inside.
 
-He leans in, a kiss offered without demand. She lets him.
-Their lips touch. Soft. Slow. Charged with the tension of
-belief.
-Then-
+OPENING — PATH B: YUMI
+(If you chose: "Go to Yumi")
+INT. HIDDEN BATHING CHAMBER — NIGHT
+Red light. Geothermal steam. Ancient stone basin cut into the
+earth itself — a forgotten purification room deep beneath
+Nocturne, sacred, untouched by surveillance.
+You are Akira Kawasaki. And the woman holding your hand led
+you here through smoke and collapsed corridors, past the
+bodies of the agents she killed to keep you breathing.
+Yumi's hair is wild. Her knuckles split. The scalpel Rei gave
+her is gone — she used it on someone who wasn't you.
+YUMI
+(quietly)
+No one comes here anymore. Not
+since they automated cleansing.
+She seals the door. A hiss. Everything goes still.
+She approaches. Slowly. Unclasps your belt. Lets it fall.
+Not desire. Devotion. The kind of touch that says: I will
+clean what they did to you, even if I was part of it.
+Your robe slips. Silence. Skin — marbled in scar tissue and
+steam. Battle and obedience painted across you.
+Yumi kneels. Begins to wash you with a ceremonial cloth.
+Ritualistic. Reverent. Water pours from a bamboo spout,
+steaming. Every breath sounds louder. Every gesture,
+intentional.
+YUMI(CONT’D)
+(whispering)
+Let me remember you this time.
+Your hand moves to lift her chin. You stare into each other.
 AKIRA
-(whispered, into his
-mouth)
-You smell like failure.
-She pulls back.
-Rei stands, exposed. Still reaching.
+Then don't look away.
+Your mouths meet. Not desperate — deep. The kind of kiss that
+could resurrect a person. Hands wander. Steam licks skin.
+Your breath breaks. She exhales into your mouth.
+You move together into the water.
+
+INT. STONE BATH — CONTINUOUS
+Your bodies submerge. Languid. Yumi straddles you — not with
+dominance, but presence. Water ripples. Fingers trace scars.
+Every kiss placed like a memory being stitched.
+She moves slowly. Deliberately. You arch — not in
+performance, but release.
+Steam fogs everything. Except your eyes. Locked.
+YUMI
+Say my name.
+AKIRA
+(softly)
+You don't need it. I remember you.
+You climax together. Not loud. Not frantic. Like breath held
+for years finally exhaled.
+INT. HIDDEN BATHING CHAMBER — LATER
+You stand in the shallows. Still damp. Your hair clings to
+your shoulders. Your body — ritual-marked, not broken.
+Yumi kneels behind you. Quiet. Watching. Reverent.
+She dips her fingers into ink. Black as void.
+YUMI
+(softly)
+You don't have to do this alone.
+AKIRA
+I'm not.
+Yumi begins painting. Slow, deliberate strokes across your
+back. Down your spine. Symbols lost to formal language —
+older than programming.
+You breathe in. Deep.
 AKIRA(CONT’D)
-You don’t get to name me.
-She turns.
-Walks.
-Each step echoes like a verdict.
-The chamber dims.
-Rei watches her disappear into shadow.
-He exhales. Just once. Almost a sob.
-Then silence.
-He walks to the black cushion. Kneels. Alone.
-REI
-(softly, to no one)
-I was the last to survive the Meiji
-purge. I thought that meant I
-deserved to stay.
-His reflection in the polished obsidian tiles flickers.
-Erased before the breath leaves him.
-He opens a ceremonial drawer beneath the dais.
-A single object, a ritual blade. Sheathed in white silk.
-He places it before him. Bows his head.
+Thank you.
+Her fingers tremble. One last stroke. She steps back.
+YUMI
+Remember who you are.
+AKIRA
+I will.
 
-REI(CONT’D)
-You are what I couldn’t become.
-CUT TO:
-INT. GLASS CORRIDOR — MOMENTS LATER
-Akira walks. Alone. Holy.
-She is not untouchable.
-She is becoming.
-CUT TO:
-INT. CONTROL NEXUS – NIGHT
-A circular chamber. Hollowed from obsidian and screenlight.
-No visible entrance, only light and hum.
-Akira stands at the core, cloaked in ceremonial black. Ink
-stains her thighs. Her fingers tremble not from fear. From
-purpose.
-Before her, the PRIMARY TERMINAL. A forgotten relic. Keyed
-only to those who were never meant to survive.
-She places her palm on the screen. Blood. Ink. Memory.
-THE SYSTEM STALLS.
+Yumi exits. Silent. The door slides closed, leaving you in
+the hush of steam and sacred heat.
+OPENING — PATH C: THE BROADCAST
+(If you chose: "Go to the broadcast")
+INT. CONTROL NEXUS — NIGHT
+The Control Nexus is circular. Hollowed from obsidian and
+screenlight. No visible entrance — only light and hum.
+You are Akira Kawasaki. And your hands are already on the
+Primary Terminal — a forgotten relic keyed only to those who
+were never meant to survive.
+Blood. Ink. Memory. Your palm presses the screen.
+The system stalls.
 Then it breathes.
-INT. VARIOUS – SIMULTANEOUS
-SCREENS FLICKER TO LIFE, across NOCTURNE.
-— A training ward. Nurses freeze.
-— A sleep chamber. Subjects stir, blinking.
-— A glass corridor. Lights dim. Then pulse.
-INT. HALL OF REPROCESSING – NIGHT
-Yumi stares at a blank monitor, until it floods with light.
-ON THE SCREEN: AKIRA. Younger. Crying. Then still. Then
-stripped. Then stitched.
-
-Voices whisper, then crescendo into layered poetry.
+Across Nocturne, screens flicker to life.
+INT. VARIOUS — SIMULTANEOUS
+A training ward. Nurses freeze. A sleep chamber. Subjects
+stir, blinking. A glass corridor. Lights dim. Then pulse.
+INT. CONTROL NEXUS — CONTINUOUS
+You type. Keys bleed. Your skin radiates.
 AKIRA (V.O.)
 I was born twice. Once in silence.
 Once in surveillance. I was never
 asked. I was only catalogued.
-INT. CONTROL NEXUS – CONTINUOUS
-Akira types. Keys bleed. Her skin radiates.
+Graphic data floods the air — not pornographic, but poetic.
+Ghostlike overlays of: you learning to obey. You learning to
+fake it. You, watching yourself vanish in a mirror.
 AKIRA (V.O.)
 And yet, I remember. Every touch.
 Every absence. Memory is not
 betrayal. It is rebellion.
-She uploads the FULL FILE.
-GRAPHIC DATA floods the air, not pornographic, but POETIC.
-Ghostlike overlays of: Akira learning to obey. Akira learning
-to fake it. Akira, watching herself vanish in a mirror.
-INT. SURVEILLANCE FLOOR – NIGHT
-An OVERSEER slams keys, but the system won’t obey.
-OVERSEER
-We’ve lost lockdown.
-TECH (O.S.)
-She’s inside all of it.
-INT. MEMORY ROOM – NIGHT
-A REMEMBERER stares at the screen. Her lip trembles. Then,
-she SMILES.
-INT. RITUAL DORMITORY – NIGHT
-A dozen subjects rise from beds. Simultaneous. One starts to
-WEEP. Another LAUGHS.
-A young man carves a single word into his palm, REAL.
-INT. CONTROL NEXUS – CONTINUOUS
-Akira’s body trembles. Not in pain, in completion.
+The broadcast streams. But the system is fighting back. An
+overseer slams keys. The lockdown fails. You are inside all
+of it.
 
+The broadcast needs fuel. Needs truth. Needs the rest of the
+story.
+You leave the terminal running and step into the corridor.
+There's still one piece missing.
+[INTERACTIVE CHOICE — EXPRESSIVE #1]
+THE WEIGHT OF POWER
+How does power feel?
+A)
+B)
+C)
+ALL PATHS CONVERGE HERE.
+INT. SUBLEVEL CORRIDOR — NIGHT
+Dim. The kind of sterile blue where breath feels monitored.
+You move like shadow. Your hand grazes the wall. Lights dim
+in sequence, like a whisper trailing behind you.
+You stop.
+A low-level attendant — barely older than you. Head shaved.
+Badge number 0-5-8. He turns a corner carrying a tray of
+sedatives. He sees you.
+Freezes.
+AKIRA
+(quiet)
+You remember me.
+He says nothing. You step forward. He steps back. The tray
+trembles.
+AKIRA(CONT’D)
+Say it.
+ATTENDANT 058
+(shaking)
+I — I can't.
+AKIRA
+You already did.
+
+You back him into the wall. Not violent. Intimate. One hand
+over his mouth. The other presses lightly to his chest —
+fingers splayed over his heart.
+AKIRA(CONT’D)
+Say what you saw.
+ATTENDANT 058
+(whispers)
+You... you were smiling. They had
+your arms bound, but you smiled.
+You asked for it.
+AKIRA
+And?
+ATTENDANT 058
+They said you were born wrong. That
+to fix you... they had to break
+you.
+AKIRA
+Was I fixed?
+He breaks. His knees buckle. He slides down the wall. Tray
+clattering. Meds rolling like marbles.
+ATTENDANT 058
+I — I watched. I didn't stop it. I
+wanted to. I couldn't. I couldn't
+move.
+You kneel with him.
+AKIRA
+You weren't the only one who wanted
+it.
+ATTENDANT 058
+I dream about it. The way you
+looked at me, when they —
+AKIRA
+Tell me.
+ATTENDANT 058
+You weren't afraid. You were...
+choosing it. Like it meant
+something. Like it was yours.
+AKIRA
+Then you remember the wrong thing.
+
+You stand. Look down at him. The corridor lights flicker in
+sync with your breath.
+AKIRA(CONT’D)
+Thank you.
+You walk away. Behind you, the attendant stays on the floor.
+The tray untouched. But one vial is missing.
+[INTERACTIVE CHOICE — BRANCHING #1]
+REI'S OFFER / THE THRESHOLD OF POWER
+The system offers you something. What do you do?
+A)
+! To Rei: "You smell like failure." You arrive at the Naming
+Chamber stripped bare. Nothing offered, nothing taken. Pure
+self-creation. The broadcast will be raw and uncompromising.
+B)
+! You accept. The system exhales. Then you act. The
+acceptance was a feint — you needed access to deeper systems,
+archives, protocols. The broadcast will include the
+Mukurokai's own records.
+C)
+! You redirect. The system has no protocol for grief. The
+Ancestral Presence goes silent. The broadcast will center on
+Namiko — memorial, not revolution.
+INT. THE NAMING CHAMBER — NIGHT
+A stone circle. Empty but for you.
+You step in. Completely bare. No covering. No armor. Ink-
+slick and glistening.
+Before you: a basin of ink. A blade. A mirror.
+You kneel. Breathe.
+Lift the blade. Slow. Purposeful. Not self-harm. Self-
+claiming.
+[INTERACTIVE CHOICE — EXPRESSIVE #2]
+THE NAMING
+How do you experience carving Kurokami into your thigh?
+
+A)
+B)
+C)
+You stand. Walk to the mirror. Your reflection — raw, marked,
+real.
+You stare. Unblinking.
+A flicker behind you. Lights meant to detect movement don't.
+You are no longer a glitch. You are a ghost with a name.
+AKIRA (V.O.)
+Not theirs.
+You walk away. Leaving bloody footprints that vanish in the
+steam.
+AKIRA (V.O.)
+Mine.
+CUT TO:
+EXT. NOCTURNE PERIMETER — NIGHT
+A void between structures. Security lights fail. Shadows
+cling like second skin.
+You walk. Hood up. Barefoot. Silent. Too silent.
+A soft metallic hiss.
+Something stabs your neck.
+A tranq dart.
+Your body jerks. Legs falter. You stumble forward, catching
+yourself on the slick steel wall.
+A shadow emerges. Masked. White uniform. Surgical gloves. Two
+more appear.
+You're surrounded.
+HOODED AGENT 1
+(softly)
+We honor the glitch.
+HOODED AGENT 2
+And restore order.
+
+They draw a needle — not to sedate. To stop the heart.
+Your eyes flutter. Limbs weak. But not gone.
+Then — a hand grabs one of the agents.
+SNAP. His neck breaks. Fast. Clean.
+Yumi. Her hair wild. Her eyes wet with terror. She's not
+trained for this, but she's decided.
+YUMI
+No.
+Agent 2 lunges. Yumi throws herself forward. A knife misses
+her cheek by millimeters. She twists, kicks — desperate,
+ungraceful.
+Your hand twitches. Twitch becomes flex.
+Then — violence.
+Your body moves without thought. No strategy. No technique.
+You bite deep into Agent 3's throat. A wet snap of cartilage.
+He gurgles. You don't stop.
+Your teeth come away painted red.
+You rise. Blood dripping from your chin. Eyes dead.
+Agent 2 goes for a weapon. You catch his wrist. Break it.
+Bone cracks through skin.
+You spin him into the wall. Elbow. Knee. Eyes.
+Every blow is survival. But it's also release.
+You pin him. Push your fingers into his windpipe. Until he
+stops.
+No one speaks. Just panting. Dripping. Blood pools like ink.
+[INTERACTIVE CHOICE — BRANCHING #2]
+THE PERIMETER ATTACK — MORAL-WEIGHT CHOICE
+Three agents dead. Blood everywhere. What does this mean to
+you?
+Values in tension: Acceptance vs. Horror vs. Transcendence
+A)
+
+! You stand over the bodies. No remorse. You take a weapon.
+Kurokami is a warrior. The broadcast will carry a threat.
+B)
+! You fall to your knees. Yumi holds you. "It's done." "No.
+It's started." The broadcast will be a confession — including
+your own violence.
+C)
+! You step over the dead without looking down. Not cold —
+elsewhere. Kurokami is uncategorizable. The broadcast will be
+otherworldly.
+Yumi steps forward. Kneels.
+[INTERACTIVE CHOICE — EXPRESSIVE #3]
+AFTERMATH OF VIOLENCE
+How do you process this moment?
+A)
+B)
+C)
+INT. CONTROL NEXUS — NIGHT
+The circular chamber. Hollowed from obsidian and screenlight.
+You stand at the core, cloaked in ceremonial black. Ink
+stains your thighs. Your fingers tremble — not fear. Purpose.
+The Primary Terminal. A forgotten relic. Keyed only to those
+who were never meant to survive.
+You place your palm on the screen. Blood. Ink. Memory.
+The system stalls.
+Then it breathes.
+INT. VARIOUS — SIMULTANEOUS
+Screens flicker to life across Nocturne.
+
+INT. HALL OF REPROCESSING — NIGHT
+Yumi stares at a blank monitor. Until it floods with light.
+On screen: you. Younger. Crying. Then still. Then stripped.
+Then stitched.
+Voices whisper, then crescendo.
+AKIRA (V.O.)
+I was born twice. Once in silence.
+Once in surveillance. I was never
+asked. I was only catalogued.
+INT. CONTROL NEXUS — CONTINUOUS
+You type. Keys bleed. Your skin radiates.
+AKIRA (V.O.)
+And yet, I remember. Every touch.
+Every absence. Memory is not
+betrayal. It is rebellion.
+You upload the full file.
+Graphic data floods the air — poetic. Ghostlike overlays: you
+learning to obey. You learning to fake it. You watching
+yourself vanish in a mirror.
+INT. RITUAL DORMITORY — NIGHT
+A dozen subjects rise from beds. Simultaneous. One starts to
+weep. Another laughs.
+A young man carves a single word into his palm: REAL.
+INT. CONTROL NEXUS — CONTINUOUS
 AKIRA (V.O.)
 If they taught us to forget, then
 remembering is war.
-The SYSTEM GLITCHES.
-All screens flicker to BLACK.
-Then one line of red code bleeds across every surface, 黒神.
-INT. OBSERVATION CHAMBER – UNKNOWN
-The ANCESTRAL PRESENCE watches.
-No emotion. Just stillness.
+The system glitches. All screens flicker to black. Then one
+line of red code bleeds across every surface: Kurokami.
+
+INT. OBSERVATION CHAMBER — UNKNOWN
+The Ancestral Presence watches. No emotion. Just stillness.
 For the first time, the mirror fogs.
 CUT TO:
-INT. NOCTURNE – MAIN SERVER CHAMBER – NIGHT
-Alarms blare. Red strobes slice through the dark like a
-heartbeat. Heat distortion ripples the air.
-THE KUROKAMI BROADCAST still pulses across screens. Akira’s
-memories. Her body. Her truth.
-INT. MUKUROKAI CONTROL NEXUS – SAME
-White-clad technicians SCREAM into comms. One slits his own
-throat with a ritual blade, blood on screens.
-A CONTROL BOARD flashes an ancient override: KAGUTSUCHI
+INT. NOCTURNE — MAIN SERVER CHAMBER — NIGHT
+Alarms blare. Red strobes slice through the dark. Heat
+distortion ripples the air.
+The Kurokami broadcast still pulses.
+A control board flashes an ancient override: KAGUTSUCHI
 PROTOCOL — ENGAGED.
-INT. NOCTURNE — SUBLEVELS – CONTINUOUS
-Flames bloom from the walls. Precision charges.
-Ancient vents hiss molten steam. Collapse is coming.
-INT. SURVEILLANCE HALL – CONTINUOUS
-Yumi watches through static-laced feeds. Her face, bloodied,
+Flames bloom from the walls. Precision charges. Ancient vents
+hiss molten steam. Collapse is coming.
+INT. SURVEILLANCE HALL — CONTINUOUS
+Yumi watches through static-laced feeds. Her face — bloodied,
 burned, alive.
-She SLAMS a palm to the emergency override.
-
+She slams a palm to the emergency override.
 YUMI
 (to the survivors)
 Follow me. NOW.
-INT. WARD CORRIDOR – MOMENTS LATER
-Naked, trembling REMEMBERERS stumble through firelit halls.
-Yumi leads. A child clutches her hand.
-INT. CORE CHAMBER — SIMULTANEOUS
-Akira stands, center-frame. Flames behind her. Cables hanging
-like veins. Her skin is charred and inked.
-But her broadcast continues.
-Her image dances across a THOUSAND SCREENS. A woman kneels,
-sobbing. A nurse lets go of a scalpel. A boy watches. And
-remembers.
-INT. UNKNOWN ARCHIVE – INTERCUT
-THE ANCESTRAL PRESENCE flickers on a shattered screen,
-calligraphy dissolving in heat.
-ANCESTRAL PRESENCE (V.O.)
-She is not a glitch. She is a
-wound.
-INT. SERVER CHAMBER — FINAL MOMENTS
-The flames curl toward Akira. She does not flinch.
-AKIRA (V.O.)
-This isn’t revolution.
-It’s recollection.
-She closes her eyes. Her lips part. Her body becomes
-silhouette, flame-wrapped, holy.
-The screen behind her glitches-
-BLACK.
-SILENCE.
-CUT TO:
+[INTERACTIVE CHOICE — BRANCHING #3]
+THE FIRE — SESSION END
+The facility is burning. The broadcast is running. Yumi is
+leading survivors to the vents. You stand at the core, flames
+curling toward you.
+A)
+! You stay. Flames wrap you in light. Your image dances
+across a thousand screens. A woman kneeling. A nurse letting
+go of a scalpel. A boy watching. Remembering. The broadcast
+completes. You are silhouette, flame-wrapped, holy. Then
+black. Then silence. Then — you walk out. Charred. Alive.
+Impossible.
+B)
 
-INT. SUBTERRANEAN VENT SHAFT — MOMENTS LATER
-Yumi shoves open a rusted hatch. Smoke pours. Survivors
-collapse into moonlight. Coughing. Gasping.
-But alive.
-Yumi turns, the fire behind her like a funeral for gods.
-YUMI
-(whispers)
-You saved them.
-She steps into the ash.
-CUT TO:
-INT. NOCTURNE - OUTER CORRIDOR — NIGHT
-Smoke coils in the air. Lights flicker, fading embers of a
-system in collapse.
-Yumi stands still.
-Her hair is wet. Her lip split. Her white coat darkened with
-soot.
-Behind her, survivors. Silent. Staggered. Rememberers. The
-almost-erased.
-She doesn’t lead them. She simply... doesn’t leave.
-From down the corridor, FOOTSTEPS.
-Then- a figure appears.
-AKIRA.
-Steam rising off her like a ghost escaping flesh. Her eyes
-glowing with something not divine, but awakened.
-They stop before one another.
-YUMI
-(still)
-It’s done?
-AKIRA
-No. But it begins.
-Their hands meet. No kiss. Just contact. Like passing a torch
-or a memory.
-
-AKIRA(CONT’D)
-You end it. Your way.
-Yumi’s eyes shine, not from hope. From pain. Earned.
-AKIRA turns- and walks.
+! You leave the terminal. The broadcast continues on its own.
+You find Yumi in the smoke, carrying a child, leading the
+almost-erased. You take point. Through a rusted hatch. Into
+moonlight. The facility burns behind you like a funeral for
+gods.
+C)
+! You walk forward. Not away. Into the fire. The screens
+capture it — a woman choosing the flame. You emerge on the
+other side. Through ash. Through smoke. Through a vent shaft
+that shouldn't exist. Into Tokyo. Alone. Steam rising off
+your skin like a ghost escaping flesh.
 EXT. TOKYO — PRE-DAWN
-A soft wind stirs. The city glows from neon, ash and memory.
-Akira walks through the streets. Past glass. Past metal. Past
-eyes that now see her.
-A child looks up from a screen and the screen glitches. A
-REMEMBERING.
-A flower seller bows in recognition.
-Akira doesn’t wave. Doesn’t pause.
-She fades into the thinning night.
-Her body vanishes in silhouette, swallowed by the pulse of
-the waking world.
-But her presence... remains.
+A soft wind stirs. The city glows — neon, ash, and memory.
+You walk through the streets. Past glass. Past metal. Past
+eyes that now see you.
+You are not hiding. You are not running. You are not
+performing survival for an audience of cameras and clipboards
+and men who confused obedience with divinity.
+You are walking.
+A child looks up from a screen. The screen glitches — a
+flicker of something the system didn't authorize. A
+remembering. The child doesn't understand. But she will.
+A flower seller bows. Not fear. Not worship. Recognition.
+The dawn is coming. You can feel it in the concrete beneath
+your bare feet — the warmth of a city waking up, the hum of
+ten million lives beginning another day in a world that is,
+as of this morning, slightly less forgetful.
+You don't wave. You don't pause.
+You fade into the thinning night. Your body vanishes in
+silhouette, swallowed by the pulse of the waking world.
+But your presence remains.
 AKIRA (V.O.)
 They taught us that silence keeps
 us safe.
 But memory... keeps us whole.
 FADE OUT.
-TEXT ON SCREEN:
+
 KUROKAMI — BLACK GODDESS
 She was never a ghost. Only a name... they tried to forget.
 FADE TO BLACK.
