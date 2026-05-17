@@ -248,12 +248,12 @@ final class AddSingleStorySeeder extends Seeder
     private function getStoryConfig(): array
     {
         return [
-            'title' => 'Driftheart',
-            'slug' => 'driftheart',
-            'category' => 'Science Fiction',
-            'script' => 'DRIFTHEART_INTERACTIVE_TEASE_v3_script.txt',
-            'source_pdf' => 'RnD/DRIFTHEART_INTERACTIVE_TEASE_v3.pdf',
-            'teaser' => 'A shattered world. Six salvagers threading the ruins of a planet torn apart. Something alive in the fragments — and it knows they\'re here.',
+            'title' => 'Nocturne',
+            'slug' => 'nocturne',
+            'category' => 'Mystery & Detective',
+            'script' => 'NOCTURNE_script.txt',
+            'source_pdf' => 'RnD/Nocturne/NOCTURNE_Session1_Interactive.pdf',
+            'teaser' => 'A door opened once. A name buried deep. Three sessions — three revelations. Nocturne is a noir mystery that remembers every choice you make.',
             'rating' => StoryRatingEnum::MATURE->value,
             'opening' => null,
             'creator' => [
