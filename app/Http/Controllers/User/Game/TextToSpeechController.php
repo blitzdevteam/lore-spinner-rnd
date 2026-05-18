@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User\Game;
 
+use App\ChaosMode\ChaosStoryConfig;
 use App\Http\Controllers\Controller;
 use App\Models\Game;
 use App\Models\Prompt;
@@ -22,9 +23,11 @@ final class TextToSpeechController extends Controller
         $path = "tts/{$provider}/{$prompt->id}.mp3";
 
         if (! Storage::disk('local')->exists($path)) {
+            $storySlug = $game->story?->slug ?? '';
+
             match ($provider) {
                 'deepgram' => $this->generateDeepgram($prompt, $path),
-                default    => $this->generateElevenLabs($prompt, $path),
+                default    => $this->generateElevenLabs($prompt, $path, ChaosStoryConfig::ttsVoiceId($storySlug)),
             };
         }
 
@@ -36,11 +39,11 @@ final class TextToSpeechController extends Controller
         ]);
     }
 
-    private function generateElevenLabs(Prompt $prompt, string $path): void
+    private function generateElevenLabs(Prompt $prompt, string $path, string $voiceId = ''): void
     {
-        $text = strip_tags($prompt->response);
-        $voiceId = config('services.elevenlabs.voice_id');
-        $apiKey = config('services.elevenlabs.api_key');
+        $text    = strip_tags($prompt->response);
+        $voiceId = $voiceId !== '' ? $voiceId : (string) config('services.elevenlabs.voice_id');
+        $apiKey  = config('services.elevenlabs.api_key');
 
         abort_unless(filled($apiKey), 503, 'Voice generation is not configured.');
 

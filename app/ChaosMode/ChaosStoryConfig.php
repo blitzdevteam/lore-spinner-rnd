@@ -15,6 +15,9 @@ namespace App\ChaosMode;
  *   - the `voice_partial` view name under `ai.agents.chaos.partials.*` — this
  *     is the world-building block that gives each story its own narrator voice
  *   - a short `tagline` for the story selector UI
+ *   - `tts_voice_id` — the ElevenLabs voice ID used for TTS in BOTH Chaos Mode
+ *     and the main Story Guard mode. null = fall back to
+ *     config('services.elevenlabs.voice_id').
  *
  * Per-session and per-event data is loaded dynamically from the DB
  * (StoryAdaptation + SessionAdaptation + Event tables). Nothing about the
@@ -23,7 +26,13 @@ namespace App\ChaosMode;
 final class ChaosStoryConfig
 {
     /**
-     * @return array<int, array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string}>
+     * Asher James voice (NaMUH1vcebhHvD4z3Lku) — used for the three
+     * contemporary Thomas Wittmer stories: Nocturne, Anima Machina, Driftheart.
+     */
+    private const VOICE_ASHER_JAMES = 'NaMUH1vcebhHvD4z3Lku';
+
+    /**
+     * @return array<int, array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string, tts_voice_id:string|null}>
      */
     public static function all(): array
     {
@@ -34,6 +43,7 @@ final class ChaosStoryConfig
                 'protagonist'   => 'Alice',
                 'voice_partial' => 'ai.agents.chaos.partials.alice',
                 'tagline'       => 'Carroll — full agency through Wonderland.',
+                'tts_voice_id'  => null, // default ElevenLabs voice from config
             ],
             [
                 'slug'          => 'the-adventure-of-the-speckled-band',
@@ -41,6 +51,7 @@ final class ChaosStoryConfig
                 'protagonist'   => 'Watson',
                 'voice_partial' => 'ai.agents.chaos.partials.sherlock',
                 'tagline'       => 'Doyle — investigate beside Holmes.',
+                'tts_voice_id'  => null, // default ElevenLabs voice from config
             ],
             [
                 'slug'          => 'the-tell-tale-heart',
@@ -48,6 +59,7 @@ final class ChaosStoryConfig
                 'protagonist'   => 'the Narrator',
                 'voice_partial' => 'ai.agents.chaos.partials.telltale',
                 'tagline'       => 'Poe — descend into the cracked mind.',
+                'tts_voice_id'  => null, // default ElevenLabs voice from config
             ],
             [
                 'slug'          => 'nocturne',
@@ -55,6 +67,7 @@ final class ChaosStoryConfig
                 'protagonist'   => 'Akira',
                 'voice_partial' => 'ai.agents.chaos.partials.nocturne',
                 'tagline'       => 'Wittmer — vanish into Tokyo\'s shadow-house.',
+                'tts_voice_id'  => self::VOICE_ASHER_JAMES,
             ],
             [
                 'slug'          => 'anima-machina',
@@ -62,6 +75,7 @@ final class ChaosStoryConfig
                 'protagonist'   => 'Nora',
                 'voice_partial' => 'ai.agents.chaos.partials.anima-machina',
                 'tagline'       => 'Wittmer — dive grief in the neon archive.',
+                'tts_voice_id'  => self::VOICE_ASHER_JAMES,
             ],
             [
                 'slug'          => 'driftheart',
@@ -69,6 +83,7 @@ final class ChaosStoryConfig
                 'protagonist'   => 'Kataria',
                 'voice_partial' => 'ai.agents.chaos.partials.driftheart',
                 'tagline'       => 'Wittmer — fall from the sky-villa into the Drift.',
+                'tts_voice_id'  => self::VOICE_ASHER_JAMES,
             ],
         ];
     }
@@ -82,7 +97,7 @@ final class ChaosStoryConfig
     }
 
     /**
-     * @return array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string}|null
+     * @return array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string, tts_voice_id:string|null}|null
      */
     public static function find(string $slug): ?array
     {
@@ -92,5 +107,17 @@ final class ChaosStoryConfig
             }
         }
         return null;
+    }
+
+    /**
+     * Resolve the ElevenLabs voice ID for a story slug.
+     * Returns the story-specific ID when one is configured, otherwise the
+     * application-wide default from config('services.elevenlabs.voice_id').
+     */
+    public static function ttsVoiceId(string $slug): string
+    {
+        $row = self::find($slug);
+
+        return $row['tts_voice_id'] ?? (string) config('services.elevenlabs.voice_id');
     }
 }

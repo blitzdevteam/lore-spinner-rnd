@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\ChaosMode;
 
+use App\ChaosMode\ChaosStoryConfig;
 use App\Http\Controllers\Controller;
 use App\Models\ChaosSession;
+use App\Models\Story;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -49,7 +51,10 @@ final class ChaosTtsController extends Controller
             return $this->serveCached($path);
         }
 
-        return $this->streamFromElevenLabs($text, $path);
+        $slug    = Story::find($chaosSession->story_id)?->slug ?? '';
+        $voiceId = ChaosStoryConfig::ttsVoiceId($slug);
+
+        return $this->streamFromElevenLabs($text, $path, $voiceId);
     }
 
     /**
@@ -89,10 +94,10 @@ final class ChaosTtsController extends Controller
      * - ob_end_flush loop flushes any PHP output buffers so chunks aren't held in memory.
      * - X-Accel-Buffering: no tells nginx not to buffer this FastCGI response.
      */
-    private function streamFromElevenLabs(string $text, string $path): StreamedResponse
+    private function streamFromElevenLabs(string $text, string $path, string $voiceId = ''): StreamedResponse
     {
         $apiKey  = config('services.elevenlabs.api_key');
-        $voiceId = config('services.elevenlabs.voice_id');
+        $voiceId = $voiceId !== '' ? $voiceId : (string) config('services.elevenlabs.voice_id');
         $modelId = config('services.elevenlabs.model_id', 'eleven_flash_v2_5');
 
         abort_unless(filled($apiKey) && filled($voiceId), 503, 'Voice generation is not configured.');
