@@ -40,6 +40,7 @@ const STORY_THEMES: Record<string, { from: string; via: string; accent: string }
     'nocturne':                          { from: '#0a2a4a', via: '#051015', accent: '#38bdf8' },
     'anima-machina':                     { from: '#4a1a5a', via: '#0d050e', accent: '#e879f9' },
     'driftheart':                        { from: '#1a3a6a', via: '#050d15', accent: '#67e8f9' },
+    '__default__':                       { from: '#063a39', via: '#030f0f', accent: '#0abab5' },
 };
 
 const props = defineProps<{
@@ -83,7 +84,7 @@ const botShadow = ref(0);
 
 const selectedStory = computed(() => props.stories.find((s) => s.slug === selectedStorySlug.value));
 
-const storyTheme = (slug: string) => STORY_THEMES[slug] ?? { from: '#2a2a2a', via: '#0a0a0a', accent: '#e5ad53' };
+const storyTheme = (slug: string) => STORY_THEMES[slug] ?? STORY_THEMES['__default__'];
 
 const updateShadows = () => {
     const el = scrollEl.value;
@@ -400,7 +401,7 @@ function resetAdventure(): void {
                 </BaseButton>
 
                 <div class="flex flex-col items-center">
-                    <p class="text-center text-[10px] uppercase tracking-widest text-[color:rgba(229,173,83,0.65)]">
+                    <p class="text-center text-[10px] uppercase tracking-widest text-[color:rgba(10,186,181,0.7)]">
                         {{ sessionComplete ? 'Session Complete' : 'Chaos Mode' }}
                     </p>
                     <p v-if="storyTitle" class="font-gill-sans text-center text-xs text-gray-400">
@@ -409,7 +410,7 @@ function resetAdventure(): void {
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <span class="hidden rounded-full border px-3 py-1 text-[10px] sm:block border-[rgba(229,173,83,0.25)] bg-[rgba(229,173,83,0.06)] text-[rgba(229,173,83,0.75)]">
+                    <span class="hidden rounded-full border px-3 py-1 text-[10px] sm:block border-[rgba(10,186,181,0.28)] bg-[rgba(10,186,181,0.07)] text-[rgba(10,186,181,0.8)]">
                         {{ MODELS.find((m) => m.value === selectedModel)?.label }}
                     </span>
                     <BaseButton severity="glass" :icon-only="true" class="size-10!" title="New adventure" @click="resetAdventure">
@@ -418,21 +419,20 @@ function resetAdventure(): void {
                 </div>
             </div>
 
-            <!-- Floating TTS media player -->
-            <div class="pointer-events-none sticky top-16 z-20 flex justify-center">
+            <!-- Floating TTS media player — fixed so it overlays content without displacing it -->
+            <div class="pointer-events-none fixed top-16 right-0 left-0 z-30 flex justify-center pt-3">
                 <Transition name="player-slide">
                     <div
                         v-if="tts.isActive.value"
-                        class="bg-glass-effect pointer-events-auto relative flex items-center gap-3 overflow-hidden rounded-full border border-[rgba(229,173,83,0.3)] py-2 pe-3 ps-2 shadow-2xl backdrop-blur-xl"
+                        class="bg-glass-effect pointer-events-auto relative flex items-center gap-3 overflow-hidden rounded-full border border-[rgba(10,186,181,0.35)] py-2 pe-3 ps-2 shadow-2xl backdrop-blur-xl bg-gray-900/80!"
                     >
                         <button
-                            class="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-full transition-transform hover:scale-105 active:scale-95"
-                            :style="{ backgroundColor: 'var(--chaos-brand)' }"
+                            class="bg-primary-glass-effect relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-full transition-transform hover:scale-105 active:scale-95"
                             @click="tts.togglePause"
                         >
-                            <LucidePause v-if="tts.isPlaying.value" class="size-3.5 text-[#1f160d]" fill="currentColor" />
-                            <LucidePlay v-else-if="!tts.isLoading.value" class="size-3.5 text-[#1f160d]" fill="currentColor" />
-                            <LucideLoader v-else class="size-3.5 animate-spin text-[#1f160d]" />
+                            <LucidePause v-if="tts.isPlaying.value" class="size-3.5 text-gray-950" fill="currentColor" />
+                            <LucidePlay v-else-if="!tts.isLoading.value" class="size-3.5 text-gray-950" fill="currentColor" />
+                            <LucideLoader v-else class="size-3.5 animate-spin text-gray-950" />
                         </button>
                         <span class="min-w-16 text-sm font-medium tabular-nums text-gray-200">
                             {{ tts.formattedCurrentTime.value }}
@@ -440,7 +440,7 @@ function resetAdventure(): void {
                             {{ tts.formattedDuration.value }}
                         </span>
                         <button
-                            class="rounded-full border px-2.5 py-0.5 text-xs font-semibold tabular-nums transition-colors border-[rgba(229,173,83,0.35)] text-[rgba(229,173,83,0.85)] hover:border-[rgba(229,173,83,0.6)] hover:bg-[rgba(229,173,83,0.1)]"
+                            class="rounded-full border px-2.5 py-0.5 text-xs font-semibold tabular-nums transition-colors border-[rgba(10,186,181,0.4)] text-[rgba(10,186,181,0.9)] hover:border-[rgba(10,186,181,0.7)] hover:bg-[rgba(10,186,181,0.12)]"
                             @click="tts.cycleSpeed"
                         >
                             {{ tts.playbackRate.value }}x
@@ -468,7 +468,7 @@ function resetAdventure(): void {
                             <!-- Narrator turn -->
                             <div v-if="turn.role === 'narrator'" class="chaos-prose py-8">
                                 <div class="mb-3 flex items-center gap-3">
-                                    <span class="text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.45)]">Narrator</span>
+                                    <span class="text-[10px] uppercase tracking-widest text-[rgba(10,186,181,0.55)]">Narrator</span>
                                     <button
                                         v-if="sessionId"
                                         class="chaos-tts-btn flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium transition-all"
@@ -518,7 +518,7 @@ function resetAdventure(): void {
                                 <button
                                     v-for="(choice, i) in choicesBuffer"
                                     :key="i"
-                                    class="chaos-choice-btn bg-glass-effect rounded-xl border border-[rgba(229,173,83,0.22)] px-4 py-2.5 text-left text-sm text-[rgba(245,236,216,0.82)] backdrop-blur-sm transition-all hover:border-[rgba(229,173,83,0.55)] hover:text-[rgba(245,236,216,1)] focus:outline-none"
+                                    class="chaos-choice-btn bg-glass-effect rounded-xl border border-[rgba(10,186,181,0.22)] px-4 py-2.5 text-left text-sm text-[rgba(235,250,250,0.82)] backdrop-blur-sm transition-all hover:border-[rgba(10,186,181,0.55)] hover:text-[rgba(235,250,250,1)] focus:outline-none"
                                     :disabled="loading"
                                     @click="takeTurn(choice)"
                                 >
@@ -530,9 +530,9 @@ function resetAdventure(): void {
                         <!-- Session complete banner -->
                         <div
                             v-if="sessionComplete"
-                            class="my-8 rounded-2xl border p-6 text-center backdrop-blur-sm border-[rgba(229,173,83,0.35)] bg-[rgba(229,173,83,0.07)]"
+                            class="my-8 rounded-2xl border p-6 text-center backdrop-blur-sm border-[rgba(10,186,181,0.35)] bg-[rgba(10,186,181,0.06)]"
                         >
-                            <p class="mb-1 text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.55)]">
+                            <p class="mb-1 text-[10px] uppercase tracking-widest text-[rgba(10,186,181,0.65)]">
                                 Session {{ sessionNumber }} Complete
                             </p>
                             <p class="font-gill-sans mb-2 text-xl font-medium text-[var(--chaos-brand)]">
@@ -592,24 +592,25 @@ function resetAdventure(): void {
 
 <style scoped>
 .chaos-mode-root {
-    --chaos-brand: #e5ad53;
-    --chaos-brand-rgb: 229, 173, 83;
+    /* Brand: Tiffany Blue — matches app primary */
+    --chaos-brand: #0abab5;
+    --chaos-brand-rgb: 10, 186, 181;
     font-family: 'Source Sans 3', Inter, sans-serif;
 }
 
 .chaos-mode-brand-bg {
     background:
-        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(var(--chaos-brand-rgb), 0.18), transparent 55%),
-        radial-gradient(ellipse 90% 70% at 100% 50%, rgba(var(--chaos-brand-rgb), 0.10), transparent 50%),
-        radial-gradient(ellipse 80% 60% at 0% 80%, rgba(var(--chaos-brand-rgb), 0.12), transparent 45%);
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(var(--chaos-brand-rgb), 0.16), transparent 55%),
+        radial-gradient(ellipse 90% 70% at 100% 50%, rgba(var(--chaos-brand-rgb), 0.08), transparent 50%),
+        radial-gradient(ellipse 80% 60% at 0% 80%, rgba(var(--chaos-brand-rgb), 0.10), transparent 45%);
 }
 
 /* ── Start screen config card ── */
 .chaos-mode-config-card {
-    border-color: rgba(var(--chaos-brand-rgb), 0.28);
+    border-color: rgba(var(--chaos-brand-rgb), 0.25);
     background: rgba(255, 255, 255, 0.04);
     box-shadow:
-        0 0 0 1px rgba(var(--chaos-brand-rgb), 0.06) inset,
+        0 0 0 1px rgba(var(--chaos-brand-rgb), 0.05) inset,
         0 0 2px 0 rgba(0, 0, 0, 0.15),
         0 1px 8px 0 rgba(0, 0, 0, 0.2),
         3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5) inset,
@@ -620,21 +621,21 @@ function resetAdventure(): void {
 }
 
 .chaos-mode-eyebrow {
-    color: rgba(var(--chaos-brand-rgb), 0.92);
-    text-shadow: 0 0 24px rgba(var(--chaos-brand-rgb), 0.25);
+    color: rgba(var(--chaos-brand-rgb), 0.9);
+    text-shadow: 0 0 24px rgba(var(--chaos-brand-rgb), 0.3);
 }
 
-.chaos-mode-title { color: #faf6ef; }
+.chaos-mode-title { color: #f0fafa; }
 
-.chaos-mode-lede { color: rgba(245, 236, 216, 0.55); }
+.chaos-mode-lede { color: rgba(220, 245, 244, 0.55); }
 
-.chaos-mode-field-label { color: rgba(var(--chaos-brand-rgb), 0.62); }
+.chaos-mode-field-label { color: rgba(var(--chaos-brand-rgb), 0.65); }
 
-.chaos-mode-tagline { color: rgba(229, 217, 192, 0.52); }
+.chaos-mode-tagline { color: rgba(192, 237, 235, 0.52); }
 
-.chaos-mode-cost-est { color: rgba(var(--chaos-brand-rgb), 0.5); font-variant-numeric: tabular-nums; }
+.chaos-mode-cost-est { color: rgba(var(--chaos-brand-rgb), 0.55); font-variant-numeric: tabular-nums; }
 
-.chaos-mode-cost-note { color: rgba(229, 217, 192, 0.28); font-style: italic; }
+.chaos-mode-cost-note { color: rgba(192, 237, 235, 0.28); font-style: italic; }
 
 /* ── Story selection cards ── */
 .story-card {
@@ -661,60 +662,60 @@ function resetAdventure(): void {
 }
 
 .story-card--selected {
-    border-color: rgba(var(--chaos-brand-rgb), 0.6) !important;
+    border-color: rgba(var(--chaos-brand-rgb), 0.65) !important;
     box-shadow:
         0 0 2px 0 rgba(0, 0, 0, 0.1),
         0 4px 24px -4px rgba(0, 0, 0, 0.35),
         1px 1px 1px -0.5px rgba(255, 255, 255, 0.22) inset,
-        0 0 0 1px rgba(var(--chaos-brand-rgb), 0.2),
-        0 0 20px -4px rgba(var(--chaos-brand-rgb), 0.25) !important;
+        0 0 0 1px rgba(var(--chaos-brand-rgb), 0.22),
+        0 0 24px -4px rgba(var(--chaos-brand-rgb), 0.28) !important;
 }
 
 .story-card--unavailable {
     cursor: not-allowed;
-    opacity: 0.65;
+    opacity: 0.6;
 }
 
 /* ── Model select ── */
 .chaos-mode-select {
-    color: #f3ebe0;
-    background-color: rgba(8, 7, 5, 0.88);
-    border-color: rgba(var(--chaos-brand-rgb), 0.28);
+    color: #e8f8f8;
+    background-color: rgba(3, 12, 12, 0.92);
+    border-color: rgba(var(--chaos-brand-rgb), 0.25);
 }
 .chaos-mode-select:focus {
     border-color: rgba(var(--chaos-brand-rgb), 0.6);
-    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.24);
+    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.22);
 }
 .chaos-mode-select option,
-.chaos-mode-select optgroup { background-color: #141210; color: #f3ebe0; }
-.chaos-mode-select option:disabled { color: rgba(243, 235, 224, 0.35); }
+.chaos-mode-select optgroup { background-color: #080e0e; color: #e8f8f8; }
+.chaos-mode-select option:disabled { color: rgba(200, 240, 238, 0.3); }
 
 /* ── CTA button ── */
 .chaos-mode-config-card :deep(.chaos-mode-cta) {
     background-color: var(--chaos-brand) !important;
-    color: #1f160d !important;
-    border-color: rgba(31, 22, 13, 0.12) !important;
+    color: #041414 !important;
+    border-color: rgba(4, 20, 20, 0.15) !important;
     outline-color: rgba(var(--chaos-brand-rgb), 0.35) !important;
     font-weight: 600;
     letter-spacing: 0.02em;
 }
 .chaos-mode-config-card :deep(.chaos-mode-cta:not(.pointer-events-none):hover) {
-    filter: brightness(1.06);
-    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.45), 0 12px 28px -8px rgba(var(--chaos-brand-rgb), 0.35);
+    filter: brightness(1.08);
+    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.5), 0 12px 28px -8px rgba(var(--chaos-brand-rgb), 0.4);
 }
 .chaos-mode-config-card :deep(.chaos-mode-cta.pointer-events-none) {
-    background-color: rgba(var(--chaos-brand-rgb), 0.38) !important;
-    color: rgba(31, 22, 13, 0.65) !important;
+    background-color: rgba(var(--chaos-brand-rgb), 0.35) !important;
+    color: rgba(4, 20, 20, 0.6) !important;
     opacity: 1 !important;
 }
 :deep(.chaos-mode-cta) {
     background-color: var(--chaos-brand) !important;
-    color: #1f160d !important;
+    color: #041414 !important;
     font-weight: 600;
 }
 
 .chaos-mode-back-link { color: rgba(var(--chaos-brand-rgb), 0.45); }
-.chaos-mode-back-link:hover { color: rgba(var(--chaos-brand-rgb), 0.88); }
+.chaos-mode-back-link:hover { color: rgba(var(--chaos-brand-rgb), 0.9); }
 
 /* ── Game screen header ── */
 .chaos-mode-game-header {
@@ -722,7 +723,7 @@ function resetAdventure(): void {
         180deg,
         rgba(3, 7, 18, 0.96) 0%,
         rgba(3, 7, 18, 0.82) 60%,
-        rgba(var(--chaos-brand-rgb), 0.03) 100%
+        rgba(var(--chaos-brand-rgb), 0.02) 100%
     );
     border-bottom: 1px solid rgba(var(--chaos-brand-rgb), 0.10);
 }
@@ -730,7 +731,7 @@ function resetAdventure(): void {
 /* ── Narration prose ── */
 .chaos-prose {
     line-height: 1.85;
-    color: rgba(245, 236, 216, 0.88);
+    color: rgba(235, 250, 250, 0.88);
     font-size: 1rem;
 }
 .chaos-prose :deep(p) { margin-bottom: 1em; }
@@ -738,20 +739,20 @@ function resetAdventure(): void {
 .chaos-prose :deep(em) { font-style: italic; }
 .chaos-prose :deep(strong) { color: var(--chaos-brand); font-weight: 500; }
 
-/* ── TTS button ── */
+/* ── TTS listen button ── */
 .chaos-tts-btn {
-    border-color: rgba(229, 173, 83, 0.18);
-    color: rgba(229, 173, 83, 0.5);
+    border-color: rgba(var(--chaos-brand-rgb), 0.18);
+    color: rgba(var(--chaos-brand-rgb), 0.5);
 }
 .chaos-tts-btn:hover {
-    border-color: rgba(229, 173, 83, 0.45);
-    color: rgba(229, 173, 83, 0.85);
-    background: rgba(229, 173, 83, 0.07);
+    border-color: rgba(var(--chaos-brand-rgb), 0.45);
+    color: rgba(var(--chaos-brand-rgb), 0.85);
+    background: rgba(var(--chaos-brand-rgb), 0.07);
 }
 .chaos-tts-btn.active {
-    border-color: rgba(229, 173, 83, 0.45);
-    color: rgba(229, 173, 83, 0.9);
-    background: rgba(229, 173, 83, 0.1);
+    border-color: rgba(var(--chaos-brand-rgb), 0.5);
+    color: rgba(var(--chaos-brand-rgb), 0.95);
+    background: rgba(var(--chaos-brand-rgb), 0.12);
 }
 
 /* ── Inline choice buttons ── */
@@ -759,7 +760,7 @@ function resetAdventure(): void {
     transition: border-color 0.15s, color 0.15s, box-shadow 0.15s, transform 0.1s;
 }
 .chaos-choice-btn:hover:not(:disabled) {
-    box-shadow: 0 0 0 1px rgba(229, 173, 83, 0.25), 0 4px 16px -4px rgba(229, 173, 83, 0.2);
+    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.28), 0 4px 16px -4px rgba(var(--chaos-brand-rgb), 0.22);
     transform: translateY(-1px);
 }
 .chaos-choice-btn:active:not(:disabled) {
@@ -779,8 +780,8 @@ function resetAdventure(): void {
 /* ── Scrollbar ── */
 .chaos-scroll::-webkit-scrollbar { width: 4px; }
 .chaos-scroll::-webkit-scrollbar-track { background: transparent; }
-.chaos-scroll::-webkit-scrollbar-thumb { background: rgba(229, 173, 83, 0.18); border-radius: 2px; }
-.chaos-scroll::-webkit-scrollbar-thumb:hover { background: rgba(229, 173, 83, 0.38); }
+.chaos-scroll::-webkit-scrollbar-thumb { background: rgba(var(--chaos-brand-rgb), 0.2); border-radius: 2px; }
+.chaos-scroll::-webkit-scrollbar-thumb:hover { background: rgba(var(--chaos-brand-rgb), 0.42); }
 
 /* ── TTS player transition ── */
 .player-slide-enter-active,
