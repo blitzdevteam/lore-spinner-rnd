@@ -114,17 +114,17 @@ onBeforeUnmount(() => {
                             New Experience
                         </div>
                         <h2 class="chaos-feature-headline">
-                            Try Alice in<br /><em>Chaos Mode</em>
+                            Step into<br /><em>Chaos Mode</em>
                         </h2>
                         <p class="chaos-feature-body">
                             A full-agency narration engine. No rails, no event gates — just you,
-                            the Narrator, and Wonderland's own logic. Live now.
+                            the narrator, and the world's own logic. Six stories live now.
                         </p>
                         <div class="chaos-feature-actions">
                             <button class="chaos-feature-btn-primary" @click.stop="goToChaosMode">
-                                Enter Wonderland
+                                Enter Chaos Mode
                             </button>
-                            <span class="chaos-feature-meta">Alice's Adventures · Full AI Narration</span>
+                            <span class="chaos-feature-meta">Alice · Sherlock · Tell-Tale Heart · Nocturne · Anima Machina · Driftheart</span>
                         </div>
                     </div>
 

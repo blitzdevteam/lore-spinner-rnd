@@ -10,56 +10,48 @@ use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeSonnet;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt41;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt54;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt55;
+use App\ChaosMode\ChaosStoryConfig;
 use App\Http\Controllers\Controller;
 use App\Models\ChaosSession;
 use App\Models\Event;
+use App\Models\SessionAdaptation;
 use App\Models\Story;
+use App\Models\StoryAdaptation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Inertia\Response;
 use Throwable;
 
 /**
- * Chaos Mode runtime.
+ * Chaos Mode runtime — multi-story, multi-session.
  *
  * Architecture:
  *   - The AI controls narration, pacing, and movement INSIDE the active session.
  *   - The runtime controls only which session is loaded, persistent state,
  *     conversation log, and the technical boundary between sessions.
- *   - There is no advance_event, no scene_note, no suggested_playhead. The AI
- *     is given the full session script and the adaptation spine, and trusted
- *     to move through it naturally.
+ *   - No advance_event, no scene_note, no suggested_playhead. The AI is given
+ *     the full session script + adaptation spine and trusted to move through it.
  *
- * For the demo, Session 1 is hardcoded:
- *   - Event range 1–23 (from adapptation-third-try.json session_allocation[0].event_range)
- *   - Session adaptation packet is read from the adaptation export JSON.
- *   - Events are read directly from the DB. No fallback.
+ * Story selection: every chaos-enabled story is whitelisted in ChaosStoryConfig.
+ * Session context is loaded entirely from the DB:
+ *   - StoryAdaptation.story_session_map gives the per-session event range and
+ *     dramatic question.
+ *   - SessionAdaptation per session_number provides cold open, beat map,
+ *     authored choices, close design, and next-session seed.
+ *   - Event rows in the range are streamed into the prompt as the full source
+ *     script for the current session.
+ *
+ * Session continuation: when the AI returns `session_complete: true`, the
+ * runtime exposes `/chaos-mode/continue` which creates a NEW ChaosSession at
+ * `story_session_number + 1`, seeded with the prior session's memory + world
+ * state and the new session's `opens_with` handoff.
  */
 final class ChaosModeController extends Controller
 {
     /**
-     * Alice's story slug. Hardcoded for the demo — chaos mode is Alice-only for now.
-     */
-    private const STORY_SLUG = 'alices-adventures-in-wonderland';
-
-    /**
-     * Session 1 event range — driven by adapptation-third-try.json
-     * "session_allocation[0].event_range": "1-23".
-     */
-    private const SESSION_1_EVENT_START = 1;
-    private const SESSION_1_EVENT_END   = 23;
-
-    /**
-     * Path (relative to base_path) to the adaptation export used as the
-     * Session Packet source for the demo.
-     */
-    private const ADAPTATION_EXPORT_PATH = 'database/exports/adapptation-third-try.json';
-
-    /**
-     * Allowed model slugs. Keep the same list on both endpoints.
+     * Allowed model slugs. Keep the same list on every endpoint.
      */
     private const ALLOWED_MODELS = [
         'gpt-5.5',
@@ -71,38 +63,80 @@ final class ChaosModeController extends Controller
     ];
 
     /**
-     * Chaos Mode entry page.
+     * Chaos Mode landing page.
+     *
+     * Lists every chaos-enabled story plus whether it has the DB data
+     * required to actually run (adaptation + at least one session adaptation).
      */
     public function show(): Response
     {
-        $story = Story::query()
-            ->where('slug', self::STORY_SLUG)
-            ->first(['id', 'title', 'slug']);
+        $configured = ChaosStoryConfig::all();
+        $slugs      = array_column($configured, 'slug');
+
+        $stories = Story::query()
+            ->whereIn('slug', $slugs)
+            ->with(['adaptation', 'adaptation.sessionAdaptations'])
+            ->get(['id', 'title', 'slug']);
+
+        $payload = array_map(function (array $row) use ($stories) {
+            $story = $stories->firstWhere('slug', $row['slug']);
+
+            $hasAdaptation = $story?->adaptation !== null;
+            $sessionCount  = (int) ($story?->adaptation?->sessionAdaptations?->count() ?? 0);
+
+            return [
+                'slug'             => $row['slug'],
+                'title'            => $row['title'],
+                'tagline'          => $row['tagline'],
+                'protagonist'      => $row['protagonist'],
+                'available'        => $story !== null && $hasAdaptation && $sessionCount > 0,
+                'total_sessions'   => $sessionCount,
+            ];
+        }, $configured);
 
         return inertia('ChaosMode', [
-            'storyTitle' => $story?->title ?? "Alice's Adventures in Wonderland",
-            'storyExists' => $story !== null,
+            'stories' => $payload,
         ]);
     }
 
     /**
-     * Generate the opening narration.
+     * Start a fresh chaos session.
      *
-     * The cold open is rendered as $currentScene exactly once, here. On
-     * subsequent turns it is omitted — the conversation history carries it.
+     * Always creates session number 1. The cold open is rendered into the
+     * system prompt as $currentScene exactly once. Subsequent turns omit it.
      */
     public function start(Request $request): JsonResponse
     {
         $request->validate([
-            'model' => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+            'story_slug' => ['required', 'string', 'in:' . implode(',', ChaosStoryConfig::slugs())],
+            'model'      => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
         ]);
 
+        $storySlug   = $request->string('story_slug')->toString();
         $model       = $request->string('model', 'gpt-5.2')->toString();
-        $session1    = $this->loadCurrentSessionContext();
-        $story       = Story::query()->where('slug', self::STORY_SLUG)->first(['id']);
+        $storyConfig = ChaosStoryConfig::find($storySlug);
+
+        if ($storyConfig === null) {
+            return response()->json(['error' => 'Unknown story.'], 422);
+        }
+
+        $story = Story::query()
+            ->where('slug', $storySlug)
+            ->with(['adaptation', 'adaptation.sessionAdaptations'])
+            ->first();
+
+        if ($story === null || $story->adaptation === null) {
+            return response()->json(['error' => 'This story has no adaptation yet.'], 422);
+        }
+
+        $sessionContext = $this->loadSessionContext($story, sessionNumber: 1, openingHandoff: null);
+
+        if (empty($sessionContext['full_session_events'])) {
+            return response()->json(['error' => 'This story has no events to narrate yet.'], 422);
+        }
 
         $chaosSession = ChaosSession::create([
-            'story_id'             => $story?->id,
+            'story_id'             => $story->id,
             'user_id'              => Auth::id(),
             'story_session_number' => 1,
             'model'                => $model,
@@ -115,9 +149,11 @@ final class ChaosModeController extends Controller
         ]);
 
         $systemPrompt = $this->renderSystemPrompt(
-            worldState:   $this->emptyWorldState(),
-            currentScene: $session1['cold_open'] ?? null,
-            session1:     $session1,
+            storyConfig:    $storyConfig,
+            sessionContext: $sessionContext,
+            worldState:     $this->emptyWorldState(),
+            sessionMemory:  null,
+            currentScene:   $sessionContext['cold_open'] ?? null,
         );
 
         try {
@@ -126,6 +162,7 @@ final class ChaosModeController extends Controller
                 systemPrompt:        $systemPrompt,
                 conversationHistory: [],
                 playerAction:        null,
+                protagonist:         $storyConfig['protagonist'],
             );
 
             $worldState = $this->mergeStateDelta($this->emptyWorldState(), $result['state_delta']);
@@ -142,35 +179,29 @@ final class ChaosModeController extends Controller
 
             Log::channel('narration')->info('chaos.start', [
                 'session_id'      => $chaosSession->id,
+                'story_slug'      => $storySlug,
+                'session_number'  => 1,
                 'model'           => $model,
                 'response_bytes'  => strlen($result['response']),
                 'session_complete' => $result['session_complete'],
             ]);
 
-            return response()->json($this->formatResult($chaosSession, $result));
+            return response()->json($this->formatResult($chaosSession, $result, $storyConfig));
         } catch (Throwable $e) {
             Log::channel('narration')->error('chaos.start_failed', [
                 'session_id' => $chaosSession->id,
+                'story_slug' => $storySlug,
                 'model'      => $model,
                 'exception'  => $e::class,
                 'message'    => $e->getMessage(),
             ]);
 
-            return response()->json(['error' => 'Wonderland is currently unavailable. Please try again.'], 500);
+            return response()->json(['error' => 'The narration engine is currently unavailable. Please try again.'], 500);
         }
     }
 
     /**
-     * Process a player turn.
-     *
-     * Runtime responsibilities here are deliberately small:
-     *   - Load the ChaosSession by id
-     *   - Pass the full session packet + script every turn (static for Session 1)
-     *   - Merge the AI's state_delta into world_state
-     *   - Append the narrator turn + session_memory_update
-     *   - Note when session_complete flips true (runtime would load Session 2)
-     *
-     * The AI owns playhead and pacing inside the session.
+     * Process a player turn inside the currently active chaos session.
      */
     public function turn(Request $request): JsonResponse
     {
@@ -192,17 +223,38 @@ final class ChaosModeController extends Controller
         $playerAction = $request->string('player_action')->toString();
         $model        = $request->string('model', $chaosSession->model)->toString();
 
-        $session1    = $this->loadCurrentSessionContext();
+        $story = Story::query()
+            ->where('id', $chaosSession->story_id)
+            ->with(['adaptation', 'adaptation.sessionAdaptations'])
+            ->first();
+
+        if ($story === null) {
+            return response()->json(['error' => 'Story not found.'], 404);
+        }
+
+        $storyConfig = ChaosStoryConfig::find($story->slug);
+        if ($storyConfig === null) {
+            return response()->json(['error' => 'Story no longer available in chaos mode.'], 410);
+        }
+
+        $sessionContext = $this->loadSessionContext(
+            story:          $story,
+            sessionNumber:  (int) $chaosSession->story_session_number,
+            openingHandoff: null,
+        );
+
         $worldState  = $chaosSession->world_state ?? $this->emptyWorldState();
         $history     = (array) ($chaosSession->conversation_history ?? []);
 
-        // Keep last 12 turns for context budget. Persisted history is full; sent history is windowed.
+        // Keep last 12 turns for context budget; persisted history stays full.
         $sentHistory = array_slice($history, -12);
 
         $systemPrompt = $this->renderSystemPrompt(
-            worldState:   $worldState,
-            currentScene: null, // cold open is in history; never re-anchor it
-            session1:     $session1,
+            storyConfig:    $storyConfig,
+            sessionContext: $sessionContext,
+            worldState:     $worldState,
+            sessionMemory:  $chaosSession->session_memory,
+            currentScene:   null, // cold open is in history; never re-anchor it
         );
 
         try {
@@ -211,10 +263,11 @@ final class ChaosModeController extends Controller
                 systemPrompt:        $systemPrompt,
                 conversationHistory: $sentHistory,
                 playerAction:        $playerAction,
+                protagonist:         $storyConfig['protagonist'],
             );
 
             $worldState = $this->mergeStateDelta($worldState, $result['state_delta']);
-            $history    = $this->appendPlayerTurn($history, $playerAction);
+            $history    = $this->appendPlayerTurn($history, $playerAction, $storyConfig['protagonist']);
             $history    = $this->appendNarratorTurn($history, $result['response']);
             $memory     = $this->appendMemory($chaosSession->session_memory, $result['session_memory_update']);
 
@@ -229,6 +282,8 @@ final class ChaosModeController extends Controller
 
             Log::channel('narration')->info('chaos.turn', [
                 'session_id'        => $chaosSession->id,
+                'story_slug'        => $story->slug,
+                'session_number'    => (int) $chaosSession->story_session_number,
                 'model'             => $model,
                 'turn'              => $chaosSession->turn_count,
                 'session_complete'  => $result['session_complete'],
@@ -236,7 +291,7 @@ final class ChaosModeController extends Controller
                 'memory_update'     => mb_substr($result['session_memory_update'], 0, 120),
             ]);
 
-            return response()->json($this->formatResult($chaosSession, $result));
+            return response()->json($this->formatResult($chaosSession, $result, $storyConfig));
         } catch (Throwable $e) {
             Log::channel('narration')->error('chaos.turn_failed', [
                 'session_id'    => $chaosSession->id,
@@ -246,23 +301,154 @@ final class ChaosModeController extends Controller
                 'player_action' => mb_substr($playerAction, 0, 80),
             ]);
 
-            return response()->json(['error' => 'Wonderland hiccuped. Your action was preserved — please try again.'], 500);
+            return response()->json(['error' => 'The narration hiccuped. Your action was preserved — please try again.'], 500);
+        }
+    }
+
+    /**
+     * Continue from a completed session into the next session in the arc.
+     *
+     * Creates a NEW ChaosSession at story_session_number + 1, carries the
+     * world_state + session_memory forward, and feeds the next session's
+     * `opens_with` handoff as the opening scene.
+     */
+    public function continueSession(Request $request): JsonResponse
+    {
+        $request->validate([
+            'session_id' => ['required', 'string', 'ulid'],
+            'model'      => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+        ]);
+
+        $previous = ChaosSession::query()->findOrFail($request->string('session_id')->toString());
+
+        if (! $previous->session_complete) {
+            return response()->json(['error' => 'This session is not complete yet.'], 409);
+        }
+
+        $story = Story::query()
+            ->where('id', $previous->story_id)
+            ->with(['adaptation', 'adaptation.sessionAdaptations'])
+            ->first();
+
+        if ($story === null) {
+            return response()->json(['error' => 'Story not found.'], 404);
+        }
+
+        $storyConfig = ChaosStoryConfig::find($story->slug);
+        if ($storyConfig === null) {
+            return response()->json(['error' => 'Story no longer available in chaos mode.'], 410);
+        }
+
+        $nextSessionNumber = (int) $previous->story_session_number + 1;
+        $totalSessions     = (int) $story->adaptation->sessionAdaptations->count();
+
+        if ($nextSessionNumber > $totalSessions) {
+            return response()->json([
+                'error'       => 'This story has no more sessions to play.',
+                'story_done'  => true,
+            ], 410);
+        }
+
+        // The handoff: the `opens_with` from arc_progression tells the AI where
+        // the next session picks up. Without it the narrator would re-cold-open.
+        $arcRow         = $this->findArcProgressionRow($story->adaptation, $nextSessionNumber);
+        $openingHandoff = (string) ($arcRow['opens_with'] ?? '');
+
+        $sessionContext = $this->loadSessionContext($story, $nextSessionNumber, $openingHandoff);
+
+        if (empty($sessionContext['full_session_events'])) {
+            return response()->json(['error' => 'The next session has no events to narrate.'], 422);
+        }
+
+        $model = $request->string('model', $previous->model)->toString();
+
+        $chaosSession = ChaosSession::create([
+            'story_id'             => $story->id,
+            'user_id'              => Auth::id(),
+            'story_session_number' => $nextSessionNumber,
+            'model'                => $model,
+            'conversation_history' => [],
+            // Carry world state + memory across the boundary so emergent facts persist.
+            'world_state'          => $previous->world_state ?? $this->emptyWorldState(),
+            'session_memory'       => $previous->session_memory,
+            'session_complete'     => false,
+            'turn_count'           => 0,
+            'ip_address'           => $request->ip(),
+        ]);
+
+        // Build the scene context for this session opener. Prefer the authored
+        // `opens_with` handoff; fall back to the per-session cold open.
+        $sceneForOpener = trim($openingHandoff) !== ''
+            ? $openingHandoff
+            : ($sessionContext['cold_open'] ?? null);
+
+        $systemPrompt = $this->renderSystemPrompt(
+            storyConfig:    $storyConfig,
+            sessionContext: $sessionContext,
+            worldState:     $chaosSession->world_state ?? $this->emptyWorldState(),
+            sessionMemory:  $chaosSession->session_memory,
+            currentScene:   $sceneForOpener,
+        );
+
+        try {
+            $result = $this->callAgent(
+                model:               $model,
+                systemPrompt:        $systemPrompt,
+                conversationHistory: [],
+                playerAction:        null,
+                protagonist:         $storyConfig['protagonist'],
+            );
+
+            $worldState = $this->mergeStateDelta($chaosSession->world_state ?? $this->emptyWorldState(), $result['state_delta']);
+            $history    = $this->appendNarratorTurn([], $result['response']);
+            $memory     = $this->appendMemory($chaosSession->session_memory, $result['session_memory_update']);
+
+            $chaosSession->update([
+                'conversation_history' => $history,
+                'world_state'          => $worldState,
+                'session_memory'       => $memory,
+                'session_complete'     => $result['session_complete'],
+                'turn_count'           => 1,
+            ]);
+
+            Log::channel('narration')->info('chaos.continue', [
+                'previous_session_id' => $previous->id,
+                'session_id'          => $chaosSession->id,
+                'story_slug'          => $story->slug,
+                'session_number'      => $nextSessionNumber,
+                'model'               => $model,
+                'session_complete'    => $result['session_complete'],
+            ]);
+
+            return response()->json($this->formatResult($chaosSession, $result, $storyConfig));
+        } catch (Throwable $e) {
+            Log::channel('narration')->error('chaos.continue_failed', [
+                'session_id' => $chaosSession->id,
+                'model'      => $model,
+                'exception'  => $e::class,
+                'message'    => $e->getMessage(),
+            ]);
+
+            return response()->json(['error' => 'The narration engine could not open the next session. Please try again.'], 500);
         }
     }
 
     // -------------------------------------------------------------------------
-    // Private helpers
+    // DB-driven session loading
     // -------------------------------------------------------------------------
 
     /**
-     * Load the dramatic spine + full source script for the currently active
-     * session. Demo: hardcoded to Session 1 of Alice. No fallback.
+     * Load the dramatic spine + full source script for the given session.
      *
      * @return array{
+     *     session_number: int,
+     *     total_sessions: int,
+     *     opening_handoff: string,
      *     cold_open: string,
      *     emotional_promise: string,
      *     dramatic_question: string,
      *     emotional_register: string,
+     *     chapters_covered: string,
      *     beat_map: array<int, array<string, mixed>>,
      *     authored_choices: array<int, array<string, mixed>>,
      *     session_destination: string,
@@ -270,29 +456,38 @@ final class ChaosModeController extends Controller
      *     full_session_events: array<int, array{position:int, title:string, content:string, objectives:?string}>,
      * }
      */
-    private function loadCurrentSessionContext(): array
+    private function loadSessionContext(Story $story, int $sessionNumber, ?string $openingHandoff): array
     {
-        $adaptation = $this->loadAdaptationExport();
-        $session1   = $this->extractSession1($adaptation);
+        /** @var StoryAdaptation|null $adaptation */
+        $adaptation = $story->adaptation;
+        $storyMap   = (array) ($adaptation?->story_session_map ?? []);
 
-        $events = Event::query()
-            ->whereHas('chapter.story', fn ($q) => $q->where('slug', self::STORY_SLUG))
-            ->whereBetween('position', [self::SESSION_1_EVENT_START, self::SESSION_1_EVENT_END])
-            ->orderBy('position')
-            ->get(['position', 'title', 'content', 'objectives'])
-            ->map(fn (Event $e) => [
-                'position'   => (int) $e->position,
-                'title'      => (string) $e->title,
-                'content'    => (string) $e->content,
-                'objectives' => $e->objectives,
-            ])
-            ->all();
+        $allocation = $this->findAllocationRow($storyMap, $sessionNumber);
+        [$start, $end] = $this->parseEventRange((string) ($allocation['event_range'] ?? ''));
 
-        $entry         = $session1['entry_point_diagnosis'] ?? [];
-        $allocation    = $adaptation['story_wide']['story_session_map']['session_allocation'][0] ?? [];
-        $architecture  = $session1['session_architecture'] ?? [];
-        $choiceDesign  = $session1['session_choice_design'] ?? [];
-        $closeDesign   = $session1['session_close_design'] ?? [];
+        $events = $start !== null && $end !== null
+            ? Event::query()
+                ->whereHas('chapter', fn ($q) => $q->where('story_id', $story->id))
+                ->whereBetween('position', [$start, $end])
+                ->orderBy('position')
+                ->get(['position', 'title', 'content', 'objectives'])
+                ->map(fn (Event $e) => [
+                    'position'   => (int) $e->position,
+                    'title'      => (string) $e->title,
+                    'content'    => (string) $e->content,
+                    'objectives' => $e->objectives,
+                ])
+                ->all()
+            : [];
+
+        /** @var SessionAdaptation|null $sessionAdaptation */
+        $sessionAdaptation = $adaptation?->sessionAdaptations
+            ?->firstWhere('session_number', $sessionNumber);
+
+        $entry        = (array) ($sessionAdaptation?->entry_point_diagnosis ?? []);
+        $architecture = (array) ($sessionAdaptation?->session_architecture ?? []);
+        $choiceDesign = (array) ($sessionAdaptation?->session_choice_design ?? []);
+        $closeDesign  = (array) ($sessionAdaptation?->session_close_design ?? []);
 
         $authoredChoices = array_values(array_filter([
             $choiceDesign['branching_choice_1'] ?? null,
@@ -301,16 +496,28 @@ final class ChaosModeController extends Controller
         ]));
 
         $sessionDestination = $closeDesign['hook_transition']
-            ?? $closeDesign['session_end_choice']['choice_question']
-            ?? '';
+            ?? ($closeDesign['session_end_choice']['choice_question'] ?? '');
 
         $nextSessionSeed = $architecture['next_session_awareness']['seed_for_next_session'] ?? '';
 
+        $totalSessions = (int) ($adaptation?->sessionAdaptations?->count() ?? 0);
+
+        // If the caller didn't pass an explicit handoff, fall back to the
+        // arc_progression row for this session (when present).
+        if ($openingHandoff === null || trim($openingHandoff) === '') {
+            $arcRow         = $this->findArcProgressionRow($adaptation, $sessionNumber);
+            $openingHandoff = (string) ($arcRow['opens_with'] ?? '');
+        }
+
         return [
+            'session_number'      => $sessionNumber,
+            'total_sessions'      => $totalSessions,
+            'opening_handoff'     => $openingHandoff,
             'cold_open'           => (string) ($entry['cold_open'] ?? ''),
             'emotional_promise'   => (string) ($entry['emotional_promise'] ?? ''),
             'dramatic_question'   => (string) ($allocation['primary_dramatic_question'] ?? ''),
             'emotional_register'  => (string) ($allocation['emotional_register'] ?? ''),
+            'chapters_covered'    => (string) ($allocation['chapters_covered'] ?? ''),
             'beat_map'            => (array)  ($architecture['beat_map'] ?? []),
             'authored_choices'    => $authoredChoices,
             'session_destination' => (string) $sessionDestination,
@@ -320,46 +527,79 @@ final class ChaosModeController extends Controller
     }
 
     /**
+     * @param  array<string, mixed>  $storyMap
      * @return array<string, mixed>
      */
-    private function loadAdaptationExport(): array
+    private function findAllocationRow(array $storyMap, int $sessionNumber): array
     {
-        $path = base_path(self::ADAPTATION_EXPORT_PATH);
-
-        if (! File::exists($path)) {
-            Log::channel('narration')->warning('chaos.adaptation_export_missing', ['path' => $path]);
-            return [];
-        }
-
-        $decoded = json_decode(File::get($path), associative: true);
-
-        return is_array($decoded) ? $decoded : [];
-    }
-
-    /**
-     * @param  array<string, mixed>  $adaptation
-     * @return array<string, mixed>
-     */
-    private function extractSession1(array $adaptation): array
-    {
-        foreach ((array) ($adaptation['sessions'] ?? []) as $sessionRow) {
-            if (($sessionRow['session_number'] ?? null) === 1) {
-                return (array) $sessionRow;
+        foreach ((array) ($storyMap['session_allocation'] ?? []) as $row) {
+            if ((int) ($row['session_number'] ?? 0) === $sessionNumber) {
+                return (array) $row;
             }
         }
         return [];
     }
 
     /**
-     * @param  array<string, mixed>  $worldState
-     * @param  array<string, mixed>|null  $session1
+     * @return array<string, mixed>
      */
-    private function renderSystemPrompt(array $worldState, ?string $currentScene, ?array $session1): string
+    private function findArcProgressionRow(?StoryAdaptation $adaptation, int $sessionNumber): array
     {
+        $storyMap = (array) ($adaptation?->story_session_map ?? []);
+        foreach ((array) ($storyMap['arc_progression'] ?? []) as $row) {
+            if ((int) ($row['session_number'] ?? 0) === $sessionNumber) {
+                return (array) $row;
+            }
+        }
+        return [];
+    }
+
+    /**
+     * Parse "1-23" into [1, 23]. Accepts "1–23" en-dash too. Returns [null, null]
+     * when the input is malformed so callers can fall back to an empty event list.
+     *
+     * @return array{0:int|null, 1:int|null}
+     */
+    private function parseEventRange(string $range): array
+    {
+        $range = str_replace(['—', '–'], '-', trim($range));
+
+        if ($range === '' || ! preg_match('/^(\d+)\s*-\s*(\d+)$/', $range, $m)) {
+            return [null, null];
+        }
+
+        $start = (int) $m[1];
+        $end   = (int) $m[2];
+
+        if ($start <= 0 || $end < $start) {
+            return [null, null];
+        }
+
+        return [$start, $end];
+    }
+
+    // -------------------------------------------------------------------------
+    // Prompt assembly + AI invocation
+    // -------------------------------------------------------------------------
+
+    /**
+     * @param  array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string}  $storyConfig
+     * @param  array<string, mixed>  $sessionContext
+     * @param  array<string, mixed>  $worldState
+     */
+    private function renderSystemPrompt(
+        array $storyConfig,
+        array $sessionContext,
+        array $worldState,
+        ?string $sessionMemory,
+        ?string $currentScene,
+    ): string {
         return view('ai.agents.chaos.system-prompt', [
-            'worldState'   => $worldState,
-            'currentScene' => $currentScene,
-            'session1'     => $session1,
+            'storyConfig'    => $storyConfig,
+            'sessionContext' => $sessionContext,
+            'worldState'     => $worldState,
+            'sessionMemory'  => $sessionMemory,
+            'currentScene'   => $currentScene,
         ])->render();
     }
 
@@ -372,19 +612,21 @@ final class ChaosModeController extends Controller
         string $systemPrompt,
         array $conversationHistory,
         ?string $playerAction,
+        string $protagonist,
     ): array {
         $promptText = view('ai.agents.chaos.turn-prompt', [
             'conversationHistory' => $conversationHistory,
             'playerAction'        => $playerAction,
+            'protagonist'         => $protagonist,
         ])->render();
 
         $agent = match ($model) {
-            'gpt-5.5'          => ChaosNarrationAgentGpt55::make(customInstructions: $systemPrompt),
-            'gpt-5.4'          => ChaosNarrationAgentGpt54::make(customInstructions: $systemPrompt),
-            'gpt-4.1'          => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt),
-            'claude-opus-4-6'  => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt),
+            'gpt-5.5'           => ChaosNarrationAgentGpt55::make(customInstructions: $systemPrompt),
+            'gpt-5.4'           => ChaosNarrationAgentGpt54::make(customInstructions: $systemPrompt),
+            'gpt-4.1'           => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt),
+            'claude-opus-4-6'   => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt),
             'claude-sonnet-4-5' => ChaosNarrationAgentClaudeSonnet::make(customInstructions: $systemPrompt),
-            default            => ChaosNarrationAgent::make(customInstructions: $systemPrompt),
+            default             => ChaosNarrationAgent::make(customInstructions: $systemPrompt),
         };
 
         /** @var \Laravel\Ai\Responses\StructuredAgentResponse $response */
@@ -399,6 +641,10 @@ final class ChaosModeController extends Controller
         ];
     }
 
+    // -------------------------------------------------------------------------
+    // World state, history, formatting helpers
+    // -------------------------------------------------------------------------
+
     /**
      * @param  array<string, mixed>  $previous
      * @param  array<string, mixed>  $delta
@@ -408,14 +654,10 @@ final class ChaosModeController extends Controller
     {
         $merged = $this->emptyWorldState();
 
-        // location: take new if non-empty, otherwise keep old
         $merged['location'] = trim((string) ($delta['location'] ?? '')) !== ''
             ? (string) $delta['location']
             : (string) ($previous['location'] ?? '');
 
-        // The AI returns the COMPLETE current list for these fields each turn,
-        // so we trust the delta. If the AI returns an empty array we treat it
-        // as "this field is now empty" — which matches the schema description.
         foreach (['conditions', 'items', 'relationships', 'knowledge', 'notes'] as $key) {
             $value = $delta[$key] ?? null;
             $merged[$key] = is_array($value)
@@ -455,9 +697,9 @@ final class ChaosModeController extends Controller
      * @param  array<int, array{role:string, text:string}>  $history
      * @return array<int, array{role:string, text:string}>
      */
-    private function appendPlayerTurn(array $history, string $action): array
+    private function appendPlayerTurn(array $history, string $action, string $protagonist = 'the protagonist'): array
     {
-        $history[] = ['role' => 'player', 'text' => $action];
+        $history[] = ['role' => 'player', 'text' => $action, 'protagonist' => $protagonist];
         return $history;
     }
 
@@ -477,12 +719,29 @@ final class ChaosModeController extends Controller
 
     /**
      * @param  array{response:string, choices:array<int,string>, session_complete:bool, state_delta:array<string,mixed>, session_memory_update:string}  $result
+     * @param  array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string}  $storyConfig
      * @return array<string, mixed>
      */
-    private function formatResult(ChaosSession $chaosSession, array $result): array
+    private function formatResult(ChaosSession $chaosSession, array $result, array $storyConfig): array
     {
+        $totalSessions = 0;
+        if ($chaosSession->story_id !== null) {
+            /** @var Story|null $story */
+            $story = Story::query()->where('id', $chaosSession->story_id)->with('adaptation.sessionAdaptations')->first();
+            $totalSessions = (int) ($story?->adaptation?->sessionAdaptations?->count() ?? 0);
+        }
+
+        $sessionNumber = (int) $chaosSession->story_session_number;
+        $hasNext       = $totalSessions > 0 && $sessionNumber < $totalSessions;
+
         return [
             'session_id'            => $chaosSession->id,
+            'story_slug'            => $storyConfig['slug'],
+            'story_title'           => $storyConfig['title'],
+            'protagonist'           => $storyConfig['protagonist'],
+            'session_number'        => $sessionNumber,
+            'total_sessions'        => $totalSessions,
+            'has_next_session'      => $hasNext,
             'response'              => $result['response'],
             'choices'               => $result['choices'],
             'session_complete'      => $result['session_complete'],

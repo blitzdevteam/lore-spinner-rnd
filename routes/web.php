@@ -40,6 +40,7 @@ Route::prefix('chaos-mode')->name('chaos-mode.')->group(function () {
     Route::get('/', [App\Http\Controllers\ChaosMode\ChaosModeController::class, 'show'])->name('show');
     Route::post('/start', [App\Http\Controllers\ChaosMode\ChaosModeController::class, 'start'])->name('start');
     Route::post('/turn', [App\Http\Controllers\ChaosMode\ChaosModeController::class, 'turn'])->name('turn');
+    Route::post('/continue', [App\Http\Controllers\ChaosMode\ChaosModeController::class, 'continueSession'])->name('continue');
     Route::get('/{chaosSession}/tts/{turnIndex}', App\Http\Controllers\ChaosMode\ChaosTtsController::class)->name('tts');
 });
 
