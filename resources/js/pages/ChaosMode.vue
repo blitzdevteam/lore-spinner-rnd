@@ -4,7 +4,7 @@ import BaseButton from '@/components/BaseButton.vue';
 import GameplayInput from '@/components/GameplayInput.vue';
 import { useChaosTextToSpeech } from '@/composables/useChaosTextToSpeech';
 import { LucideChevronLeft, LucideLoader, LucidePause, LucidePlay, LucideRefreshCw, LucideX } from 'lucide-vue-next';
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 
 defineOptions({ layout: null });
 
@@ -50,7 +50,24 @@ const turns = ref<Turn[]>([]);
 const choicesBuffer = ref<string[]>([]);
 const worldState = ref<WorldState>(emptyWorldState());
 const errorMessage = ref('');
-const scrollEl = ref<HTMLElement | null>(null);
+const scrollEl   = ref<HTMLElement | null>(null);
+const topShadow  = ref(0);
+const botShadow  = ref(0);
+
+const updateShadows = () => {
+    const el = scrollEl.value;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    const maxScroll = scrollHeight - clientHeight;
+    if (maxScroll <= 0) { topShadow.value = 0; botShadow.value = 0; return; }
+    topShadow.value = Math.min(scrollTop / 80, 1);
+    botShadow.value = Math.min((maxScroll - scrollTop) / 80, 1);
+};
+
+// Initialise shadows once the game screen mounts
+watch(scrollEl, (el) => {
+    if (el) updateShadows();
+});
 
 // Maps each turn array index → narrator-only index (for TTS endpoint)
 const narratorIndexMap = computed(() => {
@@ -109,6 +126,7 @@ async function scrollToBottom(): Promise<void> {
     if (scrollEl.value) {
         scrollEl.value.scrollTo({ top: scrollEl.value.scrollHeight, behavior: 'smooth' });
     }
+    updateShadows();
 }
 
 function applyResponse(data: any): void {
@@ -312,8 +330,9 @@ function resetAdventure(): void {
                 </Transition>
             </div>
 
-            <!-- Scrollable story -->
-            <div ref="scrollEl" class="flex-1 overflow-y-auto">
+            <!-- Scrollable story with glass fade shadows -->
+            <div class="relative flex-1 overflow-hidden">
+                <div ref="scrollEl" class="chaos-scroll absolute inset-0 overflow-y-auto" @scroll.passive="updateShadows">
                 <div class="mx-auto flex max-w-3xl flex-col divide-y divide-gray-100/20 px-4 pb-4 sm:px-8">
 
                     <template v-for="(turn, idx) in turns" :key="idx">
@@ -380,6 +399,18 @@ function resetAdventure(): void {
                         </div>
                     </div>
                 </div>
+                </div>
+
+                <!-- Top shadow — fades in as you scroll down -->
+                <div
+                    class="pointer-events-none absolute top-0 right-0 left-0 h-14 bg-gradient-to-b from-gray-950 to-transparent transition-opacity duration-200"
+                    :style="{ opacity: topShadow }"
+                />
+                <!-- Bottom shadow — fades in when there's more content to scroll -->
+                <div
+                    class="pointer-events-none absolute right-0 bottom-0 left-0 h-20 bg-gradient-to-t from-gray-950 to-transparent transition-opacity duration-200"
+                    :style="{ opacity: botShadow }"
+                />
             </div>
 
             <!-- World state chips -->
@@ -577,6 +608,21 @@ function resetAdventure(): void {
     border-color: rgba(229, 173, 83, 0.45);
     color: rgba(229, 173, 83, 0.9);
     background: rgba(229, 173, 83, 0.1);
+}
+
+/* Thin gold-tinted scrollbar — mirrors Index.vue pattern */
+.chaos-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+.chaos-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+.chaos-scroll::-webkit-scrollbar-thumb {
+    background: rgba(229, 173, 83, 0.18);
+    border-radius: 2px;
+}
+.chaos-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(229, 173, 83, 0.38);
 }
 
 /* Floating player slide */
