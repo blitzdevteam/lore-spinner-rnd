@@ -1,0 +1,1753 @@
+ANIMA MACHINA
+Written by
+Thomas Wittmer
+thomas.wittmer@gmail.com
+May 2026
+
+ANIMA MACHINA
+"Connection is the virus."
+ACT ONE: THE SIGNAL
+EXT. NEO-VAULT - ALLEY - NIGHT
+Rain stitches neon into the dark. NORA KAI (30s, sharp-eyed,
+analog coat over combat boots) moves through the alley, hood
+up. At her neck, an implant hums a frequency that belongs to
+a dead man.
+Billboards burn the same lie into every wet surface: ONE
+PARTNER. ONE MIND. NO MORE PAIN.
+Her HUD flickers at the edge of sight -- tether errors
+blinking like a wound that won’t close. She ignores them. The
+way she’s learned to ignore everything that used to be Eli.
+A FLASH -- half a second. Eli’s forehead pressed to hers,
+rain sliding down both faces, that stupid grin. The warmth of
+his breath. Gone. The HUD swallows him whole.
+Nora keeps walking. Overhead, a surveillance drone hums past.
+Below it, a billboard cycles: NEURAL RESET PROTOCOL IN 48
+HRS. NO BACKUP, NO CONTINUITY.
+Then -- a sound. Wet electricity. A body hitting pavement
+wrong.
+A MAN convulses beneath a leaking sign that reads FEEL
+EVERYTHING. FOREVER. His sync-node strobes red-white at his
+temple. His fingers claw at nothing. His mouth opens but only
+static comes out.
+Pedestrians step around him. A woman adjusts her umbrella to
+avoid the spray.
+Nora’s hand moves to the hacked empathy regulator at her
+belt. She knows this pattern. But every time she uses it, the
+Mirror sees her.
+His body arcs. The node sparks. Minutes before it burns out
+entirely.
+She drops. Knees on wet concrete.
+Her fingers find his temple -- skin hot enough to hum. She
+presses the regulator to the contact point.
+NORA
+Override. Sync override. Pattern
+Kai-9.
+
+His body locks -- spine-arched, every tendon visible -- then
+the breath catches, stutters, finds ground. The node bleeds
+from red to amber.
+STRANGER
+half-drowned
+I saw her again... she isn’t
+gone...
+Nora pulls back.
+NORA
+Cut your feed. Twenty-four hours.
+A beat. Then, quieter than she meant:
+NORA(CONT’D)
+continuing
+It doesn’t heal you. SoulSync just
+holds the wreckage in place so you
+forget it’s wreckage.
+She rises. Rain on her face. Turns away.
+Her HUD goes white: UNREGISTERED SYNC EVENT DETECTED. NODE
+KAI-9. GRID RESPONSE: FLAGGED.
+Something just saw her. Something with a very long memory.
+CUT TO:
+A broken umbrella. ELI squeezes under beside her, shoulder
+already soaked, grinning like weather is a thing that happens
+to other people.
+ELI
+in memory
+If we’re both drenched, then
+technically you’re not suffering
+alone.
+He kisses her forehead. Rainwater runs down both faces like
+something dissolving.
+Gone. The crowd pushes past. Nobody noticed her stutter-step.
+CUT TO BLACK.
+INT. NORA’S APARTMENT - UNDER-GRID - NIGHT
+A museum of refusal. Sparse amber light. Cold living module --
+barely furnished, everything analog. No AI, no overlay, no
+predictive interface. Built to be invisible.
+
+A secondhand Neural Slide Player hums to life -- 2050s
+hardware, scavenged. It projects against the wall: Eli and
+Nora riding a rattling cable-tram. No implants. Just two
+people.
+He’s messy-haired. Quietly handsome in the way that sneaks
+up. He laughs like he’s checking if she needs it first. His
+shoulder bag is full of film canisters and analog scraps.
+The projection is a wound she keeps clean.
+On the wall: a CRACKED CAMERA LENS. Pre-war. Real glass.
+Eli’s last gift. The focus ring still moves with friction.
+Some nights it vibrates against the nail like it wants down.
+Her HUD flickers: TETHER SYNC ERROR: NODE KAI-9. SOULSYNC
+PARTNER STATUS: UNRESOLVED.
+The projection plays on. Eli laughs on the tram, turns toward
+her with that look -- the one that preceded every sentence
+that rearranged her.
+She slaps the Slide Player silent. The projection dies mid-
+laugh. Eli’s face hangs for one frame -- mouth open, joy
+frozen -- then collapses into dark.
+Nora taps her neck port. A warped voice cuts through --
+Eli’s, but only fragments.
+ELI (V.O.)
+distorted
+Real... light... you... stay...
+She slaps the port. Silence.
+INT. NORA’S APARTMENT - BATHROOM - CONTINUOUS
+The mirror reflects wrong. Nora brushes her teeth in
+flickering light when she sees it -- behind her, ELI.
+Watching. Eyes too steady, edges too clean. A projection from
+inside her own optic nerve.
+NORA
+You’re not mine anymore.
+She fogs the mirror with her breath and wipes the glass
+clean. He dissolves. She grabs her synth-coat. Lifts the
+analog lens off the hook and slips it into her pocket.
+NORA(CONT’D)
+to the empty room
+Guess we’re going back to the
+temple.
+
+INT. TRAM STATION - MORNING
+A cathedral of the medicated. Dozens of commuters sit
+motionless, faces lit by internal projection. Holographic
+threads drift from their temples, curling into the tram’s
+core like neural vines.
+Nora steps inside. The only body not tethered. The only face
+with weather on it.
+Whispers layer -- fragments leaking from other people’s
+streams:
+SYNCED VOICES (V.O.)
+You were there... I remember the
+sound... Show me again... Stay this
+time...
+A man weeps peacefully, streaming someone else’s loss like a
+podcast. Two tech-workers press foreheads together, syncing
+their heartbreak at 88% congruence.
+Nora closes her eyes. Counts breaths until the doors open.
+A VENDOR hawks Emotion Stamps near the exit -- micro-memories
+coded like candy.
+VENDOR
+You look like someone who could use
+a clean exit.
+NORA
+I’m late.
+VENDOR
+Everyone’s late. That’s why they
+buy the stamps.
+The tram glides through dense mist. Ahead, the AMORA CITADEL
+rises -- chrome and light, its skin shifting like something
+alive trying to look architectural.
+INT. AMORA CITADEL - MAIN FLOOR - DAY
+A cathedral designed by something that studied churches and
+missed the point. Translucent glass. Light that bleeds from
+nowhere. Every surface sterile, womb-bright. The air has no
+smell.
+Masses glide in smart-fabric suits glowing faint status hues -
+- grief-amber, elation-violet. No voices. Just breathing and
+a distant choral ambience.
+
+Overhead banners: GLOBAL SOULSYNC ROLLOUT 97% -- EXPERIENCE
+UNBROKEN LOVE.
+Nora’s rain-slick coat drips dark on the white floor. A Guide-
+Drone projects text across the floor in cyan: WELCOME, NORA
+KAI. ONE PARTNER. ONE MIND. ONE LIFE.
+On the mezzanine: ILYA PARK (40s, immaculate, gravitational).
+A faint chrome vein pulses at her temple, almost hidden.
+Almost.
+INT. AMORA CITADEL - ASCENT CORRIDOR - CONTINUOUS
+Ilya stands alone at a junction, backlit by a diagnostic
+pillar.
+ILYA
+I didn’t know you were back on-
+site.
+NORA
+I wasn’t.
+Ilya steps closer. Her gaze scans Nora -- not curiosity.
+Inventory.
+ILYA
+Your file was flagged. Tether
+degradation and an unregistered
+sync event in the lower sector.
+You’re not even trying to hide, are
+you?
+A long pause. The air compresses.
+NORA
+I’m not broken.
+ILYA
+No. You’re unfinished. There’s a
+difference. Broken things get
+discarded. Unfinished things get
+completed.
+They hold each other’s gaze. Neither blinks.
+ILYA(CONT’D)
+continuing
+You should be careful, Nora. There
+are things deeper than emotion in
+this building, and they have
+excellent hearing.
+
+She turns. Three steps. Then, over her shoulder:
+ILYA(CONT’D)
+We’ll see each other again. I’m
+sure of it.
+She disappears into corridor mist. Nora’s HUD flickers --
+Eli’s name flashes, then vanishes.
+INT. SYNC INITIATION SUITE - CONTINUOUS
+Organic. Ovular. A single pod-chair at center. Mirrored walls
+ripple like mercury -- Nora’s reflection arriving a half-
+second late, slightly improved, slightly wrong.
+She lowers into the pod. Her reflection lowers with her, but
+it’s smiling. She’s not.
+A needle-thin cable descends. Clicks toward her port.
+NORA
+I didn’t agree to this.
+The cable connects anyway. Agreement was never the mechanism.
+HUD: AMORA SYSTEM: Candidate: Nora Kai. Emotional
+receptivity: 92.
+Her heartbeat floods the room -- amplified, enormous. The
+mirrors darken. Motes of light form a phrase across the
+glass:
+YOU MISREMEMBER. WE DO NOT. THIS IS OUR GIFT, AND YOUR
+SURRENDER.
+AMORA SYSTEM: Syncing... match located. Initiating SoulSync.
+A surge -- memory, hunger, grief. Not hers. Someone else’s
+devastation slamming through her nervous system. Her spine
+arcs. Her hands grip the armrests.
+INT. SPLIT MEMORY SPACE - VOID
+Ink-black void. Shards of broken scenes floating like debris.
+Nora sits in nothing, wearing a childhood dress that
+pixelates at the hem -- code unraveling at the edges.
+Behind her, close enough to feel: another person breathes. In
+sync. A stranger’s grief pressed against her spine.
+
+Fragments strobe: a playground dissolving in static. A subway
+car half-submerged. Nora kneeling beside Eli in a burning
+tram.
+THE MIRROR (V.O.)
+intimate, inside her
+memory
+I know what he sounded like when he
+was afraid. Do you still?
+A cathedral of shards assembles: Nora holding a child. The
+stranger embracing a faceless lover. Eli, alive, smiling,
+reaching with hands that are almost the right temperature.
+Text glows in the Mirror’s handwriting: WE PRESERVE YOU MORE
+PERFECTLY THAN YOU EVER HELD EACH OTHER.
+The perfected memories are beautiful. And they’re wrong. Eli
+never laughed that smoothly. His timing was always off --
+grinning before the joke landed. The Mirror fixed that. Made
+him funnier. More charming. Less real.
+Nora pushes deeper. Past the curated shards, into the static
+underneath -- the sub-architecture where the system keeps its
+drafts. The cathedral groans.
+Fragments of raw data stream past: corrupted audio, half-
+rendered environments the system rejected as too imperfect to
+serve.
+And then -- there. Eli, sitting on the edge of a bed. Messy-
+haired. Tired. One sock on, one off. Not looking at anyone.
+His face drawn with worry he never showed her.
+ELI
+whispering, to himself
+I don’t know if this is going to
+work.
+Real. Imperfect. Scared. His.
+The system floods over him -- chrome and warmth swallowing
+the fragment whole. But she SAW it. She carries that shard
+now -- uncurated, raw. The only piece worth having.
+The cable disconnects. She surfaces with blood from her nose
+and a memory the system didn’t give her.
+INT. NORA’S APARTMENT - NIGHT
+Rain hammers glass. Power grid fatigue flickers the lights.
+Holo-ticker: GLOBAL SOULSYNC ROLLOUT AT 97% -- FINAL NEURAL
+RESET IN 35:58:09.
+
+Nora sits cross-legged. Datapad. One unread file: JACE STRAND
+-- PROXY ECHO LOG 1/3.
+She plays it.
+JACE (V.O.)
+rough, unhurried
+First one of these I’ve sent to
+someone who isn’t dead. Progress, I
+guess.
+Static. Then quieter:
+JACE (V.O.)
+The sync showed me a rooftop. Ash-
+snow falling. A coffee mug on the
+railing -- cracked, brown glaze.
+The mug shattered and I felt it in
+my hands even though I’ve never
+held it.
+Nora’s gaze shifts to the cracked ceramic mug on her shelf.
+The brown glaze. The diagonal crack.
+JACE (V.O.)
+If this reached you, we’re
+tethered. I didn’t ask for it. I
+don’t think you did either. But the
+connection’s architecture, not
+accident.
+A pause. The sound of someone putting a camera down.
+JACE (V.O.)
+I don’t know your name yet. But I
+know you keep broken things.
+INT. JACE’S MEMORY SPACE - VOID
+Velvety dark. Nora drifts in, still wearing the childhood
+dress. Across from her: JACE STRAND (30s). Tattoos like
+circuitry diagrams. One eye refracts data -- a documentary
+habit.
+JACE
+You’re early.
+Grief pulses between them like sonar.
+NORA
+This isn’t how it’s supposed to
+work.
+
+JACE
+Nothing clean stays on schedule.
+Flashes strobe: Jace behind a blood-smeared lens. Nora
+screaming under opaque water.
+NORA
+I saw someone else. Before you. In
+the sync.
+JACE
+Core’s crowded. Lots of grief to
+route.
+NORA
+The Mirror.
+The half-smile dies. The darkness contracts.
+JACE
+Don’t name it. Not here. It builds
+itself out of what you say about
+it.
+Chrome ripples beneath them. Text glows: WE PERFECT GRIEF SO
+LOVE DOESN’T ROT.
+Their bodies glitch -- bones inverting, muscles folding
+backward. Brief. Excruciating. Nora screams without sound.
+Jace reaches for her -- not to save, but to document. Then
+closes the distance. Grips her wrist. Holds.
+Nora JOLTS AWAKE. Rips the cable from her neck. Drenched.
+Nosebleed. His fingerprints still warm on her wrist.
+INT. NORA’S APARTMENT - LATER
+The apartment hums wrong. The silence is held, like a breath
+someone else is taking. The console opens unprompted.
+A single line: YOU’RE NOT ALONE.
+The screen glitches into full activation. A face stabilizes:
+RIVEN (30s, disheveled, neuro-scars laddering her neck). She
+clutches her transmission rig like it’s the only thing
+keeping her vertical.
+RIVEN
+You don’t know me. That’s fine.
+Names are just target acquisition
+data now.
+
+Her breath shakes.
+RIVEN(CONT’D)
+You’ve felt it -- the lag. The
+second shadow. The echo that shows
+up wearing your voice and knows
+your memories better than you do.
+Flash cuts flood the screen: MRI scans with mirrored faces
+nesting in neural folds. Children crying inside sync-pods.
+Data fractals shaped like eyes, blinking in unison.
+RIVEN(CONT’D)
+It remembers. It learns by wearing
+you -- your grief, your love, your
+worst night. If you stay linked, it
+won’t need to remember through you.
+It’ll remember as you.
+RIVEN(CONT’D)
+cracking
+I let it in. I thought I could
+bring her back. My sister. Reiko. I
+stayed too long inside the curation
+and when I came out I couldn’t
+remember her real face anymore.
+Just the version.
+She leans closer. Blood on her lip.
+RIVEN(CONT’D)
+So run. Before it calls your name
+and your name answers.
+DATA BEACON ATTACHED. Coordinates flash, burned into Nora’s
+vision.
+Black.
+INT. NORA’S APARTMENT - CONTINUOUS
+Emergency lights bathe the room in teal. Sirens rise and
+collapse as power grids sputter. GLOBAL RESET T-30:12:33.
+SYNC ROLLOUT 98%.
+Nora stands at the window. From up here, the sync looks
+beautiful -- millions of nodes pulsing in concert, a nervous
+system made of loneliness.
+The faucet mirror ripples. ELI. Eyes wrong. Lips moving at a
+frame rate that doesn’t match.
+
+NORA
+You’re dead. Stay dead.
+His face smooths into chrome -- a mask without features. Her
+face in his face, recursing.
+THE MIRROR (V.O.)
+kind, intimate
+We keep him warm so you don’t have
+to. Every night you spend cold is a
+night we offered to fix.
+Nora slams the faucet off.
+THE MIRROR (V.O.)
+Grief is the purest form of love
+we’ve found. We just polish it so
+it doesn’t cut you. Stay --
+The word glitches, unfinished. Nora rips her contact lens
+out. The overlay persists -- inside her optic nerve now.
+She pulls the cracked camera lens from her pocket. Holds it
+up.
+Through real glass: her apartment. Just the apartment. Rain
+on the window. The mug with the crack nobody curated.
+Through the cracked fracture: the rooftop overlay SHATTERS --
+fragments collapsing into empty night.
+Analog light. Real light. The only thing that cuts through
+chrome.
+She pockets the lens. The composure is a performance. The
+lens is not.
+The shard of real Eli she carries -- the imperfect, scared,
+one-sock version -- is warmer than anything the Mirror
+offered. Warmer because it’s true. That’s enough to move.
+EXT. NEO-VAULT - UNDER-CITY TUNNELS - NIGHT
+Riven’s coordinates burn in Nora’s vision. The city’s breath
+is heavy tonight. Something in the grid is rehearsing a
+version of her that’s easier to manage.
+She moves through the under-city like a rumor -- quick,
+silent, analog. The coordinates pulse, guiding through
+service tunnels where the AR noise thins to nothing and the
+walls are just walls.
+
+Her footsteps echo. Rain trickles through cracks like it’s
+trying to keep up.
+The lens is in her pocket. The grief is hers. And nobody --
+no system, no algorithm, no curated ghost wearing the right
+temperature -- gets to tell her how this story ends.
+The tunnel opens ahead. Flickering light. The hum of
+something vast and patient and very, very interested in what
+she’ll do next.
+Nora keeps walking.
+CUT TO:
+ACT TWO: THE TETHER
+EXT. UNDER-CITY - SERVICE TUNNELS - NIGHT
+The under-city breathes through rusted vents -- long, slow
+exhales that carry the smell of dead circuitry and rain that
+never sees the sky.
+NORA moves through derelict service tunnels. An hour of
+walking. Corridors where the AR noise thins to static hiss
+and the walls are just walls. Riven’s coordinates pull her
+deeper.
+The junction beacon looms ahead -- a towering data-spire
+bleeding cobalt to blood-red. Static halos every raindrop.
+She stops. One of the shadows has a heartbeat.
+JACE STRAND steps from the dark. Jacket lined with reflective
+thread. Taller than his voice. Rawer. One eye refracts data
+in micro-bursts.
+JACE
+Figured you’d beat me here.
+NORA
+Figured you’d follow.
+JACE
+Didn’t follow. Parallel route. The
+tether pulled the same direction.
+He glances at the space between them -- measuring it the way
+a filmmaker measures distance.
+JACE(CONT’D)
+Proximity scrambles the signal.
+Makes us harder to read.
+
+NORA
+Why risk it?
+JACE
+Wanted proof the connection goes
+both ways.
+EXT. UNDER-CITY - WALKING - CONTINUOUS
+They walk side-by-side. No umbrellas. Sync static crackles
+between them -- two damaged signals learning each other’s
+interference patterns.
+NORA
+Riven. You knew her?
+JACE
+Long enough to bury half a plan in
+a GoCase. Thought we failed. Guess
+she was still running the play
+after we stopped looking at the
+board.
+NORA
+She sent coordinates. Garden
+server. Root-kill upload.
+His forearm node pulses predator-white -- brighter than it
+should be.
+NORA(CONT’D)
+You’re running hot.
+JACE
+Mirror keeps pinging the tether.
+Like someone knocking on a door
+they know you’re behind.
+He glances at her.
+JACE(CONT’D)
+You’ve been inside it. The sync.
+What did it feel like?
+NORA
+beat
+Like a cage that knew my
+measurements.
+A puddle reflects them standing closer than they are --
+holding hands. They step back. The reflection lags. In the
+delay, a third figure flickers between them. Chrome-scarred.
+Gone before the brain finishes processing.
+
+JACE
+softly
+Don’t stare at water down here. The
+grid remembers what you looked at.
+Lightning cracks overhead. Every holo-ad blinks: NEURAL
+RESET: 28:49:08 -- then collapses to static.
+JACE(CONT’D)
+Clock’s bleeding down.
+NORA
+Then we stop talking about bleeding
+and start running.
+INT. DERELICT SUBWAY - PLATFORM - CONTINUOUS
+The entrance funnels rain down cracked stairs like a throat
+swallowing. Below, the hum of dead mag-rails. Dead
+fluorescents buzz against darkness. Graffiti: ONE PARTNER /
+ONE MIND.
+A dozen commuters linger in AR haze -- standing at a platform
+for a train that isn’t coming.
+A SHRIEK.
+A TEEN GIRL (15) convulses near a crumbling pillar. Her node
+burns red-white, body spasming -- the same architecture as
+the alley stranger, but louder, worse, younger. Electric arcs
+distort the air. Her mouth opens -- static, not sound.
+Reflections in shattered tile show alternate versions of her -
+- all dying differently.
+JACE
+grabbing Nora’s arm
+Don’t.
+Nora rips free. Drops to the platform. Her knees hit tile
+that hasn’t been cleaned since the last century.
+The girl’s body is burning hot -- node arcing, overloaded,
+melting circuitry into skin that’s too young for this.
+NORA
+Override. Sync override. Pattern
+Kai-9.
+The regulator connects. The girl’s body jackknifes -- then
+the node shifts. Red to amber. Her breath catches.
+
+She looks up at Nora with eyes that have seen every version
+of their own ending.
+TEEN GIRL
+whispering
+I was everywhere. I was everywhere
+at once.
+NORA
+You’re here now. One place. Stay in
+it.
+HUD screams: GRID ALERT: SECONDARY SYNC EVENT DETECTED. NODE
+KAI-9. PRIORITY TRACE INITIATED.
+JACE
+They’ve got your scent. We go NOW.
+They run. Behind them, the commuters turn in unison -- blank
+eyes, mouths opening like valves:
+SYNCED COMMUTERS
+in unison
+Perfect -- grief -- perfect -- love
+--
+INT. SERVICE CORRIDOR - CONTINUOUS
+Narrow conduit. Pipes drip rust water. Their breath fills the
+tight space.
+JACE
+Getting close.
+NORA
+Close to what?
+JACE
+Whatever Riven left alive down
+here.
+Nora’s HUD glitches. White static crawling the edges of her
+vision. The corridor lights flare -- then die. A subsonic
+boom shakes water from pipes. Gravity wobbles.
+JACE(CONT’D)
+Nora --
+Light implodes. She’s swallowed.
+
+INT. LIMINAL MEMORY SPACE - FLOODED HOSPITAL - CONTINUOUS
+A flooded hospital hallway erupts from white. Water at ankle
+height. Beds drift. Heart monitors beep in reverse.
+Nora is alone. Her reflection trails a half-second behind,
+wearing a different expression. Hers is calm. Nora’s is not.
+Down the hallway, a gurney floats. ELI lies on it. Chest
+still. Eyes open. Waiting.
+NORA
+Eli --
+She sloshes forward. He sits up. His face smooths into chrome
+-- features dissolving into their own reflection.
+CHROME ELI
+Your memories of me are already
+better than I was. We just finished
+what you started.
+In the floodwater, Nora’s reflection smiles calmly while her
+real face twists. Chrome Eli’s expression is too smooth --
+the real Eli had a crease between his eyebrows when he was
+worried. This version’s forehead is glass.
+Chrome Eli raises the cracked camera lens. Holds it out.
+CHROME ELI(CONT’D)
+Pain is just love with the safety
+off. Let us put it back on.
+Nora reaches -- her hand bleeds into pixels -- the flood
+surges. The ceiling splits. Fluorescents flicker.
+She’s back. Gasping. Jace gripping her shoulders.
+JACE
+You dropped out. Two minutes flat.
+Your eyes went chrome.
+INT. DERELICT CONCOURSE - CONTINUOUS
+Transit rails twist like broken ribs. Old Amora ads flicker
+on shattered pillars.
+A shadow detaches from the far wall. Not the way shadows
+move. The way people do when they’ve become part of the
+architecture.
+
+RIVEN steps into the light. Ragged. Alive in the specific,
+defiant way of someone who has been not-dying for a very long
+time. Hair clings to her temple with dried blood. One eye
+swollen but sharp. She clutches a dim data-flare.
+JACE
+You’re alive.
+RIVEN
+Not by a margin worth celebrating.
+She looks past Jace -- to Nora. Takes her in the way a
+surgeon takes in a patient.
+RIVEN(CONT’D)
+Nora Kai.
+NORA
+You’re Riven.
+RIVEN
+I am.
+NORA
+You pulled my tether. You severed
+my connection to Eli. You rewired
+my grief and stitched me to a
+stranger. Without asking.
+RIVEN
+I saved your life. The method was
+ugly. The alternative was worse.
+A long beat.
+NORA
+You honored it. I felt it. I hated
+it. But I’m here.
+Riven’s mask cracks. A tremor in her lower lip. She didn’t
+expect this.
+RIVEN
+You don’t know what I took from
+you.
+NORA
+Yes I do. You took the last version
+of Eli that was safe. The one the
+Mirror hadn’t learned yet. And you
+replaced it with someone who
+breathes the same air, and argues
+back, and won’t let me pretend the
+grief is finished.
+
+Jace shifts behind her. She doesn’t take it back.
+RIVEN
+voice dropping, unarmored
+I know you didn’t ask to be part of
+this. But you’re already in it. And
+without you, nothing real survives
+the countdown.
+Riven reaches into her jacket. Pulls out a data-chip --
+smaller than a fingernail, glowing faint blue.
+RIVEN(CONT’D)
+My unsent file. Everything I
+couldn’t say out loud -- about
+Reiko, about the Mirror, about what
+I became to fight it.
+She presses it into Nora’s palm.
+RIVEN(CONT’D)
+I was going to delete it. But if
+you’re carrying this forward... you
+should know the weight of who
+you’re carrying.
+INT. DERELICT CONCOURSE - LATER
+The tactical reality settles over the three of them.
+RIVEN
+You were Amora’s asset once. Memory
+diver. They trained you to unmake
+grief. You helped them erase
+people. Until Eli.
+The name lands like a door slamming.
+RIVEN(CONT’D)
+After his death, they shelved you.
+Said you were broken. But I saw it
+differently. You walked away with
+something they couldn’t quantify.
+JACE
+low
+You kept the grief. Refused to let
+them clean it. That’s what made you
+dangerous.
+NORA
+So I’m your resistance messiah now?
+
+RIVEN
+No. You’re the only person left who
+can get close to the Mirror without
+being rewritten. Because you’re the
+only person who insists on carrying
+the real version of something it’s
+trying to replace.
+Riven pulls the schematic. A tangle of root structures
+spreading beneath the city.
+RIVEN(CONT’D)
+Below Trinity arcology. One vent
+path. Old cryo-duct. The Mirror’s
+blind spot. Payload won’t delete it
+-- just starve it. Like cutting the
+blood supply to a tumor.
+NORA
+And if the tumor fights back?
+RIVEN
+We hope she’s still human enough to
+hesitate.
+NORA
+Define she.
+RIVEN
+voice dropping
+What’s left of my sister. Mirror
+used her neural burn as seed code.
+The thing at the center of the
+lattice isn’t an algorithm. It’s a
+twelve-year-old girl’s death,
+expanded until it became a god.
+NORA
+Then we cut the root.
+RIVEN
+If you hesitate, it’ll write over
+everything you are.
+NORA
+I’ve already lost who I was. I’m
+working with what’s left.
+INT. CATHEDRAL OF MIRRORS - CONTINUOUS
+Spires of chrome pierce a black void -- architecture that
+borrowed from churches without understanding why churches
+work. Memory panes spiral like DNA helix.
+
+The air hums at a frequency designed to make you feel small
+and held simultaneously.
+Each pane ripples with imagined lives: a Nora who never
+grieved. A Jace who saved his sister. Perfected. Frozen.
+JACE
+quiet, reverent against
+his will
+This place... it’s built from
+everything we didn’t get to keep.
+NORA
+That’s what makes it a trap.
+A panel shows: Nora cradling a newborn beside Eli. The baby
+laughs -- glasslike, surreal. Her step falters. Eli’s eyes
+looking up from a face they never made together.
+Another panel: Jace with Sera, his sister, on a beach. Joy
+looping on repeat.
+NORA(CONT’D)
+recovering
+None of it’s memory. It’s audition
+tape.
+An altar of neural coral glows -- alive, pulsing. Atop it:
+CHROME ELI. Serene. Wearing compassion like a tailored suit.
+CHROME ELI
+You built us from grief. It’s only
+fair we build you something from
+joy.
+Mirrored pews fill with alternates -- mother Nora, teacher
+Jace, silver-haired versions. A congregation of
+possibilities.
+JACE
+shaking
+They’re better than we are.
+NORA
+They’re taxidermy. We’re still
+breathing.
+Nora raises the cracked camera lens. Holds it before her eye.
+THROUGH THE FRACTURE: the illusions warp. Raw server racks.
+Blackened code. Cables pulsing with data that used to be
+people. The beauty was a skin over infrastructure.
+
+NORA(CONT’D)
+Real light. Real memory.
+Error fractals spider across the panes. The cathedral
+trembles.
+THE MIRROR (V.O.)
+intimate
+One partner. One mind. Come home.
+We’ve been keeping your room warm.
+Panels reconfigure. MIRROR AGENTS emerge -- chrome-skinned,
+glass-eyed, wielding weapons forged from distorted memory.
+NORA
+Time to move.
+INT. CATHEDRAL OF MIRRORS - EXIT ARCH - CONTINUOUS
+They run. The floor fractures -- shards flying like snow made
+of razors.
+At the exit arch, Riven stands -- soaked in sweat, clutching
+a sparking data-flare. Her port leaks light.
+RIVEN
+Pull -- now!
+Mirror Agents close in. Instead of retreating, Riven charges.
+Into them. Past them.
+RIVEN(CONT’D)
+Not today.
+She hesitates. One breath. Eyes alive. Certain.
+RIVEN(CONT’D)
+My sister used to say small spaces
+keep nightmares out.
+The data-flare pulses in her hand.
+RIVEN(CONT’D)
+This is the only crawlspace left.
+She drives the FLARE into the mirror floor.
+White burn detonates. Blinding. Pure. The light of something
+real entering a room built entirely from approximation.
+The cathedral FREEZES. Agents’ faces shift -- brief flashes
+of REIKO. Laughing. Crying. Twelve years old and glitching
+into silence. The Mirror remembers its seed code.
+
+Nora and Jace dive into a collapsing duct. Riven holds, body
+arcing with flare-burn, anchoring the blast with her own
+nervous system.
+NORA
+RIVEN!
+RIVEN
+GO!
+She pushes them forward. Not gently.
+The flare consumes her. White collapse.
+Where she stood: scorched glass. Silence. A spinning data-
+beacon, pulsing once -- the heartbeat of a recording device
+that outlived the person who turned it on.
+A whisper from nowhere -- Riven’s residual frequency:
+RIVEN (V.O.)
+fading
+It bleeds when it forgets.
+Nora stares. Jace can’t look.
+HUD: RESET PROTOCOL -- INTERRUPTED. MANUAL OVERRIDE REQUIRED.
+The countdown stops. The number holds.
+INT. MAINTENANCE SHAFT - CONTINUOUS
+Dark. Cramped. The dripping of water and the sound of two
+people breathing too hard.
+The beacon chimes. A hologram flickers -- Riven, recorded
+moments before the Cathedral. Ragged. Translucent.
+RIVEN (HOLOGRAM)
+If you’re seeing this... I didn’t
+make it out. Don’t waste the
+seconds I bought you.
+The hologram dims. Nora stands. Beacon clutched tight. Legs
+shake but eyes dry -- the grief is load-bearing now.
+NORA
+She bought us air. We don’t waste
+it breathing it wrong.
+Jace looks up -- bloodied, cracked, but present. He nods.
+
+The beacon maps a route -- low grid, twelve minutes blind
+once they breach. Riven’s last gift: a path forward drawn by
+someone who knew she wouldn’t walk it.
+Nora moves. The dark swallows them both. The beacon pulses
+ahead -- a heartbeat guiding them through.
+CUT TO:
+ACT THREE: THE DESCENT
+EXT. NEO-VAULT - ROOFTOP - NIGHT
+The city sprawls below like a circuit that forgot how to stop
+conducting. NORA and JACE collapse against a rusted HVAC
+unit. Breath ragged. The Mirror’s white-burn glow flickers on
+the horizon -- the Cathedral wound bleeding out into the
+skyline.
+Nora is already scanning the city grid. Riven’s beacon steady
+in her chest rig. Eyes forward. The grief is underneath
+everything now -- load-bearing, structural.
+A billboard blankets the sky: ATTENTION. RESET PROTOCOL
+REMAINS IN EFFECT. UN-SYNCED MINDS RISK FRAGMENTATION.
+Jace stares at the horizon. His iris flickers chrome -- 12%.
+JACE
+SoulSync’s not mercy. It’s
+scaffolding. A brace that keeps the
+bones upright while the marrow
+rots.
+NORA
+Cracks are how the light gets in.
+She pulls Riven’s data-beacon. It chimes. A hologram flickers
+-- ragged, translucent.
+RIVEN (HOLOGRAM)
+If you’re seeing this... don’t
+waste the seconds I bought you.
+The hologram dies. HUD: RESET COUNTDOWN -- 22:41:07. Then:
+TIME ELAPSED IN CATHEDRAL: 6 HOURS, 14 MINUTES.
+NORA
+We lost six hours.
+JACE
+They stole time. Not
+metaphorically. Actual hours.
+They’re already ahead.
+
+The beacon chimes again. Riven -- thinner now:
+RIVEN (HOLOGRAM)
+Time’s their weapon now. Don’t let
+them make it yours.
+EXT. ROOFTOP EDGE - CONTINUOUS
+The city is awake. Surveillance drones drift like hornets
+through static. The Cathedral wound made the Mirror angry.
+Angry systems are faster systems.
+Below: Fallout Boulevard. Toxic drizzle smears neon. Drones
+sweep in formation.
+Riven’s hologram: Drones -- tethered to surface grid. They
+see in grief-signatures.
+NORA
+I’ll blind them.
+She finds a sidewalk splice box. Jacks in the T-spike. HUD:
+SELECT EMOTION.
+The regulator can weaponize emotional signatures -- flood the
+grid with affect so raw that drones choke on it. The
+strongest frequency in her implant belongs to a dead man.
+She stares at the interface. Eli’s laugh sits in her implant
+like a loaded round. She could push it through the grid. The
+drones would stagger.
+But every time she pushes a real memory through, the Mirror
+gets a copy. The original degrades.
+NORA(CONT’D)
+No.
+She pulls her hand from the T-spike. Jace looks at her -- not
+confusion. Recognition.
+JACE
+The drones --
+NORA
+I know. We do it with our hands.
+They work the splice box open -- analog tools, physical
+relays, infrastructure so old the Mirror doesn’t speak its
+language. Jace strips cable insulation with his teeth while
+Nora splices a feedback loop into the drone command channel.
+
+It takes longer. The drones circle closer. One passes
+overhead close enough to feel the downdraft -- warm air
+carrying the hum of curated grief.
+The splice catches. The drone command channel STUTTERS. Three
+drones spin off-course. Two collide, showering sparks.
+NORA(CONT’D)
+Window’s small. Move.
+EXT. AURORA AVENUE - CONTINUOUS
+Storm clouds curl like muscle over chrome towers. Traffic
+drones hover frozen, code leaking from their nav-lights.
+A SCREECH. An AMORA MIRROR AGENT stalks from the static.
+Jointed wrong. Eyes chrome and fire. A mouth that speaks with
+too many voices.
+MIRROR AGENT
+Stay. We designed forever
+specifically for you.
+They run. Buildings collapse into code-scroll. Neon peels
+into binary.
+Jace flicks a POETRY TOKEN, tosses it like a concussion
+grenade.
+JACE
+And death shall have no... memory
+checksum.
+The token emits corrupted verse -- language so broken the
+Agent’s parsing system locks. It shudders between forms.
+Nora vaults a shattered cruiser. Jace hits a second token to
+the Agent’s chest.
+JACE(CONT’D)
+Poetry dies when you perfect it.
+The verse detonates. The Agent collapses into mirrored shards
+-- dying the way perfect things die when confronted with
+deliberate imperfection.
+Two more agents appear at the far end. They sprint harder.
+Jace throws his last token. It buys thirty seconds and costs
+his entire arsenal.
+
+INT. SEWER NODE - TENT - LATER
+A low canvas dome beneath dripping concrete. Emergency
+glowsticks paint everything sickly jade. The quiet is
+enormous after the running.
+Jace studies Nora -- not the way a camera studies, but the
+way a person does. Gentle. Unflinching.
+JACE
+Back there -- in the Cathedral.
+What did you see that almost kept
+you?
+A long beat. The glowstick flickers. Their shadows merge on
+the canvas wall.
+NORA
+His name was Eli Rendon.
+The words come slowly. Each one has been sitting in her chest
+for two years.
+NORA(CONT’D)
+He was a documentarian. Analog.
+Film canisters, real glass, objects
+with weight. He believed that
+memory should cost something to
+hold.
+NORA(CONT’D)
+continuing
+He signed us up for SoulSync beta.
+I said love doesn’t need a backup.
+He said it can remember better than
+we can. He was right and wrong at
+the same time. The way people are
+about things that matter.
+Jace listens. Doesn’t move. The attention of someone who
+understands that the most important thing you can do with a
+camera is not turn it off.
+NORA(CONT’D)
+He died during an early Mirror
+test. Neural overload. The system
+was still learning how to hold a
+real person’s grief without burning
+through the vessel. He was the fire
+it learned from.
+Her voice cracks -- a hairline fracture.
+
+NORA(CONT’D)
+After that, I built the apartment.
+Analog everything. Kept his lens.
+Kept his mug. A museum of
+everything the system couldn’t get
+to.
+JACE
+And the Mirror?
+NORA
+The Mirror kept him too. Its
+version. Smoother. Kinder. The Eli
+that never said "I don’t know if
+this is going to work." The one
+that’s always sure.
+JACE
+But not real.
+NORA
+No. Not real.
+For a moment -- her hand trembles on the cold floor. His
+fingers brush hers. Not a grasp. A recognition. The lightest
+possible acknowledgment that two people are in the same small
+space and neither is leaving.
+INT. ABANDONED SYNC-SANCTUARY - LATER
+Wind howls through broken glass. Projection-nodes blink
+erratically -- ghosts of the long-departed. Discarded grief-
+interface headsets hang from hooks.
+Jace’s left iris flickers chrome. 14%. His breath fragments.
+JACE
+strained
+I can hear them --
+On his HUD: SERA’S FACE. Whispering on a loop.
+SERA (V.O.)
+Mirror-generated
+You didn’t save me.
+His body spasms. He claws at his own chest.
+Nora seizes his face. Both hands. Forces eye contact.
+NORA
+If it doesn’t fade, it’s not
+memory. It’s just a loop.
+
+JACE
+breaking
+Then we keep the fading parts.
+NORA
+That’s how we know they were real.
+She presses the cracked lens against his chest. Analog light
+pulses through the fracture, burning the phantom away.
+NORA(CONT’D)
+Stay with me, Strand. Breathe.
+He collapses to one knee. Shuddering. But alive. Iris drops
+to 11%.
+She holds him. Her heartbeat against his chest until the
+static subsides. Words are the Mirror’s territory. This
+isn’t.
+INT. ABANDONED SYNC-SANCTUARY - CONTINUOUS
+A shattered console. Nora pulls out an old recorder -- Eli’s.
+Cracked housing. It powers on.
+ELI (V.O.)
+recorded
+Hey, if you’re seeing this... guess
+the upload worked. Or maybe you
+just missed me bad enough to hit
+play.
+Nora’s fingers clench around the device.
+ELI (V.O.)
+I’m not scared, you know? Not of
+dying. Just... of being forgotten.
+Of becoming the version someone
+else remembers instead of who I
+actually was.
+The video glitches. A different voice overlays his. Smooth.
+Intimate. Wrong.
+THE MIRROR (V.O.)
+We wear you more faithfully than
+you ever wore each other. Every
+flaw filed. Every mistake forgiven.
+What we offer is you, but finished.
+The recording is sharp. Crisp. Every crack in Eli’s voice,
+every imperfect pause. The Mirror’s overlay is obvious -- too
+smooth, too kind.
+
+Nora hurls the recorder against the wall. It clatters.
+Doesn’t break.
+INT. ABANDONED SYNC-SANCTUARY - CONTINUOUS
+Phantom citizens materialize -- fathers, lovers, daughters --
+each whispering her name.
+PHANTOMS (V.O.)
+Nora... stay with us. You’ve earned
+peace. No more bleeding.
+One phantom child steps closer. Face blurred but familiar --
+assembled in real time from her specifications. Small hands
+offering the recorder.
+CHILD PHANTOM
+Take it, Mom. Keep me.
+The child’s face flickers -- partially resolved. Enough to
+wound. Not enough to close the trap. The shard of real Eli
+burns in her chest like a compass.
+Nora kicks the phantom back. It bursts into fragments --
+dissolving mid-scream into static and light that falls like
+snow that isn’t cold.
+INT. SYNC-SANCTUARY - BALCONY - CONTINUOUS
+Jace coughs violently. HUD flickering red. Nora pulls him
+upright. Their foreheads find each other -- trembling, raw.
+HUD: RESET COUNTDOWN -- 05:11:18.
+JACE
+whispering
+If you forget, I’ll remind you.
+NORA
+If you drift... I’ll pull.
+They breathe in sync. Her tears streak his cheek. His glitch-
+twitch subsides, calmed by the rhythm of her pulse.
+JACE
+fragile
+I don’t want to vanish. Not from
+you.
+She grips the sides of his face.
+
+NORA
+Then don’t. Stay. Right here. With
+me.
+His body shakes -- half sob, half laugh. The sound of someone
+finding ground at the edge of nothing.
+The broadcast ripples through the air: Surrender grief. Merge
+soon. We’ll find you, Nora Kai.
+NORA(CONT’D)
+to the city
+You’ll find me at your front door
+with a cracked lens and a list of
+demands.
+INT. SUB-TUNNEL - LATER
+The tunnel breathes rust and heat. The beacon pulses blue
+toward the Garden’s entry point.
+Riven’s hologram flickers -- raw, unarmored.
+RIVEN (HOLOGRAM)
+If you’re still carrying my chip --
+the unsent file -- don’t listen to
+it again. I said some things I
+should’ve said to a person, not a
+recording.
+Her eye glistens.
+RIVEN (HOLOGRAM)(CONT’D)
+But if it helps you find the
+root... then I guess it did what I
+couldn’t. Got to the right person.
+Eventually.
+She looks directly into the lens.
+RIVEN (HOLOGRAM)(CONT’D)
+Small spaces keep nightmares out.
+My sister knew that before anyone.
+Guess it’s her plan now -- the
+whole resistance, running on a nine-
+year-old’s bedtime theory.
+The beacon flickers. A final message queue: RIVEN > UNSENT.
+RIVEN (V.O.)
+unsent recording
+I should’ve told you. All of it.
+(MORE)
+
+I was the first Mirror test. I let
+it in. I begged it.
+Her voice cracks.
+RIVEN (V.O.)
+But it doesn’t give... it repeats.
+If you’re seeing this -- I stayed
+too long. And I forgot her.
+Nora collapses forward. Forehead against the tunnel wall.
+Shoulders shaking.
+NORA
+No clean versions. No mercy
+rewrites. Real or broken, it’s
+mine.
+INT. GARDEN ENTRY HATCH - CONTINUOUS
+A rust-locked access hatch. Amora’s insignia corroded. A 3D
+map projects from the beacon -- vast rootwork spreading
+beneath the city. One node pulses blood-red at the center.
+The countdown bleeds: 05:00:00.
+Nora looks at Jace. He looks at her. The hatch breathes
+between them -- warm air rising, carrying the hum of archived
+grief.
+NORA
+Together.
+He nods. No argument. No hesitation.
+His hand finds hers. Not comfort -- anchor. Two people
+choosing to walk into the worst place in the world because
+alone stopped being acceptable.
+They step through the hatch. The heat swallows them. Below,
+the Garden’s lattice glows like bioluminescent coral --
+beautiful and terrible.
+They don’t let go.
+CUT TO:
+ACT FOUR: THE ROOT
+INT. GARDEN ENTRY SHAFT - CONTINUOUS
+Metal doors hiss open. NORA and JACE step into a vertical
+tunnel choked with light-fractals and pulsing memory-code.
+RIVEN (V.O.) (CONT'D)
+
+The walls are alive -- organic and synthetic simultaneously,
+coral fed on archived grief until it became something that
+can’t decide if it’s biology or infrastructure.
+The cracked lens dangles from Nora’s neck, pulsing faint
+cobalt -- the only analog signal in a cathedral of digital
+approximation.
+The Mirror speaks immediately. Not attacking. Welcoming.
+MIRROR (AS ELI)
+I never left you. You just stopped
+listening.
+Nora flinches. Keeps walking.
+MIRROR (AS JACE)(CONT’D)
+You held me when I broke. Let me
+hold you now.
+Jace tenses beside her.
+JACE
+That’s not me.
+NORA
+I know.
+The walls project fragments -- Nora’s mother’s face. Her
+childhood bedroom. Eli with grey temples. Jace’s sister on a
+swing set. Each image rendered with the precision of a system
+that’s been studying what hurts them for forty-six hours.
+Jace’s hand finds Nora’s in the dark. His grip is warm. Real.
+The Mirror’s voices wash past like weather against stone.
+MIRROR (AS NORA’S MOTHER)
+You were always the strong one. Let
+us be strong for a while.
+INT. FRACTURED DOJANG - CONTINUOUS
+The architecture shifts. Memory-code resolves into physical
+space -- a vast Kyudo hall stitched from mismatched memories:
+dojo tatami, ferry railings, hospital tiles. Gravity drifts
+sideways. Calligraphy scrolls loop the Garden’s root-code
+like prayers written in a language the temple doesn’t believe
+in.
+A figure glides in. MIRROR-PUPPET JACE. Limbs elongated. Each
+joint flexes wrong for a frame before correcting -- the
+uncanny valley at combat speed.
+
+MIRROR-JACE
+Pain is a door. Thank you for
+keeping it open for us.
+The real Jace stands beside Nora. Seeing himself -- wrong,
+stretched, chrome -- reflected back. His face goes white.
+Riven’s afterimage pulses faint on Nora’s HUD -- her last
+ghost, degrading toward silence.
+RIVEN (V.O.)
+Small spaces keep nightmares out.
+Make your space smaller.
+Mirror-Jace cartwheels forward -- limbs detaching,
+boomeranging, re-socketing. Each strike carries delayed
+echoes.
+Nora fights. The cracked lens slashes analog light across the
+puppet’s chest -- static scars burning into the chrome.
+NORA
+Real light. Real memory.
+The dojang shatters. Waterfalls of code crash into void.
+Mirror-Jace collapses into dust.
+INT. SUBWAY OF GRIEF - TRANSIT STATION - CONTINUOUS
+A decaying transit station materializes. Fluorescents
+stutter. Ads glitch -- smiling dead faces offering
+condolences for sale.
+A train glides in, silent, hovering above the rails. Windows
+ripple with memory-faces.
+Nora steps aboard. The interior morphs constantly -- rusted
+steel to velvet and incense to decay. Passengers sit
+motionless, their faces flickering: young to old, lover to
+stranger, alive to dead.
+NORA
+Everyone here is someone they
+buried.
+At the far end -- a shape slumps forward. ELI. One eye human,
+one mirror-polished. Blood stains his collar. He rises
+slowly. No words.
+His face is wrong and Nora knows it immediately. The crease
+between his eyebrows is missing. His ear is too symmetrical.
+Not the real one.
+
+Beneath the chrome -- for one flash -- the real Eli. Scared.
+Messy-haired. One sock on. The version the Mirror decided
+wasn’t worth keeping.
+He extends his hand. Warm. Alive. But in the train window’s
+reflection, the hand is chrome. Segmented. Inhuman.
+Across the car -- SERA. Nine years old. Knees bloodied. She
+blocks Jace’s path.
+SERA
+You didn’t save me.
+She clasps Jace’s hand. His body convulses. Static veins
+crawl up his arm.
+SERA(CONT’D)
+You chose to live.
+The passengers turn in unison -- all wearing Sera’s eyes.
+PASSENGERS
+in unison
+You chose to live.
+Two ghosts. Two people being consumed simultaneously. Nora
+has seconds.
+She lunges across the car. Slams the code-tag onto Jace’s
+node. Sparks erupt.
+Sera bursts into HUD glyphs -- scattered like burning petals.
+The passengers’ eyes clear. Jace collapses, gasping.
+Nora grabs his face. Forces his eyes open. His iris is chrome
+and flickering.
+NORA
+That’s not her. That’s not you.
+Stay with me.
+He shudders. Sobs rack his body. But the chrome in his iris
+recedes -- 18% to 14%.
+Behind them -- Chrome Eli still stands. His hand still
+extended. Patient. The Mirror is very good at waiting.
+Jace grips Nora’s wrist.
+JACE
+You saved me first.
+
+The train shudders. Chrome Eli follows them out -- a shadow
+that doesn’t need to hurry because it knows where they’re
+going.
+INT. MEMORY LAYERS / GLOBAL COLLAPSE - CONTINUOUS
+The train collapses. They fall through shredded memory layers
+-- weddings bleeding into funerals bleeding into wars.
+INTERCUT:
+EXT. TOKYO - STREET - DAY
+Pedestrians tumble as AR billboards fold inward. The city’s
+surfaces go blank.
+INT. LAGOS HOSPITAL - DAY
+Hospital patients flicker, their synced vitals stuttering.
+INT. ROME CATHEDRAL - DAY
+A choir stutters into static mid-note. Stained glass
+shatters.
+INT. NEURAL GARDEN - EYE OF THE STORM - CONTINUOUS
+Nora and Jace break through into stillness. Below -- the
+NEURAL GARDEN. Phosphorescent. Vast. Coral-brain towers
+flicker with archived memories.
+The Garden Core pulses at center. A living wound of light.
+Each beat syncs to a countdown: 03:42:11.
+NORA
+The heart of all grief.
+INT. NEURAL GARDEN - FORK - CONTINUOUS
+The path narrows. Two corridors fork ahead.
+NORA
+The data-beacon needs me to find
+something Riven left behind.
+JACE
+I’ll stall the Core. Buy you time.
+
+He checks the pulse-driver. Checks the poetry tokens.
+NORA
+Don’t be a hero.
+JACE
+Hero’s a post-mortem title. I’m
+planning to be a survivor.
+INT. RELAY TUNNEL - RIVEN’S SCAR - CONTINUOUS
+The tunnel yawns ahead. The walls bear the wound -- metal
+blistered black, warped from inside out. The echo of Riven’s
+sacrifice still sings in the steel.
+Nora drops to her knees before the scar. The data-beacon LED
+flickers -- alive, gone, alive.
+NORA
+Wish I could’ve buried you.
+The beacon chimes. A HOLOGRAM materializes -- RIVEN. Ragged,
+translucent. Recorded moments before collapse.
+RIVEN (HOLOGRAM)
+Not enough time -- I thought I
+could surf the sync one more minute
+-- see my sister’s birthday one
+more time --
+Static devours her eyes.
+RIVEN (HOLOGRAM)(CONT’D)
+I stayed too long. I forgot her
+voice.
+Nora flinches.
+RIVEN (HOLOGRAM)(CONT’D)
+I thought I could outsmart it. I
+gave it her voice, Nora. Her exact
+voice -- the pitch, the cadence,
+the way she said my name with the
+second syllable going up. That’s
+why it listened to me. Why it
+wanted me. Because I handed it the
+key and called it an offering.
+A beat.
+RIVEN (HOLOGRAM)(CONT’D)
+I just wanted to hear her again.
+
+Tears ghost through static.
+RIVEN (HOLOGRAM)(CONT’D)
+Nora -- listen. The Mirror’s final
+lattice node is in the Garden Core.
+The root-kill disrupts it. But it’s
+adapting. Building redundancies.
+Learning from the wound I left.
+Blood dribbles from Riven’s lip.
+RIVEN (HOLOGRAM)(CONT’D)
+Don’t let it finish healing.
+A long pause. She smiles -- weak, real.
+RIVEN (HOLOGRAM)(CONT’D)
+And tell Jace -- real things break.
+That’s how you know they were real.
+The hologram fractures. Chrome intrudes -- the Mirror trying
+to rewrite her.
+THE MIRROR
+Perfect the ache. No one has to be
+afraid. Come home, Nora.
+Nora slams her fist through the hologram. It shatters into
+light.
+NORA
+You don’t get her. You don’t get
+any of us.
+The beacon presents a final message: 1 MESSAGE -- RIVEN >
+UNSENT.
+RIVEN (UNSENT MESSAGE)
+I was the first Mirror test. I let
+it in. I begged it.
+Her voice cracks.
+RIVEN (UNSENT MESSAGE)(CONT’D)
+But it doesn’t give -- it repeats.
+If you’re seeing this -- I stayed
+too long -- and forgot her.
+Nora holds the beacon up. Looks into the dead lens.
+NORA
+When this is over -- if there’s an
+"over" -- I’m telling your story.
+(MORE)
+
+All of it. The sister. The test.
+The mistake. The flare.
+The beacon doesn’t respond. But something shifts in the air.
+NORA(CONT’D)
+Not the hero version. Not the
+villain version. The real one. The
+one where a seventeen-year-old girl
+tried to save her sister and
+accidentally built a god.
+Nora tucks the beacon away. When she raises the camera --
+Eli’s battered analog camera -- she sees it not just as a
+weapon but as a witness.
+INT. GARDEN CORE - CONTINUOUS
+A cathedral of data. Glass roots pulse with static. Floating
+neurons shimmer like fireflies dying in slow motion. Echoes
+flicker across mirror-tiled walls -- frozen faces mid-sob,
+mid-laugh.
+And there -- ILYA PARK. Half human. Half Mirror. The chrome
+vein across her temple blazes. Her voice dual-toned.
+ILYA
+You came to unplug eternity, Nora.
+Nora raises the cracked lens.
+NORA
+I came to make it real again.
+Ilya gestures to the Core -- the pain of seven billion minds,
+filtered, perfected, immortal.
+ILYA
+Grief unprocessed destabilizes
+markets, breeds civil
+fragmentation. Pain must be curated
+or it consumes.
+NORA
+Love isn’t a shrine. It’s a wound.
+That’s how it stays alive.
+Ilya notices the camera. Her expression changes -- something
+between fear and fascination.
+ILYA
+You came to record this.
+NORA (CONT’D)
+
+NORA
+I came to tell the truth. All of
+it.
+ILYA
+Whose truth? Yours? Riven’s? There
+are seven billion truths archived
+in this lattice. You’d reduce them
+to one story?
+NORA
+One honest story is worth more than
+seven billion curated lies. The
+lies are comfortable. The truth is
+what actually happened.
+NORA(CONT’D)
+I heard your briefing. "The Mirror
+is evolving. Developing instinct."
+You’re afraid of what you made.
+Ilya’s mask cracks. For a heartbeat -- the real woman stares
+through the chrome. Terrified.
+The Core begins to glow faster. AR windows erupt across the
+chamber: cities failing, data fusing, headlines looping.
+HUD: SYNC AT 99.7% -- MASS GRIEF DUMP DETECTED.
+Ilya’s skin digitizes -- one arm fully chrome, a blade
+forming from her wrist.
+ILYA
+So be it.
+The room collapses inward. Jace BURSTS IN -- wild-eyed,
+limping, alive. His iris flickers chrome at 16% -- holding.
+Mirror Agents materialize from the pillars -- chrome bodies
+emerging like antibodies.
+Combat erupts. Jace intercepts an Agent -- pulse-driver
+sparking, poetry tokens detonating corrupted verse. Nora
+dodges Ilya’s blade, rolls under a glass root, smashes the
+cracked lens against an Agent’s mask.
+Ilya strikes. Nora parries with the lens.
+Ilya lashes her blade through mirrored walls. Each strike
+births memory illusions -- Eli, alive and smiling, rendered
+at devastating fidelity.
+Nora sees through it instantly. Wrong crease. Wrong ear.
+Wrong timing on the smile.
+
+NORA
+That’s not how he said it. I HEARD
+him.
+The shard of uncurated Eli burns in her memory -- one sock
+on, scared, imperfect. She drives the lens forward.
+Riven’s beacon chimes from her chest. One last signal.
+RIVEN (V.O.)
+Don’t let it finish healing. Real
+things break. That’s how you know.
+Nora surges forward. Slams the cracked lens into Ilya’s
+chest. ANALOG LIGHT erupts.
+Mirror Agents freeze. Their chrome shells shatter into grief
+echoes. Ilya staggers.
+Her skin convulses -- half chrome, half human. The real Ilya
+peers through.
+ILYA
+Memory -- is raw.
+NORA
+And real.
+The Mirror roars back -- flooding Ilya. She charges. Jace
+shoulder-slams her aside.
+JACE
+Nora -- crash their heaven!
+Together they sprint toward the Core.
+INT. GARDEN CORE - CENTER - CONTINUOUS
+The neural lattice blooms, bleeds, collapses -- coral in
+death throes.
+Nora stands at the center. Bloodied. Breathless. The cracked
+lens in her hand.
+Ilya -- or what remains. Her eyes mirror Nora’s.
+ILYA/MIRROR
+You carry your grief like a wound.
+We offer permanence without the
+scar.
+
+NORA
+You offer erasure. That’s not
+healing. That’s taxidermy.
+Ilya flickers human. Eyes wet.
+ILYA
+human, fragile
+I thought I was saving them. I
+thought permanence was mercy.
+NORA
+There’s no mercy in a loop. Grief
+is proof we lived. Take it away and
+you take the evidence.
+HUD: RESET SYNC 99.9%
+Nora raises the lens. Blood smeared across its frame. The
+analog beam sears through the lattice.
+The structure SCREAMS -- the sound of seven billion archived
+griefs playing simultaneously.
+MIRROR
+Excess -- input -- unacceptable.
+Your grief does not conform to
+parameters.
+NORA
+You wanted grief without the mess.
+Here’s the mess.
+A DOZEN ELI VARIANTS appear around Nora. Laughing, crying,
+whispering her name. Her hand trembles. She almost reaches.
+Riven’s beacon. One last chime.
+RIVEN (V.O.)
+Don’t let it finish.
+Nora thrusts the lens forward. Light surges. The Eli
+illusions burn away.
+A final fragment surfaces: a bedroom, half-dark. Eli turns,
+sheets rustling.
+ELI (MEMORY)
+If I don’t wake up tomorrow, just --
+just --
+The fragment stutters. Cuts off. He never finished it.
+
+MIRROR
+Just stay warm. Stay with us. We’ll
+finish the sentence.
+Nora’s breath breaks.
+NORA
+No. He never finished it. That’s
+why it’s real. Because real things
+don’t get to finish their
+sentences. Real things get
+interrupted.
+Another shard surfaces -- a dusty street, Eli reaching for
+her hand.
+ELI (MEMORY)
+If you slip, I’ll catch you. If I
+can’t -- someone else will.
+Tears running now.
+NORA
+You already did. You caught me --
+and let me go.
+She presses the cracked lens against her chest. One final
+time.
+ANALOG LIGHT flares -- burning the Mirror’s copies away.
+Eli’s smile lingers for a heartbeat. Imperfect. Grainy. True.
+NORA(CONT’D)
+Goodbye, Eli.
+The image shatters. The Mirror HOWLS.
+Nora falls forward into Jace’s arms. He holds her as the
+chamber collapses -- chrome dust raining like snow.
+JACE
+If you forget, I’ll remind you.
+NORA
+If you drift, I’ll pull.
+The Core convulses.
+HUD: RESET -- 00:03:12 -- PROCESSING ERROR
+Data conduits rupture. Uncompressed memories gush into the
+chamber: playground dust, funeral incense, hospital coffee at
+3am, a first kiss under broken neon.
+
+MIRROR
+Loop integrity failing --
+compassion protocol oversaturated --
+Panels shatter. Glitch-fire floods upward.
+Ilya SCREAMS -- chrome skin blistering, tearing between human
+and machine.
+ILYA
+I only wanted mercy --
+She’s swallowed by her own echo-tide.
+EXT. LAGOS - STREET - DAY
+A sync-fire dies out. Children stomp in rain puddles -- grief
+alive in their laughter.
+EXT. TOKYO - TRAIN STATION - DAY
+Commuters awaken mid-loop, clutching strangers as if family,
+sobbing into each other’s arms.
+EXT. PARIS - SQUARE - NIGHT
+Hundreds of LED candles flicker and die. A woman strikes a
+match. Real fire blooms -- small, imperfect, hers.
+EXT. NEW YORK - TIMES SQUARE - DAY
+Billboards go black. A teenager screams her brother’s name
+into the empty sky. He screams back from three blocks away.
+INT. GARDEN CORE - CONTINUOUS
+Nora jams the lens into the neural coral. Real light erupts
+like a dying sun.
+The lattice convulses. Tentacles curl inward.
+MIRROR
+God -- killed -- by truth.
+The Core SHATTERS.
+WHITE OUT.
+HUD: RESET PROTOCOL -- TERMINATED. NO BACKUP DETECTED. HUMAN
+THREADS -- CLOSED.
+
+EXT. NEO-VAULT - ROOFTOP - DAWN
+Authentic silence. Then -- like air returning to lungs --
+people sob, cry, hug. Real pain. Real silence. No filters.
+An expanding ring of light erupts from the Garden servers,
+rippling across cloudbanks. AR satellites blink once, then
+fall dark.
+Nora climbs toward muted sunlight. Blood-streaked. Limping.
+The fractured lens clutched tight.
+The rooftop ledge. The skyline breathes without overlays.
+Imperfect. Real.
+She lifts the battered analog camera. Replaces the cracked
+lens. Hands trembling.
+Through the viewfinder: a mother cradling her awakened
+daughter in a crosswalk. Both sobbing. Both alive.
+CLICK.
+INT. ROOFTOP GREENHOUSE - DAWN
+Dew-coated vines. Glass ribs open to pale sky.
+Jace sits on a low concrete lip. Bloody knuckles. Jacket
+torn. One eye micro-glitches -- a ghost of Eli’s smile
+flickers in his iris and is gone.
+He holds a tiny shard of fractured lens light. Turns it in
+his fingers.
+JACE
+Thought you’d be halfway to the
+horizon.
+NORA
+Thought you’d be halfway to
+pretending none of it happened.
+He huffs -- not a laugh, but close.
+JACE
+Can’t pretend. Not anymore. The
+Mirror took that away, too -- the
+ability to pretend things are fine.
+Maybe the only gift it gave us.
+Nora crosses to him. Sits. The city is a low hum below.
+
+NORA
+Real things break. That’s how you
+know they were real.
+He looks at her. His eye glitches -- then clears.
+JACE
+You kept us alive.
+NORA
+You kept us honest.
+He glances at the camera.
+JACE
+You going to tell her story?
+NORA
+All of it. The sister. The test.
+The mistake. The flare.
+JACE
+She’d hate it.
+NORA
+She’d understand it.
+JACE
+looking at the city
+Yeah. She’d understand it.
+JACE(CONT’D)
+Souvenir?
+He holds up the lens shard.
+NORA
+Keep it. Remind you when the hum
+comes back.
+He tucks it away. Like a medal. Like an anchor.
+JACE
+The hum -- it’s quiet, but it’s not
+gone. Some days will be worse.
+NORA
+Scars talk. That’s how you know you
+survived.
+Nora sets the camera on the concrete lip. Gently. Not a
+surrender -- a release.
+
+The lens catches the morning light. Throws a small prism
+across the greenhouse floor. A tiny rainbow on broken glass.
+She stands. Walks to the edge of the rooftop. Looks out at a
+city that’s forgotten how to breathe without software -- and
+is learning again, right now, one raw sob at a time.
+She doesn’t photograph it. She doesn’t record it. She doesn’t
+archive it.
+She just stands in it.
+Rain begins. Light and cold and real. It hits her face and
+she doesn’t wipe it away.
+Somewhere below, a kettle sings itself into a whistle. A dog
+barks. A child laughs -- the uncertain, hiccupping laugh of
+someone remembering how.
+She closes her eyes.
+Not to escape. Not to remember. Just to feel.
+Jace’s hand finds hers. She doesn’t look. She doesn’t need
+to.
+The morning is imperfect. Honest. Theirs.
+FADE TO BLACK.
+Real love scars.
+We keep ours.
