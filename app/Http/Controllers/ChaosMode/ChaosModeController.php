@@ -75,7 +75,7 @@ final class ChaosModeController extends Controller
 
         $stories = Story::query()
             ->whereIn('slug', $slugs)
-            ->with(['adaptation', 'adaptation.sessionAdaptations'])
+            ->with(['adaptation', 'adaptation.sessionAdaptations', 'media'])
             ->get(['id', 'title', 'slug']);
 
         $payload = array_map(function (array $row) use ($stories) {
@@ -84,6 +84,8 @@ final class ChaosModeController extends Controller
             $hasAdaptation = $story?->adaptation !== null;
             $sessionCount  = (int) ($story?->adaptation?->sessionAdaptations?->count() ?? 0);
 
+            $cover = $story?->getFirstMediaUrl('cover') ?: null;
+
             return [
                 'slug'             => $row['slug'],
                 'title'            => $row['title'],
@@ -91,6 +93,7 @@ final class ChaosModeController extends Controller
                 'protagonist'      => $row['protagonist'],
                 'available'        => $story !== null && $hasAdaptation && $sessionCount > 0,
                 'total_sessions'   => $sessionCount,
+                'cover'            => $cover ?: null,
             ];
         }, $configured);
 
