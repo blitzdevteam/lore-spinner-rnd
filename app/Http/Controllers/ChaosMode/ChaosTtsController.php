@@ -28,9 +28,8 @@ final class ChaosTtsController extends Controller
      * handles Accept-Ranges / Content-Range / 206 automatically and works on all
      * browsers including iOS Safari.
      *
-     * Latency is kept low via eleven_flash_v2_5 (ElevenLabs' fastest model) and
-     * optimize_streaming_latency=3 — roughly 50-60% faster than the original
-     * eleven_v3 baseline, reducing generation from ~7s to ~2-3s.
+     * eleven_v3 is the default model (set via ELEVENLABS_MODEL_ID in .env).
+     * optimize_streaming_latency is not used — eleven_v3 returns 400 with it.
      */
     public function __invoke(ChaosSession $chaosSession, int $turnIndex): BinaryFileResponse
     {
@@ -65,8 +64,7 @@ final class ChaosTtsController extends Controller
 
         abort_unless(filled($apiKey) && filled($voiceId), 503, 'Voice generation is not configured.');
 
-        $url = sprintf(self::ELEVENLABS_URL, $voiceId)
-            . '?output_format=mp3_44100_128&optimize_streaming_latency=3';
+        $url = sprintf(self::ELEVENLABS_URL, $voiceId) . '?output_format=mp3_44100_128';
 
         $response = Http::withHeaders(['xi-api-key' => $apiKey])
             ->timeout(90)
