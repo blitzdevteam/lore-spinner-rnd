@@ -248,12 +248,12 @@ final class AddSingleStorySeeder extends Seeder
     private function getStoryConfig(): array
     {
         return [
-            'title' => 'Nocturne',
-            'slug' => 'nocturne',
-            'category' => 'Mystery & Detective',
-            'script' => 'NOCTURNE_Screenplay_script.txt',
-            'source_pdf' => 'RnD/NOCTURNE_Screenplay.pdf',
-            'teaser' => 'A door opened once. A name buried deep. Three sessions — three revelations. Nocturne is a noir mystery that remembers every choice you make.',
+            'title' => 'Anima Machina',
+            'slug' => 'anima-machina',
+            'category' => 'Science Fiction',
+            'script' => 'ANIMA_MACHINA_script.txt',
+            'source_pdf' => 'RnD/ANIMA MACHINA — Full Screenplay.pdf',
+            'teaser' => 'In a city wired for feeling, one woman carries a dead man\'s signal. Nora Kai has 48 hours before the Neural Reset erases everything — including the truth about what killed Eli.',
             'rating' => StoryRatingEnum::MATURE->value,
             'opening' => null,
             'creator' => [
