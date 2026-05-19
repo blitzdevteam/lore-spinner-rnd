@@ -466,22 +466,21 @@ final class ChaosModeController extends Controller
         $storyMap   = (array) ($adaptation?->story_session_map ?? []);
 
         $allocation = $this->findAllocationRow($storyMap, $sessionNumber);
-        [$start, $end] = $this->parseEventRange((string) ($allocation['event_range'] ?? ''));
 
-        $events = $start !== null && $end !== null
-            ? Event::query()
-                ->whereHas('chapter', fn ($q) => $q->where('story_id', $story->id))
-                ->whereBetween('position', [$start, $end])
-                ->orderBy('position')
-                ->get(['position', 'title', 'content', 'objectives'])
-                ->map(fn (Event $e) => [
-                    'position'   => (int) $e->position,
-                    'title'      => (string) $e->title,
-                    'content'    => (string) $e->content,
-                    'objectives' => $e->objectives,
-                ])
-                ->all()
-            : [];
+        $events = Event::query()
+            ->whereHas('chapter', fn ($q) => $q->where('story_id', $story->id))
+            ->where('session_number', $sessionNumber)
+            ->join('chapters', 'events.chapter_id', '=', 'chapters.id')
+            ->orderBy('chapters.position')
+            ->orderBy('events.position')
+            ->get(['events.position', 'events.title', 'events.content', 'events.objectives'])
+            ->map(fn (Event $e) => [
+                'position'   => (int) $e->position,
+                'title'      => (string) $e->title,
+                'content'    => (string) $e->content,
+                'objectives' => $e->objectives,
+            ])
+            ->all();
 
         /** @var SessionAdaptation|null $sessionAdaptation */
         $sessionAdaptation = $adaptation?->sessionAdaptations
