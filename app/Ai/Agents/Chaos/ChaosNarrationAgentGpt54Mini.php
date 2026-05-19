@@ -6,7 +6,6 @@ namespace App\Ai\Agents\Chaos;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\Model;
-use Laravel\Ai\Attributes\Provider;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Attributes\Timeout;
 use Laravel\Ai\Contracts\Agent;
@@ -14,17 +13,16 @@ use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-#[Provider('anthropic')]
-#[Model('claude-sonnet-4-6')]
-#[Temperature(1.0)]
-#[Timeout(90)]
-class ChaosNarrationAgentClaudeSonnet implements Agent, HasStructuredOutput
+#[Model('gpt-5.4-mini')]
+#[Temperature(0.95)]
+#[Timeout(60)]
+class ChaosNarrationAgentGpt54Mini implements Agent, HasStructuredOutput
 {
     use Promptable;
 
     public function __construct(
         private string $customInstructions,
-        private float $runtimeTemperature = 1.0,
+        private float $runtimeTemperature = 0.95,
     ) {}
 
     public function instructions(): Stringable|string

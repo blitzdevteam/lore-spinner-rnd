@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\ChaosMode;
 
 use App\Ai\Agents\Chaos\ChaosNarrationAgent;
+use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeHaiku;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeOpus;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeSonnet;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt41;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt54;
+use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt54Mini;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt55;
 use App\ChaosMode\ChaosStoryConfig;
 use App\Http\Controllers\Controller;
@@ -56,10 +58,23 @@ final class ChaosModeController extends Controller
     private const ALLOWED_MODELS = [
         'gpt-5.5',
         'gpt-5.4',
+        'gpt-5.4-mini',
         'gpt-5.2',
         'gpt-4.1',
-        'claude-opus-4-6',
-        'claude-sonnet-4-5',
+        'claude-opus-4-7',
+        'claude-sonnet-4-6',
+        'claude-haiku-4-5',
+    ];
+
+    private const MODEL_DEFAULT_TEMPERATURES = [
+        'gpt-5.5'        => 0.9,
+        'gpt-5.4'        => 1.0,
+        'gpt-5.4-mini'   => 0.95,
+        'gpt-5.2'        => 1.0,
+        'gpt-4.1'        => 1.0,
+        'claude-opus-4-7'   => 1.0,
+        'claude-sonnet-4-6' => 1.0,
+        'claude-haiku-4-5'  => 0.95,
     ];
 
     /**
@@ -111,12 +126,14 @@ final class ChaosModeController extends Controller
     public function start(Request $request): JsonResponse
     {
         $request->validate([
-            'story_slug' => ['required', 'string', 'in:' . implode(',', ChaosStoryConfig::slugs())],
-            'model'      => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+            'story_slug'  => ['required', 'string', 'in:' . implode(',', ChaosStoryConfig::slugs())],
+            'model'       => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+            'temperature' => ['nullable', 'numeric', 'min:0.5', 'max:1.5'],
         ]);
 
         $storySlug   = $request->string('story_slug')->toString();
         $model       = $request->string('model', 'gpt-5.2')->toString();
+        $temperature = (float) $request->input('temperature', self::MODEL_DEFAULT_TEMPERATURES[$model] ?? 1.0);
         $storyConfig = ChaosStoryConfig::find($storySlug);
 
         if ($storyConfig === null) {
@@ -166,6 +183,7 @@ final class ChaosModeController extends Controller
                 conversationHistory: [],
                 playerAction:        null,
                 protagonist:         $storyConfig['protagonist'],
+                temperature:         $temperature,
             );
 
             $worldState = $this->mergeStateDelta($this->emptyWorldState(), $result['state_delta']);
@@ -181,11 +199,12 @@ final class ChaosModeController extends Controller
             ]);
 
             Log::channel('narration')->info('chaos.start', [
-                'session_id'      => $chaosSession->id,
-                'story_slug'      => $storySlug,
-                'session_number'  => 1,
-                'model'           => $model,
-                'response_bytes'  => strlen($result['response']),
+                'session_id'       => $chaosSession->id,
+                'story_slug'       => $storySlug,
+                'session_number'   => 1,
+                'model'            => $model,
+                'temperature'      => $temperature,
+                'response_bytes'   => strlen($result['response']),
                 'session_complete' => $result['session_complete'],
             ]);
 
@@ -212,6 +231,7 @@ final class ChaosModeController extends Controller
             'session_id'    => ['required', 'string', 'ulid'],
             'player_action' => ['required', 'string', 'min:1', 'max:500'],
             'model'         => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+            'temperature'   => ['nullable', 'numeric', 'min:0.5', 'max:1.5'],
         ]);
 
         $chaosSession = ChaosSession::query()->findOrFail($request->string('session_id')->toString());
@@ -225,6 +245,7 @@ final class ChaosModeController extends Controller
 
         $playerAction = $request->string('player_action')->toString();
         $model        = $request->string('model', $chaosSession->model)->toString();
+        $temperature  = (float) $request->input('temperature', self::MODEL_DEFAULT_TEMPERATURES[$model] ?? 1.0);
 
         $story = Story::query()
             ->where('id', $chaosSession->story_id)
@@ -267,6 +288,7 @@ final class ChaosModeController extends Controller
                 conversationHistory: $sentHistory,
                 playerAction:        $playerAction,
                 protagonist:         $storyConfig['protagonist'],
+                temperature:         $temperature,
             );
 
             $worldState = $this->mergeStateDelta($worldState, $result['state_delta']);
@@ -284,14 +306,15 @@ final class ChaosModeController extends Controller
             ]);
 
             Log::channel('narration')->info('chaos.turn', [
-                'session_id'        => $chaosSession->id,
-                'story_slug'        => $story->slug,
-                'session_number'    => (int) $chaosSession->story_session_number,
-                'model'             => $model,
-                'turn'              => $chaosSession->turn_count,
-                'session_complete'  => $result['session_complete'],
-                'player_action'     => mb_substr($playerAction, 0, 80),
-                'memory_update'     => mb_substr($result['session_memory_update'], 0, 120),
+                'session_id'       => $chaosSession->id,
+                'story_slug'       => $story->slug,
+                'session_number'   => (int) $chaosSession->story_session_number,
+                'model'            => $model,
+                'temperature'      => $temperature,
+                'turn'             => $chaosSession->turn_count,
+                'session_complete' => $result['session_complete'],
+                'player_action'    => mb_substr($playerAction, 0, 80),
+                'memory_update'    => mb_substr($result['session_memory_update'], 0, 120),
             ]);
 
             return response()->json($this->formatResult($chaosSession, $result, $storyConfig));
@@ -318,8 +341,9 @@ final class ChaosModeController extends Controller
     public function continueSession(Request $request): JsonResponse
     {
         $request->validate([
-            'session_id' => ['required', 'string', 'ulid'],
-            'model'      => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+            'session_id'  => ['required', 'string', 'ulid'],
+            'model'       => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+            'temperature' => ['nullable', 'numeric', 'min:0.5', 'max:1.5'],
         ]);
 
         $previous = ChaosSession::query()->findOrFail($request->string('session_id')->toString());
@@ -363,7 +387,8 @@ final class ChaosModeController extends Controller
             return response()->json(['error' => 'The next session has no events to narrate.'], 422);
         }
 
-        $model = $request->string('model', $previous->model)->toString();
+        $model       = $request->string('model', $previous->model)->toString();
+        $temperature = (float) $request->input('temperature', self::MODEL_DEFAULT_TEMPERATURES[$model] ?? 1.0);
 
         $chaosSession = ChaosSession::create([
             'story_id'             => $story->id,
@@ -400,6 +425,7 @@ final class ChaosModeController extends Controller
                 conversationHistory: [],
                 playerAction:        null,
                 protagonist:         $storyConfig['protagonist'],
+                temperature:         $temperature,
             );
 
             $worldState = $this->mergeStateDelta($chaosSession->world_state ?? $this->emptyWorldState(), $result['state_delta']);
@@ -615,6 +641,7 @@ final class ChaosModeController extends Controller
         array $conversationHistory,
         ?string $playerAction,
         string $protagonist,
+        float $temperature = 1.0,
     ): array {
         $promptText = view('ai.agents.chaos.turn-prompt', [
             'conversationHistory' => $conversationHistory,
@@ -623,24 +650,43 @@ final class ChaosModeController extends Controller
         ])->render();
 
         $agent = match ($model) {
-            'gpt-5.5'           => ChaosNarrationAgentGpt55::make(customInstructions: $systemPrompt),
-            'gpt-5.4'           => ChaosNarrationAgentGpt54::make(customInstructions: $systemPrompt),
-            'gpt-4.1'           => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt),
-            'claude-opus-4-6'   => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt),
-            'claude-sonnet-4-5' => ChaosNarrationAgentClaudeSonnet::make(customInstructions: $systemPrompt),
-            default             => ChaosNarrationAgent::make(customInstructions: $systemPrompt),
+            'gpt-5.5'            => ChaosNarrationAgentGpt55::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
+            'gpt-5.4'            => ChaosNarrationAgentGpt54::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
+            'gpt-5.4-mini'       => ChaosNarrationAgentGpt54Mini::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
+            'gpt-4.1'            => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
+            'claude-opus-4-7'    => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
+            'claude-sonnet-4-6'  => ChaosNarrationAgentClaudeSonnet::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
+            'claude-haiku-4-5'   => ChaosNarrationAgentClaudeHaiku::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
+            default              => ChaosNarrationAgent::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
         };
 
-        /** @var \Laravel\Ai\Responses\StructuredAgentResponse $response */
-        $response = $agent->prompt($promptText);
+        // Retry up to 2 times on transient failures (e.g. GPT-5.5 structured-output
+        // compliance errors that occasionally occur on longer context windows).
+        $lastException = null;
 
-        return [
-            'response'              => (string) ($response['response'] ?? ''),
-            'choices'               => (array)  ($response['choices'] ?? []),
-            'session_complete'      => (bool)   ($response['session_complete'] ?? false),
-            'state_delta'           => (array)  ($response['state_delta'] ?? []),
-            'session_memory_update' => (string) ($response['session_memory_update'] ?? ''),
-        ];
+        for ($attempt = 1; $attempt <= 3; $attempt++) {
+            try {
+                /** @var \Laravel\Ai\Responses\StructuredAgentResponse $response */
+                $response = $agent->prompt($promptText);
+
+                return [
+                    'response'              => (string) ($response['response'] ?? ''),
+                    'choices'               => (array)  ($response['choices'] ?? []),
+                    'session_complete'      => (bool)   ($response['session_complete'] ?? false),
+                    'state_delta'           => (array)  ($response['state_delta'] ?? []),
+                    'session_memory_update' => (string) ($response['session_memory_update'] ?? ''),
+                ];
+            } catch (Throwable $e) {
+                $lastException = $e;
+
+                if ($attempt < 3) {
+                    // Brief back-off before retrying (1 s, 2 s).
+                    sleep($attempt);
+                }
+            }
+        }
+
+        throw $lastException ?? new \RuntimeException('Agent call failed with no captured exception.');
     }
 
     // -------------------------------------------------------------------------

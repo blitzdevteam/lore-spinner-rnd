@@ -15,16 +15,16 @@ use Laravel\Ai\Promptable;
 use Stringable;
 
 #[Provider('anthropic')]
-#[Model('claude-sonnet-4-6')]
-#[Temperature(1.0)]
-#[Timeout(90)]
-class ChaosNarrationAgentClaudeSonnet implements Agent, HasStructuredOutput
+#[Model('claude-haiku-4-5')]
+#[Temperature(0.95)]
+#[Timeout(60)]
+class ChaosNarrationAgentClaudeHaiku implements Agent, HasStructuredOutput
 {
     use Promptable;
 
     public function __construct(
         private string $customInstructions,
-        private float $runtimeTemperature = 1.0,
+        private float $runtimeTemperature = 0.95,
     ) {}
 
     public function instructions(): Stringable|string

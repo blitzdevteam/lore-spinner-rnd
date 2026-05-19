@@ -22,11 +22,17 @@ class ChaosNarrationAgentGpt41 implements Agent, HasStructuredOutput
 
     public function __construct(
         private string $customInstructions,
+        private float $runtimeTemperature = 1.0,
     ) {}
 
     public function instructions(): Stringable|string
     {
         return $this->customInstructions;
+    }
+
+    public function temperature(): float
+    {
+        return $this->runtimeTemperature;
     }
 
     public function schema(JsonSchema $schema): array
