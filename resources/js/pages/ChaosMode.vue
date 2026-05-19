@@ -284,23 +284,23 @@ function resetAdventure(): void {
             <div class="flex flex-col lg:flex-row lg:items-start">
 
                 <!-- ── Left panel: hero + config ── -->
-                <div class="chaos-start-left flex flex-col px-5 pb-8 pt-1 sm:px-8 lg:sticky lg:top-0 lg:h-[calc(100vh-60px)] lg:w-[370px] lg:shrink-0 lg:overflow-hidden lg:pb-10 lg:pt-4 xl:w-[400px]">
+                <div class="chaos-start-left order-last flex flex-col px-5 pb-28 pt-2 sm:px-8 sm:pb-10 lg:order-1 lg:sticky lg:top-0 lg:h-[calc(100vh-60px)] lg:w-[370px] lg:shrink-0 lg:overflow-hidden lg:pb-10 lg:pt-4 xl:w-[400px]">
 
                     <!-- Hero text -->
-                    <div class="chaos-enter-anim mb-6 lg:mb-8" style="--anim-delay: 0ms">
-                        <h1 class="chaos-start-title font-gill-sans mb-3 text-[2.5rem] font-medium leading-[1.05] tracking-tight sm:text-5xl lg:text-[2.8rem] xl:text-[3.2rem]">
+                    <div class="chaos-enter-anim mb-4 sm:mb-6 lg:mb-8" style="--anim-delay: 0ms">
+                        <h1 class="chaos-start-title font-gill-sans mb-2 text-[1.85rem] font-medium leading-[1.05] tracking-tight sm:text-[2.5rem] lg:text-[2.8rem] xl:text-[3.2rem]">
                             Step into<br>the story.
                         </h1>
-                        <p class="chaos-mode-lede max-w-[38ch] text-sm leading-relaxed">
+                        <p class="chaos-mode-lede hidden max-w-[38ch] text-sm leading-relaxed sm:block">
                             Full agency. No rails. Type anything — the world responds, absorbs, and changes.
                         </p>
                     </div>
 
-                    <!-- Selected story preview strip -->
+                    <!-- Selected story preview strip — desktop only (mobile sees selection in card) -->
                     <Transition name="preview-fade">
                         <div
                             v-if="selectedStory"
-                            class="chaos-story-preview-strip chaos-enter-anim mb-5 rounded-xl border p-3.5 lg:mb-6"
+                            class="chaos-story-preview-strip chaos-enter-anim mb-5 hidden rounded-xl border p-3.5 lg:mb-6 lg:block"
                             style="--anim-delay: 50ms"
                         >
                             <div class="mb-1.5 flex items-center gap-2">
@@ -384,26 +384,27 @@ function resetAdventure(): void {
                             </div>
                         </div>
 
-                        <!-- CTA -->
-                        <BaseButton
-                            class="chaos-mode-cta w-full"
-                            severity="primary"
-                            :disabled="loading || !selectedStory?.available"
-                            @click="startWithChoices"
-                        >
-                            <span v-if="loading" class="flex items-center justify-center gap-2 text-[#1a0f00]">
-                                <span class="size-4 animate-spin rounded-full border-2 border-[#1a0f00]/25 border-t-[#1a0f00]/85" />
-                                Opening the story...
-                            </span>
-                            <span v-else>Begin the Adventure</span>
-                        </BaseButton>
-
-                        <p v-if="errorMessage" class="mt-3 text-xs text-red-400">{{ errorMessage }}</p>
+                        <!-- CTA — desktop only; mobile uses fixed bottom bar -->
+                        <div class="hidden lg:block">
+                            <BaseButton
+                                class="chaos-mode-cta w-full"
+                                severity="primary"
+                                :disabled="loading || !selectedStory?.available"
+                                @click="startWithChoices"
+                            >
+                                <span v-if="loading" class="flex items-center justify-center gap-2 text-[#1a0f00]">
+                                    <span class="size-4 animate-spin rounded-full border-2 border-[#1a0f00]/25 border-t-[#1a0f00]/85" />
+                                    Opening the story...
+                                </span>
+                                <span v-else>Begin the Adventure</span>
+                            </BaseButton>
+                            <p v-if="errorMessage" class="mt-3 text-xs text-red-400">{{ errorMessage }}</p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- ── Right panel: story grid ── -->
-                <div class="flex-1 px-5 pb-10 pt-2 sm:px-8 lg:pt-6">
+                <div class="order-first flex-1 px-5 pb-4 pt-3 sm:px-8 sm:pt-2 lg:order-2 lg:pb-10 lg:pt-6">
                     <label
                         class="chaos-mode-field-label chaos-enter-anim mb-4 block text-[10px] uppercase tracking-[0.18em]"
                         style="--anim-delay: 70ms"
@@ -451,22 +452,22 @@ function resetAdventure(): void {
                             />
 
                             <!-- Card content -->
-                            <div class="relative z-[1] flex h-full flex-col justify-between p-4 sm:p-5">
+                            <div class="relative z-[1] flex h-full flex-col justify-between p-3 sm:p-4 lg:p-5">
                                 <div>
                                     <h3
-                                        class="story-card-title font-gill-sans mb-1.5 text-base font-semibold leading-snug"
+                                        class="story-card-title font-gill-sans mb-1 text-sm font-semibold leading-snug sm:mb-1.5 sm:text-base"
                                         :style="{ color: story.available ? '#faf6ef' : 'rgba(250,246,239,0.38)' }"
                                     >
                                         {{ story.title }}
                                     </h3>
                                     <p
-                                        class="story-card-tagline line-clamp-3 text-[11px] leading-relaxed"
+                                        class="story-card-tagline line-clamp-2 text-[10px] leading-relaxed sm:text-[11px] lg:line-clamp-3"
                                         :style="{ color: story.available ? 'rgba(229,217,192,0.65)' : 'rgba(229,217,192,0.22)' }"
                                     >
                                         {{ story.tagline }}
                                     </p>
                                 </div>
-                                <div class="mt-4 flex items-center justify-between">
+                                <div class="mt-3 flex items-center justify-between sm:mt-4">
                                     <span
                                         class="text-[10px] uppercase tracking-wider"
                                         :style="{ color: story.available ? storyTheme(story.slug).accent : 'rgba(255,255,255,0.15)' }"
@@ -491,6 +492,25 @@ function resetAdventure(): void {
                 </div>
             </div>
         </div>
+
+        <!-- ── Mobile CTA bar — fixed at bottom, visible only on start screen ── -->
+        <Transition name="mobile-cta-slide">
+            <div v-if="!started" class="chaos-mobile-cta-bar lg:hidden">
+                <BaseButton
+                    class="chaos-mode-cta w-full"
+                    severity="primary"
+                    :disabled="loading || !selectedStory?.available"
+                    @click="startWithChoices"
+                >
+                    <span v-if="loading" class="flex items-center justify-center gap-2 text-[#1a0f00]">
+                        <span class="size-4 animate-spin rounded-full border-2 border-[#1a0f00]/25 border-t-[#1a0f00]/85" />
+                        Opening the story...
+                    </span>
+                    <span v-else>Begin the Adventure</span>
+                </BaseButton>
+                <p v-if="errorMessage" class="mt-2 text-center text-xs text-red-400">{{ errorMessage }}</p>
+            </div>
+        </Transition>
 
         <!-- ── Game screen ───────────────────────────────────────────────────── -->
         <div v-else class="relative z-[1] flex h-full flex-col">
@@ -796,11 +816,14 @@ function resetAdventure(): void {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.04);
     color: rgba(250, 235, 200, 0.55);
-    font-size: 11px;
-    padding: 3px 10px;
+    font-size: 10px;
+    padding: 3px 9px;
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s, color 0.15s;
     white-space: nowrap;
+}
+@media (min-width: 640px) {
+    .chaos-model-pill { font-size: 11px; padding: 3px 10px; }
 }
 .chaos-model-pill:hover {
     border-color: rgba(var(--chaos-brand-rgb), 0.38);
@@ -818,7 +841,7 @@ function resetAdventure(): void {
 .chaos-stories-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 10px;
 }
 @media (min-width: 640px) {
     .chaos-stories-grid { gap: 14px; }
@@ -826,6 +849,32 @@ function resetAdventure(): void {
 @media (min-width: 1280px) {
     .chaos-stories-grid { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* ── Mobile CTA bar ── */
+.chaos-mobile-cta-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    padding: 12px 20px;
+    padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
+    background: linear-gradient(
+        0deg,
+        rgba(3, 7, 18, 1) 0%,
+        rgba(3, 7, 18, 0.97) 55%,
+        rgba(3, 7, 18, 0.8) 80%,
+        transparent 100%
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* ── Mobile CTA slide transition ── */
+.mobile-cta-slide-enter-active { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; }
+.mobile-cta-slide-leave-active { transition: transform 0.2s ease, opacity 0.15s ease; }
+.mobile-cta-slide-enter-from,
+.mobile-cta-slide-leave-to   { transform: translateY(100%); opacity: 0; }
 
 /* ── Story selection cards ── */
 .story-card {
@@ -838,7 +887,10 @@ function resetAdventure(): void {
         inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    min-height: 11rem;
+    min-height: 9.5rem;
+}
+@media (min-width: 390px) {
+    .story-card { min-height: 10.5rem; }
 }
 @media (min-width: 640px) {
     .story-card { min-height: 12rem; }
