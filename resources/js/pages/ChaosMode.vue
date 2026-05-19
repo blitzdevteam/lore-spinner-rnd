@@ -292,7 +292,7 @@ function resetAdventure(): void {
                             Step into<br>the story.
                         </h1>
                         <p class="chaos-mode-lede hidden max-w-[38ch] text-sm leading-relaxed sm:block">
-                            Full agency. No rails. Type anything — the world responds, absorbs, and changes.
+                            Explore. Live it.
                         </p>
                     </div>
 
@@ -717,7 +717,6 @@ function resetAdventure(): void {
     /* Brand: Amber Gold — Chaos Mode signature, distinct from Story Guard's Tiffany Blue */
     --chaos-brand: #e5ad53;
     --chaos-brand-rgb: 229, 173, 83;
-    font-family: 'Source Sans 3', Inter, sans-serif;
 
     /* Override the app-wide primary palette so every shared component
        (GameplayInput mic/submit buttons, glow gradient, media player
