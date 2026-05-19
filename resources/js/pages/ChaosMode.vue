@@ -267,163 +267,228 @@ function resetAdventure(): void {
         <div class="chaos-mode-brand-bg pointer-events-none absolute inset-0" aria-hidden="true" />
 
         <!-- ── Start screen ──────────────────────────────────────────────────── -->
-        <div v-if="!started" class="relative z-[1] flex h-full flex-col items-center justify-center overflow-y-auto px-4 py-8">
-            <div class="chaos-mode-config-card w-full max-w-2xl rounded-2xl border p-7 backdrop-blur-xl sm:p-8">
+        <div v-if="!started" class="chaos-start relative z-[1] h-full overflow-y-auto">
 
-                <p class="chaos-mode-eyebrow mb-3 text-xs uppercase tracking-widest">
-                    Experimental — Chaos Mode
-                </p>
-                <h1 class="chaos-mode-title mb-1 font-gill-sans text-2xl font-medium sm:text-3xl">
-                    Step into the story.
-                </h1>
-                <p class="chaos-mode-lede mb-8 text-sm">
-                    Full agency. Type anything; the world absorbs it.
-                </p>
+            <!-- Top nav bar -->
+            <div class="chaos-start-nav flex shrink-0 items-center justify-between px-5 py-4 sm:px-8 sm:py-5">
+                <a href="/" class="chaos-mode-back-link flex items-center gap-1 text-xs transition-colors">
+                    <LucideChevronLeft class="size-3.5" :stroke-width="2" />
+                    LoreSpinner
+                </a>
+                <span class="chaos-mode-eyebrow text-[10px] uppercase tracking-[0.18em]">
+                    Experimental · Chaos Mode
+                </span>
+            </div>
 
-                <!-- Story selector cards -->
-                <div class="mb-7">
-                    <label class="chaos-mode-field-label mb-3 block text-xs uppercase tracking-widest">
+            <!-- Two-column content -->
+            <div class="flex flex-col lg:flex-row lg:items-start">
+
+                <!-- ── Left panel: hero + config ── -->
+                <div class="chaos-start-left flex flex-col px-5 pb-8 pt-1 sm:px-8 lg:sticky lg:top-0 lg:h-[calc(100vh-60px)] lg:w-[370px] lg:shrink-0 lg:overflow-hidden lg:pb-10 lg:pt-4 xl:w-[400px]">
+
+                    <!-- Hero text -->
+                    <div class="chaos-enter-anim mb-6 lg:mb-8" style="--anim-delay: 0ms">
+                        <h1 class="chaos-start-title font-gill-sans mb-3 text-[2.5rem] font-medium leading-[1.05] tracking-tight sm:text-5xl lg:text-[2.8rem] xl:text-[3.2rem]">
+                            Step into<br>the story.
+                        </h1>
+                        <p class="chaos-mode-lede max-w-[38ch] text-sm leading-relaxed">
+                            Full agency. No rails. Type anything — the world responds, absorbs, and changes.
+                        </p>
+                    </div>
+
+                    <!-- Selected story preview strip -->
+                    <Transition name="preview-fade">
+                        <div
+                            v-if="selectedStory"
+                            class="chaos-story-preview-strip chaos-enter-anim mb-5 rounded-xl border p-3.5 lg:mb-6"
+                            style="--anim-delay: 50ms"
+                        >
+                            <div class="mb-1.5 flex items-center gap-2">
+                                <span
+                                    class="size-1.5 shrink-0 rounded-full"
+                                    :style="{ backgroundColor: storyTheme(selectedStory.slug).accent }"
+                                />
+                                <span
+                                    class="text-[10px] uppercase tracking-wider"
+                                    :style="{ color: storyTheme(selectedStory.slug).accent }"
+                                >
+                                    As {{ selectedStory.protagonist }}
+                                </span>
+                            </div>
+                            <p class="text-[12px] leading-relaxed text-gray-400">{{ selectedStory.tagline }}</p>
+                        </div>
+                    </Transition>
+
+                    <!-- Spacer pushes config to bottom on desktop -->
+                    <div class="hidden lg:block lg:flex-1" />
+
+                    <!-- Config block -->
+                    <div class="chaos-enter-anim" style="--anim-delay: 110ms">
+
+                        <!-- Model selector — pill chips, grouped by provider -->
+                        <div class="mb-5">
+                            <div class="mb-2.5 flex items-baseline justify-between">
+                                <label class="chaos-mode-field-label text-[10px] uppercase tracking-[0.18em]">Narrator Model</label>
+                                <span class="chaos-mode-cost-est text-[10px]">{{ selectedModelMeta?.est }} / session</span>
+                            </div>
+
+                            <div class="mb-2 flex flex-wrap gap-1.5">
+                                <span class="chaos-provider-label">OpenAI</span>
+                                <button
+                                    v-for="m in MODELS.filter((x) => x.provider === 'OpenAI')"
+                                    :key="m.value"
+                                    class="chaos-model-pill"
+                                    :class="{ 'chaos-model-pill--active': selectedModel === m.value }"
+                                    @click="selectedModel = m.value"
+                                >
+                                    {{ m.label }}
+                                </button>
+                            </div>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="chaos-provider-label">Anthropic</span>
+                                <button
+                                    v-for="m in MODELS.filter((x) => x.provider === 'Anthropic')"
+                                    :key="m.value"
+                                    class="chaos-model-pill"
+                                    :class="{ 'chaos-model-pill--active': selectedModel === m.value }"
+                                    @click="selectedModel = m.value"
+                                >
+                                    {{ m.label }}
+                                </button>
+                            </div>
+                            <p class="chaos-mode-cost-note mt-1.5 text-[10px] leading-relaxed">
+                                Estimate per ~20-turn session. Actual cost varies.
+                            </p>
+                        </div>
+
+                        <!-- Tone slider -->
+                        <div class="mb-6">
+                            <div class="mb-2 flex items-center justify-between">
+                                <label class="chaos-mode-field-label text-[10px] uppercase tracking-[0.18em]">Tone</label>
+                                <span class="chaos-mode-temp-value text-[11px] font-medium tabular-nums">
+                                    {{ selectedTemperature <= 0.7 ? 'Focused' : selectedTemperature >= 1.15 ? 'Wild' : selectedTemperature >= 0.95 ? 'Creative' : 'Balanced' }}
+                                    <span class="opacity-45">· {{ selectedTemperature.toFixed(2) }}</span>
+                                </span>
+                            </div>
+                            <input
+                                v-model.number="selectedTemperature"
+                                type="range"
+                                min="0.5"
+                                max="1.3"
+                                step="0.05"
+                                class="chaos-mode-temp-slider w-full"
+                            />
+                            <div class="mt-1 flex justify-between">
+                                <span class="chaos-mode-cost-note text-[10px]">Consistent</span>
+                                <span class="chaos-mode-cost-note text-[10px]">Inventive</span>
+                            </div>
+                        </div>
+
+                        <!-- CTA -->
+                        <BaseButton
+                            class="chaos-mode-cta w-full"
+                            severity="primary"
+                            :disabled="loading || !selectedStory?.available"
+                            @click="startWithChoices"
+                        >
+                            <span v-if="loading" class="flex items-center justify-center gap-2 text-[#1a0f00]">
+                                <span class="size-4 animate-spin rounded-full border-2 border-[#1a0f00]/25 border-t-[#1a0f00]/85" />
+                                Opening the story...
+                            </span>
+                            <span v-else>Begin the Adventure</span>
+                        </BaseButton>
+
+                        <p v-if="errorMessage" class="mt-3 text-xs text-red-400">{{ errorMessage }}</p>
+                    </div>
+                </div>
+
+                <!-- ── Right panel: story grid ── -->
+                <div class="flex-1 px-5 pb-10 pt-2 sm:px-8 lg:pt-6">
+                    <label
+                        class="chaos-mode-field-label chaos-enter-anim mb-4 block text-[10px] uppercase tracking-[0.18em]"
+                        style="--anim-delay: 70ms"
+                    >
                         Choose Your Story
                     </label>
-                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div class="chaos-stories-grid">
                         <button
-                            v-for="story in stories"
+                            v-for="(story, i) in stories"
                             :key="story.slug"
                             :disabled="!story.available"
-                            class="story-card relative overflow-hidden rounded-xl border text-left transition-all focus:outline-none"
+                            class="story-card chaos-enter-anim relative overflow-hidden rounded-2xl border text-left transition-all focus:outline-none"
                             :class="{
                                 'story-card--selected': selectedStorySlug === story.slug && story.available,
                                 'story-card--unavailable': !story.available,
                             }"
+                            :style="{ '--anim-delay': `${90 + i * 50}ms` }"
                             @click="story.available && (selectedStorySlug = story.slug)"
                         >
-                            <!-- Theme gradient background -->
+                            <!-- Theme gradient bg -->
                             <div
                                 class="story-card-bg absolute inset-0"
                                 :style="{
-                                    background: `radial-gradient(ellipse 120% 100% at 50% 0%, ${storyTheme(story.slug).from}cc 0%, ${storyTheme(story.slug).via} 70%)`,
+                                    background: `radial-gradient(ellipse 140% 110% at 50% -10%, ${storyTheme(story.slug).from}ee 0%, ${storyTheme(story.slug).via} 65%)`,
                                 }"
                             />
-                            <!-- Cover image if available -->
+                            <!-- Cover image -->
                             <img
                                 v-if="story.cover"
                                 :src="story.cover"
                                 :alt="story.title"
-                                class="absolute inset-0 h-full w-full object-cover object-center opacity-30"
+                                class="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-500"
+                                :class="selectedStorySlug === story.slug ? 'opacity-35' : 'opacity-20'"
                             />
                             <!-- Accent top stripe -->
                             <div
-                                class="absolute top-0 right-0 left-0 h-0.5 transition-opacity"
-                                :style="{ background: storyTheme(story.slug).accent, opacity: selectedStorySlug === story.slug ? 1 : 0.3 }"
+                                class="absolute inset-x-0 top-0 h-px transition-opacity duration-300"
+                                :style="{ background: storyTheme(story.slug).accent, opacity: selectedStorySlug === story.slug ? 1 : 0.22 }"
                             />
-                            <!-- Content -->
-                            <div class="relative z-[1] flex flex-col gap-1.5 p-4">
-                                <h3
-                                    class="story-card-title font-gill-sans text-sm font-semibold leading-snug sm:text-base"
-                                    :style="{ color: story.available ? '#faf6ef' : 'rgba(250,246,239,0.45)' }"
-                                >
-                                    {{ story.title }}
-                                </h3>
-                                <p
-                                    class="story-card-tagline line-clamp-2 text-[11px] leading-relaxed"
-                                    :style="{ color: story.available ? 'rgba(229,217,192,0.72)' : 'rgba(229,217,192,0.3)' }"
-                                >
-                                    {{ story.tagline }}
-                                </p>
-                                <div class="mt-2 flex items-center justify-between">
+                            <!-- Bottom gradient on selected -->
+                            <div
+                                class="absolute inset-x-0 bottom-0 h-20 transition-opacity duration-300"
+                                :class="selectedStorySlug === story.slug ? 'opacity-100' : 'opacity-0'"
+                                :style="{ background: `linear-gradient(to top, ${storyTheme(story.slug).from}99, transparent)` }"
+                            />
+
+                            <!-- Card content -->
+                            <div class="relative z-[1] flex h-full flex-col justify-between p-4 sm:p-5">
+                                <div>
+                                    <h3
+                                        class="story-card-title font-gill-sans mb-1.5 text-base font-semibold leading-snug"
+                                        :style="{ color: story.available ? '#faf6ef' : 'rgba(250,246,239,0.38)' }"
+                                    >
+                                        {{ story.title }}
+                                    </h3>
+                                    <p
+                                        class="story-card-tagline line-clamp-3 text-[11px] leading-relaxed"
+                                        :style="{ color: story.available ? 'rgba(229,217,192,0.65)' : 'rgba(229,217,192,0.22)' }"
+                                    >
+                                        {{ story.tagline }}
+                                    </p>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between">
                                     <span
                                         class="text-[10px] uppercase tracking-wider"
-                                        :style="{ color: story.available ? storyTheme(story.slug).accent : 'rgba(255,255,255,0.2)' }"
+                                        :style="{ color: story.available ? storyTheme(story.slug).accent : 'rgba(255,255,255,0.15)' }"
                                     >
                                         As {{ story.protagonist }}
                                     </span>
                                     <span
                                         v-if="!story.available"
-                                        class="rounded-full border border-gray-700 px-2 py-0.5 text-[9px] uppercase tracking-wider text-gray-600"
+                                        class="rounded-full border border-gray-700/50 px-2 py-0.5 text-[9px] uppercase tracking-wider text-gray-700"
                                     >
                                         Soon
                                     </span>
                                     <span
                                         v-else-if="selectedStorySlug === story.slug"
-                                        class="story-card-check flex size-4 items-center justify-center rounded-full text-[10px] text-[#1f160d]"
+                                        class="story-card-check flex size-5 items-center justify-center rounded-full text-[10px] text-[#1f160d]"
                                         :style="{ backgroundColor: storyTheme(story.slug).accent }"
                                     >✓</span>
                                 </div>
                             </div>
                         </button>
                     </div>
-                    <p v-if="selectedStory?.tagline" class="chaos-mode-tagline mt-2 text-[11px] italic opacity-0">
-                        {{ selectedStory.tagline }}
-                    </p>
                 </div>
-
-                <!-- Model selector -->
-                <div class="mb-5">
-                    <div class="mb-2 flex items-baseline justify-between">
-                        <label class="chaos-mode-field-label text-xs uppercase tracking-widest">Narrator Model</label>
-                        <span class="chaos-mode-cost-est text-[10px]">
-                            {{ selectedModelMeta?.est }} / session
-                        </span>
-                    </div>
-                    <select
-                        v-model="selectedModel"
-                        class="chaos-mode-select w-full rounded-lg border px-3 py-2.5 text-sm outline-none"
-                    >
-                        <optgroup v-for="provider in ['OpenAI', 'Anthropic']" :key="provider" :label="provider">
-                            <option
-                                v-for="m in MODELS.filter((x) => x.provider === provider)"
-                                :key="m.value"
-                                :value="m.value"
-                            >
-                                {{ m.label }} — {{ m.est }}
-                            </option>
-                        </optgroup>
-                    </select>
-                    <p class="chaos-mode-cost-note mt-1.5 text-[10px] leading-relaxed">
-                        Estimate based on ~20 turns with full session context. Actual cost varies.
-                    </p>
-                </div>
-
-                <!-- Temperature slider -->
-                <div class="mb-7">
-                    <div class="mb-2 flex items-baseline justify-between">
-                        <label class="chaos-mode-field-label text-xs uppercase tracking-widest">Temperature</label>
-                        <span class="chaos-mode-temp-value tabular-nums text-[11px] font-medium">
-                            {{ selectedTemperature.toFixed(2) }}
-                        </span>
-                    </div>
-                    <input
-                        v-model.number="selectedTemperature"
-                        type="range"
-                        min="0.5"
-                        max="1.3"
-                        step="0.05"
-                        class="chaos-mode-temp-slider w-full"
-                    />
-                    <div class="mt-1.5 flex justify-between">
-                        <span class="chaos-mode-cost-note text-[10px]">Focused</span>
-                        <span class="chaos-mode-cost-note text-[10px]">Creative</span>
-                    </div>
-                    <p class="chaos-mode-cost-note mt-0.5 text-[10px] leading-relaxed">
-                        Lower = more consistent narration. Higher = more surprising and inventive.
-                    </p>
-                </div>
-
-                <BaseButton
-                    class="chaos-mode-cta w-full"
-                    severity="primary"
-                    :disabled="loading || !selectedStory?.available"
-                    @click="startWithChoices"
-                >
-                    <span v-if="loading" class="flex items-center justify-center gap-2 text-[#1a0f00]">
-                        <span class="size-4 animate-spin rounded-full border-2 border-[#1a0f00]/25 border-t-[#1a0f00]/85" />
-                        Opening the story...
-                    </span>
-                    <span v-else>Begin the Adventure</span>
-                </BaseButton>
-
-                <p v-if="errorMessage" class="mt-4 text-sm text-red-400">{{ errorMessage }}</p>
-                <a href="/" class="chaos-mode-back-link mt-6 block text-xs transition-colors">← Back to LoreSpinner</a>
             </div>
         </div>
 
@@ -658,37 +723,109 @@ function resetAdventure(): void {
         radial-gradient(ellipse 80% 60% at 0% 80%, rgba(var(--chaos-brand-rgb), 0.10), transparent 45%);
 }
 
-/* ── Start screen config card ── */
-.chaos-mode-config-card {
-    border-color: rgba(var(--chaos-brand-rgb), 0.25);
-    background: rgba(255, 255, 255, 0.04);
-    box-shadow:
-        0 0 0 1px rgba(var(--chaos-brand-rgb), 0.05) inset,
-        0 0 2px 0 rgba(0, 0, 0, 0.15),
-        0 1px 8px 0 rgba(0, 0, 0, 0.2),
-        3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5) inset,
-        -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.5) inset,
-        1px 1px 1px -0.5px rgba(255, 255, 255, 0.5) inset,
-        inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.12),
-        0 32px 64px -32px rgba(0, 0, 0, 0.65);
+/* ── Entrance animation ── */
+@keyframes chaos-fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.chaos-enter-anim {
+    animation: chaos-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--anim-delay, 0ms);
 }
 
+/* ── Start screen layout ── */
+.chaos-start-nav {
+    border-bottom: 1px solid rgba(var(--chaos-brand-rgb), 0.07);
+}
+
+.chaos-start-left {
+    border-right: none;
+}
+@media (min-width: 1024px) {
+    .chaos-start-left {
+        border-right: 1px solid rgba(var(--chaos-brand-rgb), 0.08);
+    }
+}
+
+.chaos-start-title { color: #faf6ef; }
+
+/* ── Selected story preview strip ── */
+.chaos-story-preview-strip {
+    border-color: rgba(var(--chaos-brand-rgb), 0.15);
+    background: rgba(var(--chaos-brand-rgb), 0.04);
+}
+
+/* ── Preview transition ── */
+.preview-fade-enter-active { transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+.preview-fade-leave-active { transition: all 0.2s ease; }
+.preview-fade-enter-from   { opacity: 0; transform: translateY(6px); }
+.preview-fade-leave-to     { opacity: 0; }
+
+/* ── Header text ── */
 .chaos-mode-eyebrow {
-    color: rgba(var(--chaos-brand-rgb), 0.9);
-    text-shadow: 0 0 24px rgba(var(--chaos-brand-rgb), 0.3);
+    color: rgba(var(--chaos-brand-rgb), 0.75);
+    letter-spacing: 0.18em;
 }
 
-.chaos-mode-title { color: #faf6ef; }
+.chaos-mode-lede { color: rgba(250, 235, 200, 0.52); }
 
-.chaos-mode-lede { color: rgba(250, 235, 200, 0.55); }
+.chaos-mode-field-label { color: rgba(var(--chaos-brand-rgb), 0.6); }
 
-.chaos-mode-field-label { color: rgba(var(--chaos-brand-rgb), 0.65); }
+.chaos-mode-cost-est { color: rgba(var(--chaos-brand-rgb), 0.52); font-variant-numeric: tabular-nums; }
 
-.chaos-mode-tagline { color: rgba(250, 230, 190, 0.52); }
+.chaos-mode-cost-note { color: rgba(250, 225, 175, 0.26); font-style: italic; }
 
-.chaos-mode-cost-est { color: rgba(var(--chaos-brand-rgb), 0.55); font-variant-numeric: tabular-nums; }
+/* ── Provider label ── */
+.chaos-provider-label {
+    display: inline-flex;
+    align-items: center;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(var(--chaos-brand-rgb), 0.35);
+    align-self: center;
+    padding-right: 2px;
+}
 
-.chaos-mode-cost-note { color: rgba(250, 225, 175, 0.28); font-style: italic; }
+/* ── Model pills ── */
+.chaos-model-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(250, 235, 200, 0.55);
+    font-size: 11px;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+.chaos-model-pill:hover {
+    border-color: rgba(var(--chaos-brand-rgb), 0.38);
+    color: rgba(250, 235, 200, 0.85);
+    background: rgba(var(--chaos-brand-rgb), 0.06);
+}
+.chaos-model-pill--active {
+    border-color: rgba(var(--chaos-brand-rgb), 0.7) !important;
+    background: rgba(var(--chaos-brand-rgb), 0.12) !important;
+    color: rgba(var(--chaos-brand-rgb), 0.95) !important;
+    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.18);
+}
+
+/* ── Stories grid ── */
+.chaos-stories-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+@media (min-width: 640px) {
+    .chaos-stories-grid { gap: 14px; }
+}
+@media (min-width: 1280px) {
+    .chaos-stories-grid { grid-template-columns: repeat(3, 1fr); }
+}
 
 /* ── Story selection cards ── */
 .story-card {
@@ -701,7 +838,10 @@ function resetAdventure(): void {
         inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    min-height: 9rem;
+    min-height: 11rem;
+}
+@media (min-width: 640px) {
+    .story-card { min-height: 12rem; }
 }
 
 .story-card:not(.story-card--unavailable):hover {
@@ -728,20 +868,6 @@ function resetAdventure(): void {
     cursor: not-allowed;
     opacity: 0.6;
 }
-
-/* ── Model select ── */
-.chaos-mode-select {
-    color: #faf3e4;
-    background-color: rgba(12, 9, 3, 0.92);
-    border-color: rgba(var(--chaos-brand-rgb), 0.25);
-}
-.chaos-mode-select:focus {
-    border-color: rgba(var(--chaos-brand-rgb), 0.6);
-    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.22);
-}
-.chaos-mode-select option,
-.chaos-mode-select optgroup { background-color: #0e0a03; color: #faf3e4; }
-.chaos-mode-select option:disabled { color: rgba(250, 230, 190, 0.3); }
 
 /* ── Temperature slider ── */
 .chaos-mode-temp-value {
@@ -793,7 +919,7 @@ function resetAdventure(): void {
 }
 
 /* ── CTA button ── */
-.chaos-mode-config-card :deep(.chaos-mode-cta) {
+:deep(.chaos-mode-cta) {
     background-color: var(--chaos-brand) !important;
     color: #1a0f00 !important;
     border-color: rgba(26, 15, 0, 0.15) !important;
@@ -801,19 +927,14 @@ function resetAdventure(): void {
     font-weight: 600;
     letter-spacing: 0.02em;
 }
-.chaos-mode-config-card :deep(.chaos-mode-cta:not(.pointer-events-none):hover) {
+:deep(.chaos-mode-cta:not(.pointer-events-none):hover) {
     filter: brightness(1.08);
     box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.5), 0 12px 28px -8px rgba(var(--chaos-brand-rgb), 0.4);
 }
-.chaos-mode-config-card :deep(.chaos-mode-cta.pointer-events-none) {
+:deep(.chaos-mode-cta.pointer-events-none) {
     background-color: rgba(var(--chaos-brand-rgb), 0.35) !important;
     color: rgba(26, 15, 0, 0.6) !important;
     opacity: 1 !important;
-}
-:deep(.chaos-mode-cta) {
-    background-color: var(--chaos-brand) !important;
-    color: #1a0f00 !important;
-    font-weight: 600;
 }
 
 .chaos-mode-back-link { color: rgba(var(--chaos-brand-rgb), 0.45); }
