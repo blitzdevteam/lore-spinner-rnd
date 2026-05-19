@@ -267,7 +267,8 @@ function resetAdventure(): void {
         <div class="chaos-mode-brand-bg pointer-events-none absolute inset-0" aria-hidden="true" />
 
         <!-- ── Start screen ──────────────────────────────────────────────────── -->
-        <div v-if="!started" class="chaos-start relative z-[1] h-full overflow-y-auto">
+        <template v-if="!started">
+        <div class="chaos-start relative z-[1] h-full overflow-y-auto">
 
             <!-- Top nav bar -->
             <div class="chaos-start-nav flex shrink-0 items-center justify-between px-5 py-4 sm:px-8 sm:py-5">
@@ -495,7 +496,7 @@ function resetAdventure(): void {
 
         <!-- ── Mobile CTA bar — fixed at bottom, visible only on start screen ── -->
         <Transition name="mobile-cta-slide">
-            <div v-if="!started" class="chaos-mobile-cta-bar lg:hidden">
+            <div class="chaos-mobile-cta-bar lg:hidden">
                 <BaseButton
                     class="chaos-mode-cta w-full"
                     severity="primary"
@@ -511,6 +512,7 @@ function resetAdventure(): void {
                 <p v-if="errorMessage" class="mt-2 text-center text-xs text-red-400">{{ errorMessage }}</p>
             </div>
         </Transition>
+        </template>
 
         <!-- ── Game screen ───────────────────────────────────────────────────── -->
         <div v-else class="relative z-[1] flex h-full flex-col">
