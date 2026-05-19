@@ -289,7 +289,7 @@ function resetAdventure(): void {
 
                     <!-- Hero text -->
                     <div class="chaos-enter-anim mb-4 sm:mb-6 lg:mb-8" style="--anim-delay: 0ms">
-                        <h1 class="chaos-start-title font-gill-sans mb-2 text-[1.85rem] font-medium leading-[1.05] tracking-tight sm:text-[2.5rem] lg:text-[2.8rem] xl:text-[3.2rem]">
+                        <h1 class="chaos-start-title mb-2 text-[1.85rem] font-medium leading-[1.05] tracking-tight sm:text-[2.5rem] lg:text-[2.8rem] xl:text-[3.2rem]">
                             Step into<br>the story.
                         </h1>
                         <p class="chaos-mode-lede hidden max-w-[38ch] text-sm leading-relaxed sm:block">
