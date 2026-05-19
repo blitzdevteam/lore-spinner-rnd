@@ -633,6 +633,22 @@ function resetAdventure(): void {
     --chaos-brand: #e5ad53;
     --chaos-brand-rgb: 229, 173, 83;
     font-family: 'Source Sans 3', Inter, sans-serif;
+
+    /* Override the app-wide primary palette so every shared component
+       (GameplayInput mic/submit buttons, glow gradient, media player
+       play button, speed text) renders in amber instead of Tiffany Blue */
+    --color-primary-50:  #fdf5e4;
+    --color-primary-100: #fae8c0;
+    --color-primary-200: #f5d496;
+    --color-primary-300: #edba68;
+    --color-primary-400: #e5ad53;
+    --color-primary-500: #d49830;
+    --color-primary-600: #b87b1a;
+    --color-primary-700: #8f5c0d;
+    --color-primary-800: #6b4009;
+    --color-primary-900: #4a2b06;
+    --color-primary-950: #2a1803;
+    --color-primary:     #e5ad53;
 }
 
 .chaos-mode-brand-bg {
