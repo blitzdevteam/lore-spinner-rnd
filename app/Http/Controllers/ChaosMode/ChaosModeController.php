@@ -706,7 +706,7 @@ final class ChaosModeController extends Controller
             ? (string) $delta['location']
             : (string) ($previous['location'] ?? '');
 
-        foreach (['conditions', 'items', 'relationships', 'knowledge', 'notes'] as $key) {
+        foreach (['conditions', 'items', 'relationships', 'knowledge', 'notes', 'player_style'] as $key) {
             $value = $delta[$key] ?? null;
             $merged[$key] = is_array($value)
                 ? array_values(array_filter(array_map('strval', $value), fn ($v) => $v !== ''))
@@ -728,6 +728,7 @@ final class ChaosModeController extends Controller
             'relationships' => [],
             'knowledge'     => [],
             'notes'         => [],
+            'player_style'  => [],
         ];
     }
 

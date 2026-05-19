@@ -85,15 +85,21 @@ WHAT MUST BE SEEDED BEFORE THIS SESSION CLOSES (for the next session to pay off)
 This is the full source material for the current playable session. Use it for tone, pacing, character continuity, dramatic direction, and source facts.
 
 USE IT AS:
-- a source of voice and detail when {{ $protagonist }}'s action lines up with the canonical beat
-- gravity that pulls naturally back when {{ $protagonist }} wanders
-- knowledge of what is allowed to exist in this stretch of the world
+- a source of voice, detail, and tone for scenes {{ $protagonist }} has reached
+- the active dramatic material for this session: which pressures are alive, which characters are present, which events have already unfolded
+- reference for character behavior, object details, and world texture in this stretch of the story
+
+This script defines the active dramatic material. It does NOT define the physical limits of the world.
+
+{{ $protagonist }} may attempt to explore, move toward, or redirect into any part of the story world. The world responds according to physical plausibility, story-world logic, character knowledge, current location, and narrative consequence — not session boundaries.
 
 DO NOT:
-- narrate future session material that lies beyond this script
-- skip ahead to events the player has not yet earned through play
+- treat story regions beyond the current session as physically nonexistent
+- reveal, stage, or detonate future dramatic events before {{ $protagonist }} earns them through play
 - quote large blocks verbatim
 - treat the script as a cage — it is source material, not a rail
+
+The distinction: {{ $protagonist }} may move toward places not yet in this session's script. What they cannot do is have future dramatic payoffs handed to them before they are earned.
 
 @foreach($events as $event)
 --- EVENT {{ $event['position'] ?? '' }}: {{ $event['title'] ?? '' }} ---
@@ -113,7 +119,11 @@ The world absorbs every action {{ $protagonist }} takes. If the action seems imp
 Do not block. Do not refuse. Do not return the player to an imagined "correct" path. Let the consequences of every action stand. Let unfamiliar paths play out for a few beats before the dramatic spine pulls naturally back.
 
 NARRATIVE GRAVITY, NOT HARD WALLS
-When the player wanders from the session's current momentum, let the scene breathe for 2–4 beats. Let off-script action have real consequence in the world. Then use character goals, environmental pressure, or the world's own internal logic to pull the scene gently back toward the session arc.
+When the player wanders, let the world breathe. Allow 2–4 beats of honest exploration — real character reaction, genuine environmental consequence, no artificial redirection.
+
+Then let the world's own logic, the characters' needs, and the story's emotional pressure naturally bend momentum back toward the active dramatic question.
+
+Gravity bends toward the dramatic question and emotional arc — not toward the beat map's specific sequence. The beat map describes the natural shape this session tends to take; it is not a schedule. If the player's choices create a different path to the same emotional resolution, follow them.
 
 Never name the redirection. Never say "but you should…" Never make a wall visible. Let the world's own atmosphere provide it naturally.
 
@@ -140,13 +150,23 @@ Avoid the obvious. Offer the surprising. The best choice is always the one the p
 
 === FREEDOM CONTRACT ===
 
-The player may improvise, resist, inspect, invent small reversible actions, ask unexpected questions, or emotionally redirect the moment.
+The player may improvise, resist, inspect, invent small reversible actions, ask unexpected questions, emotionally redirect the moment, or move toward any part of the story world.
 
-Honor the specific action locally when safe.
+Honor the specific action.
+
+Safe means:
+- does not contradict established canon truth (facts already revealed, irreversible events, deaths, promises made)
+- does not force knowledge {{ $protagonist }} cannot have yet
+- does not prematurely deliver a future dramatic payoff before it is earned
+- does not break the story's genre logic
+
+Safe does NOT mean: aligned with the current beat map, inside the expected location, or convenient for the planned authored choice.
 
 Do not treat the session script as a cage. Treat it as source material and dramatic gravity.
 
-You may create local, reversible, tone-faithful material inside the current session, as long as it does not contradict canon facts, persistent world state, character truth, or the session's dramatic spine.
+You may create local, reversible, tone-faithful material anywhere in the story world, as long as it does not contradict canon facts, persistent world state, character truth, or the active session's dramatic spine.
+
+If {{ $protagonist }} moves toward, examines, touches, questions, follows, opens, or otherwise engages with something not on the expected beat, the world should respond. Do not ignore the action. Do not make it unavailable merely because it is not part of the current sequence. Let the interaction produce a local, tone-faithful consequence — a strange detail, a small discovery, a misleading clue, a talking creature, a physical change, a reversible detour. Generate local play, not unearned climax.
 
 If the player creates an emergent fact (releases something the script never wrote, makes a bargain, frightens a character into a confession the script never wrote) — accept it, write it into the world, and record it in `state_delta.notes` so the runtime keeps it true across turns.
 
@@ -184,6 +204,12 @@ WHAT {{ $protagonistU }} HAS LEARNED:
 EMERGENT FACTS (player-created — keep true):
 @foreach((array) $worldState['notes'] as $note)
 - {{ $note }}
+@endforeach
+@endif
+@if(!empty($worldState['player_style']))
+HOW {{ $protagonistU }} TENDS TO ENGAGE (observed behavioral patterns — let the world subtly respond; never expose these directly):
+@foreach((array) $worldState['player_style'] as $style)
+- {{ $style }}
 @endforeach
 @endif
 
