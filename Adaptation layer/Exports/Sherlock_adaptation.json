@@ -1,0 +1,957 @@
+{
+    "adaptation_status": "completed",
+    "story_wide": {
+        "format_detection": {
+            "detected_format": "NOVEL",
+            "evidence": "Page 1 uses continuous prose paragraphs with embedded dialogue in quotation marks (e.g., Watson narrating Holmes waking him), rather than scene sluglines like INT.\/EXT. It also features a first-person narrator voice with reflective commentary (“I had no keener pleasure than in following Holmes...”) and no screenplay elements such as all-caps character cues, parentheticals, or transitions.",
+            "narrative_tense": "First person",
+            "protagonist_name": "Dr. Watson",
+            "genre_signals": [
+                "Detective\/investigation setup: a distressed client arrives at daybreak to consult Sherlock Holmes",
+                "Holmes demonstrates deductive reasoning from physical clues (ticket stub, mud spatter) indicating mystery-solving focus",
+                "Gothic\/psychological menace: veiled woman, terror, ominous family history and a violent stepfather"
+            ],
+            "estimated_reading_time_per_page": "~2 min\/page",
+            "total_estimated_source_duration": "~10 min for 5 pages",
+            "estimated_session_count": 1
+        },
+        "ip_audit": {
+            "licensing_friction": {
+                "score": 1,
+                "evidence": "The provided sections identify the work as “The Adventure of the Speckled Band, NOVEL,” but contain no publication date, rights statement, or licensing information. There is nothing in the excerpts indicating whether the text is public domain or under an active estate\/rights-holder. With no explicit adaptation rights or restrictions present in the supplied material, gatekeeping\/uncertainty is likely at this phase."
+            },
+            "latent_choice_architecture": {
+                "score": 3,
+                "evidence": "The story repeatedly presents clear threshold moments where a player-facing decision could naturally occur without inventing new plot logic: Holmes asks Watson if he wants “the chance” to follow the case “from the outset,” and Watson accepts (“I would not miss it for anything.”). The antagonist directly pressures Holmes—“Don’t you dare to meddle with my affairs… I am a dangerous man to fall foul of!”—creating an immediate fork between caution and escalation. Later, Holmes explicitly commits to action (“this is too serious for dawdling… we shall… drive to Waterloo… slip your revolver into your pocket”), and in the climax they choose to enter the doctor’s room (“Take your pistol, and we will enter Dr. Roylott’s room.”)."
+            },
+            "bounded_agency": {
+                "score": 2,
+                "evidence": "The excerpts establish a strong investigative identity for Holmes—calm under threat (“Holmes… imperturbably”), deductive (“I observe the second half of a return ticket…”), and proactive (“we must make the best use of our time”). However, the core protagonist perspective\/agency is split: Watson narrates and acts (e.g., “with the cocked pistol in my hand”), while Holmes drives key decisions and deductions. Because the player avatar (Watson vs. Holmes) is not explicitly fixed by the provided sections, interactive agency could drift unless the adaptation pins a consistent playable role early."
+            },
+            "emotional_range": {
+                "score": 3,
+                "evidence": "Fear\/terror is explicit and sustained: “It is fear, Mr. Holmes. It is terror,” and Helen appears “like those of some hunted animal.” There is humor\/banter and social play (“Mrs. Hudson has been knocked up… she retorted upon me, and I on you,” and Holmes’s amused responses to Roylott’s insults: “Holmes chuckled heartily”). Threat and menace are vivid (Roylott bends the poker; Holmes advises a revolver), and the climax delivers horror\/shock (“the most horrible cry… a hoarse yell of pain and fear and anger”)."
+            },
+            "recognizability": {
+                "score": 2,
+                "evidence": "Within the text, Sherlock Holmes and Dr. Watson are presented as already-known figures to characters (“I have heard of you, Mr. Holmes… from Mrs. Farintosh”), implying some in-world reputation. But the excerpts themselves do not provide any external-market evidence of broad audience recognition, franchise status, or brand guarantees. Based strictly on the supplied sections, this reads as a professionally competent detective story with some implied renown, but not provably ‘widely known’ from the text alone."
+            },
+            "replayability_hook": {
+                "score": 2,
+                "evidence": "The world does not explicitly encode a branching metaphor (no stated time loops, alternate realities, or institutionalized ‘multiple outcomes’ framing). That said, the investigation is built from interpretable clues and competing hypotheses—Holmes admits he was misled by “the word ‘band’… sufficient to put me upon an entirely wrong scent”—which supports replay via different investigative emphases and risk tolerances. Replayability would likely need to be manufactured through structured choice design (what to inspect, whom to trust, how to set the trap) rather than being natively justified by the setting."
+            },
+            "total_score": 12,
+            "verdict": "AMBER",
+            "lowest_scoring_criterion": "Licensing Friction",
+            "editorial_mitigation": "Before Phase 2, resolve rights status with documentation rather than assumption: obtain a clear determination of whether this specific text\/translation\/edition is public domain in your target territories and platforms, and whether any modern editorial apparatus (introductions, annotations, compiled editions) is excluded. If licensing is required, secure a written grant covering interactive adaptation, derivative works, and distribution (including marketing use of character names), plus any constraints on depiction of violence\/animals. If public domain, still lock the exact source edition you will adapt (to avoid inadvertently using protected later revisions), and record a citation trail so downstream narrative\/design can proceed without legal rework."
+        },
+        "story_session_map": {
+            "confirmed_session_count": 2,
+            "session_allocation": [
+                {
+                    "session_number": 1,
+                    "chapters_covered": "Ch.1–Ch.3 (through the daytime inspection and plan-setting)",
+                    "event_range": "1-19",
+                    "primary_dramatic_question": "Will Holmes and Watson take Helen’s terror seriously enough to intervene—and can they identify what could have killed Julia in a locked room before nightfall?",
+                    "emotional_register": "From cozy competence and banter to mounting dread and moral urgency."
+                },
+                {
+                    "session_number": 2,
+                    "chapters_covered": "Ch.3 (inn stakeout)–Ch.5 (vigil, confrontation, aftermath explanation)",
+                    "event_range": "20-32",
+                    "primary_dramatic_question": "Can Holmes and Watson survive the night trap and stop the method of murder in time—without becoming the cause of a worse outcome?",
+                    "emotional_register": "From tense vigilance to gothic horror shock, then sober reckoning."
+                }
+            ],
+            "arc_progression": [
+                {
+                    "session_number": 1,
+                    "opens_with": "N\/A",
+                    "primary_dramatic_question": "Will Holmes and Watson take Helen’s terror seriously enough to intervene—and can they identify what could have killed Julia in a locked room before nightfall?",
+                    "emotional_register_shift": "Cozy domestic calm → intrusive menace and urgency."
+                },
+                {
+                    "session_number": 2,
+                    "opens_with": "Holmes’s plan is set; the player must decide how to execute it once Roylott returns and the signal appears.",
+                    "primary_dramatic_question": "Can Holmes and Watson survive the night trap and stop the method of murder in time—without becoming the cause of a worse outcome?",
+                    "emotional_register_shift": "Analytical control → claustrophobic fear → violent release → reflective aftermath."
+                }
+            ],
+            "branch_opportunities": [
+                {
+                    "session_number": 1,
+                    "event_position": 1,
+                    "event_title": "Holmes wakes Watson about a client",
+                    "choice_dimension": "duty_vs_detachment",
+                    "downstream_payoff_session": 2,
+                    "payoff_event": "24 (They sneak into bedroom and prepare vigil)"
+                },
+                {
+                    "session_number": 1,
+                    "event_position": 9,
+                    "event_title": "Roylott bursts in and confronts Holmes",
+                    "choice_dimension": "defiance_vs_deescalation",
+                    "downstream_payoff_session": 2,
+                    "payoff_event": "22 (Signal light appears and they depart)"
+                },
+                {
+                    "session_number": 1,
+                    "event_position": 16,
+                    "event_title": "Holmes inspects sleeping room and finds dummy rope",
+                    "choice_dimension": "methodical_inquiry_vs_intuitive_leap",
+                    "downstream_payoff_session": 2,
+                    "payoff_event": "27 (Holmes strikes a match and lashes bell-pull)"
+                },
+                {
+                    "session_number": 2,
+                    "event_position": 21,
+                    "event_title": "Holmes and Watson discuss dangers and deductions",
+                    "choice_dimension": "courage_vs_self_preservation",
+                    "downstream_payoff_session": 2,
+                    "payoff_event": "28 (They decide to enter Dr. Roylott’s room)"
+                },
+                {
+                    "session_number": 2,
+                    "event_position": 24,
+                    "event_title": "They sneak into bedroom and prepare vigil",
+                    "choice_dimension": "procedure_vs_improvisation",
+                    "downstream_payoff_session": 2,
+                    "payoff_event": "26 (Light and smell appear in adjacent room)"
+                },
+                {
+                    "session_number": 2,
+                    "event_position": 28,
+                    "event_title": "They decide to enter Dr. Roylott’s room",
+                    "choice_dimension": "justice_vs_mercy",
+                    "downstream_payoff_session": 2,
+                    "payoff_event": "31 (Holmes recounts his revised conclusions)"
+                }
+            ],
+            "cross_session_payoff_plan": [
+                {
+                    "choice_reference": "S1E1",
+                    "what_it_tracks": "How fully the player commits to active protection (bring weapon\/accept risk\/insist on accompanying Holmes) versus staying observational.",
+                    "echo_session": 1,
+                    "payoff_session": 2,
+                    "payoff_description": "At the vigil setup (E24), the loadout and positioning options reflect earlier commitment: proactive players get more agency over preparations; detached players are constrained to follow Holmes’s instructions with fewer interventions."
+                },
+                {
+                    "choice_reference": "S1E9",
+                    "what_it_tracks": "Whether the player escalates or de-escalates Roylott’s threat (provoking him, standing firm, or playing for time).",
+                    "echo_session": 2,
+                    "payoff_session": 2,
+                    "payoff_description": "When the signal appears (E22) and they cross the grounds (E23), Roylott’s alertness\/patrol behavior is tuned: escalation increases risk of being spotted; de-escalation reduces immediate heat but may increase uncertainty about timing."
+                },
+                {
+                    "choice_reference": "S1E16",
+                    "what_it_tracks": "Clue discipline: whether the player thoroughly interrogates the bell-rope\/ventilator oddities or dismisses them in favor of a faster theory.",
+                    "echo_session": 2,
+                    "payoff_session": 2,
+                    "payoff_description": "At the first sensory cue (E26) and the reaction moment (E27), clue-disciplined players recognize the ‘delivery mechanism’ sooner (more precise responses); less disciplined players face a higher chance of misreading the cue and choosing a riskier reaction."
+                },
+                {
+                    "choice_reference": "S2E28",
+                    "what_it_tracks": "Moral posture after violence: do you prioritize immediate accountability (enter, confront, secure evidence) or minimize harm\/avoid direct confrontation.",
+                    "echo_session": 2,
+                    "payoff_session": 2,
+                    "payoff_description": "In the aftermath explanation (E31–E32), Holmes’s framing and Watson’s internal justification shift: ‘justice’ choices emphasize duty and necessity; ‘mercy’ choices emphasize tragic accident and restraint, affecting closing tone and future trust alignment."
+                }
+            ],
+            "branch_dimensions": [
+                {
+                    "dimension_name": "defiance_vs_deescalation",
+                    "description": "Whether the player meets intimidation with confrontation and escalation or with tactical calm and delay to reduce immediate danger.",
+                    "possible_paths": {
+                        "option_a": "You argue you must confront Roylott openly and act as if he is the threat, because waiting is how people die.",
+                        "option_b": "You argue you must keep Roylott calm and cooperative until you have proof, even if it means swallowing your anger.",
+                        "option_c": "You argue you should watch Roylott and the house first, holding judgment until his routines reveal what words cannot."
+                    },
+                    "session_introduced": 1,
+                    "choice_id": "S2_C2"
+                },
+                {
+                    "dimension_name": "methodical_inquiry_vs_intuitive_leap",
+                    "description": "Whether the player prioritizes systematic evidence-checking and hypothesis testing or relies on fast pattern-matching and bold assumptions.",
+                    "possible_paths": {
+                        "option_a": "You press close and make her give you the exact words and sequence, even if it costs seconds.",
+                        "option_b": "You seize her and call for Roylott and help at once, refusing to waste a breath on interpretation.",
+                        "option_c": "You let her fall and move down the corridor toward the whistle’s source, watching and listening before you commit."
+                    },
+                    "session_introduced": 1,
+                    "choice_id": "S2_C1"
+                },
+                {
+                    "dimension_name": "courage_vs_self_preservation",
+                    "description": "Whether the player accepts personal risk to protect others and pursue truth or limits exposure to survive and avoid becoming a liability."
+                },
+                {
+                    "dimension_name": "procedure_vs_improvisation",
+                    "description": "Whether the player follows Holmes’s plan and controlled protocol or adapts on the fly, trading safety for speed and opportunism.",
+                    "possible_paths": {
+                        "option_a": "You commit to strict procedure and stay hidden until the cue is undeniable, even if it feels unbearable to wait.",
+                        "option_b": "You commit to improvisation and move early to control doors and corridor angles before the threat fully shows itself.",
+                        "option_c": "You commit to self-preservation and keep distance unless Helen is in immediate, visible danger."
+                    },
+                    "session_introduced": 2,
+                    "choice_id": "S2_C3"
+                },
+                {
+                    "dimension_name": "justice_vs_mercy",
+                    "description": "Whether the player prioritizes accountability and decisive intervention or restraint and harm-minimization when outcomes turn lethal."
+                },
+                {
+                    "dimension_name": "duty_vs_detachment",
+                    "description": "Whether the player treats the case as a moral obligation to intervene or as an interesting puzzle best handled with emotional distance.",
+                    "possible_paths": {
+                        "option_a": "You tell Holmes you will treat this as urgent protection and insist she is not to leave Baker Street alone again today.",
+                        "option_b": "You urge Holmes to keep the room calm and clinical, letting her speak while you observe without promising anything yet.",
+                        "option_c": "You hold your tongue and watch her hands, her breath, and Holmes’s eyes, waiting to see what kind of fear this really is."
+                    },
+                    "session_introduced": 1,
+                    "choice_id": "S1_C1"
+                }
+            ]
+        }
+    },
+    "sessions": [
+        {
+            "session_number": 1,
+            "session_status": "completed",
+            "entry_point_diagnosis": {
+                "editorial_diagnosis": "Cut everything before the first moment a new user can feel immediate stakes.\n\nParagraph-by-paragraph stakes test:\n- Watson waking to find Holmes dressed by the bed: domestic texture and mild irritation; no danger, no urgent problem yet. Stakes are social (being woken early), not compelling within 60 seconds.\n- Holmes’s banter about “knocked up”: charming, but still tonal warm-up.\n- “No; a client… young lady… considerable state of excitement”: hints at urgency, but it’s still secondhand and abstract.\n- “When young ladies wander… I presume… pressing… interesting case… give you the chance”: meta-invitation and franchise comfort; still not a felt threat.\n- Transition to the sitting-room and Watson’s admiration: pure orientation\/backstory about their partnership.\n\nThe first YES arrives when the visitor speaks: “It is fear, Mr. Holmes. It is terror.” At that line, the emotional stakes are immediate, embodied (shivering, low voice), and demand action now.\n\nSo the entry point should cut past: the wake-up routine, the banter, and Watson’s ‘Holmes is brilliant’ framing, and begin with the veiled woman’s fear landing in the room. This preserves mystery, urgency, and a player-facing question instantly: What is she afraid of—and will you treat it as real enough to act today?",
+                "format_specific_cut": {
+                    "cut_point": "Source section: “A veiled woman meets Holmes and Watson” — at the line: “It is fear, Mr. Holmes. It is terror.”",
+                    "original_before_cut": "Event-count before cut: 1 full event (Event 1) plus the opening portion of Event 2 up to the fear reveal.",
+                    "cut_eliminates": "Domestic morning routine, banter, narrator admiration\/brand framing, and the ‘invitation to the case’ setup.",
+                    "must_reintroduce": "Through action (not exposition) you must quickly re-establish: (1) player role = Watson in Holmes’s rooms; (2) Holmes’s competence\/authority in the space; (3) why this stranger is here at dawn and why time matters today."
+                },
+                "cold_open": "The fire in the grate snaps and spits; the sitting-room smells of coal-smoke and wet wool. You step in behind Holmes, still buttoning your cuff, and clock the woman in black before she even turns—veil, rigid shoulders, hands clenched hard enough to whiten the gloves.\n\nHolmes doesn’t ask her name first. He draws her toward the warmth with two fingers and a chair, like he’s moving a piece into light. You stay a half-step back, watching for what people try to hide.\n\nShe obeys—and still shivers.\n\n“It is not cold which makes me shiver,” she says, voice scraped thin.\n\nHolmes’s eyes sharpen. “What, then?”\n\nShe lifts the veil. Grey face. Restless eyes. The look of someone who has been running for days and can’t stop.\n\n“It is fear, Mr. Holmes. It is terror.”\n\nHolmes turns his head slightly toward you, as if weighing whether you’ll treat this as a case—or a woman about to break. Your answer has to come now.",
+                "emotional_promise": "The emotional promise of this cold open is: urgency. A user arrives feeling unsettled and wanting to decide whether to lean in and protect someone—or keep distance and observe.",
+                "start_event_position": 2,
+                "start_event_id": 92,
+                "start_event_chapter_position": 1,
+                "start_event_local_position": 2
+            },
+            "session_architecture": {
+                "beat_identification": {
+                    "setup": {
+                        "source_moment": "Cold open at Helen’s reveal: “It is fear, Mr. Holmes. It is terror.” (Veiled woman meets Holmes and Watson).",
+                        "why_it_qualifies": "Immediate embodied stakes and a player-facing demand: do we treat her terror as real enough to act now? It also re-establishes role (Watson beside Holmes) through action in the room rather than preamble.",
+                        "editorial_intervention": "Moderate"
+                    },
+                    "escalation": {
+                        "source_moment": "Helen’s situation and Roylott’s danger profile: inheritance\/marriage money, Roylott’s violence, cheetah\/baboon, and the looming sense that her sister’s fate may repeat (Helen describes her fears and home).",
+                        "why_it_qualifies": "Goal becomes visible: protect Helen and determine what killed Julia before Helen’s wedding\/nightfall. Obstacle becomes clear: Roylott is powerful, volatile, and the threat is deniable\/vague (no proof; ‘fancies of a nervous woman’). Stakes compound via money motive + physical danger + isolation at Stoke Moran.",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "breath": {
+                        "source_moment": "Holmes’s showy micro-deduction of the return ticket and dog-cart mud splatter, delivered with light social control (“There is no mystery…”) and the coffee\/fire domesticity (Veiled woman meets Holmes and Watson).",
+                        "why_it_qualifies": "A deliberate release\/wonder beat: competence-as-magic, a small ‘reward’ of delight and tonal lift before the gothic dread deepens. It also reinforces Holmes’s authority and gives the player a moment to enjoy being in the Holmesian engine.",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "twist": {
+                        "source_moment": "Julia’s last night: the whistle at 3 a.m., the metallic clang, the locked room, and dying words: “It was the band! The speckled band!” plus Holmes pressing on whether Helen can swear to what she heard (Helen recounts Julia’s last night; Holmes questions the inquest details).",
+                        "why_it_qualifies": "Moral-weight pivot: intervene aggressively against a violent stepfather on ambiguous evidence (risking escalation\/false accusation), or proceed cautiously and risk repeating the murder. There is no correct answer because the evidence is sensory, uncertain, and the cost of being wrong is catastrophic either way.",
+                        "editorial_intervention": "Moderate"
+                    },
+                    "resolution": {
+                        "source_moment": "Holmes consolidates the ‘locked room’ constraints via inquest details (door fastened, windows blocked, match in hand) and commits to going to Stoke Moran to inspect; the session ends with the player deciding *how* to proceed (travel now vs delay; involve police vs private; what posture to take toward Roylott).",
+                        "why_it_qualifies": "Primary arc resolves: Holmes\/Watson take Helen seriously and form an actionable plan—go to the house and investigate before night. Seed for next session is planted: Roylott’s confrontation and the inspection\/plan-setting that leads into the stakeout.",
+                        "editorial_intervention": "Moderate"
+                    }
+                },
+                "beat_map": [
+                    {
+                        "time_range": "0:00–2:30",
+                        "moment": "Cold open in Baker Street: Helen lifts veil—“It is fear… terror.” Holmes turns attention to you as the associate in the room.",
+                        "beat_type": "SETUP",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES — Branch 1 (duty_vs_detachment): Do you press Holmes to treat this as urgent protection (commit resources\/risk), or keep it as a puzzle and let Holmes lead with distance?"
+                    },
+                    {
+                        "time_range": "2:30–5:30",
+                        "moment": "Holmes steadies Helen; offers coffee\/fire; begins reading her physical tells.",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES — How do you make Helen feel safe (gentle bedside manner vs brisk clinical questioning)? (No architecture change; tone\/relationship shading.)"
+                    },
+                    {
+                        "time_range": "5:30–9:00",
+                        "moment": "Holmes’s ticket\/dog-cart mud deduction; Helen confirms; the room briefly feels controllable again.",
+                        "beat_type": "BREATH",
+                        "choice_type": "none",
+                        "choice_arrives": "NO"
+                    },
+                    {
+                        "time_range": "9:00–12:30",
+                        "moment": "Helen lays out Roylott: money provisions on marriage, violence, gypsies, cheetah\/baboon, isolation at Stoke Moran.",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES — Branch 2 (methodical_inquiry_vs_intuitive_leap): Do you steer the interview into systematic fact-gathering (dates, rooms, locks, witnesses), or push a bold early theory about motive\/threat to accelerate action?"
+                    },
+                    {
+                        "time_range": "12:30–16:30",
+                        "moment": "Julia’s last night: whistle, scream, metallic clang, locked door, dying words ‘speckled band’; Holmes drills the uncertainty of Helen’s sensory memory.",
+                        "beat_type": "TWIST",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES — Do you validate Helen’s certainty (support her perception) or challenge it (protect against hysteria\/false memory)? (Sets emotional posture, not branch count.)"
+                    },
+                    {
+                        "time_range": "16:30–20:30",
+                        "moment": "Holmes frames the locked-room constraints (match\/matchbox, fastened door, blocked windows) and commits to immediate investigation at Stoke Moran before nightfall.",
+                        "beat_type": "RESOLUTION",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES — Branch 3 (defiance_vs_deescalation): How do you plan to meet Roylott’s looming presence—openly confront\/stand firm, or de-escalate and play for time while gathering proof? (Ends session on the player’s unresolved decision.)"
+                    }
+                ],
+                "next_session_awareness": {
+                    "seed_for_next_session": "A committed plan to travel to Stoke Moran and a chosen posture toward Roylott (escalate vs de-escalate), plus the player’s investigative style (methodical vs intuitive) that will color the daytime inspection and later night preparations.",
+                    "connects_to_next_dramatic_question": "YES"
+                }
+            },
+            "session_choice_design": {
+                "branching_choice_1": {
+                    "choice_id": "S1_C1",
+                    "source_moment": "Cold open at Helen’s reveal: “It is fear, Mr. Holmes. It is terror.” (Veiled woman meets Holmes and Watson).",
+                    "what_this_choice_tracks": "duty_vs_detachment",
+                    "narrative_setup": "The woman’s veil lifts, and the firelight catches the grey in her hair and the hunted shine in her eyes. Holmes’s hand rests lightly on her forearm, soothing as if terror were a fever he can cool. Then, as if to make you complicit, he introduces you as his intimate associate—someone she may speak before without fear. Her breath trembles on the word: terror.",
+                    "choice_question": "How do you move first—toward protection, or toward distance?",
+                    "option_a": {
+                        "text": "You tell Holmes you will treat this as urgent protection and insist she is not to leave Baker Street alone again today.",
+                        "downstream_effect": "*Holmes pivots immediately to logistics—safe escort, timings, and what resources you can bring—framing the case as a duty before it is a puzzle.*"
+                    },
+                    "option_b": {
+                        "text": "You urge Holmes to keep the room calm and clinical, letting her speak while you observe without promising anything yet.",
+                        "downstream_effect": "*Holmes takes the lead as examiner-in-chief, and you become the measured witness, holding back commitment until the facts harden.*"
+                    },
+                    "option_c": {
+                        "text": "You hold your tongue and watch her hands, her breath, and Holmes’s eyes, waiting to see what kind of fear this really is.",
+                        "downstream_effect": "*Holmes reads your silence as permission to proceed on his own tempo, and the case begins as observation rather than intervention.*"
+                    },
+                    "all_paths_arrive_at": "Holmes orders coffee, draws her toward the fire, and asks her to lay out everything that bears upon the matter."
+                },
+                "expressive_choices": [
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "Holmes steadies Helen; offers coffee\/fire; begins reading her physical tells.",
+                        "narrative_lead_in": "Mrs. Hudson’s coffee arrives, and the cup rattles once against the saucer in the woman’s shaking hands. Holmes’s voice stays warm, but his gaze is already measuring mud-spatter and glove seams as if they are testimony. She looks to you, not for brilliance, but for permission to breathe.",
+                        "choice_question": "How do you make space for her to speak?",
+                        "option_a": {
+                            "text": "You lower your voice and reassure her that fear is evidence, not shame.",
+                            "downstream_effect": "Your tone softens the room, and Helen’s answers come with fewer apologies and more concrete detail."
+                        },
+                        "option_b": {
+                            "text": "You ask crisp, practical questions about where she came from and who knows she is here.",
+                            "downstream_effect": "The conversation tightens into a statement, and Helen steadies herself by following your structure."
+                        },
+                        "option_c": {
+                            "text": "You let the silence stretch and simply offer the chair nearest the fire, waiting until she chooses to begin.",
+                            "downstream_effect": "Helen fills the quiet with what she fears most, and Holmes listens without interrupting the first spill of truth."
+                        },
+                        "all_paths_arrive_at": "Holmes performs his small deduction about the return ticket and the dog-cart, and Helen confirms it."
+                    },
+                    {
+                        "beat": "BREATH",
+                        "source_moment": "Holmes’s showy micro-deduction of the return ticket and dog-cart mud splatter, delivered with light social control and the coffee\/fire domesticity.",
+                        "narrative_lead_in": "Holmes smiles as if the world is a clockwork toy, and the woman startles as he names her train and her dog-cart ride without being told. For a moment, the dread in the room loosens—competence as a kind of magic trick performed beside a comfortable fire. You feel the old, guilty pleasure of watching him be right.",
+                        "choice_question": "What do you do with the brief lift in the room?",
+                        "option_a": {
+                            "text": "You let yourself admire the deduction aloud, giving Helen a reason to believe help has arrived.",
+                            "downstream_effect": "The moment turns hopeful, and Helen’s posture shifts from hunted to cautiously trusting."
+                        },
+                        "option_b": {
+                            "text": "You gently redirect Holmes from showmanship to what she needs next, keeping the focus on safety.",
+                            "downstream_effect": "The room stays grounded, and the competence feels protective rather than theatrical."
+                        },
+                        "option_c": {
+                            "text": "You keep your expression neutral and watch Helen’s reaction, waiting to see whether relief or fear wins.",
+                            "downstream_effect": "The wonder beat becomes diagnostic, and you notice which details calm her and which make her flinch."
+                        },
+                        "all_paths_arrive_at": "Helen begins describing Stoke Moran, Dr. Roylott, and why her fears have a shape even if they lack proof."
+                    },
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "Julia’s last night: whistle, metallic clang, locked door, dying words ‘speckled band’; Holmes drills the uncertainty of Helen’s sensory memory.",
+                        "narrative_lead_in": "When Helen speaks of the whistle, the scream, and the slow swing of a door that should have been locked, the fire seems to give less heat. Holmes’s questions sharpen, pressing on what she can swear to and what might be impression. Helen’s eyes fix on you as if you are the only person in the room who might believe her without dissecting her.",
+                        "choice_question": "How do you respond to the uncertainty in her memory?",
+                        "option_a": {
+                            "text": "You tell her that strong impressions are often the mind’s way of warning us, and you ask her to keep trusting what she felt.",
+                            "downstream_effect": "Helen’s fear becomes steadier and more coherent, and she speaks with less self-doubt."
+                        },
+                        "option_b": {
+                            "text": "You tell her that precision matters and ask her to separate what she heard from what she feared it meant.",
+                            "downstream_effect": "Helen grows more careful, and the account becomes cleaner but colder."
+                        },
+                        "option_c": {
+                            "text": "You say nothing and let Holmes press while you watch for what she avoids saying.",
+                            "downstream_effect": "The room turns interrogative, and Helen’s hesitations become the loudest part of her story."
+                        },
+                        "all_paths_arrive_at": "Holmes consolidates the locked-room constraints—match, matchbox, fastened door, blocked windows—and begins to outline action."
+                    }
+                ],
+                "branching_choice_2": {
+                    "choice_id": "S1_C2",
+                    "source_moment": "Helen’s situation and Roylott’s danger profile: inheritance\/marriage money, Roylott’s violence, cheetah\/baboon, and the looming sense that her sister’s fate may repeat (Helen describes her fears and home).",
+                    "values_in_tension": [
+                        "Due process and evidentiary restraint",
+                        "Protective urgency and prevention",
+                        "Respect for Helen’s agency versus paternalistic control"
+                    ],
+                    "what_this_choice_tracks": "methodical_inquiry_vs_intuitive_leap",
+                    "narrative_setup": "As Helen speaks, the motive sharpens: money shifts on marriage, and a violent man stands to lose it. Yet every piece is wrapped in deniability—temper, animals, gypsies, a death with no visible cause, and a phrase whispered by a dying woman. Holmes can turn this into a ledger of facts, or into a theory that moves you out the door before the day turns. Either way, someone may pay for being wrong.",
+                    "choice_question": "How do you steer Holmes’s approach when the stakes are clear but the proof is thin?",
+                    "option_a": {
+                        "text": "You insist on a systematic timeline and floor-plan account—dates, rooms, locks, witnesses—before you let any theory harden.",
+                        "downstream_effect": "*Holmes structures the interview into checkable particulars, and your next steps prioritize verifying constraints over confronting suspects.*"
+                    },
+                    "option_b": {
+                        "text": "You push a bold early theory that Roylott is engineering a murder to keep the inheritance, and you urge immediate action on that assumption.",
+                        "downstream_effect": "*Holmes accelerates toward proactive measures and tests a leading hypothesis in the field, accepting the risk of escalation on incomplete evidence.*"
+                    },
+                    "option_c": {
+                        "text": "You hold back and let Helen finish uninterrupted, choosing to observe for contradictions before you commit to any line of inquiry.",
+                        "downstream_effect": "*Holmes remains outwardly open-ended, and the investigation begins with psychological and sensory pattern-reading rather than a declared method.*"
+                    },
+                    "moral_weight_confirmation": "Each option risks harm: restraint may cost Helen her life, urgency may falsely accuse and provoke a violent man, and observation may waste the narrowing window before night.",
+                    "talkability_test": "Players can argue for hours whether the ethical failure is acting without proof, waiting for proof while danger grows, or using Helen’s fear as data while withholding reassurance."
+                },
+                "branching_choice_3": {
+                    "choice_id": "S1_C3",
+                    "source_moment": "Holmes frames the locked-room constraints and commits to immediate investigation at Stoke Moran before nightfall; session ends with the player deciding how to proceed (posture toward Roylott).",
+                    "what_this_choice_tracks": "defiance_vs_deescalation",
+                    "narrative_setup": "Holmes snaps his case-book shut as if closing a door on doubt, and the room feels suddenly smaller with the idea of Stoke Moran inside it. Roylott is not a distant villain in a file; he is a man who throws blacksmiths and keeps wild animals loose on his grounds. You have a few hours of daylight and no warrant, only a frightened woman and a dead sister’s last words. Before you leave Baker Street, you decide what face you will show if Roylott blocks the path.",
+                    "choice_question": "What posture do you commit to when you meet Dr. Roylott’s intimidation?",
+                    "option_a": {
+                        "text": "You decide you will stand openly with Holmes and confront Roylott without yielding an inch.",
+                        "next_session_opens": "You arrive at Stoke Moran ready to be seen, and the first inspection plays as a challenge—every encounter with Roylott is a test of nerve."
+                    },
+                    "option_b": {
+                        "text": "You decide you will de-escalate and play for time, keeping Roylott calm while you gather proof.",
+                        "next_session_opens": "You arrive at Stoke Moran in a posture of courtesy and caution, and the inspection becomes a quiet theft of information under a man’s watchful temper."
+                    },
+                    "option_c": {
+                        "text": "You decide you will hang back and watch Roylott first, waiting to see where his attention and routines truly lie.",
+                        "next_session_opens": "You arrive at Stoke Moran prioritizing observation, and the opening beats focus on reading the grounds and the household before you risk direct friction."
+                    }
+                }
+            },
+            "choice_consequence_map": {
+                "consequence_map_choice_1": {
+                    "tracked_dimension": "duty_vs_detachment",
+                    "path_a": {
+                        "immediate_effect": "Watson physically blocks the sitting-room door and says, “Mrs. Stoner does not step into the street alone again today.” Holmes immediately rings for Mrs. Hudson and has her bring a tray and send a note to a cabman to stand by at Baker Street.",
+                        "current_session_echo": "Helen is repeatedly staged close to Watson (chair by the fire; Watson walks her to the window when the cab arrives). Holmes treats Watson as “security” in the room—asking him to check the street below for loiterers before Helen leaves, and later, when travel is discussed, Holmes says, “Watson, you will keep your revolver,” making protection a running lens on every beat.",
+                        "next_session_payoff": "Session 2, Event 24 (bedroom vigil prep): Watson produces the revolver without being prompted and is offered a concrete prep action: “Take the chair by the door or the bedside?” Holmes explicitly references the earlier stance—“You were for guarding her from the first moment; now choose where you’ll stand when the night comes.”",
+                        "later_session_legacy": "N\/A (2-session structure)."
+                    },
+                    "path_b": {
+                        "immediate_effect": "Watson raises a calming hand and says, “Let her speak. No promises until we understand.” Holmes takes the floor as examiner and begins with a clipped, clinical prompt: “State your name, your address, and the exact time you left your lodgings.”",
+                        "current_session_echo": "The interview becomes formal and procedural: Holmes keeps Helen on a strict question track, and Watson is positioned as note-taker and witness (Holmes: “Watson, mark that—‘band’—and the hour.”). Helen’s relief is delayed; she looks to Watson for reassurance and doesn’t get it, which makes her more brittle and more precise—coloring the session with an ethical chill.",
+                        "next_session_payoff": "Session 2, Event 24 (bedroom vigil prep): Holmes assigns Watson the “record-and-check” role—measuring the distance to the ventilator and testing the bell-pull’s reach—because “you kept your head when she wanted comfort.” A specific callback line lands: “Same discipline tonight, Watson: we watch, we note, we do not blunder.”",
+                        "later_session_legacy": "N\/A (2-session structure)."
+                    },
+                    "path_c": {
+                        "immediate_effect": "Watson says nothing; instead he watches Helen’s fingers worry the glove seam and notices a faint bruise at her wrist. Holmes clocks Watson’s silence, turns slightly away from comfort, and begins with an observational gambit: “Your left hand—how did you come by that mark?”",
+                        "current_session_echo": "The session’s tone skews toward reading bodies and rooms: Holmes keeps inviting Watson’s “quiet noticing” (Holmes: “What do you make of her hands, Watson?”). Helen becomes an object of scrutiny before she becomes a person to be protected, and Watson’s silence becomes a pattern—he speaks later, but always after looking first.",
+                        "next_session_payoff": "Session 2, Event 24 (bedroom vigil prep): Watson gets an observation-first payoff: before any moving of furniture, he can choose to “scan the skirting boards, the ventilator, and the bell-rope for fresh disturbance.” Holmes validates it with a named echo: “You began this case by watching her hands; watch the house the same way.”",
+                        "later_session_legacy": "N\/A (2-session structure)."
+                    }
+                },
+                "consequence_map_choice_2": {
+                    "tracked_dimension": "methodical_inquiry_vs_intuitive_leap",
+                    "path_a": {
+                        "immediate_effect": "Holmes pulls Helen to the table and makes her draw the floor plan: her room, Julia’s room, the corridor, the ventilator, the bell-rope. Watson pins down dates aloud—“Two years since Julia’s death; eight months since you returned”—and Holmes repeats, “Locks: inside or outside? Show me.”",
+                        "current_session_echo": "Daytime inspection at Stoke Moran is constraint-led: Holmes and Watson arrive with the drawn plan in hand and explicitly test each claim—rattling the shutters, checking the bed’s position, and having Helen demonstrate the bell-pull’s reach. The ‘dummy rope’ discovery lands as a confirmed contradiction against the plan, not a spooky oddity, making the rest of the session feel like a tightening net of verified facts.",
+                        "next_session_payoff": "Session 2, Event 27 (match + bell-pull lash): Holmes’s action is preceded by a precise recognition moment. He taps the bell-rope and says, “Dummy—as our diagram proved,” then instructs Watson with a checkable task: “Hold your light to the ventilator; confirm the draught.” The player is rewarded with an earlier, clearer identification of the bell-rope as a delivery vector rather than a mere signal device.",
+                        "later_session_legacy": "N\/A (2-session structure)."
+                    },
+                    "path_b": {
+                        "immediate_effect": "Watson voices the accusation outright—“Roylott means to murder her as he murdered Julia”—and Holmes stands, already reaching for his coat: “Then we waste no daylight.” He cuts Helen’s explanation short with a single demand: “Where is he now, and how soon can we be at Stoke Moran?”",
+                        "current_session_echo": "The session becomes escalation-forward: at Stoke Moran, Holmes pushes closer to Roylott’s orbit sooner (asking after the doctor directly; lingering near his room). The inspection is framed as a race against a man, not a puzzle against a room; Roylott’s menace feels more immediate, and the party’s presence feels more like provocation—raising the temperature of every encounter and compressing the margin for error.",
+                        "next_session_payoff": "Session 2, Event 27 (match + bell-pull lash): the player is more likely to misread the first cue as “Roylott moving” rather than “mechanism activating.” The payoff is a named, buildable beat: Watson flinches at the whistle\/hiss and reaches for the door, and Holmes hisses, “Not him—wait!” If the player steadies, Holmes later acknowledges, “Your instinct to act kept us alive; tonight it must be leashed.”",
+                        "later_session_legacy": "N\/A (2-session structure)."
+                    },
+                    "path_c": {
+                        "immediate_effect": "Watson lets Helen run uninterrupted. Holmes leans back, eyes half-lidded, and the room goes quiet except for the fire. Holmes’s first intervention is sensory, not factual: “Describe the sound again—the whistle. Was it near? Was it thin or full?”",
+                        "current_session_echo": "The investigation is guided by pattern and atmosphere: Holmes asks about smells, drafts, and the quality of the night sounds; during the Stoke Moran inspection he lingers on “feel” details (the ventilator’s airflow; the bed’s fixed position) before declaring any structure. This colors the session as uncanny and interpretive—more dread-forward, less checklist-forward—making later discoveries feel like intuitions snapping into place.",
+                        "next_session_payoff": "Session 2, Event 26 (first sensory cue: light\/smell): the player gets a distinctive recognition moment: Watson notices the ‘faint metallic, animal’ smell and recalls Helen’s description of the “whistle,” prompting an explicit option to whisper, “That smell—animals,” before Holmes acts. Holmes replies with a validating line: “Yes. You listened when she spoke; now listen to the house.”",
+                        "later_session_legacy": "N\/A (2-session structure)."
+                    }
+                },
+                "consequence_map_choice_3": {
+                    "tracked_dimension": "defiance_vs_deescalation",
+                    "path_a": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Stoke Moran, daytime: Watson steps out of the trap with his shoulders squared and his revolver’s weight remembered. When Roylott appears (cane in hand), Watson does not yield the path; the first exchange is openly adversarial, with Holmes letting Watson’s stance set the temperature.",
+                        "next_session_payoff": "Session 2, Event 22 (signal light appears \/ departure): Roylott’s patrol is sharper because he remembers being challenged—he is seen at an upper window earlier than usual, forcing a specific stealth beat across the grounds (ducking behind the clump of laurel; freezing when the lantern swings). Holmes validates the player’s choice with a line that frames it as strategically useful: “Good—he watches us. That means he fears interruption.”",
+                        "later_session_legacy": "N\/A (2-session structure)."
+                    },
+                    "path_b": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Stoke Moran, daytime: Watson keeps his hat in hand and his voice even. When Roylott looms into view, Watson offers a courteous pretext—medical curiosity about the estate’s repairs—while Holmes plays along, letting Roylott believe he has social control.",
+                        "next_session_payoff": "Session 2, Event 22 (signal light appears \/ departure): Roylott’s alertness is lower—he returns later and with less active searching—creating a payable advantage: the crossing to Helen’s room is quicker and quieter, but Holmes explicitly notes the tradeoff: “He is calm—which means we cannot predict when he will strike.” The player feels “right” because the immediate danger of being spotted is reduced.",
+                        "later_session_legacy": "N\/A (2-session structure)."
+                    },
+                    "path_c": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Stoke Moran, daytime: Watson hangs back at the edge of the grounds and watches. Before any direct exchange, he clocks Roylott’s movement patterns—where he pauses, which door he favors, and how the servants avoid his line of sight—so the opening plays as reconnaissance rather than confrontation.",
+                        "next_session_payoff": "Session 2, Event 22 (signal light appears \/ departure): the player receives a concrete navigation advantage: an extra choice to take the “kitchen wall shadow-line” route instead of the open gravel, based on the earlier observed patrol rhythm. Holmes validates the observational posture: “You watched him when it mattered; now we move when he cannot see.”",
+                        "later_session_legacy": "N\/A (2-session structure)."
+                    }
+                },
+                "validation_results": {
+                    "specificity": "PASS",
+                    "asymmetry": "PASS",
+                    "payability": "PASS"
+                }
+            },
+            "session_close_design": {
+                "session_close_trigger_event_position": 19,
+                "resolution_prose": "Holmes’s instructions land with the weight of a physician’s order. Helen stands in the doorway of her room, fingers whitening around the edge of the frame, and you can see the faint bruise-marks at her wrist where fear has become physical. Holmes speaks quietly, but every sentence narrows the world to a few hard facts: the room must be secured as he says; the lamp must be placed as he says; the bolt must be shot at the hour he names. When she nods, it is not relief—it is obedience.\n\nOutside, the late light lies thin over the lawn. The old house smells of damp plaster and stale cigar smoke, and somewhere deeper in it a floorboard gives a slow, complaining creak. Holmes steps away from the corridor as if leaving a sickbed, his face set, his eyes alive with certainty.\n\nYou have what you came for: Helen’s terror is no longer “nerves,” and the locked-room has become a mechanism you can test before nightfall. Now the question is how you will face the man who built it.",
+                "hook_transition": "For a moment, there is nothing to do but breathe and listen to the house settling around you. Then Holmes glances toward the drive—toward the inevitable meeting with Roylott—and you feel the daylight shrinking into a deadline.",
+                "session_end_choice": {
+                    "choice_question": "What posture do you commit to when you meet Dr. Roylott’s intimidation?",
+                    "option_a": {
+                        "text": "You decide you will stand openly with Holmes and confront Roylott without yielding an inch.",
+                        "next_session_opens": "You arrive at Stoke Moran ready to be seen, and the first inspection plays as a challenge—every encounter with Roylott is a test of nerve."
+                    },
+                    "option_b": {
+                        "text": "You decide you will de-escalate and play for time, keeping Roylott calm while you gather proof.",
+                        "next_session_opens": "You arrive at Stoke Moran in a posture of courtesy and caution, and the inspection becomes a quiet theft of information under a man’s watchful temper."
+                    },
+                    "option_c": {
+                        "text": "You decide you will hang back and watch Roylott first, waiting to see where his attention and routines truly lie.",
+                        "next_session_opens": "You arrive at Stoke Moran prioritizing observation, and the opening beats focus on reading the grounds and the household before you risk direct friction."
+                    },
+                    "final_line": "Choose the face you’ll wear at Stoke Moran—and come back to see what it costs."
+                },
+                "stickiness_audit": {
+                    "payoff_test": "PASS",
+                    "return_driver_test": "PASS",
+                    "overnight_test": "PASS"
+                },
+                "session_close_trigger_event_id": 109
+            },
+            "editorial_verification": {
+                "question_results": {
+                    "entry_point": {
+                        "verdict": "PASS",
+                        "detail": "The session begins at the first embodied, urgent stake: Helen lifting the veil and saying, “It is fear… terror.” This is the first moment where the user can feel immediate danger and a player-facing demand. All lower-energy domestic preamble is correctly cut."
+                    },
+                    "emotional_promise": {
+                        "verdict": "PASS",
+                        "detail": "The first paragraph promises urgency + protective dread in a controlled, intimate space (fire, wet wool, shivering woman). It also promises a role fantasy: being the human moral barometer beside Holmes (protect vs observe)."
+                    },
+                    "first_choice_timing": {
+                        "verdict": "PASS",
+                        "detail": "Branching Choice 1 lands in the cold open (0:00–2:30) and is clearly reachable within 300 words of the start, with a direct prompt tied to Helen’s terror and Holmes’s glance to Watson."
+                    },
+                    "consequential_choices": {
+                        "verdict": "PASS",
+                        "detail": "All three branching choices have planned downstream consequences with specific, asymmetric payoffs: (1) duty_vs_detachment changes Watson’s functional role (security\/note-taker\/observer) and is explicitly echoed in Session 2 Event 24; (2) methodical_inquiry_vs_intuitive_leap changes the investigation texture and recognition timing, paying off at Session 2 Events 26–27; (3) defiance_vs_deescalation sets Roylott’s alertness\/patrol behavior and traversal options, paying off at Session 2 Event 22\/23. These are not cosmetic; they alter available actions, risk profile, and authored lines."
+                    },
+                    "stakes_within_60_seconds": {
+                        "verdict": "PASS",
+                        "detail": "Within the opening moments, the user gets a frightened woman at dawn, explicit terror, and an implied immediate decision about whether to act. The threat is not abstract; it is physically manifested (shivering, hunted look) and socially urgent (she is here now, needing help now)."
+                    },
+                    "early_decision_visible_later": {
+                        "verdict": "PASS",
+                        "detail": "Choice 1 produces visible intra-session echoes (Holmes treating Watson as security vs witness vs observer) and a concrete cross-session payoff (Session 2 Event 24 loadout\/positioning tasks and explicit callback lines). This satisfies “visible impact later,” not just tracked variables."
+                    },
+                    "breath_beat": {
+                        "verdict": "PASS",
+                        "detail": "A deliberate release\/wonder beat is placed at 5:30–9:00 via Holmes’s micro-deduction (ticket\/mud) and the cozy fire\/coffee competence reward. This lands inside the required 8–10 minute window and functions as a tonal lift before dread deepens."
+                    },
+                    "moral_gray_area": {
+                        "verdict": "PASS",
+                        "detail": "Branching Choice 2 is a genuine moral gray area: act urgently on thin proof (risk false accusation\/escalation) vs restraint (risk Helen’s life) vs observational delay (risk wasting the narrowing window). No option is cleanly correct, and the design explicitly articulates the harms."
+                    },
+                    "exit_emotional_state": {
+                        "verdict": "PASS",
+                        "detail": "The session ends on the player’s unresolved decision about posture toward Roylott (confront\/de-escalate\/observe), with daylight shrinking into a deadline. The carried-out emotion is anticipation (and dread-tinged readiness), not resolution or confusion."
+                    },
+                    "talkability": {
+                        "verdict": "PASS",
+                        "detail": "A friend would immediately ask what you chose because the choices are identity-revealing and arguable (protect vs clinical distance; methodical proof vs bold accusation; confront vs play nice vs shadow-watch). The options imply different risk ethics and will clearly change how Roylott encounters play."
+                    }
+                },
+                "total_passed": 10,
+                "production_status": "GREEN",
+                "revision_instructions": []
+            }
+        },
+        {
+            "session_number": 2,
+            "session_status": "completed",
+            "entry_point_diagnosis": {
+                "editorial_diagnosis": "Cut everything before the first moment a new user can feel immediate, personal stakes in-scene.\n\nIn the supplied pages, the opening begins with domestic banter (Holmes waking Watson; Mrs. Hudson wordplay), then a competence showcase (Holmes’s deductions from mud and a ticket), then a long backstory runway (Roylott family history, India, inheritance, animals, village terror) before the narrative finally lands on a vivid, time-stamped threat: a locked bedroom at night, an unexplained whistle, a scream, a dying sister’s last words (“the speckled band”), and the possibility that Helen is next.\n\nRetention risk: the first 60 seconds are currently spent on tone-setting and reputation-building. A new user can’t yet feel what they must DO.\n\nThe first paragraph where the answer becomes YES to “can a new user feel the stakes within 60 seconds?” is the start of Julia’s last night: it is concrete (wind, rain, corridor, locked doors), it is urgent (a scream), and it frames an immediate emotional question (what killed Julia in a locked room—and will it come again?). That’s the earliest point that generates playable tension without relying on prior exposition.",
+                "format_specific_cut": {
+                    "cut_point": "At the start of: “I could not sleep that night… It was a wild night. The wind was howling outside…” (Helen recounts Julia’s last night and death).",
+                    "original_before_cut": "All prior excerpts in the provided pages up to this paragraph (Holmes\/Watson wake-up banter; client introduction; deduction showcase; Helen’s family\/financial backstory; Roylott’s violence\/animals; engagement setup; room-layout preface).",
+                    "cut_eliminates": "Domestic setup and humor; character-intro formalities; Holmes competence demo; extensive backstory (estate ruin, India, inheritance motive, Roylott’s reputation, animals); procedural framing (Holmes asking for precision).",
+                    "must_reintroduce": "Through action\/lines after the cold open: (1) who you are (Watson) and that Holmes is with you; (2) Helen Stoner is the client and fears she’ll die like her twin; (3) locked-room constraint (doors locked due to dangerous animals); (4) the key clues: whistle at ~3 a.m., metallic clang, dying words “speckled band,” gesture toward Roylott’s room; (5) Roylott as a violent stepfather with motive tied to marriage\/inheritance; (6) setting: Stoke Moran manor, ground-floor bedrooms off one corridor."
+                },
+                "cold_open": "Rain needles the windowpanes, and the old house answers with a wet, arthritic creak. Your bare feet find the corridor boards—cold, gritty with tracked-in mud—as you pull a shawl tight and listen.\n\nA scream rips through the storm. Not a stranger’s. Your sister’s.\n\nYou move before thought can catch you. You wrench your door open, lantern-light spilling into the passage, and for a heartbeat you swear you hear it again: that thin, clear whistle—too deliberate to be wind. Then a metallic clanging, as if something heavy has struck iron.\n\nYou run.\n\nYour sister’s door is unlatched, swinging inward as though the house itself is breathing. She staggers into the frame, face white, hands pawing at the air for you. You catch her—and feel her body seize, convulsing hard enough to bruise your arms.\n\nHer eyes find yours. Her mouth works.\n\nWhat does she try to warn you about before the darkness takes her?",
+                "emotional_promise": "The emotional promise of this cold open is: dread. A user arrives feeling unsettled and wanting to prevent a second death by grasping the warning in time.",
+                "start_event_position": 26,
+                "start_event_id": 116,
+                "start_event_chapter_position": 4,
+                "start_event_local_position": 5
+            },
+            "session_architecture": {
+                "beat_identification": {
+                    "setup": {
+                        "source_moment": "Cold open anchored in Helen’s recollection: “I could not sleep that night… Suddenly… the wild scream… I seemed to hear a low whistle… a clanging sound… my sister appear… convulsed… ‘the speckled band!’… finger… direction of the Doctor’s room.”",
+                        "why_it_qualifies": "Immediate, personal, in-scene stakes (someone is dying now; an unknown threat is active; a concrete clue is uttered). This is the earliest moment that creates playable tension without requiring prior exposition. It also naturally sets up the session’s core engine: interpret the warning and decide what to do next.",
+                        "editorial_intervention": "Moderate"
+                    },
+                    "escalation": {
+                        "source_moment": "Holmes’s follow-up interrogation of the inquest facts: “are you sure about this whistle and metallic sound… Was your sister dressed?… charred stump of a match… match-box… important.” (plus the implied locked-room constraints: door fastened inside; windows blocked).",
+                        "why_it_qualifies": "Goal becomes visible: identify the killing method before it can recur. Obstacle becomes clear: unreliable sensory evidence (storm noise), locked-room conditions, and limited physical proof (only matches; no clear cause of death). This is where the player shifts from raw dread to actionable investigation logic.",
+                        "editorial_intervention": "Minimal"
+                    },
+                    "breath": {
+                        "source_moment": "Use the earlier tonal material as a deliberately placed reward beat: Holmes’s brisk, almost playful competence and hospitality—“Mrs. Hudson has been knocked up… she retorted upon me…”, “Pray draw up to it… I shall order you a cup of hot coffee…”, and the rapid deduction of the ticket\/mud\/dog-cart.",
+                        "why_it_qualifies": "Between minutes 8–10, the session needs a release valve and a ‘reward’ (Schell Rule). This material provides warmth, wit, and wonder at Holmes’s method—without reducing stakes—before the narrative tightens again into the night trap planning.",
+                        "editorial_intervention": "Moderate"
+                    },
+                    "twist": {
+                        "source_moment": "Holmes presses on the ambiguous evidence and the implication of Dr. Roylott (Julia’s pointing toward his room; Roylott’s notorious violence; the locked doors ‘because of the cheetah and baboon’).",
+                        "why_it_qualifies": "Moral-weight moment: the player must decide whether to treat Roylott as the likely murderer and act preemptively (risking wrongful accusation\/escalation), or treat the evidence as too thin and proceed cautiously (risking Helen’s death). There is no correct answer because both paths carry credible harm: provoking a violent man vs. delaying protection.",
+                        "editorial_intervention": "Moderate"
+                    },
+                    "resolution": {
+                        "source_moment": "Holmes’s case-taking posture and pivot to action: “I shall be happy to devote the same care… lay before us everything…” combined with the clarified constraints of the manor layout and the ‘3 a.m.’ recurrence pattern from Julia’s whistle report.",
+                        "why_it_qualifies": "Primary arc resolves for this session: commitment and plan-setting—Holmes\/Watson decide to intervene and move toward Stoke Moran with a theory and a timetable. Seed for next session is planted: the night vigil\/trap must be executed and the player will have to choose how far to go when the signal\/whistle cues arrive.",
+                        "editorial_intervention": "Heavy"
+                    }
+                },
+                "beat_map": [
+                    {
+                        "time_range": "0:00–2:30",
+                        "moment": "Cold open in the corridor: scream, whistle, metallic clang; Julia staggers out, convulses, gasps “the speckled band,” points toward Roylott’s room.",
+                        "beat_type": "SETUP",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES — Branch 1: In the instant Julia tries to speak, do you (A) press for the exact words\/meaning (methodical), (B) prioritize calling for help immediately (protective), or (C) chase the sound\/source down the corridor (impulsive). Consequence planned: what detail you ‘lock in’ (wording vs. direction vs. timing) colors later deductions and how confident you are acting on Roylott."
+                    },
+                    {
+                        "time_range": "2:30–6:30",
+                        "moment": "Aftermath compression: Roylott appears; brandy\/doctor; Julia dies. Transition to ‘present’ framing with Holmes listening and insisting on precision.",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES — How do you (as Watson\/observer) read Helen’s reliability: shaken but accurate \/ possibly mistaken \/ hiding something? (Flags tone and later dialogue emphasis; does not branch architecture.)"
+                    },
+                    {
+                        "time_range": "6:30–8:00",
+                        "moment": "Holmes drills the inquest facts: locked door, matches, uncertainty about whistle\/clang; the ‘locked in because of animals’ constraint is made explicit.",
+                        "beat_type": "ESCALATION",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES — Branch 2: What do you push Holmes to do with the ambiguity? (A) Treat whistle\/clang as decisive leads (commit to a mechanism), (B) treat them as unreliable and focus on physical constraints (locked room, windows, corridor), or (C) focus on motive\/stepfather threat profile first. Consequence planned: what line of inquiry dominates the daytime inspection and what you’re primed to notice at the vigil cue."
+                    },
+                    {
+                        "time_range": "8:00–10:00",
+                        "moment": "BREATH reward: reintroduced warmth\/wit and competence—Holmes’s coffee\/fire hospitality and the ‘ticket + mud + dog-cart’ deduction (as a brief intercut or remembered beat) to relieve dread before the plan hardens.",
+                        "beat_type": "BREATH",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES — Do you enjoy\/encourage Holmes’s showmanship, or urge him to drop performance and focus on saving Helen? (Affects rapport\/voice; not branching.)"
+                    },
+                    {
+                        "time_range": "10:00–14:30",
+                        "moment": "Twist pressure: Julia’s pointing toward Roylott’s room + Roylott’s violence + the animal-locking practice implies a human threat, but evidence is circumstantial and acting could trigger lethal escalation.",
+                        "beat_type": "TWIST",
+                        "choice_type": "EXPRESSIVE",
+                        "choice_arrives": "YES — Where do you land morally: presume Roylott dangerous enough to justify preemption \/ insist on proof-first restraint \/ split the difference with a covert plan? (Sets moral posture that will pay off in Session 2’s ‘justice vs mercy’ framing.)"
+                    },
+                    {
+                        "time_range": "14:30–18:30",
+                        "moment": "Resolution movement: Holmes accepts the case; timeline is established (3 a.m. whistle pattern; impending marriage deadline); intention to go to Stoke Moran and set a trap is stated\/locked.",
+                        "beat_type": "RESOLUTION",
+                        "choice_type": "none",
+                        "choice_arrives": "NO"
+                    },
+                    {
+                        "time_range": "18:30–22:00",
+                        "moment": "Session-end retention choice: you and Holmes are committed to intervene, but the method and risk posture are unresolved—how will you execute the night plan when Roylott is nearby and the cue appears?",
+                        "beat_type": "RESOLUTION",
+                        "choice_type": "BRANCHING",
+                        "choice_arrives": "YES — Branch 3 (session-end hook): When the night vigil comes, do you (A) follow strict procedure and stay hidden until the cue is undeniable, (B) improvise and move early to control the corridor\/rooms, or (C) prioritize your own survival and keep distance unless Helen is in immediate danger. Consequence planned: directly feeds Session 2 opening execution options (positioning, readiness to enter Roylott’s room, and risk of being spotted)."
+                    }
+                ],
+                "next_session_awareness": {
+                    "seed_for_next_session": "A concrete, player-owned plan posture for the night trap at Stoke Moran (procedure vs improvisation vs self-preservation), plus which evidentiary thread they believe (sound cue vs physical constraints vs motive).",
+                    "connects_to_next_dramatic_question": "YES"
+                }
+            },
+            "session_choice_design": {
+                "branching_choice_1": {
+                    "choice_id": "S2_C1",
+                    "source_moment": "Cold open anchored in Helen’s recollection: “I could not sleep that night… Suddenly… the wild scream… I seemed to hear a low whistle… a clanging sound… my sister appear… convulsed… ‘the speckled band!’… finger… direction of the Doctor’s room.”",
+                    "what_this_choice_tracks": "methodical_inquiry_vs_intuitive_leap",
+                    "narrative_setup": "In Helen’s telling, the corridor is a knife of lamplight and storm-shadow. Julia sways in the doorway like she has been poisoned by the air itself, her fingers scrabbling for meaning as much as for you. She tries to speak, and you feel the moment narrowing: whatever you do now will decide which fragment becomes the case’s first anchor.",
+                    "choice_question": "In the instant Julia tries to warn you, what do you commit to?",
+                    "option_a": {
+                        "text": "You press close and make her give you the exact words and sequence, even if it costs seconds.",
+                        "downstream_effect": "*You lock in a precise timeline (whistle, clang, words, pointing) that later strengthens systematic reconstruction and challenges sloppy theories.*"
+                    },
+                    "option_b": {
+                        "text": "You seize her and call for Roylott and help at once, refusing to waste a breath on interpretation.",
+                        "downstream_effect": "*You lock in the direction of urgency—who arrives when, and how they behave—priming you to read people and motive over mechanism.*"
+                    },
+                    "option_c": {
+                        "text": "You let her fall and move down the corridor toward the whistle’s source, watching and listening before you commit.",
+                        "downstream_effect": "*You lock in sensory context—distance, echoes, and what the house sounds like—priming intuitive pattern-matching when the night cues return.*"
+                    },
+                    "all_paths_arrive_at": "Julia’s body stills; the household converges; the memory collapses forward into Baker Street with Holmes insisting on precision."
+                },
+                "expressive_choices": [
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "Aftermath compression into present framing: Holmes listening while Helen insists her fears are “vague,” and Holmes asks for precision.",
+                        "narrative_lead_in": "Back in Baker Street, Helen’s hands won’t stop worrying the edge of her glove, as if the fabric can hold her together. Holmes’s gaze is steady, but it’s your job to decide what kind of witness you’re sitting beside.",
+                        "choice_question": "How do you privately read Helen as she speaks?",
+                        "option_a": {
+                            "text": "You treat her as shaken but fundamentally accurate, and you lean in like every detail matters.",
+                            "downstream_effect": "Your narration warms toward protective trust, and your follow-up questions emphasize clarifying rather than challenging."
+                        },
+                        "option_b": {
+                            "text": "You assume fear is distorting her senses, and you watch for exaggeration and misremembered timing.",
+                            "downstream_effect": "Your narration turns clinical, and your interjections sharpen toward testing reliability without openly accusing her."
+                        },
+                        "option_c": {
+                            "text": "You say little and study what she avoids—pauses, swallowed words, and where her eyes won’t go.",
+                            "downstream_effect": "Your narration becomes quietly suspicious, and later dialogue beats highlight omissions and subtext over surface facts."
+                        },
+                        "all_paths_arrive_at": "Holmes pivots to the inquest facts—locks, windows, matches—and forces the room into analysis."
+                    },
+                    {
+                        "beat": "ESCALATION",
+                        "source_moment": "Holmes questions the inquest details: whistle\/clang uncertainty; match stump and match-box; locked door; blocked windows; animals as reason for locking.",
+                        "narrative_lead_in": "Holmes taps the match-box detail as if it were a chess piece placed too early. Helen’s uncertainty about the whistle and clang hangs in the air, daring you to either honor it or override it.",
+                        "choice_question": "What do you do with the ambiguity in the sounds Helen reports?",
+                        "option_a": {
+                            "text": "You urge Holmes to treat the whistle and clang as real leads and build outward from them.",
+                            "downstream_effect": "Your tone becomes decisive and sensory-driven, as if the house itself is speaking in signals you can decode."
+                        },
+                        "option_b": {
+                            "text": "You urge Holmes to treat the sounds as storm-noise and focus on locks, windows, and physical impossibilities.",
+                            "downstream_effect": "Your tone becomes architectural and grounded, emphasizing constraints and eliminating the impossible step by step."
+                        },
+                        "option_c": {
+                            "text": "You urge Holmes to start with Roylott’s violence and the inheritance pressure, and let the sounds wait.",
+                            "downstream_effect": "Your tone becomes human and wary, framing the case as a predator problem before it is a puzzle."
+                        },
+                        "all_paths_arrive_at": "Holmes acknowledges the line you favor, then continues extracting the layout and nightly routine that will govern any intervention."
+                    },
+                    {
+                        "beat": "BREATH",
+                        "source_moment": "BREATH reward: Holmes’s hospitality and brisk wit—coffee by the fire; the ticket\/mud\/dog-cart deduction—relieving dread before the plan hardens.",
+                        "narrative_lead_in": "Mrs. Hudson’s fire pops, the coffee is hot, and for a moment the room feels like it belongs to daylight rather than corridors. Holmes’s little deductions land with an ease that almost feels like a trick performed for your benefit.",
+                        "choice_question": "How do you respond to Holmes’s show of competence in the middle of terror?",
+                        "option_a": {
+                            "text": "You indulge the display and let yourself enjoy the relief of being beside someone so certain.",
+                            "downstream_effect": "Your narration brightens into admiration, and your rapport with Holmes reads as shared craft rather than shared fear."
+                        },
+                        "option_b": {
+                            "text": "You gently push him to stop performing and return to what might kill Helen tonight.",
+                            "downstream_effect": "Your narration tightens into urgency, and the warmth of the room becomes a contrast you refuse to accept."
+                        },
+                        "option_c": {
+                            "text": "You stay quiet and drink your coffee, letting the calm settle while you watch what Holmes chooses not to say.",
+                            "downstream_effect": "Your narration becomes restrained and observant, using the comfort as cover for sharper attention."
+                        },
+                        "all_paths_arrive_at": "The comfort passes; Holmes returns to the case with a timetable forming around the recurring 3 a.m. cue."
+                    }
+                ],
+                "branching_choice_2": {
+                    "choice_id": "S2_C2",
+                    "source_moment": "Holmes presses on the ambiguous evidence and the implication of Dr. Roylott (Julia’s pointing toward his room; Roylott’s notorious violence; the locked doors “because of the cheetah and baboon”).",
+                    "values_in_tension": [
+                        "protecting Helen immediately",
+                        "avoiding wrongful accusation and escalation",
+                        "preserving truth through proof"
+                    ],
+                    "what_this_choice_tracks": "defiance_vs_deescalation",
+                    "narrative_setup": "Julia pointed toward Roylott’s room, and the house was locked like a cage from the inside. Yet the only things you truly have are a frightened woman’s impressions, a match burned down in a dead hand, and a man with a history of violence who might be guilty—or merely monstrous. Holmes looks to you, not for a conclusion, but for the posture you will take when you meet danger without certainty.",
+                    "choice_question": "With evidence thin and the risk immediate, how do you treat Dr. Roylott right now?",
+                    "option_a": {
+                        "text": "You argue you must confront Roylott openly and act as if he is the threat, because waiting is how people die.",
+                        "downstream_effect": "*You commit to defiance, raising the chance of provoking Roylott but gaining leverage through direct pressure and clear lines.*"
+                    },
+                    "option_b": {
+                        "text": "You argue you must keep Roylott calm and cooperative until you have proof, even if it means swallowing your anger.",
+                        "downstream_effect": "*You commit to de-escalation, lowering immediate heat but risking that caution buys the killer time and access.*"
+                    },
+                    "option_c": {
+                        "text": "You argue you should watch Roylott and the house first, holding judgment until his routines reveal what words cannot.",
+                        "downstream_effect": "*You commit to observation, preserving flexibility but accepting a dangerous delay and fewer chances to deter him directly.*"
+                    },
+                    "moral_weight_confirmation": "Each option risks real harm: provoking a violent man, enabling him through caution, or losing time while someone remains in danger.",
+                    "talkability_test": "Players can debate afterward whether preemptive confrontation is justified on circumstantial evidence, and where the line is between prudence and cowardice."
+                },
+                "branching_choice_3": {
+                    "choice_id": "S2_C3",
+                    "source_moment": "Session-end retention choice: you and Holmes are committed to intervene, but the method and risk posture are unresolved—how will you execute the night plan when Roylott is nearby and the cue appears?",
+                    "what_this_choice_tracks": "procedure_vs_improvisation",
+                    "narrative_setup": "By the time Holmes closes his case-book, the day has become a narrowing corridor toward night. Stoke Moran is waiting, and so is whatever answered Julia at three in the morning. Holmes can draft a plan, but the plan will only live or die by how you choose to behave when the first cue arrives and your blood decides faster than your brain.",
+                    "choice_question": "When the vigil begins and the first sign comes, what is your rule for yourself?",
+                    "option_a": {
+                        "text": "You commit to strict procedure and stay hidden until the cue is undeniable, even if it feels unbearable to wait.",
+                        "next_session_opens": "Session 3 opens with you positioned exactly as planned, counting seconds in the dark as the house speaks in small sounds you must not misread."
+                    },
+                    "option_b": {
+                        "text": "You commit to improvisation and move early to control doors and corridor angles before the threat fully shows itself.",
+                        "next_session_opens": "Session 3 opens with you shifting position ahead of schedule, risking a telltale creak or shadow in exchange for control of the approach."
+                    },
+                    "option_c": {
+                        "text": "You commit to self-preservation and keep distance unless Helen is in immediate, visible danger.",
+                        "next_session_opens": "Session 3 opens with you choosing a safer vantage, forcing Holmes to carry more of the immediate risk while you watch for the moment you cannot ignore."
+                    }
+                }
+            },
+            "choice_consequence_map": {
+                "consequence_map_choice_1": {
+                    "tracked_dimension": "methodical_inquiry_vs_intuitive_leap",
+                    "path_a": {
+                        "immediate_effect": "In Helen’s recollection, you force Julia’s last coherent seconds into an ordered list—she rasps “a low whistle… a clanging sound… the speckled band,” then her finger jerks toward Roylott’s door; Helen later repeats your exact sequence to Holmes verbatim (“whistle first, then the metal clang”).",
+                        "current_session_echo": "Back in Baker Street, Holmes uses your sequence as a measuring-stick: when Helen mentions the bed-clamp and the bell-rope, Holmes explicitly ties it to “the whistle” as a deliberate signal, and he has you write the order in your notebook before you leave for Stoke Moran.",
+                        "next_session_payoff": "During the vigil, at the first faint hiss\/whistle (E26–E27), you recognize it as the first step in Julia’s sequence and stop yourself from moving too early; Holmes murmurs, “Just as your timeline said—wait for the second sound,” and only after the metallic ‘click’ from the ventilator\/bell-pull does he strike the match and lash the bell-pull.",
+                        "later_session_legacy": "In the aftermath explanation, Holmes quotes your preserved order as the hinge that ruled out ‘human entry’ and pointed to a timed delivery (“the whistle was the summons; the clang the release”), and Watson’s closing narration frames the case as won by refusing to let panic scramble chronology."
+                    },
+                    "path_b": {
+                        "immediate_effect": "You shout for help and Roylott is the first heavy footfall in the corridor; Helen’s memory fixes on his arrival—his dressing-gown, the candle, and the way he blocks the doorway before anyone else can enter Julia’s room.",
+                        "current_session_echo": "In Baker Street, your account makes Holmes treat Roylott’s behavior as evidence: he asks Helen three times about Roylott’s position in the hall and his hands when he entered, and Holmes’s working theory leans harder toward ‘motive + opportunity’ than mechanism until the bedroom inspection forces a pivot.",
+                        "next_session_payoff": "On the night approach across the grounds (E22–E23), Roylott is staged as more alert and mobile in your version: you spot his candle moving behind the shutters earlier than Holmes expects, forcing a tense pause behind the laurel bushes while Holmes whispers, “He came quickly once before—assume he will again.”",
+                        "later_session_legacy": "After Roylott’s death, Holmes’s tone turns colder in the debrief: he explicitly cites Roylott’s ‘too-timely’ appearance on Julia’s night as the reason he feels less remorse, and Watson’s final paragraph carries a sharper judgment (“there are men whose presence at a deathbed is itself a confession”)."
+                    },
+                    "path_c": {
+                        "immediate_effect": "You move toward the whistle’s source and register the house as a sound-map: the corridor boards that don’t creak, the distance to Roylott’s door, and—crucially—the thin, unnatural draft at the ventilator as the storm gusts.",
+                        "current_session_echo": "In Baker Street and on the drive, you keep returning to physical sensation; Holmes indulges it by asking for ‘distance’ and ‘air’ rather than words, and when he sees the ventilator and dummy bell-rope he explicitly tests airflow with his hand because you planted the idea of a ‘moving current’ in a sealed house.",
+                        "next_session_payoff": "At the vigil (E26), when the smell of Roylott’s lamp and the faint movement of air coincide, you feel the same draft you noticed in the recollection and silently signal Holmes by touching the ventilator frame; Holmes’s match comes a beat earlier, catching the snake mid-descent rather than after it reaches the bed.",
+                        "later_session_legacy": "In the closing explanation, Holmes credits your ‘sense for the house’ as what made him treat the ventilator as functional rather than decorative; later references to you in dialogue lean toward instinctive field-read (“Watson heard the building lie”) rather than purely documentary narration."
+                    }
+                },
+                "consequence_map_choice_2": {
+                    "tracked_dimension": "defiance_vs_deescalation",
+                    "path_a": {
+                        "immediate_effect": "You press Holmes to treat Roylott as an active threat; when Roylott later bursts into Baker Street, you step forward first and name the danger plainly (“If another woman dies, it will be on your head”), prompting Roylott to seize your wrist and snarl his warning about ‘violence’ before Holmes dismisses him.",
+                        "current_session_echo": "Holmes runs the afternoon inspection with a harder edge: he has you keep your revolver ready in the yard, and he chooses the inn stakeout with the assumption Roylott will retaliate—every shadowed window becomes ‘a man watching us,’ tightening the session’s paranoia.",
+                        "next_session_payoff": "When the signal appears and you cross the grounds (E22–E23), Roylott’s patrol is more aggressive: you nearly get caught by the sudden flare of his candle at the stable corner, and you must freeze in the wet grass while Holmes grips your sleeve—this directly pays off your earlier decision to provoke and be treated as a known enemy.",
+                        "later_session_legacy": "After the snake turns on Roylott, Holmes’s moral framing is more ‘necessity’ than ‘regret’: he tells you, “We warned him in every way a man can be warned,” and Watson’s internal justification leans toward duty fulfilled rather than tragedy observed."
+                    },
+                    "path_b": {
+                        "immediate_effect": "You argue for calm and proof; when Roylott appears, you hold your ground without accusation and keep your voice even (“We mean no harm, Doctor—only to understand”), which makes Roylott leave with a suspicious, measuring look rather than immediate violence.",
+                        "current_session_echo": "Holmes mirrors your restraint: he speaks more gently to Helen, emphasizes ‘certainty’ over ‘courage,’ and the investigation beat becomes a controlled chess-game—Holmes spends extra time on the will, the marriage settlement, and the stepfather’s financial motive because you’ve committed to not inflaming a possibly innocent man.",
+                        "next_session_payoff": "At the inn and during the approach (E22–E23), Roylott is less overtly on patrol, but the payoff is a different danger: you and Holmes reach the manor with fewer interruptions, only to realize the household is quieter than it should be—no servants stirring—raising the fear that your caution bought Roylott time to set the trap more cleanly before you arrived.",
+                        "later_session_legacy": "In the debrief, Holmes explicitly acknowledges your posture: “You kept us from turning suspicion into a duel,” and Watson’s closing tone emphasizes restraint—Roylott’s death reads as a consequence of his own machinery rather than of your confrontation."
+                    },
+                    "path_c": {
+                        "immediate_effect": "You insist on watching first; Holmes assigns you a specific surveillance task that same day—note Roylott’s movements at the windows and listen for animal sounds in the yard—so your ‘first move’ becomes data collection rather than argument.",
+                        "current_session_echo": "The session’s middle becomes observationally tense: you catalog the cheetah’s pacing and the baboon’s chatter, and Holmes treats your notes as operational—he chooses the timing of the night return based on your report of when Roylott’s lamp usually goes out.",
+                        "next_session_payoff": "When the signal appears (E22) and you move (E23), you get a concrete advantage: you predict Roylott’s position from his routine and lead Holmes along the darker edge of the path, avoiding the gravel that would crunch—this is explicitly called back as “the route you marked earlier.”",
+                        "later_session_legacy": "In the aftermath, Holmes frames the case as won by patience: he cites your routine-notes as what let him risk the vigil at all, and future trust alignment tilts toward Holmes consulting you for ‘field observation’ rather than merely chronicling deductions."
+                    }
+                },
+                "consequence_map_choice_3": {
+                    "tracked_dimension": "procedure_vs_improvisation",
+                    "path_a": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "You and Holmes are already concealed in Helen’s room exactly as agreed—chairs moved, shutters fixed, your revolver laid where it can be reached without a scrape; the darkness is measured in seconds, and Holmes’s only instruction is a whisper: “Do nothing until I do.”",
+                        "next_session_payoff": "When the first cue comes (the faint whistle\/hiss), you successfully suppress the urge to act; the payoff is immediate competence—Holmes later murmurs approval (“Excellent—now we have it”), and the match is struck at the decisive second, giving the player the felt reward of discipline rather than mere obedience.",
+                        "later_session_legacy": "Holmes’s post-mortem explanation credits ‘control’ as the difference between catching the mechanism and dying to it; Watson’s narration frames the night as a lesson in restraint, and Holmes’s trust in your steadiness increases in later scenes (he hands you the lamp\/lead position without hesitation)."
+                    },
+                    "path_b": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "Session opens mid-shift: you ease the door a fraction and reposition to control the corridor angle; a floorboard gives a tiny complaint, and both you and Holmes freeze as a shadow passes under Roylott’s door across the ventilator line.",
+                        "next_session_payoff": "Your early movement creates a concrete tactical benefit: when the snake begins to descend, you are already closer to the bed and can swat\/strike sooner—Holmes’s match reveals it a half-step earlier than in the procedural path, validating improvisation as ‘speed that saves.’",
+                        "later_session_legacy": "The legacy is reputational: Holmes later needles you—half admiration, half warning—about ‘moving before the proof,’ and in subsequent planning beats he builds contingencies around your tendency to act, offering you roles that exploit initiative (door control, flanking) but limiting unsupervised leaps."
+                    },
+                    "path_c": {
+                        "immediate_effect": "N\/A — session ends on this choice.",
+                        "next_session_opening": "You choose a safer vantage—nearer the window\/doorway—keeping a clear retreat line; Holmes is closer to Helen’s bed, carrying the immediate exposure while you watch the ventilator and bell-pull from a distance.",
+                        "next_session_payoff": "The payoff validates self-preservation as ‘not becoming the second victim’: when panic spikes, you remain clear-headed enough to spot the movement at the ventilator and call it out (“There—by the grating!”), enabling Holmes’s decisive strike while you keep Helen behind you and ready to move.",
+                        "later_session_legacy": "Afterward, the moral tone shifts: Holmes’s explanation stresses calculated risk and the cost of heroics; Watson’s internal voice is more sober about survival, and future trust alignment shows Holmes relying on you as a stabilizer\/evacuation mind rather than the first into the dark."
+                    }
+                },
+                "validation_results": {
+                    "specificity": "PASS",
+                    "asymmetry": "PASS",
+                    "payability": "PASS"
+                }
+            },
+            "session_close_design": {
+                "session_close_trigger_event_position": 24,
+                "resolution_prose": "You slip into Helen Stoner’s room as if the house itself might hear you. The air is close with old wallpaper and damp stone; the bed is narrow, the counterpane pulled tight as if it could ward off anything. Holmes moves with brisk, economical certainty—shutters drawn and latched, the little ventilator above the door examined with a fingertip, the bell-pull tested and then left hanging like a dare. He sets the lamp where it can be reached without a scrape, lays matches beside it, and places your revolver so your hand can find it in the dark.\n\nFor the first time all day, the case stops being talk and becomes a room you can touch. You are here before the hour that killed Julia. Helen’s frightened breathing from the corridor fades as she obeys Holmes and leaves you to the trap.\n\nHolmes’s whisper is dry and final: tonight, you do not merely suspect—you will see.",
+                "hook_transition": "A thin quiet settles, broken only by the faint tick of the clock somewhere deeper in the manor. Then Holmes leans close enough that you smell tobacco on his coat and feel the heat of his certainty: the first sign will come quickly, and whatever you do next will decide whether you catch the method—or feed it.",
+                "session_end_choice": {
+                    "choice_question": "When the vigil begins and the first sign comes, what is your rule for yourself?",
+                    "option_a": {
+                        "text": "You commit to strict procedure and stay hidden until the cue is undeniable, even if it feels unbearable to wait.",
+                        "next_session_opens": "Session 3 opens with you positioned exactly as planned, counting seconds in the dark as the house speaks in small sounds you must not misread."
+                    },
+                    "option_b": {
+                        "text": "You commit to improvisation and move early to control doors and corridor angles before the threat fully shows itself.",
+                        "next_session_opens": "Session 3 opens with you shifting position ahead of schedule, risking a telltale creak or shadow in exchange for control of the approach."
+                    },
+                    "option_c": {
+                        "text": "You commit to self-preservation and keep distance unless Helen is in immediate, visible danger.",
+                        "next_session_opens": "Session 3 opens with you choosing a safer vantage, forcing Holmes to carry more of the immediate risk while you watch for the moment you cannot ignore."
+                    },
+                    "final_line": "Decide the shape of your courage, and then let the dark begin."
+                },
+                "stickiness_audit": {
+                    "payoff_test": "PASS",
+                    "return_driver_test": "PASS",
+                    "overnight_test": "PASS"
+                },
+                "session_close_trigger_event_id": 114
+            },
+            "editorial_verification": {
+                "question_results": {
+                    "entry_point": {
+                        "verdict": "PASS",
+                        "detail": "The session starts at the first moment of immediate, personal, in-scene stakes (Julia’s death night: scream → whistle → clang → convulsions → last words). All prior domestic banter\/competence runway is correctly repositioned later as a breath\/reward beat rather than front-loaded."
+                    },
+                    "emotional_promise": {
+                        "verdict": "PASS",
+                        "detail": "The first paragraph promises dread + urgency + a solvable-but-deadly mystery (locked-house terror, a dying warning, and the implicit promise that the player can prevent the next death by interpreting\/acting). This is clear and emotionally legible."
+                    },
+                    "first_choice_timing": {
+                        "verdict": "PASS",
+                        "detail": "Branching Choice 1 lands inside the cold open and is clearly within 300 words of the start (the user is asked what to do as Julia tries to speak)."
+                    },
+                    "consequential_choices": {
+                        "verdict": "PASS",
+                        "detail": "All three branching choices have planned downstream consequences with concrete payoffs:\n- Branch 1 (methodical vs help-first vs chase) visibly alters what clue-anchor is ‘locked in’ and pays off during Session 3 vigil timing\/airflow recognition and later debrief framing.\n- Branch 2 (confront vs de-escalate vs observe Roylott) changes Roylott’s Baker Street confrontation texture, inspection posture, and Session 3 approach\/patrol risk profile.\n- Branch 3 (procedure vs improvise vs self-preservation) directly determines Session 3 opening positioning and tactical affordances at first cue.\nThese align with the provided consequence maps and the cross-session payoff plan (signal\/approach\/vigil moments)."
+                    },
+                    "stakes_within_60_seconds": {
+                        "verdict": "PASS",
+                        "detail": "Within the opening seconds the user understands: someone is dying now, the threat is active in the house, and the player’s immediate action may determine what warning\/clue survives. Stakes are visceral and personal without requiring exposition."
+                    },
+                    "early_decision_visible_later": {
+                        "verdict": "PASS",
+                        "detail": "Branch 1’s ‘what you lock in’ is explicitly echoed later in-session (Holmes using your sequence\/your sensory framing) and has explicit next-session payoffs (wait for second sound; airflow\/ventilator timing; Roylott alertness staging). The design includes clear call-backs rather than purely hidden variables."
+                    },
+                    "breath_beat": {
+                        "verdict": "PASS",
+                        "detail": "A deliberate breath\/reward beat is placed at 8:00–10:00 using Holmes’s warmth\/wit\/competence (coffee\/fire + deduction intercut). It functions as release without deflating stakes and meets the Schell reward timing requirement."
+                    },
+                    "moral_gray_area": {
+                        "verdict": "PASS",
+                        "detail": "Branch 2 is a genuine moral gray choice: preemptive confrontation vs proof-first restraint vs surveillance. Each option carries credible harm (escalation\/false accusation vs delay enabling murder vs dangerous passivity). No option is framed as ‘correct.’"
+                    },
+                    "exit_emotional_state": {
+                        "verdict": "PASS",
+                        "detail": "The session ends on a player-owned unresolved decision (rule for the vigil) with imminent danger and clear next action. The carried-out emotion is anticipation\/tense readiness, not closure or confusion."
+                    },
+                    "talkability": {
+                        "verdict": "PASS",
+                        "detail": "A friend would naturally ask what the player chose, especially at Branch 2 (how to treat Roylott on thin evidence) and Branch 3 (procedure vs improvisation vs self-preservation). These are identity-revealing and debatable choices with obvious downstream implications."
+                    }
+                },
+                "total_passed": 10,
+                "production_status": "GREEN",
+                "revision_instructions": []
+            }
+        }
+    ]
+}
