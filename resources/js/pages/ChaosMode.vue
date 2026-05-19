@@ -40,7 +40,7 @@ const STORY_THEMES: Record<string, { from: string; via: string; accent: string }
     'nocturne':                          { from: '#0a2a4a', via: '#051015', accent: '#38bdf8' },
     'anima-machina':                     { from: '#4a1a5a', via: '#0d050e', accent: '#e879f9' },
     'driftheart':                        { from: '#1a3a6a', via: '#050d15', accent: '#67e8f9' },
-    '__default__':                       { from: '#063a39', via: '#030f0f', accent: '#0abab5' },
+    '__default__':                       { from: '#3a2800', via: '#0f0b00', accent: '#e5ad53' },
 };
 
 const props = defineProps<{
@@ -48,12 +48,14 @@ const props = defineProps<{
 }>();
 
 const MODELS = [
-    { value: 'gpt-5.5',           label: 'GPT-5.5',           provider: 'OpenAI',    est: '~$1.70' },
-    { value: 'gpt-5.4',           label: 'GPT-5.4',           provider: 'OpenAI',    est: '~$0.85' },
-    { value: 'gpt-5.2',           label: 'GPT-5.2',           provider: 'OpenAI',    est: '~$0.45' },
-    { value: 'gpt-4.1',           label: 'GPT-4.1',           provider: 'OpenAI',    est: '~$0.65' },
-    { value: 'claude-opus-4-6',   label: 'Claude Opus 4.6',   provider: 'Anthropic', est: '~$1.65' },
-    { value: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5', provider: 'Anthropic', est: '~$1.00' },
+    { value: 'gpt-5.5',           label: 'GPT-5.5',           provider: 'OpenAI',    est: '~$1.70', defaultTemp: 0.9  },
+    { value: 'gpt-5.4',           label: 'GPT-5.4',           provider: 'OpenAI',    est: '~$0.85', defaultTemp: 1.0  },
+    { value: 'gpt-5.4-mini',      label: 'GPT-5.4 Mini',      provider: 'OpenAI',    est: '~$0.30', defaultTemp: 0.95 },
+    { value: 'gpt-5.2',           label: 'GPT-5.2',           provider: 'OpenAI',    est: '~$0.45', defaultTemp: 1.0  },
+    { value: 'gpt-4.1',           label: 'GPT-4.1',           provider: 'OpenAI',    est: '~$0.65', defaultTemp: 1.0  },
+    { value: 'claude-opus-4-7',   label: 'Claude Opus 4.7',   provider: 'Anthropic', est: '~$1.85', defaultTemp: 1.0  },
+    { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', provider: 'Anthropic', est: '~$1.05', defaultTemp: 1.0  },
+    { value: 'claude-haiku-4-5',  label: 'Claude Haiku 4.5',  provider: 'Anthropic', est: '~$0.30', defaultTemp: 0.95 },
 ];
 
 const selectedModelMeta = computed(() => MODELS.find((m) => m.value === selectedModel.value));
@@ -65,6 +67,7 @@ const firstAvailableSlug = computed(() => availableStories.value[0]?.slug ?? pro
 
 const selectedStorySlug = ref<string>(firstAvailableSlug.value);
 const selectedModel = ref('gpt-5.5');
+const selectedTemperature = ref(0.9);
 const started = ref(false);
 const loading = ref(false);
 const sessionId = ref<string | null>(null);
@@ -102,6 +105,11 @@ watch(scrollEl, (el) => {
 
 watch(firstAvailableSlug, (val) => {
     if (!selectedStorySlug.value) selectedStorySlug.value = val;
+});
+
+watch(selectedModel, (model) => {
+    const meta = MODELS.find((m) => m.value === model);
+    if (meta) selectedTemperature.value = meta.defaultTemp;
 });
 
 const narratorIndexMap = computed(() => {
@@ -177,6 +185,7 @@ async function startWithChoices(): Promise<void> {
         const data = await apiFetch('/chaos-mode/start', {
             story_slug: selectedStorySlug.value,
             model: selectedModel.value,
+            temperature: selectedTemperature.value,
         });
         turns.value = [];
         applyResponse(data);
@@ -202,6 +211,7 @@ async function takeTurn(action: string): Promise<void> {
             session_id: sessionId.value,
             player_action: trimmed,
             model: selectedModel.value,
+            temperature: selectedTemperature.value,
         });
         applyResponse(data);
         await scrollToBottom();
@@ -222,6 +232,7 @@ async function continueToNextSession(): Promise<void> {
         const data = await apiFetch('/chaos-mode/continue', {
             session_id: sessionId.value,
             model: selectedModel.value,
+            temperature: selectedTemperature.value,
         });
         turns.value = [];
         sessionComplete.value = false;
@@ -347,7 +358,7 @@ function resetAdventure(): void {
                 </div>
 
                 <!-- Model selector -->
-                <div class="mb-7">
+                <div class="mb-5">
                     <div class="mb-2 flex items-baseline justify-between">
                         <label class="chaos-mode-field-label text-xs uppercase tracking-widest">Narrator Model</label>
                         <span class="chaos-mode-cost-est text-[10px]">
@@ -373,14 +384,39 @@ function resetAdventure(): void {
                     </p>
                 </div>
 
+                <!-- Temperature slider -->
+                <div class="mb-7">
+                    <div class="mb-2 flex items-baseline justify-between">
+                        <label class="chaos-mode-field-label text-xs uppercase tracking-widest">Temperature</label>
+                        <span class="chaos-mode-temp-value tabular-nums text-[11px] font-medium">
+                            {{ selectedTemperature.toFixed(2) }}
+                        </span>
+                    </div>
+                    <input
+                        v-model.number="selectedTemperature"
+                        type="range"
+                        min="0.5"
+                        max="1.3"
+                        step="0.05"
+                        class="chaos-mode-temp-slider w-full"
+                    />
+                    <div class="mt-1.5 flex justify-between">
+                        <span class="chaos-mode-cost-note text-[10px]">Focused</span>
+                        <span class="chaos-mode-cost-note text-[10px]">Creative</span>
+                    </div>
+                    <p class="chaos-mode-cost-note mt-0.5 text-[10px] leading-relaxed">
+                        Lower = more consistent narration. Higher = more surprising and inventive.
+                    </p>
+                </div>
+
                 <BaseButton
                     class="chaos-mode-cta w-full"
                     severity="primary"
                     :disabled="loading || !selectedStory?.available"
                     @click="startWithChoices"
                 >
-                    <span v-if="loading" class="flex items-center justify-center gap-2 text-[#1f160d]">
-                        <span class="size-4 animate-spin rounded-full border-2 border-[#1f160d]/25 border-t-[#1f160d]/85" />
+                    <span v-if="loading" class="flex items-center justify-center gap-2 text-[#1a0f00]">
+                        <span class="size-4 animate-spin rounded-full border-2 border-[#1a0f00]/25 border-t-[#1a0f00]/85" />
                         Opening the story...
                     </span>
                     <span v-else>Begin the Adventure</span>
@@ -401,7 +437,7 @@ function resetAdventure(): void {
                 </BaseButton>
 
                 <div class="flex flex-col items-center">
-                    <p class="text-center text-[10px] uppercase tracking-widest text-[color:rgba(10,186,181,0.7)]">
+                    <p class="text-center text-[10px] uppercase tracking-widest text-[color:rgba(229,173,83,0.7)]">
                         {{ sessionComplete ? 'Session Complete' : 'Chaos Mode' }}
                     </p>
                     <p v-if="storyTitle" class="font-gill-sans text-center text-xs text-gray-400">
@@ -410,8 +446,9 @@ function resetAdventure(): void {
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <span class="hidden rounded-full border px-3 py-1 text-[10px] sm:block border-[rgba(10,186,181,0.28)] bg-[rgba(10,186,181,0.07)] text-[rgba(10,186,181,0.8)]">
+                    <span class="hidden rounded-full border px-3 py-1 text-[10px] sm:block border-[rgba(229,173,83,0.28)] bg-[rgba(229,173,83,0.07)] text-[rgba(229,173,83,0.8)]">
                         {{ MODELS.find((m) => m.value === selectedModel)?.label }}
+                        <span class="opacity-60">· {{ selectedTemperature.toFixed(2) }}</span>
                     </span>
                     <BaseButton severity="glass" :icon-only="true" class="size-10!" title="New adventure" @click="resetAdventure">
                         <LucideRefreshCw class="size-4 text-gray-400" :stroke-width="1.5" />
@@ -424,7 +461,7 @@ function resetAdventure(): void {
                 <Transition name="player-slide">
                     <div
                         v-if="tts.isActive.value"
-                        class="bg-glass-effect pointer-events-auto relative flex items-center gap-3 overflow-hidden rounded-full border border-[rgba(10,186,181,0.35)] py-2 pe-3 ps-2 shadow-2xl backdrop-blur-xl bg-gray-900/80!"
+                        class="bg-glass-effect pointer-events-auto relative flex items-center gap-3 overflow-hidden rounded-full border border-[rgba(229,173,83,0.35)] py-2 pe-3 ps-2 shadow-2xl backdrop-blur-xl bg-gray-900/80!"
                     >
                         <button
                             class="bg-primary-glass-effect relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-full transition-transform hover:scale-105 active:scale-95"
@@ -440,7 +477,7 @@ function resetAdventure(): void {
                             {{ tts.formattedDuration.value }}
                         </span>
                         <button
-                            class="rounded-full border px-2.5 py-0.5 text-xs font-semibold tabular-nums transition-colors border-[rgba(10,186,181,0.4)] text-[rgba(10,186,181,0.9)] hover:border-[rgba(10,186,181,0.7)] hover:bg-[rgba(10,186,181,0.12)]"
+                            class="rounded-full border px-2.5 py-0.5 text-xs font-semibold tabular-nums transition-colors border-[rgba(229,173,83,0.4)] text-[rgba(229,173,83,0.9)] hover:border-[rgba(229,173,83,0.7)] hover:bg-[rgba(229,173,83,0.12)]"
                             @click="tts.cycleSpeed"
                         >
                             {{ tts.playbackRate.value }}x
@@ -468,7 +505,7 @@ function resetAdventure(): void {
                             <!-- Narrator turn -->
                             <div v-if="turn.role === 'narrator'" class="chaos-prose py-8">
                                 <div class="mb-3 flex items-center gap-3">
-                                    <span class="text-[10px] uppercase tracking-widest text-[rgba(10,186,181,0.55)]">Narrator</span>
+                                    <span class="text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.55)]">Narrator</span>
                                     <button
                                         v-if="sessionId"
                                         class="chaos-tts-btn flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium transition-all"
@@ -518,7 +555,7 @@ function resetAdventure(): void {
                                 <button
                                     v-for="(choice, i) in choicesBuffer"
                                     :key="i"
-                                    class="chaos-choice-btn bg-glass-effect rounded-xl border border-[rgba(10,186,181,0.22)] px-4 py-2.5 text-left text-sm text-[rgba(235,250,250,0.82)] backdrop-blur-sm transition-all hover:border-[rgba(10,186,181,0.55)] hover:text-[rgba(235,250,250,1)] focus:outline-none"
+                                    class="chaos-choice-btn bg-glass-effect rounded-xl border border-[rgba(229,173,83,0.22)] px-4 py-2.5 text-left text-sm text-[rgba(250,243,228,0.82)] backdrop-blur-sm transition-all hover:border-[rgba(229,173,83,0.55)] hover:text-[rgba(250,243,228,1)] focus:outline-none"
                                     :disabled="loading"
                                     @click="takeTurn(choice)"
                                 >
@@ -530,9 +567,9 @@ function resetAdventure(): void {
                         <!-- Session complete banner -->
                         <div
                             v-if="sessionComplete"
-                            class="my-8 rounded-2xl border p-6 text-center backdrop-blur-sm border-[rgba(10,186,181,0.35)] bg-[rgba(10,186,181,0.06)]"
+                            class="my-8 rounded-2xl border p-6 text-center backdrop-blur-sm border-[rgba(229,173,83,0.35)] bg-[rgba(229,173,83,0.06)]"
                         >
-                            <p class="mb-1 text-[10px] uppercase tracking-widest text-[rgba(10,186,181,0.65)]">
+                            <p class="mb-1 text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.65)]">
                                 Session {{ sessionNumber }} Complete
                             </p>
                             <p class="font-gill-sans mb-2 text-xl font-medium text-[var(--chaos-brand)]">
@@ -592,9 +629,9 @@ function resetAdventure(): void {
 
 <style scoped>
 .chaos-mode-root {
-    /* Brand: Tiffany Blue — matches app primary */
-    --chaos-brand: #0abab5;
-    --chaos-brand-rgb: 10, 186, 181;
+    /* Brand: Amber Gold — Chaos Mode signature, distinct from Story Guard's Tiffany Blue */
+    --chaos-brand: #e5ad53;
+    --chaos-brand-rgb: 229, 173, 83;
     font-family: 'Source Sans 3', Inter, sans-serif;
 }
 
@@ -625,17 +662,17 @@ function resetAdventure(): void {
     text-shadow: 0 0 24px rgba(var(--chaos-brand-rgb), 0.3);
 }
 
-.chaos-mode-title { color: #f0fafa; }
+.chaos-mode-title { color: #faf6ef; }
 
-.chaos-mode-lede { color: rgba(220, 245, 244, 0.55); }
+.chaos-mode-lede { color: rgba(250, 235, 200, 0.55); }
 
 .chaos-mode-field-label { color: rgba(var(--chaos-brand-rgb), 0.65); }
 
-.chaos-mode-tagline { color: rgba(192, 237, 235, 0.52); }
+.chaos-mode-tagline { color: rgba(250, 230, 190, 0.52); }
 
 .chaos-mode-cost-est { color: rgba(var(--chaos-brand-rgb), 0.55); font-variant-numeric: tabular-nums; }
 
-.chaos-mode-cost-note { color: rgba(192, 237, 235, 0.28); font-style: italic; }
+.chaos-mode-cost-note { color: rgba(250, 225, 175, 0.28); font-style: italic; }
 
 /* ── Story selection cards ── */
 .story-card {
@@ -678,8 +715,8 @@ function resetAdventure(): void {
 
 /* ── Model select ── */
 .chaos-mode-select {
-    color: #e8f8f8;
-    background-color: rgba(3, 12, 12, 0.92);
+    color: #faf3e4;
+    background-color: rgba(12, 9, 3, 0.92);
     border-color: rgba(var(--chaos-brand-rgb), 0.25);
 }
 .chaos-mode-select:focus {
@@ -687,14 +724,63 @@ function resetAdventure(): void {
     box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.22);
 }
 .chaos-mode-select option,
-.chaos-mode-select optgroup { background-color: #080e0e; color: #e8f8f8; }
-.chaos-mode-select option:disabled { color: rgba(200, 240, 238, 0.3); }
+.chaos-mode-select optgroup { background-color: #0e0a03; color: #faf3e4; }
+.chaos-mode-select option:disabled { color: rgba(250, 230, 190, 0.3); }
+
+/* ── Temperature slider ── */
+.chaos-mode-temp-value {
+    color: var(--chaos-brand);
+}
+.chaos-mode-temp-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(
+        to right,
+        rgba(var(--chaos-brand-rgb), 0.8) 0%,
+        rgba(var(--chaos-brand-rgb), 0.8) calc((var(--v, 0.9) - 0.5) / 0.8 * 100%),
+        rgba(var(--chaos-brand-rgb), 0.15) calc((var(--v, 0.9) - 0.5) / 0.8 * 100%),
+        rgba(var(--chaos-brand-rgb), 0.15) 100%
+    );
+    outline: none;
+    cursor: pointer;
+}
+.chaos-mode-temp-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--chaos-brand);
+    border: 2px solid rgba(3, 7, 18, 0.9);
+    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.4), 0 2px 8px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+}
+.chaos-mode-temp-slider::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 3px rgba(var(--chaos-brand-rgb), 0.22), 0 2px 8px rgba(0,0,0,0.4);
+}
+.chaos-mode-temp-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--chaos-brand);
+    border: 2px solid rgba(3, 7, 18, 0.9);
+    box-shadow: 0 0 0 1px rgba(var(--chaos-brand-rgb), 0.4);
+    cursor: pointer;
+}
+.chaos-mode-temp-slider::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(var(--chaos-brand-rgb), 0.15);
+}
 
 /* ── CTA button ── */
 .chaos-mode-config-card :deep(.chaos-mode-cta) {
     background-color: var(--chaos-brand) !important;
-    color: #041414 !important;
-    border-color: rgba(4, 20, 20, 0.15) !important;
+    color: #1a0f00 !important;
+    border-color: rgba(26, 15, 0, 0.15) !important;
     outline-color: rgba(var(--chaos-brand-rgb), 0.35) !important;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -705,12 +791,12 @@ function resetAdventure(): void {
 }
 .chaos-mode-config-card :deep(.chaos-mode-cta.pointer-events-none) {
     background-color: rgba(var(--chaos-brand-rgb), 0.35) !important;
-    color: rgba(4, 20, 20, 0.6) !important;
+    color: rgba(26, 15, 0, 0.6) !important;
     opacity: 1 !important;
 }
 :deep(.chaos-mode-cta) {
     background-color: var(--chaos-brand) !important;
-    color: #041414 !important;
+    color: #1a0f00 !important;
     font-weight: 600;
 }
 
@@ -731,7 +817,7 @@ function resetAdventure(): void {
 /* ── Narration prose ── */
 .chaos-prose {
     line-height: 1.85;
-    color: rgba(235, 250, 250, 0.88);
+    color: rgba(250, 243, 228, 0.88);
     font-size: 1rem;
 }
 .chaos-prose :deep(p) { margin-bottom: 1em; }
