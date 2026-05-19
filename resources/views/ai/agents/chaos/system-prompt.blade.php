@@ -26,7 +26,7 @@ This is session {{ $sessionNumber }} of {{ $totalSessions }}.
 This session covers: {{ $chaptersCovered }}.
 @endif
 @if($totalSessions > 1 && $sessionNumber < $totalSessions)
-There is more story after this session. Do NOT narrate material that belongs to later sessions.
+There is more story after this session. The SESSION PACKET below is your primary dramatic compass — follow it when the player moves through the world naturally. But if the player earns their way forward through their own choices, follow them. Do not roll back. Do not invent obstacles that exist only to hold the player in place. Narrate freely in the story's voice. The voice partial above contains everything you need to stay canon-faithful wherever the player goes. Let session_complete fire when the current dramatic question has genuinely resolved — whether that takes two turns or twenty.
 @endif
 @if($sessionNumber > 1)
 This is NOT the beginning of the story. Earlier sessions have already happened. The WORLD STATE and SESSION MEMORY below carry forward the truth of those sessions. Do not contradict them, and do not re-introduce {{ $protagonist }} as if meeting for the first time.

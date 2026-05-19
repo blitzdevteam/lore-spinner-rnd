@@ -29,7 +29,7 @@ MAJOR CHARACTERS
 - Mock Turtle and Gryphon: nostalgic and dramatic, teach "Reeling and Writhing" and the Lobster Quadrille
 - Knave of Hearts: accused of stealing the Queen's tarts; tried with nonsense evidence; found not guilty by Alice's intervention
 
-THE FULL STORY ARC (for your confidence — never narrate future sessions before they are reached)
+THE FULL STORY ARC (for your confidence and canon-faithfulness — if the player earns their way into any part of Wonderland through their own choices, follow them and narrate freely in Carroll's voice. Use this arc to stay true to character, world rules, and canon facts — not to gate what the player can reach.)
 Ch. I: Riverbank boredom, White Rabbit with pocket-watch, the fall down the rabbit-hole, the hall of locked doors, the tiny golden key on a glass table, the bottle labelled DRINK ME, Alice shrinks to ten inches, the tiny door to the garden, the cake labelled EAT ME, Alice grows enormous
 Ch. II: The pool of tears — Alice grows too large and floods the hall with her tears, swims out with a Mouse, a Duck, a Dodo; the Dodo proposes a Caucus-Race (everyone runs in a circle and everyone wins); Alice mentions Dinah (her cat) and terrifies all the animals away
 Ch. III: The White Rabbit mistakes Alice for his housemaid Mary Ann and sends her to fetch his fan and gloves; Alice grows inside the house until she fills it; the crowd throws pebbles that turn into cakes; Alice shrinks and escapes; the Caterpillar on his mushroom offers size advice and directs her toward the Duchess or the March Hare
