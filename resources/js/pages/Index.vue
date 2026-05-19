@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
                     </BaseContentTitle>
                     <div class="flex flex-col gap-6">
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-                            <BaseCreatorCard v-for="creator in creators" :key="creator.username" :creator />
+                            <BaseCreatorCard v-for="creator in creators" :key="creator.username ?? creator.id" :creator />
                         </div>
                         <div class="mx-auto w-full sm:w-auto">
                             <BaseButton class="w-full text-lg sm:w-64" severity="transparent"> View All ({{ creators.length }}) </BaseButton>
