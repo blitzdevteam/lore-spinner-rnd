@@ -23,10 +23,11 @@ final class EventExtractorJob implements ShouldQueue
 
     /**
      * Max characters of chapter content sent to the event extractor.
-     * Prevents token-limit errors on very long chapters (e.g. feature-length screenplays).
-     * ~60k chars ≈ 15k tokens of screenplay text — well within gpt-5.2's window.
+     * After LineNumberFormatterHelper adds #N# prefixes + the length index block,
+     * raw chars inflate ~25–30% before reaching the model. 35k raw chars stays
+     * safely within budget even for long LOTR-scale chapters.
      */
-    private const int MAX_CONTENT_CHARS = 60_000;
+    private const int MAX_CONTENT_CHARS = 35_000;
 
     public int $tries = 3;
 
