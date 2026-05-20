@@ -24,11 +24,10 @@ final class EventExtractorJob implements ShouldQueue
     /**
      * Max characters per chunk sent to the event extractor.
      * After LineNumberFormatterHelper adds #N# prefixes + the length index block,
-     * raw chars inflate ~25–30%. 25k raw chars ≈ safe budget for any chapter size.
-     * Chapters larger than this are split into multiple chunks at line boundaries
-     * and merged — no events are silently dropped.
+     * raw chars inflate ~30–40%. 10k raw chars keeps every chunk safely within
+     * even the tightest model token budgets.
      */
-    private const int CHUNK_SIZE_CHARS = 25_000;
+    private const int CHUNK_SIZE_CHARS = 10_000;
 
     public int $tries = 3;
 
