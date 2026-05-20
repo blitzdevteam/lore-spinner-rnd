@@ -248,21 +248,21 @@ final class AddSingleStorySeeder extends Seeder
     private function getStoryConfig(): array
     {
         return [
-            'title' => 'Anima Machina',
-            'slug' => 'anima-machina',
-            'category' => 'Science Fiction',
-            'script' => 'ANIMA_MACHINA_PRODUCTION_script.txt',
-            'source_pdf' => 'RnD/Anima Machina - PRODUCTION SCREENPLAY.pdf',
-            'teaser' => 'In a city wired for feeling, one woman carries a dead man\'s signal. Nora Kai has 48 hours before the Neural Reset erases everything — including the truth about what killed Eli.',
-            'rating' => StoryRatingEnum::MATURE->value,
+            'title' => 'The Lord of the Rings: The Fellowship of the Ring',
+            'slug' => 'the-lord-of-the-rings-the-fellowship-of-the-ring',
+            'category' => 'Fantasy Adventure',
+            'script' => 'LOTR_FELLOWSHIP_script.txt',
+            'source_pdf' => 'RnD/the-lord-of-the-rings-the-fellowship-of-the-ring-2001.pdf',
+            'teaser' => 'A young hobbit inherits a ring of terrible power. Pursued by darkness across Middle-earth, he must join a Fellowship of unlikely heroes — and carry the fate of the world to the fires of Mount Doom.',
+            'rating' => StoryRatingEnum::TEEN->value,
             'opening' => null,
             'creator' => [
-                'first_name' => 'LoreSpinner',
-                'last_name' => 'Originals',
-                'username' => 'lorespinner',
-                'email' => 'originals@lorespinner.com',
-                'bio' => 'Original interactive stories crafted for choice-driven narrative experiences.',
-                'avatar' => 'lorespinner-originals-avatar.jpg',
+                'first_name' => 'The Classics, Unbound',
+                'last_name' => '',
+                'username' => 'theclassicsunbound',
+                'email' => 'classics@lorespinner.com',
+                'bio' => "Enter the world's most iconic classic stories—now immersive, interactive adventures where your choices reshape timeless legends.",
+                'avatar' => 'THE CLASSICS, UNBOUND - PROFILE PIC.jpg',
             ],
         ];
     }
