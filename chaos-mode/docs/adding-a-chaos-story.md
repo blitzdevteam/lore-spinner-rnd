@@ -128,7 +128,7 @@ private const VOICE_MY_NARRATOR = 'your-elevenlabs-voice-id';
 
 Current convention in repo:
 
-- **Alice, Sherlock, Tell-Tale Heart, Indiana Jones, Snow Queen** → `null` (default narrator from `.env`)
+- **Alice, Sherlock, Tell-Tale Heart, Indiana Jones, Snow Queen, LOTR Fellowship** → `null` (default narrator from `.env`)
 - **Nocturne, Anima Machina, Driftheart** → Declan Sage (`kqVT88a5QfII1HNAEPTJ`)
 
 ---
@@ -149,6 +149,7 @@ Copy structure from an existing partial, for example:
 - `driftheart.blade.php` — kinetic space opera
 - `indiana-jones.blade.php` — pulp adventure, close-third, kinetic
 - `snow-queen.blade.php` — Andersen fairy tale, direct address, Nordic cold
+- `lotr-fellowship.blade.php` — epic fantasy, intimate-and-immense, close to Frodo
 
 ### What belongs in the partial
 
@@ -287,6 +288,7 @@ All stories currently enabled in `ChaosStoryConfig::all()`:
 | Indiana Jones and the Raiders of the Lost Ark | `indiana-jones-and-the-raiders-of-the-lost-ark` | Indy | 7 | 124 | 6 | `indiana-jones` | default |
 | Anima Machina | `anima-machina` | Nora | 7 | 44 | 3 | `anima-machina` | Declan Sage |
 | The Snow Queen | `the-snow-queen` | Gerda | 6 | 61 | 4 | `snow-queen` | default |
+| The Lord of the Rings: The Fellowship of the Ring | `the-lord-of-the-rings-the-fellowship-of-the-ring` | Frodo | — | — | — | `lotr-fellowship` | default |
 
 ---
 

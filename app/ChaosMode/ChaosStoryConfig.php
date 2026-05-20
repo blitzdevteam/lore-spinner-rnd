@@ -101,6 +101,14 @@ final class ChaosStoryConfig
                 'tagline'       => 'Andersen — walk north through winter to find Kay.',
                 'tts_voice_id'  => null, // default ElevenLabs voice from config
             ],
+            [
+                'slug'          => 'the-lord-of-the-rings-the-fellowship-of-the-ring',
+                'title'         => 'The Lord of the Rings: The Fellowship of the Ring',
+                'protagonist'   => 'Frodo',
+                'voice_partial' => 'ai.agents.chaos.partials.lotr-fellowship',
+                'tagline'       => 'Tolkien — carry the Ring out of the Shire.',
+                'tts_voice_id'  => null, // default ElevenLabs voice from config
+            ],
         ];
     }
 
