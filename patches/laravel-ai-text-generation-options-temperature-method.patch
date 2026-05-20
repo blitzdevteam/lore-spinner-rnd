@@ -1,6 +1,7 @@
 --- a/src/Gateway/TextGenerationOptions.php
 +++ b/src/Gateway/TextGenerationOptions.php
-@@ -20,13 +20,20 @@ class TextGenerationOptions
+@@ -20,6 +20,11 @@
+ 
      /**
       * Create a new TextGenerationOptions instance for the given agent.
 +     *
@@ -11,9 +12,7 @@
       */
      public static function forAgent(Agent $agent): self
      {
-         $reflection = new ReflectionClass($agent);
- 
-         $maxSteps = $reflection->getAttributes(MaxSteps::class);
+@@ -29,10 +34,14 @@
          $maxTokens = $reflection->getAttributes(MaxTokens::class);
          $temperature = $reflection->getAttributes(Temperature::class);
  
