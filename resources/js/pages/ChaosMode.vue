@@ -4,7 +4,7 @@ import BaseButton from '@/components/BaseButton.vue';
 import GameplayInput from '@/components/GameplayInput.vue';
 import { useChaosTextToSpeech } from '@/composables/useChaosTextToSpeech';
 import { LucideChevronLeft, LucideLoader, LucidePause, LucidePlay, LucideRefreshCw, LucideX } from 'lucide-vue-next';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 defineOptions({ layout: null });
 
@@ -82,26 +82,13 @@ const choicesBuffer = ref<string[]>([]);
 const worldState = ref<WorldState>(emptyWorldState());
 const errorMessage = ref('');
 const scrollEl = ref<HTMLElement | null>(null);
-const topShadow = ref(0);
-const botShadow = ref(0);
 
 const selectedStory = computed(() => props.stories.find((s) => s.slug === selectedStorySlug.value));
 
 const storyTheme = (slug: string) => STORY_THEMES[slug] ?? STORY_THEMES['__default__'];
 
-const updateShadows = () => {
-    const el = scrollEl.value;
-    if (!el) return;
-    const { scrollTop, scrollHeight, clientHeight } = el;
-    const maxScroll = scrollHeight - clientHeight;
-    if (maxScroll <= 0) { topShadow.value = 0; botShadow.value = 0; return; }
-    topShadow.value = Math.min(scrollTop / 80, 1);
-    botShadow.value = Math.min((maxScroll - scrollTop) / 80, 1);
-};
-
-watch(scrollEl, (el) => {
-    if (el) updateShadows();
-});
+onMounted(() => document.body.classList.add('chaos-mode-active'));
+onUnmounted(() => document.body.classList.remove('chaos-mode-active'));
 
 watch(firstAvailableSlug, (val) => {
     if (!selectedStorySlug.value) selectedStorySlug.value = val;
@@ -160,7 +147,6 @@ async function scrollToBottom(): Promise<void> {
     if (scrollEl.value) {
         scrollEl.value.scrollTo({ top: scrollEl.value.scrollHeight, behavior: 'smooth' });
     }
-    updateShadows();
 }
 
 function applyResponse(data: any): void {
@@ -584,7 +570,6 @@ function resetAdventure(): void {
                 <div
                     ref="scrollEl"
                     class="chaos-scroll absolute inset-0 overflow-y-auto"
-                    @scroll.passive="updateShadows"
                 >
                     <div class="mx-auto flex max-w-3xl flex-col divide-y divide-gray-100/10 px-4 pb-8 sm:px-8">
 
@@ -690,15 +675,6 @@ function resetAdventure(): void {
                     </div>
                 </div>
 
-                <!-- Scroll fade shadows -->
-                <div
-                    class="pointer-events-none absolute top-0 right-0 left-0 h-14 bg-gradient-to-b from-gray-950 to-transparent transition-opacity duration-200"
-                    :style="{ opacity: topShadow }"
-                />
-                <div
-                    class="pointer-events-none absolute right-0 bottom-0 left-0 h-20 bg-gradient-to-t from-gray-950 to-transparent transition-opacity duration-200"
-                    :style="{ opacity: botShadow }"
-                />
             </div>
 
             <!-- Error -->
@@ -719,22 +695,6 @@ function resetAdventure(): void {
     /* Brand: Amber Gold — Chaos Mode signature, distinct from Story Guard's Tiffany Blue */
     --chaos-brand: #e5ad53;
     --chaos-brand-rgb: 229, 173, 83;
-
-    /* Override the app-wide primary palette so every shared component
-       (GameplayInput mic/submit buttons, glow gradient, media player
-       play button, speed text) renders in amber instead of Tiffany Blue */
-    --color-primary-50:  #fdf5e4;
-    --color-primary-100: #fae8c0;
-    --color-primary-200: #f5d496;
-    --color-primary-300: #edba68;
-    --color-primary-400: #e5ad53;
-    --color-primary-500: #d49830;
-    --color-primary-600: #b87b1a;
-    --color-primary-700: #8f5c0d;
-    --color-primary-800: #6b4009;
-    --color-primary-900: #4a2b06;
-    --color-primary-950: #2a1803;
-    --color-primary:     #e5ad53;
 }
 
 .chaos-mode-brand-bg {
@@ -1064,4 +1024,23 @@ function resetAdventure(): void {
 .player-slide-leave-active { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 .player-slide-enter-from,
 .player-slide-leave-to { opacity: 0; transform: translateY(-12px) scale(0.95); }
+</style>
+
+<!-- Non-scoped: overrides primary palette on <body> so teleported components
+     (FeedbackWidget, toasts) also receive the Chaos Mode amber branding. -->
+<style>
+body.chaos-mode-active {
+    --color-primary-50:  #fdf5e4;
+    --color-primary-100: #fae8c0;
+    --color-primary-200: #f5d496;
+    --color-primary-300: #edba68;
+    --color-primary-400: #e5ad53;
+    --color-primary-500: #d49830;
+    --color-primary-600: #b87b1a;
+    --color-primary-700: #8f5c0d;
+    --color-primary-800: #6b4009;
+    --color-primary-900: #4a2b06;
+    --color-primary-950: #2a1803;
+    --color-primary:     #e5ad53;
+}
 </style>

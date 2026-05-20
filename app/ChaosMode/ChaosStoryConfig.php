@@ -26,10 +26,10 @@ namespace App\ChaosMode;
 final class ChaosStoryConfig
 {
     /**
-     * Asher James voice (NaMUH1vcebhHvD4z3Lku) — used for the three
+     * Declan Sage voice (kqVT88a5QfII1HNAEPTJ) — used for the three
      * contemporary Thomas Wittmer stories: Nocturne, Anima Machina, Driftheart.
      */
-    private const VOICE_ASHER_JAMES = 'NaMUH1vcebhHvD4z3Lku';
+    private const VOICE_DECLAN_SAGE = 'kqVT88a5QfII1HNAEPTJ';
 
     /**
      * @return array<int, array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string, tts_voice_id:string|null}>
@@ -67,7 +67,7 @@ final class ChaosStoryConfig
                 'protagonist'   => 'Akira',
                 'voice_partial' => 'ai.agents.chaos.partials.nocturne',
                 'tagline'       => 'Wittmer — vanish into Tokyo\'s shadow-house.',
-                'tts_voice_id'  => self::VOICE_ASHER_JAMES,
+                'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
             [
                 'slug'          => 'anima-machina',
@@ -75,7 +75,7 @@ final class ChaosStoryConfig
                 'protagonist'   => 'Nora',
                 'voice_partial' => 'ai.agents.chaos.partials.anima-machina',
                 'tagline'       => 'Wittmer — dive grief in the neon archive.',
-                'tts_voice_id'  => self::VOICE_ASHER_JAMES,
+                'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
             [
                 'slug'          => 'driftheart',
@@ -83,7 +83,7 @@ final class ChaosStoryConfig
                 'protagonist'   => 'Kataria',
                 'voice_partial' => 'ai.agents.chaos.partials.driftheart',
                 'tagline'       => 'Wittmer — fall from the sky-villa into the Drift.',
-                'tts_voice_id'  => self::VOICE_ASHER_JAMES,
+                'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
         ];
     }

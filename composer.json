@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
+        "cweagans/composer-patches": "^2.0",
         "fakerphp/faker": "^1.24.1",
         "filament/filament": "^4.7.2",
         "filament/spatie-laravel-media-library-plugin": "^4.7.2",
@@ -100,6 +101,14 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "patches": {
+            "prism-php/prism": {
+                "Add gpt-5.4, gpt-5.4-mini, gpt-5.5 to StructuredModeResolver allowlist": "patches/prism-php-prism-structured-mode-resolver-gpt5x.patch"
+            },
+            "laravel/ai": {
+                "Allow temperature() instance method to override #[Temperature] attribute": "patches/laravel-ai-text-generation-options-temperature-method.patch"
+            }
         }
     },
     "config": {
@@ -108,7 +117,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "cweagans/composer-patches": true
         }
     },
     "minimum-stability": "stable",

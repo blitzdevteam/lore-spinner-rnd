@@ -1,0 +1,31 @@
+--- a/src/Gateway/TextGenerationOptions.php
++++ b/src/Gateway/TextGenerationOptions.php
+@@ -20,13 +20,20 @@ class TextGenerationOptions
+     /**
+      * Create a new TextGenerationOptions instance for the given agent.
++     *
++     * Temperature resolution order (mirrors how Promptable resolves model/provider/timeout):
++     *   1. temperature() instance method on the agent (runtime override — e.g. user-selected value)
++     *   2. #[Temperature] class attribute
++     *   3. null (provider default)
+      */
+     public static function forAgent(Agent $agent): self
+     {
+         $reflection = new ReflectionClass($agent);
+ 
+         $maxSteps = $reflection->getAttributes(MaxSteps::class);
+         $maxTokens = $reflection->getAttributes(MaxTokens::class);
+         $temperature = $reflection->getAttributes(Temperature::class);
+ 
++        $resolvedTemperature = method_exists($agent, 'temperature')
++            ? $agent->temperature()
++            : (! empty($temperature) ? $temperature[0]->newInstance()->value : null);
++
+         return new self(
+             maxSteps: ! empty($maxSteps) ? $maxSteps[0]->newInstance()->value : null,
+             maxTokens: ! empty($maxTokens) ? $maxTokens[0]->newInstance()->value : null,
+-            temperature: ! empty($temperature) ? $temperature[0]->newInstance()->value : null,
++            temperature: $resolvedTemperature,
+         );
+     }
+ }
