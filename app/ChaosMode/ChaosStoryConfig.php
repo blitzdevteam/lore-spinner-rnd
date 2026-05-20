@@ -85,6 +85,22 @@ final class ChaosStoryConfig
                 'tagline'       => 'Wittmer — fall from the sky-villa into the Drift.',
                 'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
+            [
+                'slug'          => 'indiana-jones-and-the-raiders-of-the-lost-ark',
+                'title'         => 'Indiana Jones and the Raiders of the Lost Ark',
+                'protagonist'   => 'Indy',
+                'voice_partial' => 'ai.agents.chaos.partials.indiana-jones',
+                'tagline'       => 'Lucas — race the Nazis to the Ark of the Covenant.',
+                'tts_voice_id'  => null, // default ElevenLabs voice from config
+            ],
+            [
+                'slug'          => 'the-snow-queen',
+                'title'         => 'The Snow Queen',
+                'protagonist'   => 'Gerda',
+                'voice_partial' => 'ai.agents.chaos.partials.snow-queen',
+                'tagline'       => 'Andersen — walk north through winter to find Kay.',
+                'tts_voice_id'  => null, // default ElevenLabs voice from config
+            ],
         ];
     }
 
