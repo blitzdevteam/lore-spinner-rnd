@@ -251,7 +251,7 @@ final class AddSingleStorySeeder extends Seeder
             'title' => 'Anima Machina',
             'slug' => 'anima-machina',
             'category' => 'Science Fiction',
-            'script' => 'Anima-Machina_script.txt',
+            'script' => 'ANIMA_MACHINA_PRODUCTION_script.txt',
             'source_pdf' => 'RnD/Anima Machina - PRODUCTION SCREENPLAY.pdf',
             'teaser' => 'In a city wired for feeling, one woman carries a dead man\'s signal. Nora Kai has 48 hours before the Neural Reset erases everything — including the truth about what killed Eli.',
             'rating' => StoryRatingEnum::MATURE->value,
