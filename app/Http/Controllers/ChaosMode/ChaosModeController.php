@@ -660,11 +660,11 @@ final class ChaosModeController extends Controller
             default              => ChaosNarrationAgent::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
         };
 
-        // Retry up to 2 times on transient failures (e.g. GPT-5.5 structured-output
-        // compliance errors that occasionally occur on longer context windows).
+        // Single retry on transient failures. Back-off is 300 ms — enough for a
+        // momentary API blip without holding up the PHP process for seconds.
         $lastException = null;
 
-        for ($attempt = 1; $attempt <= 3; $attempt++) {
+        for ($attempt = 1; $attempt <= 2; $attempt++) {
             try {
                 /** @var \Laravel\Ai\Responses\StructuredAgentResponse $response */
                 $response = $agent->prompt($promptText);
@@ -679,9 +679,8 @@ final class ChaosModeController extends Controller
             } catch (Throwable $e) {
                 $lastException = $e;
 
-                if ($attempt < 3) {
-                    // Brief back-off before retrying (1 s, 2 s).
-                    sleep($attempt);
+                if ($attempt < 2) {
+                    usleep(300_000); // 300 ms — fast enough to not feel like lag
                 }
             }
         }
