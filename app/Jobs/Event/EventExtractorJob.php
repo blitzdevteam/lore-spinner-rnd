@@ -22,12 +22,13 @@ final class EventExtractorJob implements ShouldQueue
     use Queueable;
 
     /**
-     * Max characters of chapter content sent to the event extractor.
+     * Max characters per chunk sent to the event extractor.
      * After LineNumberFormatterHelper adds #N# prefixes + the length index block,
-     * raw chars inflate ~25–30% before reaching the model. 35k raw chars stays
-     * safely within budget even for long LOTR-scale chapters.
+     * raw chars inflate ~25–30%. 25k raw chars ≈ safe budget for any chapter size.
+     * Chapters larger than this are split into multiple chunks at line boundaries
+     * and merged — no events are silently dropped.
      */
-    private const int MAX_CONTENT_CHARS = 35_000;
+    private const int CHUNK_SIZE_CHARS = 25_000;
 
     public int $tries = 3;
 
@@ -54,33 +55,41 @@ final class EventExtractorJob implements ShouldQueue
                 'status' => ChapterStatusEnum::EXTRACTING_EVENTS,
             ]);
 
-            // Truncate oversized chapters before sending to the agent to avoid token-limit errors.
             $content = $this->chapter->content;
-            if (mb_strlen($content) > self::MAX_CONTENT_CHARS) {
-                Log::warning("EventExtractorJob: Chapter [{$this->chapter->id}] \"{$this->chapter->title}\" truncated from " . mb_strlen($content) . " to " . self::MAX_CONTENT_CHARS . " chars for event extraction.");
-                $content = mb_substr($content, 0, self::MAX_CONTENT_CHARS);
+            $chunks = $this->splitIntoChunks($content);
+
+            if (count($chunks) > 1) {
+                Log::info("EventExtractorJob: Chapter [{$this->chapter->id}] \"{$this->chapter->title}\" split into " . count($chunks) . " chunks (" . mb_strlen($content) . " chars total).");
             }
 
-            // Extract events using AI agent with line-numbered content
-            $linedContent = LineNumberFormatterHelper::handle($content);
+            $allEvents = collect();
+            $positionOffset = 0;
 
-            /** @var StructuredAgentResponse $response */
-            $response = EventExtractorAgent::make()
-                ->prompt(
-                    view('ai.agents.event-extractor.prompt', [
-                        'length' => $linedContent['length'],
-                        'content' => $linedContent['content'],
-                    ])->render()
-                );
+            foreach ($chunks as $chunk) {
+                $linedContent = LineNumberFormatterHelper::handle($chunk);
 
-            // Create events sorted by position
-            $events = collect($response['events'])
-                ->sortBy('position')
-                ->map(fn (array $event): array => [
-                    'position' => $event['position'],
-                    'title' => $event['title'],
-                    'content' => TextRangeExtractorHelper::handle($content, $event['start'], $event['end']),
-                ]);
+                /** @var StructuredAgentResponse $response */
+                $response = EventExtractorAgent::make()
+                    ->prompt(
+                        view('ai.agents.event-extractor.prompt', [
+                            'length' => $linedContent['length'],
+                            'content' => $linedContent['content'],
+                        ])->render()
+                    );
+
+                $chunkEvents = collect($response['events'])
+                    ->sortBy('position')
+                    ->map(fn (array $event): array => [
+                        'position' => $event['position'] + $positionOffset,
+                        'title' => $event['title'],
+                        'content' => TextRangeExtractorHelper::handle($chunk, $event['start'], $event['end']),
+                    ]);
+
+                $positionOffset += $chunkEvents->count();
+                $allEvents = $allEvents->concat($chunkEvents);
+            }
+
+            $events = $allEvents;
 
             // Queue jobs to extract objectives and attributes for each event
             $jobs = $this->chapter->events()
@@ -115,5 +124,39 @@ final class EventExtractorJob implements ShouldQueue
 
             throw $throwable;
         }
+    }
+
+    /**
+     * Split content into chunks at line boundaries, each under CHUNK_SIZE_CHARS.
+     * Returns a single-element array when the content fits in one chunk.
+     *
+     * @return list<string>
+     */
+    private function splitIntoChunks(string $content): array
+    {
+        if (mb_strlen($content) <= self::CHUNK_SIZE_CHARS) {
+            return [$content];
+        }
+
+        $lines = explode("\n", str_replace("\r\n", "\n", $content));
+        $chunks = [];
+        $current = '';
+
+        foreach ($lines as $line) {
+            $lineWithNewline = $line . "\n";
+
+            if ($current !== '' && mb_strlen($current) + mb_strlen($lineWithNewline) > self::CHUNK_SIZE_CHARS) {
+                $chunks[] = rtrim($current, "\n");
+                $current = '';
+            }
+
+            $current .= $lineWithNewline;
+        }
+
+        if ($current !== '') {
+            $chunks[] = rtrim($current, "\n");
+        }
+
+        return $chunks;
     }
 }
