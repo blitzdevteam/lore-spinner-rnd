@@ -130,10 +130,23 @@ async function apiFetch(url: string, body: object): Promise<any> {
         body: JSON.stringify(body),
     });
     if (!res.ok) {
-        const text = await res.text().catch(() => '');
-        throw new Error(text || `HTTP ${res.status}`);
+        const payload = await res.json().catch(() => null);
+        if (payload?.debug) {
+            const err = new Error(payload.debug.message || payload.error || `HTTP ${res.status}`) as Error & { debug?: unknown };
+            err.debug = payload.debug;
+            throw err;
+        }
+        throw new Error(payload?.error || `HTTP ${res.status}`);
     }
     return res.json();
+}
+
+function describeError(fallback: string, err: unknown): string {
+    const e = err as { message?: string; debug?: { exception?: string; message?: string } } | undefined;
+    if (e?.debug?.message) {
+        return `${fallback}\n\n[debug] ${e.debug.exception ?? 'Exception'}: ${e.debug.message}`;
+    }
+    return fallback;
 }
 
 function stripHtml(html: string): string {
@@ -177,8 +190,8 @@ async function startWithChoices(): Promise<void> {
         applyResponse(data);
         started.value = true;
         await scrollToBottom();
-    } catch {
-        errorMessage.value = 'The narration engine is currently unavailable. Please try again.';
+    } catch (err) {
+        errorMessage.value = describeError('The narration engine is currently unavailable. Please try again.', err);
     } finally {
         loading.value = false;
     }
@@ -201,9 +214,9 @@ async function takeTurn(action: string): Promise<void> {
         });
         applyResponse(data);
         await scrollToBottom();
-    } catch {
+    } catch (err) {
         turns.value.pop();
-        errorMessage.value = 'The narration hiccuped — please try again.';
+        errorMessage.value = describeError('The narration hiccuped — please try again.', err);
     } finally {
         loading.value = false;
     }
@@ -225,8 +238,8 @@ async function continueToNextSession(): Promise<void> {
         choicesBuffer.value = [];
         applyResponse(data);
         await scrollToBottom();
-    } catch {
-        errorMessage.value = 'Could not open the next session. Please try again.';
+    } catch (err) {
+        errorMessage.value = describeError('Could not open the next session. Please try again.', err);
     } finally {
         loading.value = false;
     }
@@ -385,7 +398,7 @@ function resetAdventure(): void {
                                 </span>
                                 <span v-else>Begin the Adventure</span>
                             </BaseButton>
-                            <p v-if="errorMessage" class="mt-3 text-xs text-red-400">{{ errorMessage }}</p>
+                            <p v-if="errorMessage" class="mt-3 whitespace-pre-wrap text-xs text-red-400">{{ errorMessage }}</p>
                         </div>
                     </div>
                 </div>
@@ -495,7 +508,7 @@ function resetAdventure(): void {
                     </span>
                     <span v-else>Begin the Adventure</span>
                 </BaseButton>
-                <p v-if="errorMessage" class="mt-2 text-center text-xs text-red-400">{{ errorMessage }}</p>
+                <p v-if="errorMessage" class="mt-2 whitespace-pre-wrap text-center text-xs text-red-400">{{ errorMessage }}</p>
             </div>
         </Transition>
         </template>
@@ -678,7 +691,7 @@ function resetAdventure(): void {
             </div>
 
             <!-- Error -->
-            <p v-if="errorMessage" class="px-4 pb-1 text-center text-xs text-red-400 sm:px-8">{{ errorMessage }}</p>
+            <p v-if="errorMessage" class="whitespace-pre-wrap px-4 pb-1 text-center text-xs text-red-400 sm:px-8">{{ errorMessage }}</p>
 
             <!-- Sticky input only -->
             <div v-if="!sessionComplete" class="sticky bottom-0 z-10 shrink-0">

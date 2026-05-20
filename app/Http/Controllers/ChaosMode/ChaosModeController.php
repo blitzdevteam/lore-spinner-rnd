@@ -218,7 +218,10 @@ final class ChaosModeController extends Controller
                 'message'    => $e->getMessage(),
             ]);
 
-            return response()->json(['error' => 'The narration engine is currently unavailable. Please try again.'], 500);
+            return response()->json($this->buildErrorResponse(
+                'The narration engine is currently unavailable. Please try again.',
+                $e,
+            ), 500);
         }
     }
 
@@ -327,7 +330,10 @@ final class ChaosModeController extends Controller
                 'player_action' => mb_substr($playerAction, 0, 80),
             ]);
 
-            return response()->json(['error' => 'The narration hiccuped. Your action was preserved — please try again.'], 500);
+            return response()->json($this->buildErrorResponse(
+                'The narration hiccuped. Your action was preserved — please try again.',
+                $e,
+            ), 500);
         }
     }
 
@@ -458,8 +464,32 @@ final class ChaosModeController extends Controller
                 'message'    => $e->getMessage(),
             ]);
 
-            return response()->json(['error' => 'The narration engine could not open the next session. Please try again.'], 500);
+            return response()->json($this->buildErrorResponse(
+                'The narration engine could not open the next session. Please try again.',
+                $e,
+            ), 500);
         }
+    }
+
+    /**
+     * Build a uniform error response. Surfaces exception details when APP_DEBUG=true
+     * so production issues (e.g. unapplied vendor patches, missing API keys) are
+     * visible in the browser/network panel without needing log access.
+     *
+     * @return array{error: string, debug?: array{exception: string, message: string}}
+     */
+    private function buildErrorResponse(string $userMessage, Throwable $e): array
+    {
+        $payload = ['error' => $userMessage];
+
+        if (config('app.debug')) {
+            $payload['debug'] = [
+                'exception' => $e::class,
+                'message'   => $e->getMessage(),
+            ];
+        }
+
+        return $payload;
     }
 
     // -------------------------------------------------------------------------
