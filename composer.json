@@ -104,7 +104,7 @@
         },
         "patches": {
             "prism-php/prism": {
-                "Add gpt-5.4, gpt-5.4-mini, gpt-5.5 to StructuredModeResolver allowlist": "patches/prism-php-prism-structured-mode-resolver-gpt5x.patch"
+                "Add gpt-5.4 and gpt-5.4-mini to StructuredModeResolver allowlist": "patches/prism-php-prism-structured-mode-resolver-gpt5x.patch"
             },
             "laravel/ai": {
                 "Allow temperature() instance method to override #[Temperature] attribute": "patches/laravel-ai-text-generation-options-temperature-method.patch"

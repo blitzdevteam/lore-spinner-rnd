@@ -11,7 +11,6 @@ use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeSonnet;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt41;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt54;
 use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt54Mini;
-use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt55;
 use App\ChaosMode\ChaosStoryConfig;
 use App\Http\Controllers\Controller;
 use App\Models\ChaosSession;
@@ -56,7 +55,6 @@ final class ChaosModeController extends Controller
      * Allowed model slugs. Keep the same list on every endpoint.
      */
     private const ALLOWED_MODELS = [
-        'gpt-5.5',
         'gpt-5.4',
         'gpt-5.4-mini',
         'gpt-5.2',
@@ -67,11 +65,10 @@ final class ChaosModeController extends Controller
     ];
 
     private const MODEL_DEFAULT_TEMPERATURES = [
-        'gpt-5.5'        => 0.9,
-        'gpt-5.4'        => 1.0,
-        'gpt-5.4-mini'   => 0.95,
-        'gpt-5.2'        => 1.0,
-        'gpt-4.1'        => 1.0,
+        'gpt-5.4'           => 1.0,
+        'gpt-5.4-mini'      => 0.95,
+        'gpt-5.2'           => 1.0,
+        'gpt-4.1'           => 1.0,
         'claude-opus-4-7'   => 1.0,
         'claude-sonnet-4-6' => 1.0,
         'claude-haiku-4-5'  => 0.95,
@@ -218,10 +215,7 @@ final class ChaosModeController extends Controller
                 'message'    => $e->getMessage(),
             ]);
 
-            return response()->json($this->buildErrorResponse(
-                'The narration engine is currently unavailable. Please try again.',
-                $e,
-            ), 500);
+            return response()->json(['error' => 'The narration engine is currently unavailable. Please try again.'], 500);
         }
     }
 
@@ -330,10 +324,7 @@ final class ChaosModeController extends Controller
                 'player_action' => mb_substr($playerAction, 0, 80),
             ]);
 
-            return response()->json($this->buildErrorResponse(
-                'The narration hiccuped. Your action was preserved — please try again.',
-                $e,
-            ), 500);
+            return response()->json(['error' => 'The narration hiccuped. Your action was preserved — please try again.'], 500);
         }
     }
 
@@ -464,32 +455,8 @@ final class ChaosModeController extends Controller
                 'message'    => $e->getMessage(),
             ]);
 
-            return response()->json($this->buildErrorResponse(
-                'The narration engine could not open the next session. Please try again.',
-                $e,
-            ), 500);
+            return response()->json(['error' => 'The narration engine could not open the next session. Please try again.'], 500);
         }
-    }
-
-    /**
-     * Build a uniform error response. Surfaces exception details when APP_DEBUG=true
-     * so production issues (e.g. unapplied vendor patches, missing API keys) are
-     * visible in the browser/network panel without needing log access.
-     *
-     * @return array{error: string, debug?: array{exception: string, message: string}}
-     */
-    private function buildErrorResponse(string $userMessage, Throwable $e): array
-    {
-        $payload = ['error' => $userMessage];
-
-        if (config('app.debug')) {
-            $payload['debug'] = [
-                'exception' => $e::class,
-                'message'   => $e->getMessage(),
-            ];
-        }
-
-        return $payload;
     }
 
     // -------------------------------------------------------------------------
@@ -680,7 +647,6 @@ final class ChaosModeController extends Controller
         ])->render();
 
         $agent = match ($model) {
-            'gpt-5.5'            => ChaosNarrationAgentGpt55::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
             'gpt-5.4'            => ChaosNarrationAgentGpt54::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
             'gpt-5.4-mini'       => ChaosNarrationAgentGpt54Mini::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
             'gpt-4.1'            => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
