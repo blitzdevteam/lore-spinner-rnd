@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\ChaosMode;
 
-use App\Ai\Agents\Chaos\ChaosNarrationAgent;
-use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeHaiku;
-use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeOpus;
-use App\Ai\Agents\Chaos\ChaosNarrationAgentClaudeSonnet;
-use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt41;
-use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt54;
-use App\Ai\Agents\Chaos\ChaosNarrationAgentGpt54Mini;
+use App\Ai\Agents\Chaos\ChaosNarrationSchema;
 use App\ChaosMode\ChaosStoryConfig;
 use App\Http\Controllers\Controller;
 use App\Models\ChaosSession;
@@ -20,9 +14,12 @@ use App\Models\Story;
 use App\Models\StoryAdaptation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\JsonSchema\JsonSchemaTypeFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Response;
+use Laravel\Ai\ObjectSchema;
+use Prism\Prism\Facades\Prism;
 use Throwable;
 
 /**
@@ -52,27 +49,44 @@ use Throwable;
 final class ChaosModeController extends Controller
 {
     /**
-     * Allowed model slugs. Keep the same list on every endpoint.
+     * Single source of truth for every chaos-mode model.
+     *
+     * - provider           Prism provider key.
+     * - temperature        Default sampling temperature (overridable per request).
+     * - reasoning_effort   Only set for OpenAI reasoning models. Keeping this at
+     *                     'low' is the difference between ~6s and ~40s per turn
+     *                     on gpt-5.x. The OpenAI Responses API accepts
+     *                     none|low|medium|high|xhigh; 'low' keeps the
+     *                     narrative quality without paying the full
+     *                     thinking-time cost. gpt-4.1 is not a reasoning
+     *                     model so this is null there.
      */
-    private const ALLOWED_MODELS = [
-        'gpt-5.4',
-        'gpt-5.4-mini',
-        'gpt-5.2',
-        'gpt-4.1',
-        'claude-opus-4-7',
-        'claude-sonnet-4-6',
-        'claude-haiku-4-5',
+    private const MODEL_CONFIG = [
+        'gpt-5.4'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => 'low'],
+        'gpt-5.4-mini'      => ['provider' => 'openai',    'temperature' => 0.95, 'reasoning_effort' => 'low'],
+        'gpt-5.2'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => 'low'],
+        'gpt-4.1'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => null],
+        'claude-opus-4-7'   => ['provider' => 'anthropic', 'temperature' => 1.0,  'reasoning_effort' => null],
+        'claude-sonnet-4-6' => ['provider' => 'anthropic', 'temperature' => 1.0,  'reasoning_effort' => null],
+        'claude-haiku-4-5'  => ['provider' => 'anthropic', 'temperature' => 0.95, 'reasoning_effort' => null],
     ];
 
-    private const MODEL_DEFAULT_TEMPERATURES = [
-        'gpt-5.4'           => 1.0,
-        'gpt-5.4-mini'      => 0.95,
-        'gpt-5.2'           => 1.0,
-        'gpt-4.1'           => 1.0,
-        'claude-opus-4-7'   => 1.0,
-        'claude-sonnet-4-6' => 1.0,
-        'claude-haiku-4-5'  => 0.95,
-    ];
+    private const DEFAULT_MODEL = 'gpt-5.2';
+
+    /**
+     * Allowed model slugs. Keep the same list on every endpoint.
+     *
+     * @return array<int, string>
+     */
+    private static function allowedModels(): array
+    {
+        return array_keys(self::MODEL_CONFIG);
+    }
+
+    private static function defaultTemperatureFor(string $model): float
+    {
+        return (float) (self::MODEL_CONFIG[$model]['temperature'] ?? 1.0);
+    }
 
     /**
      * Chaos Mode landing page.
@@ -124,13 +138,13 @@ final class ChaosModeController extends Controller
     {
         $request->validate([
             'story_slug'  => ['required', 'string', 'in:' . implode(',', ChaosStoryConfig::slugs())],
-            'model'       => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+            'model'       => ['nullable', 'string', 'in:' . implode(',', self::allowedModels())],
             'temperature' => ['nullable', 'numeric', 'min:0.5', 'max:1.5'],
         ]);
 
         $storySlug   = $request->string('story_slug')->toString();
-        $model       = $request->string('model', 'gpt-5.2')->toString();
-        $temperature = (float) $request->input('temperature', self::MODEL_DEFAULT_TEMPERATURES[$model] ?? 1.0);
+        $model       = $request->string('model', self::DEFAULT_MODEL)->toString();
+        $temperature = (float) $request->input('temperature', self::defaultTemperatureFor($model));
         $storyConfig = ChaosStoryConfig::find($storySlug);
 
         if ($storyConfig === null) {
@@ -227,7 +241,7 @@ final class ChaosModeController extends Controller
         $request->validate([
             'session_id'    => ['required', 'string', 'ulid'],
             'player_action' => ['required', 'string', 'min:1', 'max:500'],
-            'model'         => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+            'model'         => ['nullable', 'string', 'in:' . implode(',', self::allowedModels())],
             'temperature'   => ['nullable', 'numeric', 'min:0.5', 'max:1.5'],
         ]);
 
@@ -242,7 +256,7 @@ final class ChaosModeController extends Controller
 
         $playerAction = $request->string('player_action')->toString();
         $model        = $request->string('model', $chaosSession->model)->toString();
-        $temperature  = (float) $request->input('temperature', self::MODEL_DEFAULT_TEMPERATURES[$model] ?? 1.0);
+        $temperature  = (float) $request->input('temperature', self::defaultTemperatureFor($model));
 
         $story = Story::query()
             ->where('id', $chaosSession->story_id)
@@ -339,7 +353,7 @@ final class ChaosModeController extends Controller
     {
         $request->validate([
             'session_id'  => ['required', 'string', 'ulid'],
-            'model'       => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_MODELS)],
+            'model'       => ['nullable', 'string', 'in:' . implode(',', self::allowedModels())],
             'temperature' => ['nullable', 'numeric', 'min:0.5', 'max:1.5'],
         ]);
 
@@ -385,7 +399,7 @@ final class ChaosModeController extends Controller
         }
 
         $model       = $request->string('model', $previous->model)->toString();
-        $temperature = (float) $request->input('temperature', self::MODEL_DEFAULT_TEMPERATURES[$model] ?? 1.0);
+        $temperature = (float) $request->input('temperature', self::defaultTemperatureFor($model));
 
         $chaosSession = ChaosSession::create([
             'story_id'             => $story->id,
@@ -629,6 +643,14 @@ final class ChaosModeController extends Controller
     }
 
     /**
+     * Single chaos narration turn.
+     *
+     * We talk to Prism directly (skipping Laravel AI's agent pipeline) so we
+     * can pass `reasoning.effort` to OpenAI's Responses API. Without that the
+     * gpt-5.x reasoning models silently default to `medium` effort and burn
+     * 20-40 seconds of thinking time on every turn — the exact symptom that
+     * surfaced as "40s latency".
+     *
      * @param  array<int, array{role:string, text:string}>  $conversationHistory
      * @return array{response:string, choices:array<int,string>, session_complete:bool, state_delta:array<string,mixed>, session_memory_update:string}
      */
@@ -640,48 +662,85 @@ final class ChaosModeController extends Controller
         string $protagonist,
         float $temperature = 1.0,
     ): array {
+        $config = self::MODEL_CONFIG[$model] ?? throw new \InvalidArgumentException("Unknown chaos model: {$model}");
+
         $promptText = view('ai.agents.chaos.turn-prompt', [
             'conversationHistory' => $conversationHistory,
             'playerAction'        => $playerAction,
             'protagonist'         => $protagonist,
         ])->render();
 
-        $agent = match ($model) {
-            'gpt-5.4'            => ChaosNarrationAgentGpt54::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
-            'gpt-5.4-mini'       => ChaosNarrationAgentGpt54Mini::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
-            'gpt-4.1'            => ChaosNarrationAgentGpt41::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
-            'claude-opus-4-7'    => ChaosNarrationAgentClaudeOpus::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
-            'claude-sonnet-4-6'  => ChaosNarrationAgentClaudeSonnet::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
-            'claude-haiku-4-5'   => ChaosNarrationAgentClaudeHaiku::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
-            default              => ChaosNarrationAgent::make(customInstructions: $systemPrompt, runtimeTemperature: $temperature),
-        };
+        $schemaArray = ChaosNarrationSchema::definition(new JsonSchemaTypeFactory);
 
-        // Single retry on transient failures. Back-off is 300 ms — enough for a
-        // momentary API blip without holding up the PHP process for seconds.
+        $providerOptions = $this->providerOptionsFor($config);
+
+        $request = Prism::structured()
+            ->using($config['provider'], $model)
+            ->withSchema(new ObjectSchema($schemaArray))
+            ->withSystemPrompt($systemPrompt)
+            ->withPrompt($promptText)
+            ->usingTemperature($temperature)
+            ->withClientOptions(['timeout' => 90])
+            ->withProviderOptions($providerOptions);
+
+        if ($config['provider'] === 'anthropic') {
+            $request = $request->withMaxTokens(64_000);
+        }
+
+        // Single retry on transient failures. 300 ms back-off — fast enough
+        // that a momentary blip doesn't visibly hang the UI.
         $lastException = null;
 
         for ($attempt = 1; $attempt <= 2; $attempt++) {
             try {
-                /** @var \Laravel\Ai\Responses\StructuredAgentResponse $response */
-                $response = $agent->prompt($promptText);
+                $response   = $request->asStructured();
+                $structured = $response->structured ?? [];
 
                 return [
-                    'response'              => (string) ($response['response'] ?? ''),
-                    'choices'               => (array)  ($response['choices'] ?? []),
-                    'session_complete'      => (bool)   ($response['session_complete'] ?? false),
-                    'state_delta'           => (array)  ($response['state_delta'] ?? []),
-                    'session_memory_update' => (string) ($response['session_memory_update'] ?? ''),
+                    'response'              => (string) ($structured['response'] ?? ''),
+                    'choices'               => (array)  ($structured['choices'] ?? []),
+                    'session_complete'      => (bool)   ($structured['session_complete'] ?? false),
+                    'state_delta'           => (array)  ($structured['state_delta'] ?? []),
+                    'session_memory_update' => (string) ($structured['session_memory_update'] ?? ''),
                 ];
             } catch (Throwable $e) {
                 $lastException = $e;
 
                 if ($attempt < 2) {
-                    usleep(300_000); // 300 ms — fast enough to not feel like lag
+                    usleep(300_000);
                 }
             }
         }
 
         throw $lastException ?? new \RuntimeException('Agent call failed with no captured exception.');
+    }
+
+    /**
+     * Build provider-specific options for a Prism structured request.
+     *
+     * @param  array{provider:string, temperature:float, reasoning_effort:?string}  $config
+     * @return array<string, mixed>
+     */
+    private function providerOptionsFor(array $config): array
+    {
+        if ($config['provider'] === 'openai') {
+            $options = ['schema' => ['strict' => true]];
+
+            if (! empty($config['reasoning_effort'])) {
+                // Maps to OpenAI Responses API `reasoning.effort`. Valid
+                // values: none|low|medium|high|xhigh. We pin to 'low' for
+                // narrative work — fast enough for live play, still coherent.
+                $options['reasoning'] = ['effort' => $config['reasoning_effort']];
+            }
+
+            return $options;
+        }
+
+        if ($config['provider'] === 'anthropic') {
+            return ['use_tool_calling' => true];
+        }
+
+        return [];
     }
 
     // -------------------------------------------------------------------------

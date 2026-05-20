@@ -65,7 +65,7 @@ const availableStories = computed(() => props.stories.filter((s) => s.available)
 const firstAvailableSlug = computed(() => availableStories.value[0]?.slug ?? props.stories[0]?.slug ?? '');
 
 const selectedStorySlug = ref<string>(firstAvailableSlug.value);
-const selectedModel = ref('gpt-5.4');
+const selectedModel = ref('gpt-5.2');
 const selectedTemperature = ref(1.0);
 const started = ref(false);
 const loading = ref(false);
@@ -86,7 +86,11 @@ const selectedStory = computed(() => props.stories.find((s) => s.slug === select
 
 const storyTheme = (slug: string) => STORY_THEMES[slug] ?? STORY_THEMES['__default__'];
 
-onMounted(() => document.body.classList.add('chaos-mode-active'));
+onMounted(() => {
+    document.body.classList.add('chaos-mode-active');
+    // Auto-start story - skip selection UI
+    startWithChoices();
+});
 onUnmounted(() => document.body.classList.remove('chaos-mode-active'));
 
 watch(firstAvailableSlug, (val) => {
