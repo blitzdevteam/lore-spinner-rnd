@@ -248,13 +248,13 @@ final class AddSingleStorySeeder extends Seeder
     private function getStoryConfig(): array
     {
         return [
-            'title' => 'The Lord of the Rings: The Fellowship of the Ring',
-            'slug' => 'the-lord-of-the-rings-the-fellowship-of-the-ring',
+            'title' => 'The Snow Queen',
+            'slug' => 'the-snow-queen',
             'category' => 'Fantasy Adventure',
-            'script' => 'LOTR_FELLOWSHIP_script.txt',
-            'source_pdf' => 'RnD/the-lord-of-the-rings-the-fellowship-of-the-ring-2001.pdf',
-            'teaser' => 'A young hobbit inherits a ring of terrible power. Pursued by darkness across Middle-earth, he must join a Fellowship of unlikely heroes — and carry the fate of the world to the fires of Mount Doom.',
-            'rating' => StoryRatingEnum::TEEN->value,
+            'script' => 'THE_SNOW_QUEEN_script.txt',
+            'source_pdf' => 'RnD/THE SNOW QUEEN.pdf',
+            'teaser' => 'A shard of an evil mirror lodges in a boy\'s heart and eye, and his best friend must journey alone across frozen kingdoms to save him — before the Snow Queen\'s cold magic makes him forget he was ever loved.',
+            'rating' => StoryRatingEnum::EVERYONE->value,
             'opening' => null,
             'creator' => [
                 'first_name' => 'The Classics, Unbound',
