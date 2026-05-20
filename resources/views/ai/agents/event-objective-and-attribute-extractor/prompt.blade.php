@@ -4,8 +4,13 @@
     /**
      * @var Collection<int, \App\Models\Event>|null $previousEvents Events before target (positions -5 to -1)
      * @var \App\Models\Event $targetEvent The target event (position 0)
-     * @var Collection<int, \App\Models\Event>|null $nextEvents Events after target (positions +1 to +5)
+     * @var Collection<int, \App\Models\Event>|null $nextEvents Events after target (positions +1 to +3)
+     *
+     * Content is capped at 3000 chars per event to stay within token budget.
+     * The target event gets a larger cap (5000) since it is the primary focus.
      */
+    $cap = fn(string $text, int $limit): string =>
+        mb_strlen($text) > $limit ? mb_substr($text, 0, $limit) . '…' : $text;
 @endphp
 <events>
     @foreach($previousEvents ?? [] as $event)
@@ -18,7 +23,7 @@
                 {{ $event->attributes }}
             </attributes>
             <content>
-                {{ $event->content }}
+                {{ $cap($event->content, 3000) }}
             </content>
         </event>
     @endforeach
@@ -28,7 +33,7 @@
         <objective></objective>
         <attributes></attributes>
         <content>
-            {{ $targetEvent->content }}
+            {{ $cap($targetEvent->content, 5000) }}
         </content>
     </event>
 
@@ -38,7 +43,7 @@
             <objective></objective>
             <attributes></attributes>
             <content>
-                {{ $event->content }}
+                {{ $cap($event->content, 3000) }}
             </content>
         </event>
     @endforeach

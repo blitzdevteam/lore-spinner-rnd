@@ -61,7 +61,7 @@ class EventObjectiveAndAttributeExtractor implements ShouldQueue
     /**
      * @return Collection<int, Event>
      */
-    private function nextEvents(int $take = 5): Collection
+    private function nextEvents(int $take = 3): Collection
     {
         return $this->chapter->events()
             ->orderBy('position')
