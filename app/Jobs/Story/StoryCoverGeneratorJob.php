@@ -107,7 +107,6 @@ final class StoryCoverGeneratorJob implements ShouldQueue
      */
     private function buildPrompt(): string
     {
-        $title = $this->story->title;
         $teaser = $this->story->teaser ?? '';
         $category = $this->story->category?->title ?? 'Fiction';
 
@@ -119,7 +118,6 @@ final class StoryCoverGeneratorJob implements ShouldQueue
         return <<<PROMPT
         Create a cinematic wide-format movie poster cover image for an interactive story.
 
-        STORY TITLE: "{$title}"
         GENRE: {$category}
         SYNOPSIS: {$teaser}
         TONE: {$toneAndStyle}
