@@ -248,21 +248,21 @@ final class AddSingleStorySeeder extends Seeder
     private function getStoryConfig(): array
     {
         return [
-            'title' => 'Indiana Jones and the Raiders of the Lost Ark',
-            'slug' => 'indiana-jones-and-the-raiders-of-the-lost-ark',
-            'category' => 'Action & Adventure',
-            'script' => 'Indiana-Jones-and-the-Raiders-of-the-Lost-Ark_script.txt',
-            'source_pdf' => 'RnD/Indiana-Jones-and-the-Raiders-of-the-Lost-Ark.pdf',
-            'teaser' => 'Legendary archaeologist Indiana Jones races against the Nazis to find the Ark of the Covenant before its power falls into the wrong hands.',
-            'rating' => StoryRatingEnum::TEEN->value,
+            'title' => 'Anima Machina',
+            'slug' => 'anima-machina',
+            'category' => 'Science Fiction',
+            'script' => 'Anima-Machina_script.txt',
+            'source_pdf' => 'RnD/Anima Machina - PRODUCTION SCREENPLAY.pdf',
+            'teaser' => 'In a city wired for feeling, one woman carries a dead man\'s signal. Nora Kai has 48 hours before the Neural Reset erases everything — including the truth about what killed Eli.',
+            'rating' => StoryRatingEnum::MATURE->value,
             'opening' => null,
             'creator' => [
-                'first_name' => 'The Classics, Unbound',
-                'last_name' => '',
-                'username' => 'theclassicsunbound',
-                'email' => 'classics@lorespinner.com',
-                'bio' => 'Enter the world\'s most iconic classic stories reimagined as interactive adventures.',
-                'avatar' => 'THE CLASSICS, UNBOUND - PROFILE PIC.jpg',
+                'first_name' => 'LoreSpinner',
+                'last_name' => 'Originals',
+                'username' => 'lorespinner',
+                'email' => 'originals@lorespinner.com',
+                'bio' => 'Original interactive stories crafted for choice-driven narrative experiences.',
+                'avatar' => 'lorespinner-originals-avatar.jpg',
             ],
         ];
     }
