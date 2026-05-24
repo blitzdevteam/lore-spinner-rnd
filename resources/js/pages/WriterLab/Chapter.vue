@@ -27,27 +27,72 @@ interface Event {
     beat_moment: string | null;
 }
 
-interface ChoiceOption { text: string; consequence?: string }
+interface ChoiceOption { text: string; downstream_effect?: string; consequence?: string }
 interface BranchingChoice {
     choice_id?: string;
     source_moment?: string;
     what_this_choice_tracks?: string;
     choice_question?: string;
+    narrative_setup?: string;
+    all_paths_arrive_at?: string;
     option_a?: ChoiceOption;
     option_b?: ChoiceOption;
     option_c?: ChoiceOption;
 }
 interface SessionChoiceDesign { [key: string]: BranchingChoice }
 
+interface FormatSpecificCut {
+    cut_point: string;
+    original_before_cut: string;
+    cut_eliminates: string;
+    must_reintroduce: string;
+}
+interface BeatIdentificationEntry {
+    source_moment: string;
+    why_it_qualifies: string;
+    editorial_intervention: string;
+}
+interface BeatIdentification {
+    setup: BeatIdentificationEntry;
+    escalation: BeatIdentificationEntry;
+    breath: BeatIdentificationEntry;
+    twist: BeatIdentificationEntry;
+    resolution: BeatIdentificationEntry;
+}
+interface NextSessionAwareness {
+    seed_for_next_session: string;
+    connects_to_next_dramatic_question: string;
+}
+interface VerificationQuestionResult {
+    verdict: 'PASS' | 'REVISE';
+    detail: string;
+}
+interface EditorialVerification {
+    question_results: Record<string, VerificationQuestionResult>;
+    total_passed: number;
+    production_status: 'GREEN' | 'AMBER' | 'RED';
+    revision_instructions: { question: string; phase: string; instruction: string }[];
+}
 interface SessionAdaptation {
     session_number: number;
     session_status: string;
+    // Entry-point diagnosis
     cold_open: string | null;
     start_event_id: number | null;
+    emotional_promise: string | null;
+    editorial_diagnosis: string | null;
+    format_specific_cut: FormatSpecificCut | null;
+    // Session architecture
     beat_map: any;
+    beat_identification: BeatIdentification | null;
+    next_session_awareness: NextSessionAwareness | null;
+    // Choice & consequence
     session_choice_design: SessionChoiceDesign | null;
     choice_consequence_map: any;
+    // Session close
     session_close_design: any;
+    // Quality gate
+    editorial_verification: EditorialVerification | null;
 }
 
 interface ActiveDraft {
@@ -639,6 +684,19 @@ const sessionAdaptation = computed(() =>
     activeSession.value !== null ? props.sessionAdaptations[activeSession.value] ?? null : null
 );
 
+// Flattened beat entries for the Architecture tab — avoids complex keyof indexing in templates
+type BeatEntry = BeatIdentificationEntry & { key: string; label: string };
+const beatEntries = computed((): BeatEntry[] => {
+    const bi = sessionAdaptation.value?.beat_identification;
+    if (!bi) return [];
+    return ([
+        ['setup', 'Setup'], ['escalation', 'Escalation'], ['breath', 'Breath'],
+        ['twist', 'Twist'], ['resolution', 'Resolution'],
+    ] as [keyof BeatIdentification, string][])
+        .map(([k, label]) => bi[k] ? ({ ...bi[k], key: k, label }) : null)
+        .filter((e): e is NonNullable<typeof e> => e !== null) as BeatEntry[];
+});
+
 // Cold open editing
 const coldOpenEdit  = ref('');
 const coldOpenDirty = ref(false);
@@ -649,13 +707,28 @@ watch(activeSession, (n) => {
     const sa = n !== null ? props.sessionAdaptations[n] ?? null : null;
     coldOpenEdit.value  = sa?.cold_open ?? '';
     coldOpenDirty.value = false;
+    startEventEdit.value  = sa?.start_event_id ?? null;
+    startEventDirty.value = false;
     initChoiceEdits(sa?.session_choice_design ?? null);
     initCloseEdit(sa?.session_close_design ?? null);
     adaptationTab.value = 'cold_open';
 });
 
 // Choice design editing
-const adaptationTab = ref<'cold_open' | 'choices' | 'close'>('cold_open');
+const adaptationTab = ref<'cold_open' | 'choices' | 'close' | 'arch' | 'quality'>('cold_open');
+
+// Light/dark mode toggle (persisted in localStorage)
+const lightMode = ref(localStorage.getItem('wl-theme') === 'light');
+const toggleTheme = () => {
+    lightMode.value = !lightMode.value;
+    localStorage.setItem('wl-theme', lightMode.value ? 'light' : 'dark');
+};
+
+// Start-event editing (part of entry_point_diagnosis)
+const startEventEdit  = ref<number | null>(null);
+const startEventDirty = ref(false);
+const savingStartEvent = ref(false);
+const briefExpanded   = ref(false);
 
 interface ChoiceEditState {
     question: string;
@@ -757,7 +830,8 @@ const saveClose = async () => {
 // Initialize on mount
 if (activeSession.value !== null) {
     const sa = props.sessionAdaptations[activeSession.value] ?? null;
-    coldOpenEdit.value = sa?.cold_open ?? '';
+    coldOpenEdit.value    = sa?.cold_open ?? '';
+    startEventEdit.value  = sa?.start_event_id ?? null;
     initChoiceEdits(sa?.session_choice_design ?? null);
     initCloseEdit(sa?.session_close_design ?? null);
 }
@@ -775,6 +849,23 @@ const saveColdOpen = async () => {
     savingColdOpen.value = false;
     if (!data.error) {
         coldOpenDirty.value = false;
+        router.reload({ only: ['activeDrafts'] });
+    }
+};
+
+const saveStartEvent = async () => {
+    if (activeSession.value === null || startEventEdit.value === null) return;
+    savingStartEvent.value = true;
+
+    const url = `/writer/writer-lab/${props.story.id}/chapters/${props.chapter.id}/drafts/adaptation`;
+    const data = await apiPost(url, {
+        session_number:   activeSession.value,
+        adaptation_patch: { entry_point_diagnosis: { start_event_id: startEventEdit.value } },
+    });
+
+    savingStartEvent.value = false;
+    if (!data.error) {
+        startEventDirty.value = false;
         router.reload({ only: ['activeDrafts'] });
     }
 };
@@ -951,7 +1042,8 @@ const eventDraftLink = (eventId: number) => {
 </script>
 
 <template>
-    <div class="flex h-screen flex-col overflow-hidden bg-gray-950 text-white">
+    <div class="flex h-screen flex-col overflow-hidden bg-gray-950 text-white wl-root"
+         :class="lightMode ? 'wl-light' : ''">
 
         <!-- Flash error banner (e.g. combine AI failure) -->
         <div v-if="flashError" class="flex-none border-b border-red-800/60 bg-red-950/50 px-6 py-2 text-sm text-red-300">
@@ -975,6 +1067,12 @@ const eventDraftLink = (eventId: number) => {
                         class="rounded px-3 py-1.5 text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">Next →</Link>
                     <Link :href="`/writer/writer-lab/${story.id}/versions`"
                         class="rounded px-3 py-1.5 text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors">Versions</Link>
+                    <button @click="toggleTheme"
+                        class="rounded-lg border px-3 py-1.5 transition-all"
+                        :class="lightMode ? 'border-gray-400 bg-gray-100 text-gray-700 hover:bg-gray-200' : 'border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'"
+                        :title="lightMode ? 'Switch to dark mode' : 'Switch to light mode'">
+                        {{ lightMode ? '🌙 Dark' : '☀️ Light' }}
+                    </button>
                 </div>
             </div>
         </header>
@@ -1402,42 +1500,109 @@ const eventDraftLink = (eventId: number) => {
                         </button>
                     </div>
 
-                    <div v-if="sessionAdaptation" class="flex-1 p-5">
-                        <!-- Sub-tabs: Cold Open | Choices | Close -->
-                        <div class="flex gap-1 mb-5">
-                            <button v-for="tab in (['cold_open', 'choices', 'close'] as const)" :key="tab"
-                                class="rounded-lg px-3 py-1.5 text-xs transition-all"
+                    <div v-if="sessionAdaptation" class="flex-1 overflow-y-auto p-5">
+                        <!-- Sub-tabs: Cold Open | Choices | Close | Architecture | Quality -->
+                        <div class="flex flex-wrap gap-1 mb-5">
+                            <button v-for="[tab, label] in ([['cold_open','Cold Open'],['choices','Choices'],['close','Session Close'],['arch','Architecture'],['quality','Quality Score']] as [string,string][])" :key="tab"
+                                class="rounded-lg px-3 py-1.5 text-xs font-medium transition-all"
                                 :class="adaptationTab === tab
-                                    ? 'bg-gray-700 text-white'
+                                    ? 'bg-primary-700 text-white'
                                     : 'text-gray-500 hover:bg-gray-900 hover:text-gray-300'"
-                                @click="adaptationTab = tab">
-                                {{ tab === 'cold_open' ? 'Cold Open' : tab === 'choices' ? 'Choice Design' : 'Session Close' }}
+                                @click="(adaptationTab as any) = tab">
+                                <template v-if="tab === 'quality' && sessionAdaptation.editorial_verification">
+                                    <span :class="{
+                                        'text-emerald-300': sessionAdaptation.editorial_verification.production_status === 'GREEN',
+                                        'text-yellow-300': sessionAdaptation.editorial_verification.production_status === 'AMBER',
+                                        'text-red-300': sessionAdaptation.editorial_verification.production_status === 'RED',
+                                    }">● </span>
+                                </template>
+                                {{ label }}
                             </button>
                         </div>
 
-                        <!-- Cold Open tab -->
+                        <!-- ── COLD OPEN tab ── -->
                         <template v-if="adaptationTab === 'cold_open'">
-                            <div class="space-y-3">
-                                <label class="block text-xs uppercase tracking-widest text-gray-500">Cold Open</label>
-                                <p class="text-xs text-gray-600">The authored opening beat the narrator delivers verbatim on session start.</p>
-                                <textarea
-                                    v-model="coldOpenEdit"
-                                    rows="10"
-                                    class="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-sm text-gray-200 leading-relaxed focus:border-primary-500 focus:outline-none resize-none"
-                                    @input="coldOpenDirty = true"
-                                ></textarea>
-                                <button
-                                    class="rounded-lg px-4 py-2 text-sm font-medium transition-all disabled:opacity-40"
-                                    :class="coldOpenDirty ? 'bg-primary-600 hover:bg-primary-500 text-white' : 'bg-gray-800 text-gray-500'"
-                                    :disabled="!coldOpenDirty || savingColdOpen"
-                                    @click="saveColdOpen">
-                                    <span v-if="savingColdOpen">Saving…</span>
-                                    <span v-else>Save Cold Open as Draft</span>
-                                </button>
+                            <div class="space-y-5">
+                                <!-- Cold Open narrative text -->
+                                <div class="rounded-xl border border-gray-800 bg-gray-900/40 p-4 space-y-3">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-200 mb-0.5">Cold Open <span class="text-xs font-normal text-gray-500">(narrative text)</span></label>
+                                        <p class="text-xs text-gray-500 mb-2">What the player first feels and sees — delivered verbatim before the event chain begins.</p>
+                                    </div>
+                                    <textarea v-model="coldOpenEdit" rows="9"
+                                        class="w-full rounded-xl border border-gray-700 bg-gray-950 px-4 py-3 text-sm text-gray-200 leading-relaxed focus:border-primary-500 focus:outline-none resize-none"
+                                        @input="coldOpenDirty = true"></textarea>
+                                    <button class="rounded-lg px-4 py-2 text-sm font-medium transition-all disabled:opacity-40"
+                                        :class="coldOpenDirty ? 'bg-primary-600 hover:bg-primary-500 text-white' : 'bg-gray-800 text-gray-500'"
+                                        :disabled="!coldOpenDirty || savingColdOpen"
+                                        @click="saveColdOpen">
+                                        <span v-if="savingColdOpen">Saving…</span>
+                                        <span v-else>Save Cold Open as Draft</span>
+                                    </button>
+                                </div>
+
+                                <!-- Start Event (runtime anchor — separate from narrative) -->
+                                <div class="rounded-xl border border-amber-700/30 bg-amber-950/10 p-4 space-y-3">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-amber-300 mb-0.5">First Runtime Event <span class="text-xs font-normal text-amber-500/70">(runtime anchor)</span></label>
+                                        <p class="text-xs text-amber-700/80 mb-2">The event where the sequence chain actually begins. Independent from the cold open text above.</p>
+                                    </div>
+                                    <select
+                                        :value="startEventEdit"
+                                        class="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-200 focus:border-amber-500 focus:outline-none"
+                                        @change="e => { startEventEdit = Number((e.target as HTMLSelectElement).value); startEventDirty = true }">
+                                        <option :value="null" disabled>— select start event —</option>
+                                        <option v-for="ev in events.filter(e => e.session_number === activeSession)" :key="ev.id" :value="ev.id">
+                                            #{{ ev.position }} — {{ ev.title }}
+                                        </option>
+                                    </select>
+                                    <div v-if="sessionAdaptation?.start_event_id" class="text-xs text-amber-600/80">
+                                        Current: event ID {{ sessionAdaptation?.start_event_id }}
+                                        <template v-if="events.find(e => e.id === sessionAdaptation?.start_event_id)">
+                                            — {{ events.find(e => e.id === sessionAdaptation?.start_event_id)?.title }}
+                                        </template>
+                                    </div>
+                                    <button class="rounded-lg px-4 py-2 text-sm font-medium transition-all disabled:opacity-40"
+                                        :class="startEventDirty ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-gray-800 text-gray-500'"
+                                        :disabled="!startEventDirty || savingStartEvent"
+                                        @click="saveStartEvent">
+                                        <span v-if="savingStartEvent">Saving…</span>
+                                        <span v-else>Save Start Event as Draft</span>
+                                    </button>
+                                </div>
+
+                                <!-- Editorial Brief (read-only AI rationale) -->
+                                <div class="rounded-xl border border-gray-800/60 bg-gray-900/20 p-4">
+                                    <button class="flex items-center gap-2 w-full text-left"
+                                        @click="briefExpanded = !briefExpanded">
+                                        <span class="text-xs uppercase tracking-widest text-gray-500 font-medium">Editorial Brief</span>
+                                        <span class="text-xs text-gray-600">AI rationale (read-only)</span>
+                                        <span class="ml-auto text-gray-600 text-xs">{{ briefExpanded ? '▲' : '▼' }}</span>
+                                    </button>
+                                    <div v-if="briefExpanded" class="mt-4 space-y-4">
+                                        <div v-if="sessionAdaptation.emotional_promise">
+                                            <p class="text-xs uppercase tracking-widest text-primary-500/70 mb-1">Emotional Promise</p>
+                                            <p class="text-sm text-gray-300 leading-relaxed italic">{{ sessionAdaptation.emotional_promise }}</p>
+                                        </div>
+                                        <div v-if="sessionAdaptation.editorial_diagnosis">
+                                            <p class="text-xs uppercase tracking-widest text-primary-500/70 mb-1">Editorial Diagnosis</p>
+                                            <p class="text-sm text-gray-300 leading-relaxed">{{ sessionAdaptation.editorial_diagnosis }}</p>
+                                        </div>
+                                        <div v-if="sessionAdaptation.format_specific_cut">
+                                            <p class="text-xs uppercase tracking-widest text-primary-500/70 mb-2">Format-Specific Cut</p>
+                                            <div class="space-y-2 text-sm">
+                                                <div class="flex gap-2"><span class="text-gray-500 flex-none w-32">Cut point</span><span class="text-gray-300">{{ sessionAdaptation.format_specific_cut.cut_point }}</span></div>
+                                                <div class="flex gap-2"><span class="text-gray-500 flex-none w-32">Before cut</span><span class="text-gray-300">{{ sessionAdaptation.format_specific_cut.original_before_cut }}</span></div>
+                                                <div class="flex gap-2"><span class="text-gray-500 flex-none w-32">Eliminates</span><span class="text-gray-300">{{ sessionAdaptation.format_specific_cut.cut_eliminates }}</span></div>
+                                                <div class="flex gap-2"><span class="text-amber-500/80 flex-none w-32 font-medium">Must reintroduce</span><span class="text-amber-300">{{ sessionAdaptation.format_specific_cut.must_reintroduce }}</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </template>
 
-                        <!-- Choice Design tab -->
+                        <!-- ── CHOICES tab ── -->
                         <template v-else-if="adaptationTab === 'choices'">
                             <div class="space-y-5">
                                 <div v-for="slot in choiceSlots" :key="slot"
@@ -1446,7 +1611,9 @@ const eventDraftLink = (eventId: number) => {
                                         <h3 class="text-xs uppercase tracking-widest text-gray-500">{{ choiceLabel(slot) }}</h3>
                                         <span class="text-xs text-gray-600">{{ sessionAdaptation.session_choice_design?.[slot]?.choice_id ?? '' }}</span>
                                     </div>
-
+                                    <div v-if="sessionAdaptation.session_choice_design?.[slot]?.source_moment" class="text-xs text-gray-600 italic">
+                                        Source moment: {{ sessionAdaptation.session_choice_design[slot].source_moment }}
+                                    </div>
                                     <div>
                                         <label class="mb-1 block text-xs text-gray-500">Tracked Dimension</label>
                                         <input v-model="choiceEdits[slot].tracked_dimension" type="text"
@@ -1454,7 +1621,6 @@ const eventDraftLink = (eventId: number) => {
                                             placeholder="e.g. impulse_vs_deliberation"
                                             @input="choicesDirty = true" />
                                     </div>
-
                                     <div>
                                         <label class="mb-1 block text-xs text-gray-500">Choice Question</label>
                                         <input v-model="choiceEdits[slot].question" type="text"
@@ -1462,17 +1628,22 @@ const eventDraftLink = (eventId: number) => {
                                             placeholder="How do you…?"
                                             @input="choicesDirty = true" />
                                     </div>
-
                                     <div class="grid grid-cols-3 gap-2">
                                         <div v-for="opt in ['option_a', 'option_b', 'option_c'] as const" :key="opt">
                                             <label class="mb-1 block text-xs text-gray-600">{{ opt.replace('_', ' ').toUpperCase() }}</label>
                                             <textarea v-model="choiceEdits[slot][opt]" rows="3"
                                                 class="w-full rounded-lg border border-gray-700 bg-gray-950 px-2 py-1.5 text-xs text-gray-300 focus:border-primary-500 focus:outline-none resize-none"
                                                 @input="choicesDirty = true"></textarea>
+                                            <p v-if="sessionAdaptation.session_choice_design?.[slot]?.[opt]?.downstream_effect"
+                                               class="mt-1 text-[10px] text-gray-600 leading-relaxed">
+                                               ↳ {{ sessionAdaptation.session_choice_design[slot][opt].downstream_effect }}
+                                            </p>
                                         </div>
                                     </div>
+                                    <div v-if="sessionAdaptation.session_choice_design?.[slot]?.all_paths_arrive_at" class="text-xs text-gray-600 border-t border-gray-800 pt-2">
+                                        All paths arrive at: <span class="text-gray-400">{{ sessionAdaptation.session_choice_design[slot].all_paths_arrive_at }}</span>
+                                    </div>
                                 </div>
-
                                 <button
                                     class="rounded-lg px-4 py-2 text-sm font-medium transition-all disabled:opacity-40"
                                     :class="choicesDirty ? 'bg-primary-600 hover:bg-primary-500 text-white' : 'bg-gray-800 text-gray-500'"
@@ -1483,65 +1654,51 @@ const eventDraftLink = (eventId: number) => {
                             </div>
                         </template>
 
-                        <!-- Session Close tab — fully editable structured UI -->
+                        <!-- ── SESSION CLOSE tab ── -->
                         <template v-else-if="adaptationTab === 'close'">
                             <div v-if="!sessionAdaptation.session_close_design" class="text-gray-600 text-sm">
                                 No session close design yet.
                             </div>
-
                             <div v-else class="space-y-5">
-
-                                <!-- Resolution prose -->
                                 <div class="rounded-xl border border-gray-800 bg-gray-900 p-5 space-y-2">
-                                    <label class="block text-xs uppercase tracking-widest text-gray-500">Resolution Prose</label>
-                                    <p class="text-xs text-gray-600">The closing prose the narrator delivers as the session resolves.</p>
+                                    <label class="block text-sm font-semibold text-gray-200">Resolution Prose</label>
+                                    <p class="text-xs text-gray-500">The closing prose the narrator delivers as the session resolves.</p>
                                     <textarea v-model="closeEdit.resolution_prose" rows="8"
                                         class="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-200 leading-relaxed focus:border-primary-500 focus:outline-none resize-none"
                                         @input="closeDirty = true"></textarea>
                                 </div>
-
-                                <!-- Hook transition -->
                                 <div class="rounded-xl border border-gray-800 bg-gray-900 p-5 space-y-2">
-                                    <label class="block text-xs uppercase tracking-widest text-gray-500">Hook Transition</label>
-                                    <p class="text-xs text-gray-600">The bridge from resolution into the session-end choice.</p>
+                                    <label class="block text-sm font-semibold text-gray-200">Hook Transition</label>
+                                    <p class="text-xs text-gray-500">The bridge from resolution into the session-end choice.</p>
                                     <textarea v-model="closeEdit.hook_transition" rows="4"
                                         class="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-200 leading-relaxed focus:border-primary-500 focus:outline-none resize-none"
                                         @input="closeDirty = true"></textarea>
                                 </div>
-
-                                <!-- Session-end choice -->
                                 <div class="rounded-xl border border-gray-800 bg-gray-900 p-5 space-y-3">
-                                    <label class="block text-xs uppercase tracking-widest text-gray-500">Session-End Choice</label>
-                                    <p class="text-xs text-gray-600">The retention hook that bridges into next session.</p>
-
+                                    <label class="block text-sm font-semibold text-gray-200">Session-End Choice</label>
+                                    <p class="text-xs text-gray-500">The retention hook that bridges into next session.</p>
                                     <div>
                                         <label class="mb-1 block text-xs text-gray-500">Choice Question</label>
                                         <input v-model="closeEdit.choice_question" type="text"
                                             class="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-1.5 text-sm text-gray-200 focus:border-primary-500 focus:outline-none"
                                             @input="closeDirty = true" />
                                     </div>
-
                                     <div v-for="opt in ['a', 'b', 'c'] as const" :key="opt"
                                         class="rounded-lg border border-gray-800 bg-gray-950/40 p-3 space-y-2">
                                         <div class="text-xs font-medium text-gray-400">Option {{ opt.toUpperCase() }}</div>
                                         <div>
                                             <label class="mb-1 block text-xs text-gray-600">Option text</label>
-                                            <textarea
-                                                v-model="closeEdit[`option_${opt}_text`]"
-                                                rows="2"
+                                            <textarea :value="closeEdit[`option_${opt}_text`]" rows="2"
                                                 class="w-full rounded-lg border border-gray-700 bg-gray-950 px-2.5 py-1.5 text-xs text-gray-300 focus:border-primary-500 focus:outline-none resize-none"
-                                                @input="closeDirty = true"></textarea>
+                                                @input="(e) => { (closeEdit as any)[`option_${opt}_text`] = (e.target as HTMLTextAreaElement).value; closeDirty = true }"></textarea>
                                         </div>
                                         <div>
-                                            <label class="mb-1 block text-xs text-gray-600">Next session opens (carry-through)</label>
-                                            <textarea
-                                                v-model="closeEdit[`option_${opt}_next`]"
-                                                rows="2"
+                                            <label class="mb-1 block text-xs text-gray-600">Next session opens</label>
+                                            <textarea :value="closeEdit[`option_${opt}_next`]" rows="2"
                                                 class="w-full rounded-lg border border-gray-700 bg-gray-950 px-2.5 py-1.5 text-xs text-gray-400 focus:border-primary-500 focus:outline-none resize-none"
-                                                @input="closeDirty = true"></textarea>
+                                                @input="(e) => { (closeEdit as any)[`option_${opt}_next`] = (e.target as HTMLTextAreaElement).value; closeDirty = true }"></textarea>
                                         </div>
                                     </div>
-
                                     <div>
                                         <label class="mb-1 block text-xs text-gray-500">Final Line</label>
                                         <input v-model="closeEdit.final_line" type="text"
@@ -1549,11 +1706,8 @@ const eventDraftLink = (eventId: number) => {
                                             @input="closeDirty = true" />
                                     </div>
                                 </div>
-
-                                <!-- Stickiness audit (read-only badges) -->
                                 <div v-if="closeStickiness" class="rounded-xl border border-gray-800/60 bg-gray-900/30 p-4 space-y-2">
                                     <label class="block text-xs uppercase tracking-widest text-gray-500">Stickiness Audit</label>
-                                    <p class="text-xs text-gray-600">Editorial verification results (read-only; regenerated when the adaptation pipeline runs).</p>
                                     <div class="flex flex-wrap gap-2 pt-1">
                                         <div v-for="(verdict, key) in closeStickiness" :key="key"
                                             class="flex items-center gap-2 rounded-full border px-3 py-1 text-xs"
@@ -1567,7 +1721,6 @@ const eventDraftLink = (eventId: number) => {
                                         </div>
                                     </div>
                                 </div>
-
                                 <button
                                     class="rounded-lg px-4 py-2 text-sm font-medium transition-all disabled:opacity-40"
                                     :class="closeDirty ? 'bg-primary-600 hover:bg-primary-500 text-white' : 'bg-gray-800 text-gray-500'"
@@ -1576,6 +1729,129 @@ const eventDraftLink = (eventId: number) => {
                                     <span v-if="savingClose">Saving…</span>
                                     <span v-else>Save Session Close as Draft</span>
                                 </button>
+                            </div>
+                        </template>
+
+                        <!-- ── ARCHITECTURE tab ── -->
+                        <template v-else-if="adaptationTab === 'arch'">
+                            <div class="space-y-5">
+                                <!-- Beat Identification -->
+                                <div v-if="beatEntries.length > 0">
+                                    <h3 class="text-xs uppercase tracking-widest text-gray-500 mb-3">Beat Identification</h3>
+                                    <div class="space-y-3">
+                                        <div v-for="beat in beatEntries" :key="beat.key"
+                                            class="rounded-xl border border-gray-800 bg-gray-900/40 p-4 space-y-2">
+                                            <div class="flex items-center gap-3">
+                                                <span class="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                                                    :class="{
+                                                        'bg-blue-950/60 text-blue-300 border border-blue-800/40': beat.key === 'setup',
+                                                        'bg-orange-950/60 text-orange-300 border border-orange-800/40': beat.key === 'escalation',
+                                                        'bg-teal-950/60 text-teal-300 border border-teal-800/40': beat.key === 'breath',
+                                                        'bg-purple-950/60 text-purple-300 border border-purple-800/40': beat.key === 'twist',
+                                                        'bg-emerald-950/60 text-emerald-300 border border-emerald-800/40': beat.key === 'resolution',
+                                                    }">{{ beat.label }}</span>
+                                                <span class="text-xs rounded-full px-2 py-0.5 border font-medium"
+                                                    :class="beat.editorial_intervention?.toLowerCase().includes('heavy') || beat.editorial_intervention?.toLowerCase().includes('invention')
+                                                        ? 'bg-red-950/30 border-red-700/40 text-red-300'
+                                                        : beat.editorial_intervention?.toLowerCase().includes('moderate')
+                                                            ? 'bg-yellow-950/30 border-yellow-700/40 text-yellow-300'
+                                                            : 'bg-gray-800 border-gray-700 text-gray-400'">
+                                                    {{ beat.editorial_intervention }}
+                                                </span>
+                                            </div>
+                                            <p class="text-sm text-gray-200 leading-relaxed">{{ beat.source_moment }}</p>
+                                            <p class="text-xs text-gray-500 italic">{{ beat.why_it_qualifies }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Next Session Awareness -->
+                                <div v-if="sessionAdaptation.next_session_awareness"
+                                    class="rounded-xl border border-gray-800 bg-gray-900/40 p-4 space-y-3">
+                                    <h3 class="text-xs uppercase tracking-widest text-gray-500">Next Session Awareness</h3>
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">Seed for next session</p>
+                                        <p class="text-sm text-gray-200 leading-relaxed">{{ sessionAdaptation.next_session_awareness.seed_for_next_session }}</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500">Connects to next dramatic question</span>
+                                        <span class="text-xs rounded-full px-2 py-0.5 font-medium"
+                                            :class="sessionAdaptation.next_session_awareness.connects_to_next_dramatic_question === 'YES'
+                                                ? 'bg-emerald-950/40 text-emerald-300'
+                                                : 'bg-yellow-950/40 text-yellow-300'">
+                                            {{ sessionAdaptation.next_session_awareness.connects_to_next_dramatic_question }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div v-if="!beatEntries.length && !sessionAdaptation?.next_session_awareness"
+                                    class="text-gray-600 text-sm py-4">
+                                    Architecture data not yet extracted for this session.
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- ── QUALITY tab ── -->
+                        <template v-else-if="adaptationTab === 'quality'">
+                            <div v-if="!sessionAdaptation.editorial_verification" class="text-gray-600 text-sm py-4">
+                                Quality verification not yet run for this session.
+                            </div>
+                            <div v-else class="space-y-5">
+                                <!-- Production status badge -->
+                                <div class="flex items-center gap-4 rounded-xl border p-4"
+                                    :class="{
+                                        'border-emerald-700/40 bg-emerald-950/20': sessionAdaptation.editorial_verification.production_status === 'GREEN',
+                                        'border-yellow-700/40 bg-yellow-950/20': sessionAdaptation.editorial_verification.production_status === 'AMBER',
+                                        'border-red-700/40 bg-red-950/20': sessionAdaptation.editorial_verification.production_status === 'RED',
+                                    }">
+                                    <span class="text-3xl font-bold"
+                                        :class="{
+                                            'text-emerald-300': sessionAdaptation.editorial_verification.production_status === 'GREEN',
+                                            'text-yellow-300': sessionAdaptation.editorial_verification.production_status === 'AMBER',
+                                            'text-red-300': sessionAdaptation.editorial_verification.production_status === 'RED',
+                                        }">{{ sessionAdaptation.editorial_verification.total_passed }}/10</span>
+                                    <div>
+                                        <p class="text-sm font-semibold"
+                                            :class="{
+                                                'text-emerald-200': sessionAdaptation.editorial_verification.production_status === 'GREEN',
+                                                'text-yellow-200': sessionAdaptation.editorial_verification.production_status === 'AMBER',
+                                                'text-red-200': sessionAdaptation.editorial_verification.production_status === 'RED',
+                                            }">{{ sessionAdaptation.editorial_verification.production_status }}</p>
+                                        <p class="text-xs text-gray-400">Editorial quality gate</p>
+                                    </div>
+                                </div>
+
+                                <!-- 10-question grid -->
+                                <div class="space-y-2">
+                                    <h3 class="text-xs uppercase tracking-widest text-gray-500 mb-2">Question Results</h3>
+                                    <div v-for="(result, qKey) in sessionAdaptation.editorial_verification.question_results" :key="qKey"
+                                        class="rounded-lg border p-3 space-y-1"
+                                        :class="result.verdict === 'PASS'
+                                            ? 'border-emerald-800/30 bg-emerald-950/10'
+                                            : 'border-yellow-800/30 bg-yellow-950/10'">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-semibold"
+                                                :class="result.verdict === 'PASS' ? 'text-emerald-400' : 'text-yellow-400'">
+                                                {{ result.verdict === 'PASS' ? '✓' : '△' }} {{ result.verdict }}
+                                            </span>
+                                            <span class="text-xs text-gray-400 font-medium">{{ String(qKey).replace(/_/g, ' ') }}</span>
+                                        </div>
+                                        <p class="text-xs text-gray-400 leading-relaxed">{{ result.detail }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Revision instructions -->
+                                <div v-if="sessionAdaptation.editorial_verification.revision_instructions?.length" class="space-y-2">
+                                    <h3 class="text-xs uppercase tracking-widest text-amber-500/70 mb-2">Revision Instructions</h3>
+                                    <div v-for="(instr, idx) in sessionAdaptation.editorial_verification.revision_instructions" :key="idx"
+                                        class="rounded-lg border border-yellow-800/30 bg-yellow-950/10 p-3 space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-medium text-yellow-300">{{ instr.phase }}</span>
+                                            <span class="text-xs text-gray-500">{{ instr.question }}</span>
+                                        </div>
+                                        <p class="text-sm text-gray-200 leading-relaxed">{{ instr.instruction }}</p>
+                                    </div>
+                                </div>
                             </div>
                         </template>
                     </div>
@@ -1646,4 +1922,42 @@ const eventDraftLink = (eventId: number) => {
 
 <style scoped>
 .prose :deep(p) { margin-bottom: 0.75rem; }
+
+/* ── Light mode overrides ─────────────────────────────────────────────── */
+.wl-light {
+    background-color: #f4f4f5 !important;
+    color: #111827 !important;
+}
+.wl-light :deep(header),
+.wl-light :deep(.border-b) {
+    border-color: #d1d5db !important;
+}
+.wl-light :deep(.bg-gray-950) { background-color: #ffffff !important; }
+.wl-light :deep(.bg-gray-900) { background-color: #f9fafb !important; }
+.wl-light :deep(.bg-gray-900\/30), .wl-light :deep(.bg-gray-900\/40) { background-color: #f3f4f6 !important; }
+.wl-light :deep(.bg-gray-800) { background-color: #e5e7eb !important; }
+.wl-light :deep(.border-gray-800) { border-color: #d1d5db !important; }
+.wl-light :deep(.border-gray-700) { border-color: #9ca3af !important; }
+.wl-light :deep(.text-white) { color: #111827 !important; }
+.wl-light :deep(.text-gray-200) { color: #1f2937 !important; }
+.wl-light :deep(.text-gray-300) { color: #374151 !important; }
+.wl-light :deep(.text-gray-400) { color: #4b5563 !important; }
+.wl-light :deep(.text-gray-500) { color: #6b7280 !important; }
+.wl-light :deep(.text-gray-600) { color: #6b7280 !important; }
+.wl-light :deep(.text-gray-700) { color: #9ca3af !important; }
+.wl-light :deep(textarea), .wl-light :deep(input), .wl-light :deep(select) {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    border-color: #9ca3af !important;
+}
+.wl-light :deep(textarea:focus), .wl-light :deep(input:focus), .wl-light :deep(select:focus) {
+    border-color: #6366f1 !important;
+}
+/* Sidebar event list */
+.wl-light :deep(.border-r) { border-color: #d1d5db !important; }
+/* Font size boost — makes all text 10% larger for readability */
+.wl-root { font-size: 1.05rem; }
+.wl-root :deep(.text-xs) { font-size: 0.8rem; }
+.wl-root :deep(.text-sm) { font-size: 0.95rem; }
+.wl-root :deep(.text-base) { font-size: 1.1rem; }
 </style>

@@ -116,14 +116,31 @@ final class WriterLabController extends Controller
         $sessionAdaptations = $sessionAdaptationModels->mapWithKeys(
             fn (SessionAdaptation $sa): array => [
                 $sa->session_number => [
+                    // ── Core fields ──────────────────────────────────────────
                     'session_number'      => $sa->session_number,
                     'session_status'      => $sa->session_status,
+
+                    // ── Entry-point diagnosis ─────────────────────────────
                     'cold_open'           => $sa->entry_point_diagnosis['cold_open'] ?? null,
                     'start_event_id'      => $sa->entry_point_diagnosis['start_event_id'] ?? null,
-                    'beat_map'            => $sa->session_architecture['beat_map'] ?? null,
-                    'session_choice_design' => $sa->session_choice_design,
+                    'emotional_promise'   => $sa->entry_point_diagnosis['emotional_promise'] ?? null,
+                    'editorial_diagnosis' => $sa->entry_point_diagnosis['editorial_diagnosis'] ?? null,
+                    'format_specific_cut' => $sa->entry_point_diagnosis['format_specific_cut'] ?? null,
+
+                    // ── Session architecture ──────────────────────────────
+                    'beat_map'              => $sa->session_architecture['beat_map'] ?? null,
+                    'beat_identification'   => $sa->session_architecture['beat_identification'] ?? null,
+                    'next_session_awareness'=> $sa->session_architecture['next_session_awareness'] ?? null,
+
+                    // ── Choice & consequence design ───────────────────────
+                    'session_choice_design'  => $sa->session_choice_design,
                     'choice_consequence_map' => $sa->choice_consequence_map,
-                    'session_close_design' => $sa->session_close_design,
+
+                    // ── Session close ─────────────────────────────────────
+                    'session_close_design'   => $sa->session_close_design,
+
+                    // ── Editorial verification (10-question quality gate) ─
+                    'editorial_verification' => $sa->editorial_verification,
                 ],
             ]
         );
