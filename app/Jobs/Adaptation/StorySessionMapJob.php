@@ -137,6 +137,9 @@ final class StorySessionMapJob implements ShouldQueue
                     new ConsequenceMappingJob($this->story, $sa->session_number),
                     new SessionCloseJob($this->story, $sa->session_number),
                     new EditorialVerificationJob($this->story, $sa->session_number),
+                    // Pipeline Upgrade V2: assemble Deliverable 8 runtime narrator template
+                    // immediately after Phase 8 so Chaos Mode can read it from cache.
+                    new RuntimeNarratorAssemblyJob($this->story, $sa->session_number),
                 ];
             }
 

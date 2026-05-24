@@ -17,7 +17,12 @@ use Illuminate\Support\Carbon;
  * @property string $model
  * @property array<int, array{role: string, text: string}>|null $conversation_history
  * @property array<string, mixed>|null $world_state
+ * @property array{chaotic:int, lawful:int, neutral:int}|null $alignment_scaffold
  * @property string|null $session_memory
+ * @property string|null $symbolic_memory
+ * @property string|null $defining_choice_id
+ * @property string|null $defining_choice_line
+ * @property bool $is_climactic_choice
  * @property bool $session_complete
  * @property int $turn_count
  * @property string|null $ip_address
@@ -40,7 +45,9 @@ final class ChaosSession extends Model
         return [
             'conversation_history' => 'json',
             'world_state'          => 'json',
+            'alignment_scaffold'   => 'json',
             'session_complete'     => 'boolean',
+            'is_climactic_choice'  => 'boolean',
             'turn_count'           => 'integer',
             'story_session_number' => 'integer',
         ];

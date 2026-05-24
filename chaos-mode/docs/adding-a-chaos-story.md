@@ -98,11 +98,17 @@ Add one entry to the `all()` array:
     'slug'          => 'your-story-slug',           // MUST match stories.slug in DB
     'title'         => 'Your Story Title',          // Chaos landing + in-game header
     'protagonist'   => 'Frodo',                     // Player label + agency handoff
-    'voice_partial' => 'ai.agents.chaos.partials.your-story',
     'tagline'       => 'Author — one-line hook for the selector.',
     'tts_voice_id'  => null,                        // null = .env ELEVENLABS default
 ],
 ```
+
+> **V2 note (2026-05-24):** the legacy `voice_partial` key has been removed.
+> Voice now comes from the Voice Lock + Runtime Narrator Template pipeline
+> output. Adding a story to Chaos Mode now requires running
+> `php artisan stories:run-adaptation <slug>` and confirming every
+> `session_adaptations.runtime_narrator_prompt` is non-null before the story
+> becomes playable.
 
 ### Field reference
 
@@ -111,7 +117,6 @@ Add one entry to the `all()` array:
 | `slug` | Yes | Exact match to `stories.slug`. Used by API validation and TTS lookup. |
 | `title` | Yes | Display name on `/chaos-mode`. |
 | `protagonist` | Yes | Shown on player turns; used in turn prompt (`[PROTAGONIST]: action`) and open questions ("What does Frodo do?"). |
-| `voice_partial` | Yes | Blade view under `resources/views/ai/agents/chaos/partials/`. |
 | `tagline` | Yes | Italic subtitle under story selector. |
 | `tts_voice_id` | No | ElevenLabs voice ID. `null` uses `config('services.elevenlabs.voice_id')`. Applies to **both** Chaos Mode TTS and main Story Guard TTS when this slug is registered. |
 

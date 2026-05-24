@@ -40,12 +40,13 @@ final class ConsequenceMappingJob implements ShouldQueue
 
             $response = (new ConsequenceMappingAgent)->prompt(
                 view('ai.agents.adaptation.consequence-mapping.prompt', [
-                    'branchingChoices' => [
-                        'branching_choice_1' => $choiceDesign['branching_choice_1'] ?? null,
-                        'branching_choice_2' => $choiceDesign['branching_choice_2'] ?? null,
-                        'branching_choice_3' => $choiceDesign['branching_choice_3'] ?? null,
-                    ],
+                    // V2 shape: pass through the full branching_choices array
+                    // (4 entries) plus the persistent state schema + reactivity
+                    // rules so the consequence map can name specific NPCs / flags.
+                    'branchingChoices' => (array) ($choiceDesign['branching_choices'] ?? []),
                     'storySessionMap' => $adaptation->story_session_map,
+                    'persistentStateSchema' => $adaptation->story_session_map['persistent_state_schema'] ?? [],
+                    'worldReactivityRules' => $adaptation->story_session_map['world_reactivity_rules'] ?? [],
                     'protagonistCoreTrait' => $adaptation->ip_audit['bounded_agency']['evidence'] ?? '',
                     'sessionNumber' => $this->sessionNumber,
                 ])->render()

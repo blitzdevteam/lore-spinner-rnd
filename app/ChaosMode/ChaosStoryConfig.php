@@ -7,21 +7,23 @@ namespace App\ChaosMode;
 /**
  * Whitelist + creative metadata for chaos-mode-enabled stories.
  *
+ * Pipeline Upgrade V2 (Daniel's correction, 2026-05-24): the per-story
+ * `voice_partial` is GONE. Chaos Mode now always reads the cached
+ * `session_adaptations.runtime_narrator_prompt` produced by Deliverable 8's
+ * RuntimeNarratorTemplateBuilder. There is no fallback to the legacy
+ * `resources/views/ai/agents/chaos/partials/*.blade.php` blocks. Old chaos
+ * sessions belonging to stories that have not yet been re-adapted under V2
+ * will be unplayable until the pipeline is re-run for that story.
+ *
  * Each entry binds:
  *   - the story `slug` (matches `stories.slug` in the DB)
  *   - the human-readable `title` for the start screen
  *   - the `protagonist` first name (used by the AGENCY HANDOFF prompt so the
  *     narrator says "What does Watson do?" not "What does Alice do?")
- *   - the `voice_partial` view name under `ai.agents.chaos.partials.*` — this
- *     is the world-building block that gives each story its own narrator voice
  *   - a short `tagline` for the story selector UI
  *   - `tts_voice_id` — the ElevenLabs voice ID used for TTS in BOTH Chaos Mode
  *     and the main Story Guard mode. null = fall back to
  *     config('services.elevenlabs.voice_id').
- *
- * Per-session and per-event data is loaded dynamically from the DB
- * (StoryAdaptation + SessionAdaptation + Event tables). Nothing about the
- * dramatic spine, beat map, or events lives here.
  */
 final class ChaosStoryConfig
 {
@@ -32,7 +34,7 @@ final class ChaosStoryConfig
     private const VOICE_DECLAN_SAGE = 'kqVT88a5QfII1HNAEPTJ';
 
     /**
-     * @return array<int, array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string, tts_voice_id:string|null}>
+     * @return array<int, array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null}>
      */
     public static function all(): array
     {
@@ -41,31 +43,27 @@ final class ChaosStoryConfig
                 'slug'          => 'alices-adventures-in-wonderland',
                 'title'         => "Alice's Adventures in Wonderland",
                 'protagonist'   => 'Alice',
-                'voice_partial' => 'ai.agents.chaos.partials.alice',
                 'tagline'       => 'Carroll — full agency through Wonderland.',
-                'tts_voice_id'  => null, // default ElevenLabs voice from config
+                'tts_voice_id'  => null,
             ],
             [
                 'slug'          => 'the-adventure-of-the-speckled-band',
                 'title'         => 'The Adventure of the Speckled Band',
                 'protagonist'   => 'Watson',
-                'voice_partial' => 'ai.agents.chaos.partials.sherlock',
                 'tagline'       => 'Doyle — investigate beside Holmes.',
-                'tts_voice_id'  => null, // default ElevenLabs voice from config
+                'tts_voice_id'  => null,
             ],
             [
                 'slug'          => 'the-tell-tale-heart',
                 'title'         => 'The Tell-Tale Heart',
                 'protagonist'   => 'the Narrator',
-                'voice_partial' => 'ai.agents.chaos.partials.telltale',
                 'tagline'       => 'Poe — descend into the cracked mind.',
-                'tts_voice_id'  => null, // default ElevenLabs voice from config
+                'tts_voice_id'  => null,
             ],
             [
                 'slug'          => 'nocturne',
                 'title'         => 'Nocturne',
                 'protagonist'   => 'Akira',
-                'voice_partial' => 'ai.agents.chaos.partials.nocturne',
                 'tagline'       => 'Wittmer — vanish into Tokyo\'s shadow-house.',
                 'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
@@ -73,7 +71,6 @@ final class ChaosStoryConfig
                 'slug'          => 'anima-machina',
                 'title'         => 'Anima Machina',
                 'protagonist'   => 'Nora',
-                'voice_partial' => 'ai.agents.chaos.partials.anima-machina',
                 'tagline'       => 'Wittmer — dive grief in the neon archive.',
                 'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
@@ -81,7 +78,6 @@ final class ChaosStoryConfig
                 'slug'          => 'driftheart',
                 'title'         => 'Driftheart',
                 'protagonist'   => 'Kataria',
-                'voice_partial' => 'ai.agents.chaos.partials.driftheart',
                 'tagline'       => 'Wittmer — fall from the sky-villa into the Drift.',
                 'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
@@ -89,25 +85,22 @@ final class ChaosStoryConfig
                 'slug'          => 'indiana-jones-and-the-raiders-of-the-lost-ark',
                 'title'         => 'Indiana Jones and the Raiders of the Lost Ark',
                 'protagonist'   => 'Indy',
-                'voice_partial' => 'ai.agents.chaos.partials.indiana-jones',
                 'tagline'       => 'Lucas — race the Nazis to the Ark of the Covenant.',
-                'tts_voice_id'  => null, // default ElevenLabs voice from config
+                'tts_voice_id'  => null,
             ],
             [
                 'slug'          => 'the-snow-queen',
                 'title'         => 'The Snow Queen',
                 'protagonist'   => 'Gerda',
-                'voice_partial' => 'ai.agents.chaos.partials.snow-queen',
                 'tagline'       => 'Andersen — walk north through winter to find Kay.',
-                'tts_voice_id'  => null, // default ElevenLabs voice from config
+                'tts_voice_id'  => null,
             ],
             [
                 'slug'          => 'the-lord-of-the-rings-the-fellowship-of-the-ring',
                 'title'         => 'The Lord of the Rings: The Fellowship of the Ring',
                 'protagonist'   => 'Frodo',
-                'voice_partial' => 'ai.agents.chaos.partials.lotr-fellowship',
                 'tagline'       => 'Tolkien — carry the Ring out of the Shire.',
-                'tts_voice_id'  => null, // default ElevenLabs voice from config
+                'tts_voice_id'  => null,
             ],
         ];
     }
@@ -121,7 +114,7 @@ final class ChaosStoryConfig
     }
 
     /**
-     * @return array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string, tts_voice_id:string|null}|null
+     * @return array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null}|null
      */
     public static function find(string $slug): ?array
     {

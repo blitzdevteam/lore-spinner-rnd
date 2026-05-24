@@ -61,14 +61,22 @@ final class ChoiceDesignJob implements ShouldQueue
         }
     }
 
+    /**
+     * V2 shape: `branching_choices` is an array of four choice objects. Each carries
+     * an `options[]` collection (label A/B/C) instead of the legacy
+     * option_a/option_b/option_c keys.
+     *
+     * @param  array<string, mixed>  $choiceDesign
+     */
     private function enrichBranchDimensionRegistry($adaptation, array $choiceDesign): void
     {
         $sessionMap = $adaptation->story_session_map;
         $dimensions = $sessionMap['branch_dimensions'] ?? [];
 
-        foreach (['branching_choice_1', 'branching_choice_2', 'branching_choice_3'] as $key) {
-            $choice = $choiceDesign[$key] ?? null;
-            if (! $choice || empty($choice['what_this_choice_tracks'])) {
+        $branchingChoices = (array) ($choiceDesign['branching_choices'] ?? []);
+
+        foreach ($branchingChoices as $choice) {
+            if (! is_array($choice) || empty($choice['what_this_choice_tracks'])) {
                 continue;
             }
 
@@ -76,17 +84,20 @@ final class ChoiceDesignJob implements ShouldQueue
             $existingIndex = null;
 
             foreach ($dimensions as $i => $dim) {
-                if (Str::snake(Str::lower($dim['dimension_name'])) === $tracked) {
+                if (Str::snake(Str::lower($dim['dimension_name'] ?? '')) === $tracked) {
                     $existingIndex = $i;
                     break;
                 }
             }
 
-            $pathData = [
-                'option_a' => $choice['option_a']['text'] ?? $choice['option_a']['downstream_effect'] ?? '',
-                'option_b' => $choice['option_b']['text'] ?? $choice['option_b']['downstream_effect'] ?? '',
-                'option_c' => $choice['option_c']['text'] ?? $choice['option_c']['downstream_effect'] ?? '',
-            ];
+            $pathData = [];
+            foreach ((array) ($choice['options'] ?? []) as $option) {
+                $label = strtolower((string) ($option['label'] ?? ''));
+                if ($label === '') {
+                    continue;
+                }
+                $pathData['option_' . $label] = (string) ($option['text'] ?? $option['downstream_effect'] ?? '');
+            }
 
             if ($existingIndex !== null) {
                 $dimensions[$existingIndex]['possible_paths'] = $pathData;

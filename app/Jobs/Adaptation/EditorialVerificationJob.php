@@ -44,21 +44,43 @@ final class EditorialVerificationJob implements ShouldQueue
                 'session_close_design' => $session->session_close_design,
             ];
 
-            $response = (new EditorialVerificationAgent)->prompt(
-                view('ai.agents.adaptation.editorial-verification.prompt', [
-                    'completeSessionDesign' => $completeDesign,
-                    'storySessionMap' => $adaptation->story_session_map,
-                    'sessionNumber' => $this->sessionNumber,
-                ])->render()
-            );
+            $verification = $this->runVerification($adaptation, $session, $completeDesign);
+
+            // One automatic retry on RED, per Deliverable 6 ("One automatic retry
+            // is permitted at the orchestration layer").
+            if (($verification['production_status'] ?? '') === 'RED') {
+                $verification = $this->runVerification($adaptation, $session, $completeDesign);
+                $verification['auto_retry_attempted'] = true;
+            }
 
             $session->update([
-                'editorial_verification' => $response->toArray(),
+                'editorial_verification' => $verification,
                 'session_status' => SessionAdaptationStatusEnum::COMPLETED,
             ]);
         } catch (Throwable $throwable) {
             $session->update(['session_status' => SessionAdaptationStatusEnum::FAILED]);
             throw $throwable;
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $completeDesign
+     * @return array<string, mixed>
+     */
+    private function runVerification($adaptation, $session, array $completeDesign): array
+    {
+        $response = (new EditorialVerificationAgent)->prompt(
+            view('ai.agents.adaptation.editorial-verification.prompt', [
+                'completeSessionDesign' => $completeDesign,
+                'storySessionMap' => $adaptation->story_session_map,
+                'voiceProfile' => $adaptation->voice_profile,
+                'storyGuardCanon' => $adaptation->story_session_map['story_guard_canon'] ?? [],
+                'persistentStateSchema' => $adaptation->story_session_map['persistent_state_schema'] ?? [],
+                'worldReactivityRules' => $adaptation->story_session_map['world_reactivity_rules'] ?? [],
+                'sessionNumber' => $this->sessionNumber,
+            ])->render()
+        );
+
+        return $response->toArray();
     }
 }

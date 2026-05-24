@@ -15,8 +15,10 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $story_id
  * @property AdaptationStatusEnum $adaptation_status
+ * @property array|null $ip_trimming
  * @property array|null $format_detection
  * @property array|null $ip_audit
+ * @property array|null $voice_profile
  * @property array|null $story_session_map
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -32,8 +34,10 @@ final class StoryAdaptation extends Model
 
     protected $casts = [
         'adaptation_status' => AdaptationStatusEnum::class,
+        'ip_trimming' => 'json',
         'format_detection' => 'json',
         'ip_audit' => 'json',
+        'voice_profile' => 'json',
         'story_session_map' => 'json',
     ];
 

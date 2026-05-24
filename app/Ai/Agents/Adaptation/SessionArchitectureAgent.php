@@ -14,9 +14,20 @@ use Laravel\Ai\Promptable;
 use Stringable;
 use Throwable;
 
+/**
+ * Pipeline Upgrade V2 — Deliverable 3: Phase 4 Session Architecture.
+ *
+ * Schema reflects the canonical Deliverable's six tasks:
+ *   1. five-beat identification
+ *   2. interaction count verification (exact quotas: 4 branching / 4-6 emotional / 6-10 posture)
+ *   3. content budget declaration
+ *   4. session beat map (with new choice_slot taxonomy)
+ *   5. posture shift placement strategy
+ *   6. next-session awareness
+ */
 #[Model('gpt-5.2')]
 #[Temperature(0.6)]
-#[Timeout(180)]
+#[Timeout(240)]
 class SessionArchitectureAgent implements Agent, HasStructuredOutput
 {
     use Promptable;
@@ -37,6 +48,26 @@ class SessionArchitectureAgent implements Agent, HasStructuredOutput
             'editorial_intervention' => $schema->string()->required()->title('Editorial Intervention')->description('Minimal / Moderate / Heavy / INVENTION REQUIRED'),
         ])->required()->withoutAdditionalProperties()->title($name);
 
+        $branchingChoiceSlotSchema = $schema->object([
+            'choice_number' => $schema->number()->required()->title('Choice Number')->description('1-4. Choice 1 = Identity (Setup). Choice 4 = Session-End Hook (Resolution).'),
+            'target_beat' => $schema->string()->required()->title('Target Beat')->description('SETUP / ESCALATION / BREATH / TWIST / RESOLUTION.'),
+            'dramatic_function' => $schema->string()->required()->title('Dramatic Function')->description('Identity / Methodology / Moral Weight / Future Commitment / etc. — must reference a Phase 2 branch dimension.'),
+            'approximate_minute' => $schema->string()->required()->title('Approximate Minute'),
+            'dramatic_question' => $schema->string()->required()->title('Dramatic Question'),
+        ])->required()->withoutAdditionalProperties();
+
+        $emotionalChoiceSlotSchema = $schema->object([
+            'beat' => $schema->string()->required()->title('Beat')->description('ESCALATION or BREATH.'),
+            'emotional_register' => $schema->string()->required()->title('Emotional Register')->description('e.g. curiosity, defiance, tenderness, restraint.'),
+            'source_attachment' => $schema->string()->required()->title('Source Attachment'),
+        ])->required()->withoutAdditionalProperties();
+
+        $postureShiftSlotSchema = $schema->object([
+            'placement' => $schema->string()->required()->title('Placement')->description('e.g. "early Setup", "mid Escalation", "during Breath beat".'),
+            'type' => $schema->string()->required()->title('Type')->description('observation / deflection / softening / intensifying / joking / withdrawing / leaning in / etc.'),
+            'player_attitude_exposed' => $schema->string()->required()->title('Player Attitude Exposed'),
+        ])->required()->withoutAdditionalProperties();
+
         return [
             'beat_identification' => $schema
                 ->object([
@@ -46,24 +77,57 @@ class SessionArchitectureAgent implements Agent, HasStructuredOutput
                     'twist' => $beatSchema('Twist Beat'),
                     'resolution' => $beatSchema('Resolution Beat'),
                 ])->required()->withoutAdditionalProperties()->title('Beat Identification'),
+
+            'interaction_count_verification' => $schema->object([
+                'branching_choices' => $schema->array()->required()->title('Branching Choices')->description('EXACTLY 4 entries.')->items($branchingChoiceSlotSchema),
+                'emotional_choices' => $schema->array()->required()->title('Emotional Choices')->description('4-6 entries.')->items($emotionalChoiceSlotSchema),
+                'posture_shifts' => $schema->array()->required()->title('Posture Shifts')->description('6-10 entries.')->items($postureShiftSlotSchema),
+                'total_interaction_density' => $schema->number()->required()->title('Total Interaction Density')->description('Sum of all three categories. Should be 14-20.'),
+            ])->required()->withoutAdditionalProperties()->title('Interaction Count Verification'),
+
+            'content_budget' => $schema->object([
+                'narration_token_budget' => $schema->string()->required()->title('Narration Token Budget')->description('Target 3,000-5,000 words of narrator output across all turns.'),
+                'distinct_scene_count' => $schema->number()->required()->title('Distinct Scene Count'),
+                'compression_targets' => $schema->array()->required()->title('Compression Targets')->description('Source sequences that will become single beats.')->items($schema->string()->required()),
+                'expansion_targets' => $schema->array()->required()->title('Expansion Targets')->description('Moments that deserve full breathing room.')->items($schema->string()->required()),
+                'dialogue_treatment' => $schema->object([
+                    'must_survive_verbatim' => $schema->array()->required()->title('Must Survive Verbatim')->items($schema->string()->required()),
+                    'can_be_reshaped' => $schema->array()->required()->title('Can Be Reshaped')->items($schema->string()->required()),
+                    'can_be_cut' => $schema->array()->required()->title('Can Be Cut')->items($schema->string()->required()),
+                ])->required()->withoutAdditionalProperties()->title('Dialogue Treatment'),
+            ])->required()->withoutAdditionalProperties()->title('Content Budget'),
+
             'beat_map' => $schema
                 ->array()
                 ->required()
                 ->title('Beat Map')
-                ->description('Complete session beat map with time slots.')
+                ->description('Complete session beat map with time slots. Must include exactly 4 BRANCHING slots, 1 BREATH beat between minutes 8-10.')
                 ->items(
                     $schema->object([
                         'time_range' => $schema->string()->required()->title('Time Range'),
                         'moment' => $schema->string()->required()->title('Moment'),
                         'beat_type' => $schema->string()->required()->title('Beat Type'),
-                        'choice_type' => $schema->string()->required()->title('Choice Type')->description('BRANCHING, EXPRESSIVE, or none.'),
-                        'choice_arrives' => $schema->string()->required()->title('Choice Arrives'),
+                        'choice_slot' => $schema->string()->required()->title('Choice Slot')->description('BRANCHING / EMOTIONAL / POSTURE / none.'),
+                        'dramatic_function' => $schema->string()->required()->title('Dramatic Function'),
                     ])->required()->withoutAdditionalProperties()
                 ),
+
+            'posture_shift_placement_strategy' => $schema->object([
+                'pressure_points' => $schema->array()->required()->title('Pressure Points')->description('3-4 emotional pressure points where posture shifts cluster.')->items(
+                    $schema->object([
+                        'source_moment' => $schema->string()->required()->title('Source Moment'),
+                        'posture_shifts_clustered' => $schema->number()->required()->title('Posture Shifts Clustered'),
+                        'emotional_pressure' => $schema->string()->required()->title('Emotional Pressure'),
+                        'micro_agency_without_diverting_spine' => $schema->string()->required()->title('Micro Agency Without Diverting Spine'),
+                    ])->required()->withoutAdditionalProperties()
+                ),
+            ])->required()->withoutAdditionalProperties()->title('Posture Shift Placement Strategy'),
+
             'next_session_awareness' => $schema
                 ->object([
                     'seed_for_next_session' => $schema->string()->required()->title('Seed For Next Session'),
                     'connects_to_next_dramatic_question' => $schema->string()->required()->title('Connects To Next Dramatic Question')->description('YES or NEEDS EDITORIAL BRIDGE.'),
+                    'bridge_description' => $schema->string()->required()->title('Bridge Description')->description('Empty string if connects naturally.'),
                 ])->required()->withoutAdditionalProperties()->title('Next Session Awareness'),
         ];
     }

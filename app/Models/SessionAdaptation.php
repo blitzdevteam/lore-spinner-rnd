@@ -20,6 +20,8 @@ use Illuminate\Support\Carbon;
  * @property array|null $choice_consequence_map
  * @property array|null $session_close_design
  * @property array|null $editorial_verification
+ * @property string|null $runtime_narrator_prompt
+ * @property Carbon|null $runtime_narrator_assembled_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read StoryAdaptation $storyAdaptation
@@ -38,6 +40,7 @@ final class SessionAdaptation extends Model
         'choice_consequence_map' => 'json',
         'session_close_design' => 'json',
         'editorial_verification' => 'json',
+        'runtime_narrator_assembled_at' => 'datetime',
     ];
 
     /**

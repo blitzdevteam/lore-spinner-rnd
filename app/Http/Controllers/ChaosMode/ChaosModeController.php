@@ -25,42 +25,25 @@ use Throwable;
 /**
  * Chaos Mode runtime — multi-story, multi-session.
  *
- * Architecture:
- *   - The AI controls narration, pacing, and movement INSIDE the active session.
- *   - The runtime controls only which session is loaded, persistent state,
- *     conversation log, and the technical boundary between sessions.
- *   - No advance_event, no scene_note, no suggested_playhead. The AI is given
- *     the full session script + adaptation spine and trusted to move through it.
+ * Pipeline Upgrade V2 (Daniel's correction 2026-05-24): the system prompt
+ * for every turn is the cached `session_adaptations.runtime_narrator_prompt`
+ * produced by RuntimeNarratorAssemblyJob. The controller injects four
+ * runtime-only blocks into that cached body using marker tokens:
  *
- * Story selection: every chaos-enabled story is whitelisted in ChaosStoryConfig.
- * Session context is loaded entirely from the DB:
- *   - StoryAdaptation.story_session_map gives the per-session event range and
- *     dramatic question.
- *   - SessionAdaptation per session_number provides cold open, beat map,
- *     authored choices, close design, and next-session seed.
- *   - Event rows in the range are streamed into the prompt as the full source
- *     script for the current session.
+ *   - [SYMBOLIC_MEMORY_INJECTION_POINT]      Section 8 — chaos_sessions.symbolic_memory
+ *   - [ALIGNMENT_TILT_INJECTION_POINT]       Section 9 — story-native alignment label
+ *                                            derived from alignment_scaffold
+ *   - [OPENING_SCENE_INJECTION_POINT]        Section 13 — cold open or arc handoff
+ *                                            (turn 1 only)
+ *   - [WORLD_STATE_TIERED_INJECTION_POINT]   Section 17 (tail) — Tier 1/2/3 view of
+ *                                            chaos_sessions.world_state
  *
- * Session continuation: when the AI returns `session_complete: true`, the
- * runtime exposes `/chaos-mode/continue` which creates a NEW ChaosSession at
- * `story_session_number + 1`, seeded with the prior session's memory + world
- * state and the new session's `opens_with` handoff.
+ * If `runtime_narrator_prompt` is null for a session, the endpoint returns
+ * 422 with a "this story has not been re-adapted under V2" message. There
+ * is no fallback to the legacy per-story partials.
  */
 final class ChaosModeController extends Controller
 {
-    /**
-     * Single source of truth for every chaos-mode model.
-     *
-     * - provider           Prism provider key.
-     * - temperature        Default sampling temperature (overridable per request).
-     * - reasoning_effort   Only set for OpenAI reasoning models. Keeping this at
-     *                     'low' is the difference between ~6s and ~40s per turn
-     *                     on gpt-5.x. The OpenAI Responses API accepts
-     *                     none|low|medium|high|xhigh; 'low' keeps the
-     *                     narrative quality without paying the full
-     *                     thinking-time cost. gpt-4.1 is not a reasoning
-     *                     model so this is null there.
-     */
     private const MODEL_CONFIG = [
         'gpt-5.4'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => 'low'],
         'gpt-5.4-mini'      => ['provider' => 'openai',    'temperature' => 0.95, 'reasoning_effort' => 'low'],
@@ -74,8 +57,6 @@ final class ChaosModeController extends Controller
     private const DEFAULT_MODEL = 'gpt-5.2';
 
     /**
-     * Allowed model slugs. Keep the same list on every endpoint.
-     *
      * @return array<int, string>
      */
     private static function allowedModels(): array
@@ -88,12 +69,6 @@ final class ChaosModeController extends Controller
         return (float) (self::MODEL_CONFIG[$model]['temperature'] ?? 1.0);
     }
 
-    /**
-     * Chaos Mode landing page.
-     *
-     * Lists every chaos-enabled story plus whether it has the DB data
-     * required to actually run (adaptation + at least one session adaptation).
-     */
     public function show(): Response
     {
         $configured = ChaosStoryConfig::all();
@@ -108,7 +83,13 @@ final class ChaosModeController extends Controller
             $story = $stories->firstWhere('slug', $row['slug']);
 
             $hasAdaptation = $story?->adaptation !== null;
-            $sessionCount  = (int) ($story?->adaptation?->sessionAdaptations?->count() ?? 0);
+            $sessionAdaptations = $story?->adaptation?->sessionAdaptations;
+            $sessionCount  = (int) ($sessionAdaptations?->count() ?? 0);
+
+            // V2 readiness: at least one session has a cached runtime narrator prompt.
+            $v2Ready = $sessionAdaptations
+                ?->contains(fn (SessionAdaptation $sa) => filled($sa->runtime_narrator_prompt))
+                ?? false;
 
             $cover = $story?->getFirstMediaUrl('cover') ?: null;
 
@@ -117,8 +98,9 @@ final class ChaosModeController extends Controller
                 'title'            => $row['title'],
                 'tagline'          => $row['tagline'],
                 'protagonist'      => $row['protagonist'],
-                'available'        => $story !== null && $hasAdaptation && $sessionCount > 0,
+                'available'        => $story !== null && $hasAdaptation && $sessionCount > 0 && $v2Ready,
                 'total_sessions'   => $sessionCount,
+                'v2_ready'         => $v2Ready,
                 'cover'            => $cover ?: null,
             ];
         }, $configured);
@@ -128,12 +110,6 @@ final class ChaosModeController extends Controller
         ]);
     }
 
-    /**
-     * Start a fresh chaos session.
-     *
-     * Always creates session number 1. The cold open is rendered into the
-     * system prompt as $currentScene exactly once. Subsequent turns omit it.
-     */
     public function start(Request $request): JsonResponse
     {
         $request->validate([
@@ -162,9 +138,19 @@ final class ChaosModeController extends Controller
 
         $sessionContext = $this->loadSessionContext($story, sessionNumber: 1, openingHandoff: null);
 
+        if ($sessionContext === null) {
+            return response()->json([
+                'error' => 'This story has not been re-adapted under V2 yet. Re-run the adaptation pipeline (`php artisan stories:run-adaptation '
+                    . $storySlug . ' --force`) before starting Chaos Mode.',
+            ], 422);
+        }
+
         if (empty($sessionContext['full_session_events'])) {
             return response()->json(['error' => 'This story has no events to narrate yet.'], 422);
         }
+
+        $emptyWorldState = $this->emptyWorldState();
+        $emptyAlignment  = $this->emptyAlignmentScaffold();
 
         $chaosSession = ChaosSession::create([
             'story_id'             => $story->id,
@@ -172,19 +158,23 @@ final class ChaosModeController extends Controller
             'story_session_number' => 1,
             'model'                => $model,
             'conversation_history' => [],
-            'world_state'          => $this->emptyWorldState(),
+            'world_state'          => $emptyWorldState,
+            'alignment_scaffold'   => $emptyAlignment,
             'session_memory'       => null,
+            'symbolic_memory'      => null,
+            'is_climactic_choice'  => false,
             'session_complete'     => false,
             'turn_count'           => 0,
             'ip_address'           => $request->ip(),
         ]);
 
         $systemPrompt = $this->renderSystemPrompt(
-            storyConfig:    $storyConfig,
-            sessionContext: $sessionContext,
-            worldState:     $this->emptyWorldState(),
-            sessionMemory:  null,
-            currentScene:   $sessionContext['cold_open'] ?? null,
+            sessionContext:      $sessionContext,
+            worldState:          $emptyWorldState,
+            alignmentScaffold:   $emptyAlignment,
+            symbolicMemory:      null,
+            currentScene:        $sessionContext['opening_scene'],
+            isClimacticPrevious: false,
         );
 
         try {
@@ -197,14 +187,21 @@ final class ChaosModeController extends Controller
                 temperature:         $temperature,
             );
 
-            $worldState = $this->mergeStateDelta($this->emptyWorldState(), $result['state_delta']);
-            $history    = $this->appendNarratorTurn([], $result['response']);
-            $memory     = $this->appendMemory(null, $result['session_memory_update']);
+            $worldState        = $this->mergeStateDelta($emptyWorldState, $result['state_delta']);
+            $alignmentScaffold = $this->mergeAlignmentDelta($emptyAlignment, $result['alignment_tally_delta']);
+            $history           = $this->appendNarratorTurn([], $result['response']);
+            $memory            = $this->appendMemory(null, $result['session_memory_update']);
+            $symbolicMemory    = $this->appendMemory(null, $result['symbolic_memory_update']);
 
             $chaosSession->update([
                 'conversation_history' => $history,
                 'world_state'          => $worldState,
+                'alignment_scaffold'   => $alignmentScaffold,
                 'session_memory'       => $memory,
+                'symbolic_memory'      => $symbolicMemory,
+                'is_climactic_choice'  => (bool) $result['is_climactic_choice'],
+                'defining_choice_id'   => $result['defining_choice_id'] !== '' ? $result['defining_choice_id'] : null,
+                'defining_choice_line' => $result['defining_choice_line'] !== '' ? $result['defining_choice_line'] : null,
                 'session_complete'     => $result['session_complete'],
                 'turn_count'           => 1,
             ]);
@@ -233,9 +230,6 @@ final class ChaosModeController extends Controller
         }
     }
 
-    /**
-     * Process a player turn inside the currently active chaos session.
-     */
     public function turn(Request $request): JsonResponse
     {
         $request->validate([
@@ -278,18 +272,26 @@ final class ChaosModeController extends Controller
             openingHandoff: null,
         );
 
-        $worldState  = $chaosSession->world_state ?? $this->emptyWorldState();
-        $history     = (array) ($chaosSession->conversation_history ?? []);
+        if ($sessionContext === null) {
+            return response()->json([
+                'error' => 'This session has not been re-adapted under V2 yet. Re-run the adaptation pipeline before continuing.',
+            ], 422);
+        }
+
+        $worldState        = $chaosSession->world_state ?? $this->emptyWorldState();
+        $alignmentScaffold = $chaosSession->alignment_scaffold ?? $this->emptyAlignmentScaffold();
+        $history           = (array) ($chaosSession->conversation_history ?? []);
 
         // Keep last 12 turns for context budget; persisted history stays full.
         $sentHistory = array_slice($history, -12);
 
         $systemPrompt = $this->renderSystemPrompt(
-            storyConfig:    $storyConfig,
-            sessionContext: $sessionContext,
-            worldState:     $worldState,
-            sessionMemory:  $chaosSession->session_memory,
-            currentScene:   null, // cold open is in history; never re-anchor it
+            sessionContext:      $sessionContext,
+            worldState:          $worldState,
+            alignmentScaffold:   $alignmentScaffold,
+            symbolicMemory:      $chaosSession->symbolic_memory,
+            currentScene:        null, // cold open is in history; never re-anchor it
+            isClimacticPrevious: (bool) $chaosSession->is_climactic_choice,
         );
 
         try {
@@ -302,15 +304,22 @@ final class ChaosModeController extends Controller
                 temperature:         $temperature,
             );
 
-            $worldState = $this->mergeStateDelta($worldState, $result['state_delta']);
-            $history    = $this->appendPlayerTurn($history, $playerAction, $storyConfig['protagonist']);
-            $history    = $this->appendNarratorTurn($history, $result['response']);
-            $memory     = $this->appendMemory($chaosSession->session_memory, $result['session_memory_update']);
+            $worldState        = $this->mergeStateDelta($worldState, $result['state_delta']);
+            $alignmentScaffold = $this->mergeAlignmentDelta($alignmentScaffold, $result['alignment_tally_delta']);
+            $history           = $this->appendPlayerTurn($history, $playerAction, $storyConfig['protagonist']);
+            $history           = $this->appendNarratorTurn($history, $result['response']);
+            $memory            = $this->appendMemory($chaosSession->session_memory, $result['session_memory_update']);
+            $symbolicMemory    = $this->appendMemory($chaosSession->symbolic_memory, $result['symbolic_memory_update']);
 
             $chaosSession->update([
                 'conversation_history' => $history,
                 'world_state'          => $worldState,
+                'alignment_scaffold'   => $alignmentScaffold,
                 'session_memory'       => $memory,
+                'symbolic_memory'      => $symbolicMemory,
+                'is_climactic_choice'  => (bool) $result['is_climactic_choice'],
+                'defining_choice_id'   => $result['defining_choice_id'] !== '' ? $result['defining_choice_id'] : $chaosSession->defining_choice_id,
+                'defining_choice_line' => $result['defining_choice_line'] !== '' ? $result['defining_choice_line'] : $chaosSession->defining_choice_line,
                 'session_complete'     => $result['session_complete'],
                 'turn_count'           => $chaosSession->turn_count + 1,
                 'model'                => $model,
@@ -324,6 +333,7 @@ final class ChaosModeController extends Controller
                 'temperature'      => $temperature,
                 'turn'             => $chaosSession->turn_count,
                 'session_complete' => $result['session_complete'],
+                'is_climactic'     => (bool) $result['is_climactic_choice'],
                 'player_action'    => mb_substr($playerAction, 0, 80),
                 'memory_update'    => mb_substr($result['session_memory_update'], 0, 120),
             ]);
@@ -342,13 +352,6 @@ final class ChaosModeController extends Controller
         }
     }
 
-    /**
-     * Continue from a completed session into the next session in the arc.
-     *
-     * Creates a NEW ChaosSession at story_session_number + 1, carries the
-     * world_state + session_memory forward, and feeds the next session's
-     * `opens_with` handoff as the opening scene.
-     */
     public function continueSession(Request $request): JsonResponse
     {
         $request->validate([
@@ -387,12 +390,16 @@ final class ChaosModeController extends Controller
             ], 410);
         }
 
-        // The handoff: the `opens_with` from arc_progression tells the AI where
-        // the next session picks up. Without it the narrator would re-cold-open.
         $arcRow         = $this->findArcProgressionRow($story->adaptation, $nextSessionNumber);
         $openingHandoff = (string) ($arcRow['opens_with'] ?? '');
 
         $sessionContext = $this->loadSessionContext($story, $nextSessionNumber, $openingHandoff);
+
+        if ($sessionContext === null) {
+            return response()->json([
+                'error' => 'The next session has not been re-adapted under V2 yet. Re-run the adaptation pipeline before continuing.',
+            ], 422);
+        }
 
         if (empty($sessionContext['full_session_events'])) {
             return response()->json(['error' => 'The next session has no events to narrate.'], 422);
@@ -401,32 +408,38 @@ final class ChaosModeController extends Controller
         $model       = $request->string('model', $previous->model)->toString();
         $temperature = (float) $request->input('temperature', self::defaultTemperatureFor($model));
 
+        // Prefer V2 sidecar carry-over when present, fall back to legacy world_state.
+        $carriedWorldState        = $previous->world_state ?? $this->emptyWorldState();
+        $carriedAlignmentScaffold = $previous->alignment_scaffold ?? $this->emptyAlignmentScaffold();
+        $carriedSymbolicMemory    = $previous->symbolic_memory;
+
         $chaosSession = ChaosSession::create([
             'story_id'             => $story->id,
             'user_id'              => Auth::id(),
             'story_session_number' => $nextSessionNumber,
             'model'                => $model,
             'conversation_history' => [],
-            // Carry world state + memory across the boundary so emergent facts persist.
-            'world_state'          => $previous->world_state ?? $this->emptyWorldState(),
+            'world_state'          => $carriedWorldState,
+            'alignment_scaffold'   => $carriedAlignmentScaffold,
             'session_memory'       => $previous->session_memory,
+            'symbolic_memory'      => $carriedSymbolicMemory,
+            'is_climactic_choice'  => false,
             'session_complete'     => false,
             'turn_count'           => 0,
             'ip_address'           => $request->ip(),
         ]);
 
-        // Build the scene context for this session opener. Prefer the authored
-        // `opens_with` handoff; fall back to the per-session cold open.
         $sceneForOpener = trim($openingHandoff) !== ''
             ? $openingHandoff
-            : ($sessionContext['cold_open'] ?? null);
+            : ($sessionContext['opening_scene'] ?? '');
 
         $systemPrompt = $this->renderSystemPrompt(
-            storyConfig:    $storyConfig,
-            sessionContext: $sessionContext,
-            worldState:     $chaosSession->world_state ?? $this->emptyWorldState(),
-            sessionMemory:  $chaosSession->session_memory,
-            currentScene:   $sceneForOpener,
+            sessionContext:      $sessionContext,
+            worldState:          $carriedWorldState,
+            alignmentScaffold:   $carriedAlignmentScaffold,
+            symbolicMemory:      $carriedSymbolicMemory,
+            currentScene:        $sceneForOpener,
+            isClimacticPrevious: false,
         );
 
         try {
@@ -439,14 +452,21 @@ final class ChaosModeController extends Controller
                 temperature:         $temperature,
             );
 
-            $worldState = $this->mergeStateDelta($chaosSession->world_state ?? $this->emptyWorldState(), $result['state_delta']);
-            $history    = $this->appendNarratorTurn([], $result['response']);
-            $memory     = $this->appendMemory($chaosSession->session_memory, $result['session_memory_update']);
+            $worldState        = $this->mergeStateDelta($carriedWorldState, $result['state_delta']);
+            $alignmentScaffold = $this->mergeAlignmentDelta($carriedAlignmentScaffold, $result['alignment_tally_delta']);
+            $history           = $this->appendNarratorTurn([], $result['response']);
+            $memory            = $this->appendMemory($previous->session_memory, $result['session_memory_update']);
+            $symbolicMemory    = $this->appendMemory($carriedSymbolicMemory, $result['symbolic_memory_update']);
 
             $chaosSession->update([
                 'conversation_history' => $history,
                 'world_state'          => $worldState,
+                'alignment_scaffold'   => $alignmentScaffold,
                 'session_memory'       => $memory,
+                'symbolic_memory'      => $symbolicMemory,
+                'is_climactic_choice'  => (bool) $result['is_climactic_choice'],
+                'defining_choice_id'   => $result['defining_choice_id'] !== '' ? $result['defining_choice_id'] : null,
+                'defining_choice_line' => $result['defining_choice_line'] !== '' ? $result['defining_choice_line'] : null,
                 'session_complete'     => $result['session_complete'],
                 'turn_count'           => 1,
             ]);
@@ -478,30 +498,37 @@ final class ChaosModeController extends Controller
     // -------------------------------------------------------------------------
 
     /**
-     * Load the dramatic spine + full source script for the given session.
+     * Load the cached runtime narrator prompt plus per-session context
+     * needed to assemble the injection points and the opening scene.
+     *
+     * Returns null when the session's `runtime_narrator_prompt` is null
+     * (i.e. the story has not been re-adapted under V2 yet). Callers must
+     * surface the 422 "re-run adaptation" message in that case.
      *
      * @return array{
      *     session_number: int,
      *     total_sessions: int,
      *     opening_handoff: string,
-     *     cold_open: string,
-     *     emotional_promise: string,
-     *     dramatic_question: string,
-     *     emotional_register: string,
-     *     chapters_covered: string,
-     *     beat_map: array<int, array<string, mixed>>,
-     *     authored_choices: array<int, array<string, mixed>>,
-     *     session_destination: string,
-     *     next_session_seed: string,
+     *     opening_scene: string,
+     *     runtime_prompt: string,
+     *     alignment_labels: array<int, array<string, mixed>>,
      *     full_session_events: array<int, array{position:int, title:string, content:string, objectives:?string}>,
-     * }
+     * }|null
      */
-    private function loadSessionContext(Story $story, int $sessionNumber, ?string $openingHandoff): array
+    private function loadSessionContext(Story $story, int $sessionNumber, ?string $openingHandoff): ?array
     {
         /** @var StoryAdaptation|null $adaptation */
         $adaptation = $story->adaptation;
-        $storyMap   = (array) ($adaptation?->story_session_map ?? []);
 
+        /** @var SessionAdaptation|null $sessionAdaptation */
+        $sessionAdaptation = $adaptation?->sessionAdaptations
+            ?->firstWhere('session_number', $sessionNumber);
+
+        if ($sessionAdaptation === null || $sessionAdaptation->runtime_narrator_prompt === null) {
+            return null;
+        }
+
+        $storyMap   = (array) ($adaptation->story_session_map ?? []);
         $allocation = $this->findAllocationRow($storyMap, $sessionNumber);
 
         $events = Event::query()
@@ -519,27 +546,7 @@ final class ChaosModeController extends Controller
             ])
             ->all();
 
-        /** @var SessionAdaptation|null $sessionAdaptation */
-        $sessionAdaptation = $adaptation?->sessionAdaptations
-            ?->firstWhere('session_number', $sessionNumber);
-
-        $entry        = (array) ($sessionAdaptation?->entry_point_diagnosis ?? []);
-        $architecture = (array) ($sessionAdaptation?->session_architecture ?? []);
-        $choiceDesign = (array) ($sessionAdaptation?->session_choice_design ?? []);
-        $closeDesign  = (array) ($sessionAdaptation?->session_close_design ?? []);
-
-        $authoredChoices = array_values(array_filter([
-            $choiceDesign['branching_choice_1'] ?? null,
-            $choiceDesign['branching_choice_2'] ?? null,
-            $choiceDesign['branching_choice_3'] ?? null,
-        ]));
-
-        $sessionDestination = $closeDesign['hook_transition']
-            ?? ($closeDesign['session_end_choice']['choice_question'] ?? '');
-
-        $nextSessionSeed = $architecture['next_session_awareness']['seed_for_next_session'] ?? '';
-
-        $totalSessions = (int) ($adaptation?->sessionAdaptations?->count() ?? 0);
+        $entry = (array) ($sessionAdaptation->entry_point_diagnosis ?? []);
 
         // If the caller didn't pass an explicit handoff, fall back to the
         // arc_progression row for this session (when present).
@@ -548,19 +555,19 @@ final class ChaosModeController extends Controller
             $openingHandoff = (string) ($arcRow['opens_with'] ?? '');
         }
 
+        $openingScene = trim($openingHandoff) !== ''
+            ? $openingHandoff
+            : (string) ($entry['cold_open'] ?? '');
+
+        $totalSessions = (int) ($adaptation?->sessionAdaptations?->count() ?? 0);
+
         return [
             'session_number'      => $sessionNumber,
             'total_sessions'      => $totalSessions,
             'opening_handoff'     => $openingHandoff,
-            'cold_open'           => (string) ($entry['cold_open'] ?? ''),
-            'emotional_promise'   => (string) ($entry['emotional_promise'] ?? ''),
-            'dramatic_question'   => (string) ($allocation['primary_dramatic_question'] ?? ''),
-            'emotional_register'  => (string) ($allocation['emotional_register'] ?? ''),
-            'chapters_covered'    => (string) ($allocation['chapters_covered'] ?? ''),
-            'beat_map'            => (array)  ($architecture['beat_map'] ?? []),
-            'authored_choices'    => $authoredChoices,
-            'session_destination' => (string) $sessionDestination,
-            'next_session_seed'   => (string) $nextSessionSeed,
+            'opening_scene'       => $openingScene,
+            'runtime_prompt'      => (string) $sessionAdaptation->runtime_narrator_prompt,
+            'alignment_labels'    => (array) ($storyMap['alignment_labels'] ?? []),
             'full_session_events' => $events,
         ];
     }
@@ -593,66 +600,277 @@ final class ChaosModeController extends Controller
         return [];
     }
 
-    /**
-     * Parse "1-23" into [1, 23]. Accepts "1–23" en-dash too. Returns [null, null]
-     * when the input is malformed so callers can fall back to an empty event list.
-     *
-     * @return array{0:int|null, 1:int|null}
-     */
-    private function parseEventRange(string $range): array
-    {
-        $range = str_replace(['—', '–'], '-', trim($range));
-
-        if ($range === '' || ! preg_match('/^(\d+)\s*-\s*(\d+)$/', $range, $m)) {
-            return [null, null];
-        }
-
-        $start = (int) $m[1];
-        $end   = (int) $m[2];
-
-        if ($start <= 0 || $end < $start) {
-            return [null, null];
-        }
-
-        return [$start, $end];
-    }
-
     // -------------------------------------------------------------------------
     // Prompt assembly + AI invocation
     // -------------------------------------------------------------------------
 
     /**
-     * @param  array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string}  $storyConfig
+     * Inject runtime-only blocks (symbolic memory, alignment tilt, opening
+     * scene, tiered world state) into the cached runtime narrator prompt.
+     *
+     * The cached body holds the four placeholder markers — we do a literal
+     * string replacement so the assembled prompt is identical every turn
+     * except for the four injection points.
+     *
      * @param  array<string, mixed>  $sessionContext
      * @param  array<string, mixed>  $worldState
+     * @param  array{chaotic:int, lawful:int, neutral:int}  $alignmentScaffold
      */
     private function renderSystemPrompt(
-        array $storyConfig,
         array $sessionContext,
         array $worldState,
-        ?string $sessionMemory,
+        array $alignmentScaffold,
+        ?string $symbolicMemory,
         ?string $currentScene,
+        bool $isClimacticPrevious,
     ): string {
-        return view('ai.agents.chaos.system-prompt', [
-            'storyConfig'    => $storyConfig,
-            'sessionContext' => $sessionContext,
-            'worldState'     => $worldState,
-            'sessionMemory'  => $sessionMemory,
-            'currentScene'   => $currentScene,
-        ])->render();
+        $prompt = $sessionContext['runtime_prompt'];
+
+        $symbolicBlock = trim((string) $symbolicMemory) !== ''
+            ? trim((string) $symbolicMemory)
+            : '(No symbolic memory yet. The protagonist is still becoming.)';
+
+        $alignmentBlock = $this->renderAlignmentTilt(
+            (array) ($sessionContext['alignment_labels'] ?? []),
+            $alignmentScaffold,
+        );
+
+        $openingBlock = trim((string) $currentScene) !== ''
+            ? trim((string) $currentScene)
+            : '(This is a continuation turn. Resume from the conversation history; do not re-cold-open.)';
+
+        $worldStateBlock = $this->renderTieredWorldState(
+            worldState: $worldState,
+            isClimactic: $isClimacticPrevious,
+            sessionEvents: $sessionContext['full_session_events'] ?? [],
+        );
+
+        return strtr($prompt, [
+            '[SYMBOLIC_MEMORY_INJECTION_POINT]'    => $symbolicBlock,
+            '[ALIGNMENT_TILT_INJECTION_POINT]'     => $alignmentBlock,
+            '[OPENING_SCENE_INJECTION_POINT]'      => $openingBlock,
+            '[WORLD_STATE_TIERED_INJECTION_POINT]' => $worldStateBlock,
+        ]);
+    }
+
+    /**
+     * Story-native alignment translator. The narrator NEVER sees the literal
+     * counter values or the words chaotic/lawful/neutral — only the IP-native
+     * label derived from the dominant axis. When the scaffold is empty or
+     * balanced, the "mixed" label is used.
+     *
+     * @param  array<int, array<string, mixed>>  $alignmentLabels  Phase 2 Task 9 output.
+     * @param  array{chaotic:int, lawful:int, neutral:int}  $scaffold
+     */
+    private function renderAlignmentTilt(array $alignmentLabels, array $scaffold): string
+    {
+        $chaotic = (int) ($scaffold['chaotic'] ?? 0);
+        $lawful  = (int) ($scaffold['lawful'] ?? 0);
+        $neutral = (int) ($scaffold['neutral'] ?? 0);
+
+        $total = $chaotic + $lawful + $neutral;
+        if ($total === 0) {
+            return 'The player\'s alignment has not yet declared itself. Narrate with neutral tonal tilt.';
+        }
+
+        $dominant = 'mixed';
+        $threshold = (int) ceil($total * 0.4);
+        $top = max($chaotic, $lawful, $neutral);
+        $tieCount = (int) ($chaotic === $top) + (int) ($lawful === $top) + (int) ($neutral === $top);
+
+        if ($tieCount === 1 && $top >= $threshold) {
+            $dominant = match (true) {
+                $chaotic === $top => 'chaotic',
+                $lawful === $top => 'lawful',
+                default => 'neutral',
+            };
+        }
+
+        $label = null;
+        $description = null;
+        $voiceSignature = null;
+        foreach ($alignmentLabels as $row) {
+            $mapsTo = strtolower((string) ($row['maps_to_internal'] ?? ''));
+            if ($mapsTo === $dominant) {
+                $label = (string) ($row['label'] ?? '');
+                $description = (string) ($row['narrative_consequences'] ?? ($row['description'] ?? ''));
+                $voiceSignature = (string) ($row['voice_signature'] ?? '');
+                break;
+            }
+        }
+
+        if ($label === null || $label === '') {
+            return 'The player\'s alignment has tilted, but no story-native label is configured for "' . $dominant
+                . '". Narrate without surfacing the alignment, but lean toward this tendency in tone.';
+        }
+
+        $lines = [
+            'STORY-NATIVE ALIGNMENT TILT: "' . $label . '" (hidden — never surface the literal label or any RPG terminology).',
+        ];
+        if ($description !== '') {
+            $lines[] = 'Behavioural shape: ' . $description;
+        }
+        if ($voiceSignature !== '') {
+            $lines[] = 'Voice signature: ' . $voiceSignature;
+        }
+        $lines[] = 'Tune the narrator\'s voice toward this tendency, but never call it out.';
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Tiered persistent state loader. Section 17's tail of the cached
+     * prompt is filled with this block.
+     *
+     *   Tier 1 — always loaded:   spine of the world state (location, items,
+     *                             conditions, knowledge, notes, player style).
+     *   Tier 2 — scene-connected: object_states, relationship_updates,
+     *                             world_flags, unresolved_promises, emotional
+     *                             ledger entries that touch the current scene.
+     *   Tier 3 — climactic load:  full unfiltered persistent state — only
+     *                             injected on the turn AFTER a Choice #3 / #4
+     *                             style climactic moment, or every 4 turns
+     *                             as a safety net.
+     *
+     * @param  array<string, mixed>  $worldState
+     * @param  array<int, array<string, mixed>>  $sessionEvents
+     */
+    private function renderTieredWorldState(array $worldState, bool $isClimactic, array $sessionEvents): string
+    {
+        $tier1 = $this->formatTier1($worldState);
+
+        $tier2 = $this->formatTier2($worldState, $sessionEvents);
+
+        if ($isClimactic) {
+            $tier3 = $this->formatTier3($worldState);
+
+            return implode("\n\n", array_filter([$tier1, $tier2, $tier3]));
+        }
+
+        return implode("\n\n", array_filter([$tier1, $tier2]));
+    }
+
+    /**
+     * @param  array<string, mixed>  $w
+     */
+    private function formatTier1(array $w): string
+    {
+        $lines = ['PERSISTENT STATE — TIER 1 (always loaded):'];
+        $location = trim((string) ($w['location'] ?? ''));
+        $lines[] = 'Location: ' . ($location !== '' ? $location : '(unset)');
+        $lines[] = 'Items: ' . $this->joinList((array) ($w['items'] ?? []));
+        $lines[] = 'Conditions: ' . $this->joinList((array) ($w['conditions'] ?? []));
+        $lines[] = 'Knowledge: ' . $this->joinList((array) ($w['knowledge'] ?? []));
+        $lines[] = 'Notes: ' . $this->joinList((array) ($w['notes'] ?? []));
+        $lines[] = 'Player style: ' . $this->joinList((array) ($w['player_style'] ?? []));
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * @param  array<string, mixed>  $w
+     * @param  array<int, array<string, mixed>>  $sessionEvents
+     */
+    private function formatTier2(array $w, array $sessionEvents): string
+    {
+        $haystack = strtolower(implode(' ', array_map(
+            static fn ($e) => (string) ($e['title'] ?? '') . ' ' . (string) ($e['content'] ?? ''),
+            $sessionEvents,
+        )));
+
+        $object = $this->filterByHaystack((array) ($w['object_states'] ?? []), $haystack);
+        $relationships = $this->filterByHaystack((array) ($w['relationship_updates'] ?? []), $haystack);
+        $flags = $this->filterByHaystack((array) ($w['world_flags'] ?? []), $haystack);
+        $promises = (array) ($w['unresolved_promises'] ?? []);
+
+        $ledger = (array) ($w['emotional_ledger'] ?? []);
+        $recentLedger = array_slice($ledger, -6);
+        $ledgerLines = array_map(
+            static fn (array $entry) => sprintf('%s: %s', $entry['category'] ?? 'note', $entry['entry'] ?? ''),
+            array_filter($recentLedger, static fn ($e) => is_array($e)),
+        );
+
+        $lines = ['PERSISTENT STATE — TIER 2 (scene-connected):'];
+        $lines[] = 'Object states: ' . $this->joinList($object);
+        $lines[] = 'Relationships: ' . $this->joinList($relationships);
+        $lines[] = 'World flags: ' . $this->joinList($flags);
+        $lines[] = 'Unresolved promises: ' . $this->joinList($promises);
+        $lines[] = 'Recent emotional ledger: ' . $this->joinList($ledgerLines);
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * @param  array<string, mixed>  $w
+     */
+    private function formatTier3(array $w): string
+    {
+        $ledger = (array) ($w['emotional_ledger'] ?? []);
+        $allLedger = array_map(
+            static fn (array $entry) => sprintf('%s: %s', $entry['category'] ?? 'note', $entry['entry'] ?? ''),
+            array_filter($ledger, static fn ($e) => is_array($e)),
+        );
+
+        $lines = ['PERSISTENT STATE — TIER 3 (climactic load — previous turn resolved a moral-weight or session-end choice):'];
+        $lines[] = 'All object states: ' . $this->joinList((array) ($w['object_states'] ?? []));
+        $lines[] = 'All relationships: ' . $this->joinList((array) ($w['relationship_updates'] ?? []));
+        $lines[] = 'All world flags: ' . $this->joinList((array) ($w['world_flags'] ?? []));
+        $lines[] = 'Full emotional ledger: ' . $this->joinList($allLedger);
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Keep only entries that mention something present in the current scene
+     * (matched against event titles + content lowercased). Falls back to
+     * returning the entire list when no entries match — better to include too
+     * much state than to elide it when the scene context is thin.
+     *
+     * @param  array<int, string>  $entries
+     */
+    private function filterByHaystack(array $entries, string $haystack): array
+    {
+        if ($haystack === '') {
+            return $entries;
+        }
+
+        $filtered = [];
+        foreach ($entries as $entry) {
+            $name = strtolower((string) (explode(':', (string) $entry, 2)[0] ?? ''));
+            if ($name !== '' && str_contains($haystack, $name)) {
+                $filtered[] = $entry;
+            }
+        }
+
+        return $filtered === [] ? $entries : $filtered;
+    }
+
+    /**
+     * @param  array<int, string>  $list
+     */
+    private function joinList(array $list): string
+    {
+        $list = array_values(array_filter(array_map('trim', $list), static fn ($v) => $v !== ''));
+
+        return $list === [] ? '(none)' : implode(' • ', $list);
     }
 
     /**
      * Single chaos narration turn.
      *
-     * We talk to Prism directly (skipping Laravel AI's agent pipeline) so we
-     * can pass `reasoning.effort` to OpenAI's Responses API. Without that the
-     * gpt-5.x reasoning models silently default to `medium` effort and burn
-     * 20-40 seconds of thinking time on every turn — the exact symptom that
-     * surfaced as "40s latency".
-     *
      * @param  array<int, array{role:string, text:string}>  $conversationHistory
-     * @return array{response:string, choices:array<int,string>, session_complete:bool, state_delta:array<string,mixed>, session_memory_update:string}
+     * @return array{
+     *     response:string,
+     *     choices:array<int,string>,
+     *     session_complete:bool,
+     *     state_delta:array<string,mixed>,
+     *     alignment_tally_delta: array{chaotic:int, lawful:int, neutral:int},
+     *     is_climactic_choice:bool,
+     *     defining_choice_id:string,
+     *     defining_choice_line:string,
+     *     symbolic_memory_update:string,
+     *     session_memory_update:string,
+     * }
      */
     private function callAgent(
         string $model,
@@ -687,8 +905,6 @@ final class ChaosModeController extends Controller
             $request = $request->withMaxTokens(64_000);
         }
 
-        // Single retry on transient failures. 300 ms back-off — fast enough
-        // that a momentary blip doesn't visibly hang the UI.
         $lastException = null;
 
         for ($attempt = 1; $attempt <= 2; $attempt++) {
@@ -696,11 +912,22 @@ final class ChaosModeController extends Controller
                 $response   = $request->asStructured();
                 $structured = $response->structured ?? [];
 
+                $alignment = (array) ($structured['alignment_tally_delta'] ?? []);
+
                 return [
                     'response'              => (string) ($structured['response'] ?? ''),
                     'choices'               => (array)  ($structured['choices'] ?? []),
                     'session_complete'      => (bool)   ($structured['session_complete'] ?? false),
                     'state_delta'           => (array)  ($structured['state_delta'] ?? []),
+                    'alignment_tally_delta' => [
+                        'chaotic' => (int) ($alignment['chaotic'] ?? 0),
+                        'lawful'  => (int) ($alignment['lawful'] ?? 0),
+                        'neutral' => (int) ($alignment['neutral'] ?? 0),
+                    ],
+                    'is_climactic_choice'   => (bool)   ($structured['is_climactic_choice'] ?? false),
+                    'defining_choice_id'    => (string) ($structured['defining_choice_id'] ?? ''),
+                    'defining_choice_line'  => (string) ($structured['defining_choice_line'] ?? ''),
+                    'symbolic_memory_update' => (string) ($structured['symbolic_memory_update'] ?? ''),
                     'session_memory_update' => (string) ($structured['session_memory_update'] ?? ''),
                 ];
             } catch (Throwable $e) {
@@ -716,8 +943,6 @@ final class ChaosModeController extends Controller
     }
 
     /**
-     * Build provider-specific options for a Prism structured request.
-     *
      * @param  array{provider:string, temperature:float, reasoning_effort:?string}  $config
      * @return array<string, mixed>
      */
@@ -727,9 +952,6 @@ final class ChaosModeController extends Controller
             $options = ['schema' => ['strict' => true]];
 
             if (! empty($config['reasoning_effort'])) {
-                // Maps to OpenAI Responses API `reasoning.effort`. Valid
-                // values: none|low|medium|high|xhigh. We pin to 'low' for
-                // narrative work — fast enough for live play, still coherent.
                 $options['reasoning'] = ['effort' => $config['reasoning_effort']];
             }
 
@@ -748,6 +970,11 @@ final class ChaosModeController extends Controller
     // -------------------------------------------------------------------------
 
     /**
+     * Merge a state_delta (the new literary-memory shape) into the persisted
+     * world_state. Each scalar/list field replaces its previous value when
+     * the agent emits one; emotional_ledger_entries are APPENDED to the
+     * existing ledger rather than overwriting.
+     *
      * @param  array<string, mixed>  $previous
      * @param  array<string, mixed>  $delta
      * @return array<string, mixed>
@@ -760,29 +987,84 @@ final class ChaosModeController extends Controller
             ? (string) $delta['location']
             : (string) ($previous['location'] ?? '');
 
-        foreach (['conditions', 'items', 'relationships', 'knowledge', 'notes', 'player_style'] as $key) {
+        foreach (['conditions', 'items', 'object_states', 'relationship_updates', 'world_flags',
+                  'knowledge', 'notes', 'player_style', 'unresolved_promises'] as $key) {
             $value = $delta[$key] ?? null;
             $merged[$key] = is_array($value)
-                ? array_values(array_filter(array_map('strval', $value), fn ($v) => $v !== ''))
+                ? array_values(array_filter(array_map('strval', $value), static fn ($v) => $v !== ''))
                 : (array) ($previous[$key] ?? []);
         }
+
+        $previousLedger = (array) ($previous['emotional_ledger'] ?? []);
+        $newLedger = [];
+        foreach ((array) ($delta['emotional_ledger_entries'] ?? []) as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+            $category = trim((string) ($entry['category'] ?? ''));
+            $text = trim((string) ($entry['entry'] ?? ''));
+            if ($category === '' || $text === '') {
+                continue;
+            }
+            $newLedger[] = ['category' => $category, 'entry' => $text];
+        }
+
+        $merged['emotional_ledger'] = array_values(array_merge($previousLedger, $newLedger));
 
         return $merged;
     }
 
     /**
-     * @return array{location:string, conditions:array<int,string>, items:array<int,string>, relationships:array<int,string>, knowledge:array<int,string>, notes:array<int,string>}
+     * @return array{
+     *   location:string,
+     *   conditions:array<int,string>,
+     *   items:array<int,string>,
+     *   object_states:array<int,string>,
+     *   relationship_updates:array<int,string>,
+     *   world_flags:array<int,string>,
+     *   knowledge:array<int,string>,
+     *   notes:array<int,string>,
+     *   player_style:array<int,string>,
+     *   unresolved_promises:array<int,string>,
+     *   emotional_ledger:array<int, array{category:string, entry:string}>,
+     * }
      */
     private function emptyWorldState(): array
     {
         return [
-            'location'      => '',
-            'conditions'    => [],
-            'items'         => [],
-            'relationships' => [],
-            'knowledge'     => [],
-            'notes'         => [],
-            'player_style'  => [],
+            'location'             => '',
+            'conditions'           => [],
+            'items'                => [],
+            'object_states'        => [],
+            'relationship_updates' => [],
+            'world_flags'          => [],
+            'knowledge'            => [],
+            'notes'                => [],
+            'player_style'         => [],
+            'unresolved_promises'  => [],
+            'emotional_ledger'     => [],
+        ];
+    }
+
+    /**
+     * @return array{chaotic:int, lawful:int, neutral:int}
+     */
+    private function emptyAlignmentScaffold(): array
+    {
+        return ['chaotic' => 0, 'lawful' => 0, 'neutral' => 0];
+    }
+
+    /**
+     * @param  array{chaotic:int, lawful:int, neutral:int}  $previous
+     * @param  array{chaotic:int, lawful:int, neutral:int}  $delta
+     * @return array{chaotic:int, lawful:int, neutral:int}
+     */
+    private function mergeAlignmentDelta(array $previous, array $delta): array
+    {
+        return [
+            'chaotic' => max(0, (int) ($previous['chaotic'] ?? 0) + (int) ($delta['chaotic'] ?? 0)),
+            'lawful'  => max(0, (int) ($previous['lawful'] ?? 0) + (int) ($delta['lawful'] ?? 0)),
+            'neutral' => max(0, (int) ($previous['neutral'] ?? 0) + (int) ($delta['neutral'] ?? 0)),
         ];
     }
 
@@ -821,8 +1103,8 @@ final class ChaosModeController extends Controller
     }
 
     /**
-     * @param  array{response:string, choices:array<int,string>, session_complete:bool, state_delta:array<string,mixed>, session_memory_update:string}  $result
-     * @param  array{slug:string, title:string, protagonist:string, voice_partial:string, tagline:string}  $storyConfig
+     * @param  array{response:string, choices:array<int,string>, session_complete:bool, state_delta:array<string,mixed>, alignment_tally_delta:array{chaotic:int,lawful:int,neutral:int}, is_climactic_choice:bool, defining_choice_id:string, defining_choice_line:string, symbolic_memory_update:string, session_memory_update:string}  $result
+     * @param  array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null}  $storyConfig
      * @return array<string, mixed>
      */
     private function formatResult(ChaosSession $chaosSession, array $result, array $storyConfig): array
@@ -838,19 +1120,24 @@ final class ChaosModeController extends Controller
         $hasNext       = $totalSessions > 0 && $sessionNumber < $totalSessions;
 
         return [
-            'session_id'            => $chaosSession->id,
-            'story_slug'            => $storyConfig['slug'],
-            'story_title'           => $storyConfig['title'],
-            'protagonist'           => $storyConfig['protagonist'],
-            'session_number'        => $sessionNumber,
-            'total_sessions'        => $totalSessions,
-            'has_next_session'      => $hasNext,
-            'response'              => $result['response'],
-            'choices'               => $result['choices'],
-            'session_complete'      => $result['session_complete'],
-            'world_state'           => $chaosSession->world_state,
-            'session_memory_update' => $result['session_memory_update'],
-            'turn_count'            => $chaosSession->turn_count,
+            'session_id'             => $chaosSession->id,
+            'story_slug'             => $storyConfig['slug'],
+            'story_title'            => $storyConfig['title'],
+            'protagonist'            => $storyConfig['protagonist'],
+            'session_number'         => $sessionNumber,
+            'total_sessions'         => $totalSessions,
+            'has_next_session'       => $hasNext,
+            'response'               => $result['response'],
+            'choices'                => $result['choices'],
+            'session_complete'       => $result['session_complete'],
+            'world_state'            => $chaosSession->world_state,
+            'symbolic_memory'        => $chaosSession->symbolic_memory,
+            'defining_choice_id'     => $chaosSession->defining_choice_id,
+            'defining_choice_line'   => $chaosSession->defining_choice_line,
+            'is_climactic_choice'    => (bool) $chaosSession->is_climactic_choice,
+            'session_memory_update'  => $result['session_memory_update'],
+            'symbolic_memory_update' => $result['symbolic_memory_update'],
+            'turn_count'             => $chaosSession->turn_count,
         ];
     }
 }

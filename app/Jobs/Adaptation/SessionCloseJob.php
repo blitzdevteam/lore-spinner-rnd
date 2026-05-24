@@ -43,6 +43,19 @@ final class SessionCloseJob implements ShouldQueue
             $consequenceMap = $session->choice_consequence_map;
             $scriptContent = $this->story->getScriptContent();
 
+            // V2 shape: branching_choices[] is the canonical list; the
+            // session-end hook is choice_number === 4 (the last one).
+            // V1 fallback path: legacy `branching_choice_3` key.
+            $branchingChoices = (array) ($choiceDesign['branching_choices'] ?? []);
+            $sessionEndChoice = collect($branchingChoices)
+                ->first(fn ($c) => (int) ($c['choice_number'] ?? 0) === 4)
+                ?? ($choiceDesign['branching_choice_3'] ?? null);
+
+            $branchingConsequences = (array) ($consequenceMap['branching_consequences'] ?? []);
+            $sessionEndConsequence = collect($branchingConsequences)
+                ->first(fn ($c) => (int) ($c['choice_number'] ?? 0) === 4)
+                ?? ($consequenceMap['consequence_map_choice_3'] ?? null);
+
             $sessionAllocation = collect($adaptation->story_session_map['session_allocation'] ?? [])
                 ->firstWhere('session_number', $this->sessionNumber);
 
@@ -56,8 +69,8 @@ final class SessionCloseJob implements ShouldQueue
 
             $response = (new SessionCloseAgent)->prompt(
                 view('ai.agents.adaptation.session-close.prompt', [
-                    'branchingChoice3Design' => $choiceDesign['branching_choice_3'] ?? null,
-                    'choice3ConsequenceMap' => $consequenceMap['consequence_map_choice_3'] ?? null,
+                    'branchingChoice3Design' => $sessionEndChoice,
+                    'choice3ConsequenceMap' => $sessionEndConsequence,
                     'sessionPrimaryGoal' => $sessionAllocation['primary_dramatic_question'] ?? '',
                     'sessionNumber' => $this->sessionNumber,
                     'sessionEvents' => $sessionEvents->map(fn (Event $ev) => [

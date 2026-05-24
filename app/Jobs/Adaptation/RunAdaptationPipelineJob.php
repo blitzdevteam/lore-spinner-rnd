@@ -46,8 +46,10 @@ final class RunAdaptationPipelineJob implements ShouldQueue
                 $this->story->events()->update(['session_number' => null]);
 
                 $adaptation->update([
+                    'ip_trimming' => null,
                     'format_detection' => null,
                     'ip_audit' => null,
+                    'voice_profile' => null,
                     'story_session_map' => null,
                     'adaptation_status' => AdaptationStatusEnum::PENDING,
                 ]);
@@ -59,9 +61,17 @@ final class RunAdaptationPipelineJob implements ShouldQueue
             ]);
         }
 
+        // Pipeline Upgrade V2 chain order:
+        //   IpTrimming (pre-Phase-1)
+        //     -> FormatDetection
+        //     -> IpAudit
+        //     -> VoiceLock (between Phase 1 and Phase 2 — consumes FULL original source)
+        //     -> StorySessionMap (Phase 2 — kicks off the per-session batch internally)
         Bus::chain([
+            new IpTrimmingJob($this->story),
             new FormatDetectionJob($this->story),
             new IpAuditJob($this->story),
+            new VoiceLockJob($this->story),
             new StorySessionMapJob($this->story),
         ])->onQueue('adaptation')->dispatch();
     }
