@@ -16,7 +16,7 @@ use Throwable;
 
 #[Model('gpt-5.4')]
 #[Temperature(0.5)]
-#[Timeout(240)]
+#[Timeout(540)]
 class StorySessionMapAgent implements Agent, HasStructuredOutput
 {
     use Promptable;
