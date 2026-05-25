@@ -36,8 +36,9 @@ final class SessionArchitectureJob implements ShouldQueue
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::SESSION_ARCHITECTURE]);
 
-            $scriptContent = $this->story->getScriptContent();
-            $sessionSourcePages = mb_substr($scriptContent, 0, 16000);
+            // Use ip_trimming chapter segments for the correct session window.
+            // Falls back to raw source if ip_trimming is not yet available.
+            $sessionSourcePages = $this->story->getSessionTrimmedText($this->sessionNumber);
 
             $response = (new SessionArchitectureAgent)->prompt(
                 view('ai.agents.adaptation.session-architecture.prompt', [

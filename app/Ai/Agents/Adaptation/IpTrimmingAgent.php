@@ -31,7 +31,7 @@ use Throwable;
  * Temperature is low (0.3) because triage decisions should be conservative.
  * Timeout extended (600s) because long novels need real reading time.
  */
-#[Model('gpt-5.2')]
+#[Model('gpt-5.4')]
 #[Temperature(0.3)]
 #[Timeout(600)]
 class IpTrimmingAgent implements Agent, HasStructuredOutput

@@ -39,14 +39,20 @@ final class IpAuditJob implements ShouldQueue
                 'adaptation_status' => AdaptationStatusEnum::IP_AUDIT,
             ]);
 
-            $scriptContent = $this->story->getScriptContent();
-            $totalLength = mb_strlen($scriptContent);
+            // Prefer the ip_trimming trimmed source — smaller payload for the same
+            // audit coverage. Three 8k windows still sample the full arc of the text.
+            $ipTrimming = $adaptation->ip_trimming ?? [];
+            $source = ! empty($ipTrimming['trimmed_source_text']['text'])
+                ? $ipTrimming['trimmed_source_text']['text']
+                : $this->story->getScriptContent();
+
+            $totalLength = mb_strlen($source);
             $pageSize = 8000;
 
-            $openingPages = mb_substr($scriptContent, 0, $pageSize);
+            $openingPages = mb_substr($source, 0, $pageSize);
             $midpoint = (int) ($totalLength / 2) - (int) ($pageSize / 2);
-            $midpointPages = mb_substr($scriptContent, max(0, $midpoint), $pageSize);
-            $closingPages = mb_substr($scriptContent, max(0, $totalLength - $pageSize));
+            $midpointPages = mb_substr($source, max(0, $midpoint), $pageSize);
+            $closingPages = mb_substr($source, max(0, $totalLength - $pageSize));
 
             $formatDetection = $adaptation->format_detection;
 
@@ -57,6 +63,8 @@ final class IpAuditJob implements ShouldQueue
                     'openingPages' => $openingPages,
                     'midpointPages' => $midpointPages,
                     'closingPages' => $closingPages,
+                    'storySpine' => $ipTrimming['story_spine'] ?? null,
+                    'worldRules' => $ipTrimming['world_rules'] ?? null,
                 ])->render()
             );
 

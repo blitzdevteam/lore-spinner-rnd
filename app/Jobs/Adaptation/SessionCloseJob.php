@@ -41,7 +41,9 @@ final class SessionCloseJob implements ShouldQueue
 
             $choiceDesign = $session->session_choice_design;
             $consequenceMap = $session->choice_consequence_map;
-            $scriptContent = $this->story->getScriptContent();
+
+            // Use ip_trimming chapter segments for session-accurate source pages.
+            $resolutionSourcePages = $this->story->getSessionTrimmedText($this->sessionNumber);
 
             // V2 shape: branching_choices[] is the canonical list; the
             // session-end hook is choice_number === 4 (the last one).
@@ -78,7 +80,7 @@ final class SessionCloseJob implements ShouldQueue
                         'title' => $ev->title,
                         'objectives' => $ev->objectives,
                     ])->all(),
-                    'resolutionSourcePages' => mb_substr($scriptContent, 0, 16000),
+                    'resolutionSourcePages' => $resolutionSourcePages,
                 ])->render()
             );
 

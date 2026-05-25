@@ -61,18 +61,47 @@ final class RunAdaptationPipelineJob implements ShouldQueue
             ]);
         }
 
-        // Pipeline Upgrade V2 chain order:
-        //   IpTrimming (pre-Phase-1)
-        //     -> FormatDetection
-        //     -> IpAudit
-        //     -> VoiceLock (between Phase 1 and Phase 2 — consumes FULL original source)
-        //     -> StorySessionMap (Phase 2 — kicks off the per-session batch internally)
-        Bus::chain([
-            new IpTrimmingJob($this->story),
-            new FormatDetectionJob($this->story),
-            new IpAuditJob($this->story),
-            new VoiceLockJob($this->story),
-            new StorySessionMapJob($this->story),
-        ])->onQueue('adaptation')->dispatch();
+        // Pipeline Upgrade V2 — map/merge architecture:
+        //
+        //  [IpTrimmingChapterJob × N chapters]   (parallel batch, gpt-5.4-mini per chapter)
+        //    → IpTrimmingMergeJob                 (PHP merge + small spine synthesis call)
+        //      → [VoiceLockChapterJob × N]        (parallel batch, gpt-5.4 per chapter)
+        //        → VoiceLockMergeJob              (full synthesis call, gpt-5.4)
+        //          → Bus::chain([
+        //              FormatDetectionJob,
+        //              IpAuditJob,
+        //              StorySessionMapJob,          (kicks off per-session batch internally)
+        //            ])
+        //
+        // Each batch step flows to the next via ->finally(). The per-session
+        // adaptation jobs (entry-point, architecture, choices, consequences,
+        // editorial) are dispatched by StorySessionMapJob as a separate batch.
+
+        $chapters = $this->story->chapters()->orderBy('position')->get();
+
+        if ($chapters->isEmpty()) {
+            // Chapters not yet extracted — dispatch legacy single-pass chain as fallback.
+            // In practice this should not happen for chaos-mode stories.
+            Bus::chain([
+                new FormatDetectionJob($this->story),
+                new IpAuditJob($this->story),
+                new StorySessionMapJob($this->story),
+            ])->onQueue('adaptation')->dispatch();
+
+            return;
+        }
+
+        $adaptation->update(['adaptation_status' => AdaptationStatusEnum::IP_TRIMMING]);
+
+        $storyId = $this->story->id;
+
+        Bus::batch(
+            $chapters->map(fn ($ch) => new IpTrimmingChapterJob($this->story, $ch))->all()
+        )->onQueue('adaptation')
+            ->finally(function () use ($storyId): void {
+                $story = Story::findOrFail($storyId);
+                IpTrimmingMergeJob::dispatch($story)->onQueue('adaptation');
+            })
+            ->dispatch();
     }
 }

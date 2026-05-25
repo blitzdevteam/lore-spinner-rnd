@@ -25,7 +25,7 @@ use Throwable;
  *   5. posture shift placement strategy
  *   6. next-session awareness
  */
-#[Model('gpt-5.2')]
+#[Model('gpt-5.4')]
 #[Temperature(0.6)]
 #[Timeout(240)]
 class SessionArchitectureAgent implements Agent, HasStructuredOutput

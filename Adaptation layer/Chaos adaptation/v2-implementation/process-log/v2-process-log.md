@@ -116,21 +116,52 @@ No legacy runtime-prompt fallback. Stories not yet re-adapted under V2 are unpla
 
 ## Pipeline shape
 
+### V2.1 map/merge architecture (2026-05-25 refactor — resolves IP Trimming + Voice Lock timeouts)
+
+The original V2 shape dispatched `IpTrimmingJob` and `VoiceLockJob` as single-pass jobs against the full source text (~200k chars). Both hit the OpenAI `/v1/responses` cURL 600s timeout with 0 bytes received. They have been replaced with chapter-by-chapter map/merge pipelines.
+
 ```
 RunAdaptationPipelineJob
-  -> IpTrimmingJob              (NEW — Deliverable 7)
+  -> [IpTrimmingChapterJob × N chapters]  (parallel batch, gpt-5.4-mini per chapter)
+  -> IpTrimmingMergeJob                   (PHP merge + spine synthesis call, gpt-5.4)
+  -> [VoiceLockChapterJob × N chapters]   (parallel batch, gpt-5.4 per chapter)
+  -> VoiceLockMergeJob                    (full Voice DNA synthesis call, gpt-5.4)
+  -> Bus::chain([
+       FormatDetectionJob,                (uses trimmed source from ip_trimming)
+       IpAuditJob,                        (uses trimmed source + story_spine + world_rules)
+       StorySessionMapJob v2,             (uses world_rules + conversion_notes)
+     ])
+  -> (per session batch)
+       EntryPointDiagnosisJob             (uses Story::getSessionTrimmedText())
+       SessionArchitectureJob v2          (uses Story::getSessionTrimmedText())
+       ChoiceDesignJob v2                 (uses Story::getSessionTrimmedText())
+       ConsequenceMappingJob v2
+       SessionCloseJob                    (uses Story::getSessionTrimmedText())
+       EditorialVerificationJob v2
+       RuntimeNarratorAssemblyJob         (Deliverable 8)
+  -> AdaptationStatusReconciliationJob
+```
+
+#### Key V2.1 details
+
+- `IpTrimmingChapterJob` (gpt-5.4-mini, 180s) stores a partial fragment (story_spine_fragment, world_rules_fragments, content_triage_log, interactive_conversion_notes, trimmed_chapter_text) in Laravel cache at `ip_trimming_fragment:{story_id}:{chapter_id}`.
+- `IpTrimmingMergeJob` collects all fragments, PHP-merges world_rules/triage/conversion_notes/trimmed_text, makes ONE small spine synthesis call (gpt-5.4), writes the Deliverable 7 package to `story_adaptations.ip_trimming`. Includes `trimmed_source_text.chapter_segments[]` for session-accurate slicing.
+- `VoiceLockChapterJob` (gpt-5.4, 300s) stores a compact voice observation fragment in cache at `voice_lock_fragment:{story_id}:{chapter_id}`. Uses FULL ORIGINAL chapter content.
+- `VoiceLockMergeJob` collects all voice fragments, makes ONE full synthesis call (gpt-5.4), writes the Deliverable 1 package to `story_adaptations.voice_profile`. Dispatches FormatDetection → IpAudit → StorySessionMap chain.
+- `Story::getSessionTrimmedText(int $sessionNumber)` resolves chapter segments via `events.session_number`, returning the correct trimmed text slice for the given session. Previously all session jobs used a fixed first-16k-chars window of the raw source.
+- All 11 adaptation agents upgraded: `gpt-5.2` → `gpt-5.4`.
+- `IpTrimmingJob.php` and `VoiceLockJob.php` deleted (dead code — nothing dispatches them).
+
+### Original V2 shape (superseded — kept for reference only)
+
+```
+RunAdaptationPipelineJob
+  -> IpTrimmingJob              (DELETED — replaced by chapter batch + merge)
   -> FormatDetectionJob
   -> IpAuditJob
-  -> VoiceLockJob               (NEW — Deliverable 1; consumes FULL original source)
-  -> StorySessionMapJob v2      (Deliverable 2 Tasks 6-9 appended)
-  -> (per session batch)
-       EntryPointDiagnosisJob
-       SessionArchitectureJob v2      (Deliverable 3)
-       ChoiceDesignJob v2             (Deliverable 4)
-       ConsequenceMappingJob v2       (Deliverable 5)
-       SessionCloseJob
-       EditorialVerificationJob v2    (Deliverable 6)
-       RuntimeNarratorAssemblyJob     (NEW — Deliverable 8)
+  -> VoiceLockJob               (DELETED — replaced by chapter batch + merge)
+  -> StorySessionMapJob v2
+  -> (per session batch) ...
   -> AdaptationStatusReconciliationJob
 ```
 
@@ -138,10 +169,10 @@ RunAdaptationPipelineJob
 
 ## File inventory (created)
 
+### V2 batch (original)
+
 - `app/Ai/Agents/Adaptation/IpTrimmingAgent.php`
 - `app/Ai/Agents/Adaptation/VoiceLockAgent.php`
-- `app/Jobs/Adaptation/IpTrimmingJob.php`
-- `app/Jobs/Adaptation/VoiceLockJob.php`
 - `app/Jobs/Adaptation/RuntimeNarratorAssemblyJob.php`
 - `app/Ai/Adaptation/RuntimeNarratorTemplateBuilder.php`
 - `resources/views/ai/agents/adaptation/ip-trimming/{system-prompt,prompt}.blade.php`
@@ -152,6 +183,29 @@ RunAdaptationPipelineJob
 - `database/migrations/2026_05_24_000003_add_v2_state_columns_to_chaos_sessions.php`
 - `Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runbook.md`
 - `Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runner.php`
+
+### V2.1 batch — map/merge refactor (2026-05-25)
+
+- `app/Ai/Agents/Adaptation/IpTrimmingChapterAgent.php` — per-chapter extraction, gpt-5.4-mini
+- `app/Ai/Agents/Adaptation/IpTrimmingMergeAgent.php` — spine synthesis, gpt-5.4
+- `app/Ai/Agents/Adaptation/VoiceLockChapterAgent.php` — per-chapter voice analysis, gpt-5.4
+- `app/Ai/Agents/Adaptation/VoiceLockMergeAgent.php` — full Voice DNA synthesis, gpt-5.4
+- `app/Jobs/Adaptation/IpTrimmingChapterJob.php`
+- `app/Jobs/Adaptation/IpTrimmingMergeJob.php`
+- `app/Jobs/Adaptation/VoiceLockChapterJob.php`
+- `app/Jobs/Adaptation/VoiceLockMergeJob.php`
+- `resources/views/ai/agents/adaptation/ip-trimming/chapter-system-prompt.blade.php`
+- `resources/views/ai/agents/adaptation/ip-trimming/chapter-prompt.blade.php`
+- `resources/views/ai/agents/adaptation/ip-trimming/merge-system-prompt.blade.php`
+- `resources/views/ai/agents/adaptation/ip-trimming/merge-prompt.blade.php`
+- `resources/views/ai/agents/adaptation/voice-lock/chapter-system-prompt.blade.php`
+- `resources/views/ai/agents/adaptation/voice-lock/chapter-prompt.blade.php`
+- `resources/views/ai/agents/adaptation/voice-lock/merge-prompt.blade.php`
+
+### V2.1 batch — deleted (dead code)
+
+- `app/Jobs/Adaptation/IpTrimmingJob.php` (**deleted** — replaced by chapter batch + merge)
+- `app/Jobs/Adaptation/VoiceLockJob.php` (**deleted** — replaced by chapter batch + merge)
 
 ## File inventory (modified)
 
@@ -181,7 +235,7 @@ RunAdaptationPipelineJob
 
 ## Risk acknowledgements
 
-1. **IP Trimming + Voice Lock on huge sources.** Long screenplays (100k+ tokens) may not fit in a single Voice Lock pass. Deliverable 1 explicitly supports split-and-merge in halves. The validation runbook documents the manual split workflow but the agent is not auto-splitting in v1 of this batch — keep it simple, the editor team can flag a story as "split required" and run twice manually.
+1. **IP Trimming + Voice Lock — chapter-batched (V2.1).** Both phases now run per-chapter with smaller context windows; timeouts on large sources are eliminated. If a chapter is itself very large (e.g. a single 40k-char act), the chapter-agent timeout (180s IP / 300s Voice) still applies — in practice this means chapters under ~8k words are safe. Stories with anomalously long chapters should be split at chapter-authoring time, not at adaptation time.
 2. **65 000-char ceiling on assembled prompt.** Long source pages can push the assembled prompt past the cap. The assembler implements Deliverable 8's compression cascade (compress Section 12 first → drop Voice Profile examples → flag for editorial split). The runbook covers detection.
 3. **Cost.** Running V2 pipeline on the 9 existing Chaos stories costs roughly $5.50–$9.00 per IP (~$60–$80 total) per Deliverable 7's figures. Daniel runs this manually per story via `php artisan stories:run-adaptation`.
 4. **Production game runtime unchanged.** The non-Chaos `PromptController` / `NarrationAgent` flow is not touched in this batch. The new fields it might consume are present in DB but unused on that surface today.
@@ -202,7 +256,7 @@ RunAdaptationPipelineJob
 ## Known limitations after this batch
 
 1. **Story re-adaptation is manual AND mandatory.** Every existing Chaos story must be re-run through `php artisan stories:run-adaptation <slug> --force` before its sessions become playable again. Until then, `start` / `continueSession` return 422. This is the in-place upgrade trade-off Daniel accepted.
-2. **Voice Lock split-and-merge is manual.** Sources over ~120k tokens must be split by hand (Deliverable 1 documents the two-pass strategy). Auto-splitting is future work.
+2. **Voice Lock map/merge is automatic (V2.1).** Replaced the manual split-and-merge strategy from V2. Voice Lock now processes each chapter independently and synthesises a unified voice profile automatically. Manual split is no longer needed.
 3. **65 000-char prompt cap is a soft fail.** The compression cascade in `RuntimeNarratorTemplateBuilder` (full source → compressed → titles-only → drop voice quotes) handles most cases. If even the most aggressive level still overflows, the assembly job logs `runtime_narrator_assembly.compression_failed` and the reconciler refuses to mark the story COMPLETED. The editorial fix is to split the offending session in `story_session_map.session_allocation` and re-run from Phase 4. There is no fallback render path.
 4. **Choice density is canonical quotas (4 / 4–6 / 6–10), not caps.** Daniel's preferred "use fewer when the story breathes better" relaxation is a future prompt revision — the schemas do not enforce array cardinality at the JSON-Schema level, so loosening will not require schema changes.
 5. **Production game runtime not touched.** Only Chaos Mode reads the V2 outputs. The Social Echo / production-game surface gets the new fields stored in DB but they are unused on that surface today.
@@ -219,13 +273,16 @@ The rollback anchor (commit SHA immediately before this batch lands on `main`) i
 Run locally before handing off; these are quick and do not need the queue or external services:
 
 
-| Probe                                                                                         | Status |
-| --------------------------------------------------------------------------------------------- | ------ |
-| `php -l` across all modified PHP files                                                        | green  |
-| Runner step 2 (model casts present, no `world_state_v2` sidecar — in-place upgrade respected) | green  |
-| Runner step 3 (every new/upgraded Blade renders)                                              | green  |
-| Runner step 4 (runtime narrator template renders with all 4 injection markers)                | green  |
-| Runner step 5 (no `chaotic`/`lawful`/`neutral` leak; story-native label present)              | green  |
+| Probe                                                                                                   | Status |
+| ------------------------------------------------------------------------------------------------------- | ------ |
+| `php -l` across all modified PHP files                                                                  | green  |
+| Runner step 2 (model casts present, no `world_state_v2` sidecar — in-place upgrade respected)          | green  |
+| Runner step 3 (every new/upgraded Blade renders — including 7 new V2.1 views)                          | green  |
+| Runner step 4 (runtime narrator template renders with all 4 injection markers)                          | green  |
+| Runner step 5 (no `chaotic`/`lawful`/`neutral` leak; story-native label present)                       | green  |
+| All adaptation agents confirmed on `gpt-5.4` (was `gpt-5.2`)                                           | green  |
+| `IpTrimmingChapterAgent` on `gpt-5.4-mini`, `VoiceLockChapterAgent` on `gpt-5.4`                       | green  |
+| Dead code removed (`IpTrimmingJob.php`, `VoiceLockJob.php` deleted)                                    | green  |
 
 
 Runner steps 1 + 6–14 require Laravel Cloud (live DB, queue worker, real Chaos endpoints). Daniel runs those manually per the runbook.

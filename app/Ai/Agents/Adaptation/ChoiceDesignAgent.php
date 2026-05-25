@@ -43,7 +43,7 @@ use Throwable;
  * (which already live inside each option, so this collection is a roll-up
  * convenience for Phase 8 / runtime template).
  */
-#[Model('gpt-5.2')]
+#[Model('gpt-5.4')]
 #[Temperature(0.7)]
 #[Timeout(420)]
 class ChoiceDesignAgent implements Agent, HasStructuredOutput

@@ -38,7 +38,9 @@ final class ChoiceDesignJob implements ShouldQueue
             $session->update(['session_status' => SessionAdaptationStatusEnum::CHOICE_DESIGN]);
 
             $ipAudit = $adaptation->ip_audit;
-            $scriptContent = $this->story->getScriptContent();
+
+            // Use ip_trimming chapter segments for session-accurate source pages.
+            $choiceMomentPages = $this->story->getSessionTrimmedText($this->sessionNumber);
 
             $response = (new ChoiceDesignAgent)->prompt(
                 view('ai.agents.adaptation.choice-design.prompt', [
@@ -47,7 +49,7 @@ final class ChoiceDesignJob implements ShouldQueue
                     'protagonistCoreTrait' => $ipAudit['bounded_agency']['evidence'] ?? '',
                     'emotionalPromise' => $session->entry_point_diagnosis['emotional_promise'] ?? '',
                     'sessionNumber' => $this->sessionNumber,
-                    'choiceMomentPages' => mb_substr($scriptContent, 0, 16000),
+                    'choiceMomentPages' => $choiceMomentPages,
                 ])->render()
             );
 

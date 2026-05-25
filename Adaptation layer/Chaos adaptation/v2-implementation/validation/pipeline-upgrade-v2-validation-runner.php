@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Pipeline Upgrade V2 — Validation Runner.
+ * Pipeline Upgrade V2.1 — Validation Runner.
  *
- * Companion to: Adaptation layer/debug/pipeline-upgrade-v2-validation-runbook.md
- * Companion to: chaos-mode/v2-process-log.md
+ * Companion to: Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runbook.md
+ * Companion to: Adaptation layer/Chaos adaptation/v2-implementation/process-log/v2-process-log.md
  *
  * Each step is a self-contained probe runnable via:
  *
- *   php "Adaptation layer/debug/pipeline-upgrade-v2-validation-runner.php" stepN [story_slug]
+ *   php "Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runner.php" stepN [story_slug]
  *
  * The probes are intentionally small. They print human-readable lines that
  * either match the runbook's "Expected" block (PASS) or do not (FAIL).
@@ -118,10 +118,39 @@ function step_2(string $slug): void
 function step_3(string $slug): void
 {
     $bladeFiles = [
+        // --- IP Trimming (original monolithic + V2.1 chapter/merge views) ---
         'ai.agents.adaptation.ip-trimming.system-prompt' => ['formatDetectionOutput' => '', 'currentPhase' => 'IP Trimming'],
         'ai.agents.adaptation.ip-trimming.prompt' => ['title' => 'X', 'author' => 'A', 'year' => '2026', 'format' => 'NOVEL', 'pageCount' => '10', 'sourceText' => 'sample'],
+        'ai.agents.adaptation.ip-trimming.chapter-system-prompt' => [],
+        'ai.agents.adaptation.ip-trimming.chapter-prompt' => [
+            'title' => 'X', 'author' => 'A', 'format' => 'NOVEL',
+            'chapterId' => 1, 'chapterPosition' => 1, 'chapterTitle' => 'Ch 1',
+            'totalChapters' => 3, 'previousChapterTitle' => '', 'nextChapterTitle' => 'Ch 2',
+            'chapterContent' => 'Sample chapter content.',
+        ],
+        'ai.agents.adaptation.ip-trimming.merge-system-prompt' => [],
+        'ai.agents.adaptation.ip-trimming.merge-prompt' => [
+            'title' => 'X', 'author' => 'A', 'totalChapters' => 2,
+            'spineFragments' => [
+                ['protagonist' => 'Alice', 'dramatic_question' => '', 'major_turning_points' => [], 'irreversible_events' => [], 'climax_fragment' => '', 'resolution_fragment' => ''],
+                ['protagonist' => '', 'dramatic_question' => 'Will she escape?', 'major_turning_points' => [], 'irreversible_events' => [], 'climax_fragment' => 'Falls down', 'resolution_fragment' => ''],
+            ],
+        ],
+        // --- Voice Lock (original + V2.1 chapter/merge views) ---
         'ai.agents.adaptation.voice-lock.system-prompt' => ['formatDetection' => [], 'formatDetectionOutput' => '', 'currentPhase' => 'Voice Lock'],
         'ai.agents.adaptation.voice-lock.prompt' => ['title' => 'X', 'author' => 'A', 'year' => '2026', 'format' => 'NOVEL', 'ipAudit' => [], 'formatDetection' => [], 'sourceText' => 'sample'],
+        'ai.agents.adaptation.voice-lock.chapter-system-prompt' => [],
+        'ai.agents.adaptation.voice-lock.chapter-prompt' => [
+            'title' => 'X', 'author' => 'A', 'year' => '2026', 'format' => 'NOVEL',
+            'chapterId' => 1, 'chapterPosition' => 1, 'chapterTitle' => 'Ch 1', 'totalChapters' => 3,
+            'chapterContent' => 'Sample chapter content.',
+        ],
+        'ai.agents.adaptation.voice-lock.merge-prompt' => [
+            'title' => 'X', 'author' => 'A', 'year' => '2026', 'format' => 'NOVEL',
+            'formatDetection' => [], 'ipAudit' => [],
+            'totalChapters' => 1, 'voiceFragments' => [['chapter_id' => 1, 'chapter_position' => 1]],
+        ],
+        // --- Phase 2-8 system prompts ---
         'ai.agents.adaptation.story-session-map.system-prompt' => ['formatDetection' => '', 'formatDetectionOutput' => '', 'currentPhase' => 'Phase 2'],
         'ai.agents.adaptation.session-architecture.system-prompt' => ['formatDetection' => '', 'formatDetectionOutput' => '', 'currentPhase' => 'Phase 4'],
         'ai.agents.adaptation.choice-design.system-prompt' => ['formatDetection' => '', 'formatDetectionOutput' => '', 'currentPhase' => 'Phase 5'],

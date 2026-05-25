@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -181,6 +182,57 @@ final class Story extends Model implements HasMedia
     protected function published(Builder $query): void
     {
         $query->where('status', StoryStatusEnum::PUBLISHED);
+    }
+
+    /**
+     * Return the trimmed source text slice that corresponds to the given session
+     * number. Used by per-session adaptation jobs instead of raw source windows.
+     *
+     * Resolution order:
+     *   1. Chapter segments in ip_trimming.trimmed_source_text.chapter_segments
+     *      that belong to events assigned to $sessionNumber.
+     *   2. Full trimmed text window if chapter segments are missing.
+     *   3. Raw source window as a final fallback (pre-ip_trimming runs).
+     */
+    public function getSessionTrimmedText(int $sessionNumber, int $maxChars = 16000): string
+    {
+        $adaptation = $this->adaptation;
+
+        if (empty($adaptation?->ip_trimming)) {
+            return mb_substr($this->getScriptContent(), 0, $maxChars);
+        }
+
+        $chapterSegments = collect($adaptation->ip_trimming['trimmed_source_text']['chapter_segments'] ?? []);
+
+        if ($chapterSegments->isEmpty()) {
+            $fullTrimmed = (string) ($adaptation->ip_trimming['trimmed_source_text']['text'] ?? '');
+
+            return mb_substr($fullTrimmed !== '' ? $fullTrimmed : $this->getScriptContent(), 0, $maxChars);
+        }
+
+        // Find which chapters have events assigned to this session number.
+        $sessionChapterIds = DB::table('events')
+            ->join('chapters', 'chapters.id', '=', 'events.chapter_id')
+            ->where('chapters.story_id', $this->id)
+            ->where('events.session_number', $sessionNumber)
+            ->distinct()
+            ->pluck('events.chapter_id')
+            ->all();
+
+        if (empty($sessionChapterIds)) {
+            // Session number not yet assigned — fall back to full trimmed window.
+            $fullTrimmed = (string) ($adaptation->ip_trimming['trimmed_source_text']['text'] ?? '');
+
+            return mb_substr($fullTrimmed !== '' ? $fullTrimmed : $this->getScriptContent(), 0, $maxChars);
+        }
+
+        $text = $chapterSegments
+            ->filter(fn ($seg) => in_array($seg['chapter_id'] ?? null, $sessionChapterIds, true))
+            ->sortBy('chapter_position')
+            ->map(fn ($seg) => (string) ($seg['text'] ?? ''))
+            ->implode("\n\n");
+
+        return mb_substr($text, 0, $maxChars);
     }
 
     /**

@@ -70,6 +70,11 @@ final class StorySessionMapJob implements ShouldQueue
                 ])
                 ->all();
 
+            // V2: pass ip_trimming.world_rules and interactive_conversion_notes
+            // so the session map agent can feed world rules into StoryGuard Canon
+            // Extraction and use conversion notes for session content allocation.
+            $ipTrimming = $adaptation->ip_trimming ?? [];
+
             $response = (new StorySessionMapAgent)->prompt(
                 view('ai.agents.adaptation.story-session-map.prompt', [
                     'ipAudit' => $ipAudit,
@@ -78,6 +83,8 @@ final class StorySessionMapJob implements ShouldQueue
                     'chapters' => $chapters,
                     'events' => $events,
                     'totalEvents' => $totalEvents,
+                    'ipTrimmingWorldRules' => $ipTrimming['world_rules'] ?? null,
+                    'ipTrimmingConversionNotes' => $ipTrimming['interactive_conversion_notes'] ?? null,
                 ])->render()
             );
 

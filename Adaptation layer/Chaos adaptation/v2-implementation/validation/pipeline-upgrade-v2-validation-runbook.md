@@ -1,8 +1,10 @@
-# Pipeline Upgrade V2 — Validation Runbook
+# Pipeline Upgrade V2.1 — Validation Runbook
 
 **Process log:** `Adaptation layer/Chaos adaptation/v2-implementation/process-log/v2-process-log.md`
 **Runner script:** `Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runner.php`
 **Style:** mirrors `narration-fix-validation-runbook-2026-05-02.md`.
+
+**V2.1 refactor (2026-05-25):** IP Trimming and Voice Lock now run as chapter-by-chapter map/merge pipelines (no single monolithic OpenAI call against the full source). All adaptation agents upgraded to `gpt-5.4`. Session source pages now use `Story::getSessionTrimmedText()` for session-accurate context. See process log → "V2.1 map/merge architecture" for full details.
 
 This runbook describes how to validate the V2 pipeline upgrade end to end on Laravel Cloud. Cursor cannot run these probes — Daniel runs them manually after the implementation batch lands.
 
@@ -97,6 +99,15 @@ php "Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upg
 
 Expected: every blade renders to a non-zero byte count. No `FAIL` lines.
 
+**V2.1 additions** — step3 now also probes the six new V2.1 blade views:
+- `ai.agents.adaptation.ip-trimming.chapter-system-prompt`
+- `ai.agents.adaptation.ip-trimming.chapter-prompt`
+- `ai.agents.adaptation.ip-trimming.merge-system-prompt`
+- `ai.agents.adaptation.ip-trimming.merge-prompt`
+- `ai.agents.adaptation.voice-lock.chapter-system-prompt`
+- `ai.agents.adaptation.voice-lock.chapter-prompt`
+- `ai.agents.adaptation.voice-lock.merge-prompt`
+
 ### Step 4 — Runtime narrator template render
 
 ```
@@ -118,12 +129,33 @@ Expected: zero hits for the literal strings `chaotic`, `lawful`, `neutral` in th
 Re-run the pipeline for a chaos-enabled story:
 
 ```
-php artisan stories:run-adaptation alice-in-wonderland --force
-# wait for queue:work to drain the adaptation queue (5-15 min on Laravel Cloud)
-php "Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runner.php" step6 alice-in-wonderland
+php artisan stories:run-adaptation alices-adventures-in-wonderland --force
+# wait for queue:work to drain the adaptation queue
+# V2.1 timing: N_chapters × ~90s (chapter trim) + ~60s (merge) + N_chapters × ~120s (voice chapter)
+#              + ~180s (voice merge) + format + audit + session map = roughly 25-50 min for Alice
+php "Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runner.php" step6 alices-adventures-in-wonderland
 ```
 
 Expected: every key (`ip_trimming`, `format_detection`, `ip_audit`, `voice_profile`, `story_session_map`) is `ok`. The `story_session_map` payload contains `persistent_state_schema`, `world_reactivity_rules`, `story_guard_canon`, `alignment_labels`.
+
+**V2.1 additional checks for `ip_trimming`:**
+
+```php
+# In tinker:
+$a = \App\Models\Story::where('slug', 'alices-adventures-in-wonderland')->first()->adaptation;
+
+// Story spine assembled
+data_get($a->ip_trimming, 'story_spine.protagonist');     // non-empty
+
+// World rules present
+count(data_get($a->ip_trimming, 'world_rules.physics_technology', []));  // > 0
+
+// Chapter segments indexed (count should match chapter count)
+count(data_get($a->ip_trimming, 'trimmed_source_text.chapter_segments', []));
+
+// Reduction in expected 25-45% range
+data_get($a->ip_trimming, 'trimmed_source_text.reduction_percentage');  // e.g. "32%"
+```
 
 ### Step 7 — Per-session outputs
 
@@ -229,3 +261,6 @@ A green run is steps 1-14 all `ok`. Steps 1-5 and 8/9/12-14 are fully automatabl
 - **No legacy fallback.** Old chaos sessions for stories that have not been re-adapted under V2 are unplayable; re-run `php artisan stories:run-adaptation <slug> --force` per story. This is deliberate (Daniel's 2026-05-24 correction).
 - **Hard quotas vs. caps.** The Phase 4 / Phase 5 quotas (4 / 4-6 / 6-10) come straight from the canonical Deliverable text. The product target is "caps not quotas"; treat the runbook quotas as gates for *this* batch and revisit in a follow-up iteration.
 - **Compression cascade.** Stories with very long sessions may hit `RuntimeNarratorTemplateBuilder`'s 65k cap. The builder will throw and the assembly job will log a `runtime_narrator_assembly.compression_failed` event. Daniel splits the offending session manually and re-runs.
+- **V2.1 cache dependency.** `IpTrimmingChapterJob` and `VoiceLockChapterJob` write to Laravel cache (24h TTL). If the merge job runs after a cache flush (e.g. Redis FLUSHALL on the same day), it will find zero fragments and log `ip_trimming.merge_failed`. Re-dispatch from `RunAdaptationPipelineJob` (`--force`) to restart. Do not flush the cache while an adaptation pipeline is in-flight.
+- **V2.1 `chapter.content` dependency.** `VoiceLockChapterJob` reads `chapters.content`. Verify all chapters have content before running `stories:run-adaptation`.
+- **Session source pages require `events.session_number`.** `Story::getSessionTrimmedText()` resolves chapters via `events.session_number`, which is populated by `StorySessionMapJob`. If called before the session map runs, it falls back to the full trimmed text window safely.

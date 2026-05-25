@@ -32,7 +32,7 @@ use Throwable;
  * Low temperature (0.2) because we want deterministic forensic output, not
  * creative interpretation. Long timeout (900s) — full-novel reads.
  */
-#[Model('gpt-5.2')]
+#[Model('gpt-5.4')]
 #[Temperature(0.2)]
 #[Timeout(900)]
 class VoiceLockAgent implements Agent, HasStructuredOutput

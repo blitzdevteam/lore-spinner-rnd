@@ -39,8 +39,14 @@ final class FormatDetectionJob implements ShouldQueue
                 'adaptation_status' => AdaptationStatusEnum::FORMAT_DETECTION,
             ]);
 
-            $scriptContent = $this->story->getScriptContent();
-            $excerpt = mb_substr($scriptContent, 0, 8000);
+            // Prefer the ip_trimming trimmed source when available — it is smaller
+            // and already has redundant description stripped, making format detection
+            // more signal-dense for the same token budget.
+            $ipTrimming = $adaptation->ip_trimming ?? [];
+            $source = ! empty($ipTrimming['trimmed_source_text']['text'])
+                ? $ipTrimming['trimmed_source_text']['text']
+                : $this->story->getScriptContent();
+            $excerpt = mb_substr($source, 0, 8000);
 
             $response = (new FormatDetectionAgent)->prompt(
                 view('ai.agents.adaptation.format-detection.prompt', [

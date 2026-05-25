@@ -42,7 +42,7 @@ use Throwable;
  *                              can iterate without re-shaping)
  *   - validation_results
  */
-#[Model('gpt-5.2')]
+#[Model('gpt-5.4')]
 #[Temperature(0.6)]
 #[Timeout(300)]
 class ConsequenceMappingAgent implements Agent, HasStructuredOutput

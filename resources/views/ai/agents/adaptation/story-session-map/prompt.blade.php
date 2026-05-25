@@ -6,6 +6,17 @@ FORMAT DETECTION:
 
 ESTIMATED SESSION COUNT FROM FORMAT DETECTION: {{ $estimatedSessionCount }}
 
+@if(!empty($ipTrimmingWorldRules))
+IP TRIMMING — WORLD RULES (feed these into StoryGuard Canon Extraction — every rule here is source-confirmed):
+{{ json_encode($ipTrimmingWorldRules, JSON_PRETTY_PRINT) }}
+
+@endif
+@if(!empty($ipTrimmingConversionNotes))
+IP TRIMMING — INTERACTIVE CONVERSION NOTES (use these for session content allocation — each trimmed section has an explicit conversion instruction):
+{{ json_encode($ipTrimmingConversionNotes, JSON_PRETTY_PRINT) }}
+
+@endif
+
 EXTRACTED CHAPTERS:
 @foreach($chapters as $chapter)
 Chapter {{ $chapter['position'] }}: {{ $chapter['title'] }}

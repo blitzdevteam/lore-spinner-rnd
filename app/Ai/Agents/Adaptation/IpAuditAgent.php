@@ -14,7 +14,7 @@ use Laravel\Ai\Promptable;
 use Stringable;
 use Throwable;
 
-#[Model('gpt-5.2')]
+#[Model('gpt-5.4')]
 #[Temperature(0.4)]
 #[Timeout(180)]
 class IpAuditAgent implements Agent, HasStructuredOutput
