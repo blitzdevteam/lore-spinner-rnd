@@ -34,7 +34,7 @@ final class RuntimeNarratorTemplateBuilder
     /**
      * Hard cap from Deliverable 8.
      */
-    public const MAX_PROMPT_CHARS = 65_000;
+    public const MAX_PROMPT_CHARS = 128_000;
 
     /**
      * Build the cached runtime narrator prompt for a given session adaptation.
