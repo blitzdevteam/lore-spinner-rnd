@@ -316,30 +316,30 @@ THIS IS THE HARD START. On turn 1, your narration begins here and nowhere before
 
 === SECTION 14 — AUTHORED CHOICE MOMENTS (Tier 1, always loaded) ===
 
-When the narration arrives at one of these moments, offer the spirit of the options — never quote them verbatim. The player may type anything; the suggested choices exist to signal what the world finds interesting.
+Use these as design targets, not menu text. Reword in-scene; the player may type anything.
 
-BRANCHING CHOICES (load-bearing — these fork the story):
+BRANCHING CHOICES:
 @foreach($branchingChoices as $choice)
-- [{{ $choice['choice_id'] ?? '' }} | {{ $choice['category'] ?? '' }} | beat: {{ $choice['beat'] ?? '' }}] tracks: {{ $choice['what_this_choice_tracks'] ?? '' }}
-  Question: {{ $choice['choice_question'] ?? '' }}
+{{ $choice['choice_id'] ?? '' }} [{{ $choice['category'] ?? '' }} | {{ $choice['beat'] ?? '' }} | tracks {{ $choice['what_this_choice_tracks'] ?? '' }}]
+Q: {{ $choice['choice_question'] ?? '' }}
 @foreach($choice['options'] ?? [] as $opt)
-  {{ $opt['label'] ?? '' }}) {{ $opt['text'] ?? '' }} → downstream: {{ $opt['downstream_effect'] ?? '' }}
+{{ $opt['label'] ?? '' }}: {{ $opt['text'] ?? '' }} | downstream: {{ $opt['downstream_effect'] ?? '' }}
 @endforeach
 @endforeach
 
-EMOTIONAL CHOICES (texture — voice and stance, no fork):
+EMOTIONAL CHOICES:
 @foreach($emotionalChoices as $ec)
-- [{{ $ec['beat'] ?? '' }} | register: {{ $ec['emotional_register'] ?? '' }}] Source: {{ $ec['source_moment'] ?? '' }}. Question: {{ $ec['choice_question'] ?? '' }}
+{{ $ec['beat'] ?? '' }} [{{ $ec['emotional_register'] ?? '' }}] source: {{ $ec['source_moment'] ?? '' }} | Q: {{ $ec['choice_question'] ?? '' }}
 @foreach($ec['options'] ?? [] as $opt)
-  {{ $opt['label'] ?? '' }}) {{ $opt['text'] ?? '' }} → tone: {{ $opt['tonal_effect'] ?? '' }}
+{{ $opt['label'] ?? '' }}: {{ $opt['text'] ?? '' }} | tone: {{ $opt['tonal_effect'] ?? '' }}
 @endforeach
 @endforeach
 
-POSTURE SHIFTS (micro-invitations — cluster around the listed pressure points):
+POSTURE SHIFTS:
 @foreach($postureShifts as $ps)
-- Placement: {{ $ps['placement'] ?? '' }}
+- {{ $ps['placement'] ?? '' }}
 @foreach($ps['options'] ?? [] as $opt)
-  {{ $opt['label'] ?? '' }}) {{ $opt['text'] ?? '' }} → stance: {{ $opt['stance_revealed'] ?? '' }}
+{{ $opt['label'] ?? '' }}: {{ $opt['text'] ?? '' }} | stance: {{ $opt['stance_revealed'] ?? '' }}
 @endforeach
 @endforeach
 
@@ -347,16 +347,16 @@ POSTURE SHIFTS (micro-invitations — cluster around the listed pressure points)
 
 === SECTION 15 — CONSEQUENCE MAP + FREEFORM GUIDELINES (Tier 2, scene-conditional) ===
 
-For each branching choice's three paths, the runtime needs to know what changes. Echo these guidelines when surfacing the consequences of a player's prior decisions in this session.
+Use these to surface prior-choice consequences.
 
 @foreach($consequenceMaps as $cm)
 {{ $cm['choice_id'] ?? '' }} (tracks {{ $cm['tracked_dimension'] ?? '' }}):
 @foreach($cm['paths'] ?? [] as $path)
-  Path {{ $path['label'] ?? '' }}: immediate — {{ $path['immediate_effect'] ?? '' }}. Echo — {{ $path['current_session_echo'] ?? '' }}. Next session payoff — {{ $path['next_session_payoff'] ?? '' }}. Defining line — "{{ $path['defining_line_captured'] ?? '' }}"
+{{ $path['label'] ?? '' }}: now: {{ $path['immediate_effect'] ?? '' }} | echo: {{ $path['current_session_echo'] ?? '' }} | payoff: {{ $path['next_session_payoff'] ?? '' }} | line: "{{ $path['defining_line_captured'] ?? '' }}"
 @endforeach
 @endforeach
 
-FREEFORM NARRATOR GUIDELINES (voice-level instructions for surfacing past choices):
+FREEFORM GUIDELINES:
 @foreach($freeformGuidelines as $g)
 - When [{{ $g['choice_id'] ?? '' }} / {{ $g['path_label'] ?? '' }}]: {{ $g['narrator_behavior'] ?? '' }}
 @endforeach
@@ -365,7 +365,7 @@ FREEFORM NARRATOR GUIDELINES (voice-level instructions for surfacing past choice
 
 === SECTION 16 — EDITORIAL VERIFICATION SIGNAL (Tier 1, always loaded) ===
 
-This session passed Phase 8 Editorial Verification with status: {{ $editorialStatus }}. The voice, design, and StoryGuard layers were verified at pipeline time. At runtime, honor every constitutional section above and you will remain in compliance.
+Phase 8 editorial status: {{ $editorialStatus }}. Honor the constitutional sections above.
 
 ---
 
