@@ -178,7 +178,9 @@ function dumpSession(ChaosSession $s): void
 
 function dumpApiResponse(array $resp): void
 {
-    hr('LLM RESPONSE  (structured output)');
+    // NOTE: formatResult() returns the MERGED world_state (from DB) not the raw
+    // state_delta. alignment_tally_delta is internal — read from DB row below.
+    hr('HTTP RESPONSE  (formatResult shape)');
     echo "\n  ── narration (first 400 chars) ──\n";
     $text = mb_substr(trim(preg_replace('/\s+/', ' ', strip_tags((string) ($resp['response'] ?? '')))), 0, 400);
     echo "  {$text}\n";
@@ -188,76 +190,71 @@ function dumpApiResponse(array $resp): void
         echo "    " . ($i + 1) . ". {$c}\n";
     }
 
-    echo "\n  ── structured fields ──\n";
+    echo "\n  ── session fields ──\n";
+    label('session_number',        $resp['session_number'] ?? '');
+    label('total_sessions',        $resp['total_sessions'] ?? '');
+    label('has_next_session',      $resp['has_next_session'] ?? false);
     label('session_complete',      $resp['session_complete'] ?? false);
     label('is_climactic_choice',   $resp['is_climactic_choice'] ?? false);
     label('defining_choice_id',    $resp['defining_choice_id'] ?? '');
     label('defining_choice_line',  $resp['defining_choice_line'] ?? '');
 
-    echo "\n  ── alignment_tally_delta ──\n";
-    $d = (array) ($resp['alignment_tally_delta'] ?? []);
-    echo "    chaotic+={$d['chaotic']}  lawful+={$d['lawful']}  neutral+={$d['neutral']}\n";
-
-    echo "\n  ── state_delta summary ──\n";
-    $sd = (array) ($resp['state_delta'] ?? []);
-    label('location',             $sd['location'] ?? '');
-    label('conditions',           $sd['conditions'] ?? []);
-    label('items',                $sd['items'] ?? []);
-    label('object_states',        $sd['object_states'] ?? []);
-    label('relationship_updates', $sd['relationship_updates'] ?? []);
-    label('world_flags',          $sd['world_flags'] ?? []);
-    label('knowledge',            $sd['knowledge'] ?? []);
-    label('notes',                $sd['notes'] ?? []);
-    label('player_style',         $sd['player_style'] ?? []);
-    label('unresolved_promises',  $sd['unresolved_promises'] ?? []);
-    label('emotional_ledger_entries', $sd['emotional_ledger_entries'] ?? []);
+    echo "\n  ── world_state (merged, post-turn) ──\n";
+    $ws = (array) ($resp['world_state'] ?? []);
+    label('location',              $ws['location'] ?? '');
+    label('conditions',            $ws['conditions'] ?? []);
+    label('items',                 $ws['items'] ?? []);
+    label('object_states',         $ws['object_states'] ?? []);
+    label('relationship_updates',  $ws['relationship_updates'] ?? []);
+    label('world_flags',           $ws['world_flags'] ?? []);
+    label('knowledge',             $ws['knowledge'] ?? []);
+    label('notes',                 $ws['notes'] ?? []);
+    label('player_style',          $ws['player_style'] ?? []);
+    label('unresolved_promises',   $ws['unresolved_promises'] ?? []);
+    label('emotional_ledger',      $ws['emotional_ledger'] ?? []);
 
     echo "\n  ── memory updates ──\n";
     label('symbolic_memory_update', $resp['symbolic_memory_update'] ?? '');
     label('session_memory_update',  $resp['session_memory_update'] ?? '');
+    label('symbolic_memory (full)', $resp['symbolic_memory'] ?? '');
 }
 
 function checkSchemaCompleteness(array $resp, int $turnNum): void
 {
-    $required = [
-        'response', 'choices', 'session_complete', 'state_delta',
-        'alignment_tally_delta', 'is_climactic_choice',
+    // Check what formatResult() exposes over HTTP (not the raw LLM output).
+    // alignment_tally_delta is internal-only; world_state is the merged result.
+    $httpKeys = [
+        'session_id', 'response', 'choices', 'session_complete',
+        'world_state', 'symbolic_memory', 'is_climactic_choice',
         'defining_choice_id', 'defining_choice_line',
         'symbolic_memory_update', 'session_memory_update',
     ];
-    $stateKeys = [
+    $worldStateKeys = [
         'location', 'conditions', 'items', 'object_states',
         'relationship_updates', 'world_flags', 'knowledge', 'notes',
-        'player_style', 'unresolved_promises', 'emotional_ledger_entries',
+        'player_style', 'unresolved_promises', 'emotional_ledger',
     ];
 
     hr('SCHEMA CHECK  turn ' . $turnNum);
     $allOk = true;
-    foreach ($required as $key) {
+    foreach ($httpKeys as $key) {
         $ok = array_key_exists($key, $resp);
         echo '  ' . ($ok ? 'ok   ' : 'MISS ') . $key . "\n";
         if (! $ok) {
             $allOk = false;
         }
     }
-    $sd = (array) ($resp['state_delta'] ?? []);
-    foreach ($stateKeys as $key) {
-        $ok = array_key_exists($key, $sd);
-        echo '  ' . ($ok ? 'ok   ' : 'MISS ') . "state_delta.{$key}\n";
-        if (! $ok) {
-            $allOk = false;
-        }
-    }
-    $atd = (array) ($resp['alignment_tally_delta'] ?? []);
-    foreach (['chaotic', 'lawful', 'neutral'] as $key) {
-        $ok = array_key_exists($key, $atd);
-        echo '  ' . ($ok ? 'ok   ' : 'MISS ') . "alignment_tally_delta.{$key}\n";
+    $ws = (array) ($resp['world_state'] ?? []);
+    foreach ($worldStateKeys as $key) {
+        $ok = array_key_exists($key, $ws);
+        echo '  ' . ($ok ? 'ok   ' : 'MISS ') . "world_state.{$key}\n";
         if (! $ok) {
             $allOk = false;
         }
     }
     $choiceCount = count((array) ($resp['choices'] ?? []));
-    echo '  ' . ($choiceCount === 3 ? 'ok   ' : "WARN ") . "choices count={$choiceCount} (expected 3)\n";
+    echo '  ' . ($choiceCount === 3 ? 'ok   ' : 'WARN ') . "choices count={$choiceCount} (expected 3)\n";
+    echo "\n  alignment_scaffold (internal — see DB dump below for accumulation)\n";
     echo "\n  " . ($allOk ? '✔ Schema complete' : '✘ Schema incomplete — see MISS lines above') . "\n";
 }
 
