@@ -806,9 +806,16 @@ final class ChaosModeController extends Controller
             $sessionEvents,
         )));
 
-        $object = $this->filterByHaystack((array) ($w['object_states'] ?? []), $haystack);
-        $relationships = $this->filterByHaystack((array) ($w['relationship_updates'] ?? []), $haystack);
-        $flags = $this->filterByHaystack((array) ($w['world_flags'] ?? []), $haystack);
+        $allObjects = (array) ($w['object_states'] ?? []);
+        $allRelationships = (array) ($w['relationship_updates'] ?? []);
+        $allFlags = (array) ($w['world_flags'] ?? []);
+
+        $object = $this->filterByHaystack($allObjects, $haystack);
+        $relationships = $this->filterByHaystack($allRelationships, $haystack);
+        $flags = $this->filterByHaystack($allFlags, $haystack);
+        $dormantObjects = array_values(array_diff($allObjects, $object));
+        $dormantRelationships = array_values(array_diff($allRelationships, $relationships));
+        $dormantFlags = array_values(array_diff($allFlags, $flags));
         $promises = (array) ($w['unresolved_promises'] ?? []);
 
         $ledger = (array) ($w['emotional_ledger'] ?? []);
@@ -822,6 +829,9 @@ final class ChaosModeController extends Controller
         $lines[] = 'Object states: ' . $this->joinList($object);
         $lines[] = 'Relationships: ' . $this->joinList($relationships);
         $lines[] = 'World flags: ' . $this->joinList($flags);
+        $lines[] = 'Other carried object states: ' . $this->joinList($dormantObjects);
+        $lines[] = 'Other carried relationships: ' . $this->joinList($dormantRelationships);
+        $lines[] = 'Other carried world flags: ' . $this->joinList($dormantFlags);
         $lines[] = 'Unresolved promises: ' . $this->joinList($promises);
         $lines[] = 'Recent emotional ledger: ' . $this->joinList($ledgerLines);
 

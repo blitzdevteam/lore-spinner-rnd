@@ -93,6 +93,26 @@ final class RuntimeNarratorTemplateBuilder
         $architecture = (array) ($session->session_architecture ?? []);
         $choiceDesign = (array) ($session->session_choice_design ?? []);
         $consequenceMap = (array) ($session->choice_consequence_map ?? []);
+        $sessionSpine = [
+            'dramatic_question' => (string) ($allocation['primary_dramatic_question'] ?? ''),
+            'emotional_promise' => (string) (($session->entry_point_diagnosis['emotional_promise'] ?? '')),
+            'emotional_register' => (string) ($allocation['emotional_register'] ?? ''),
+            'chapters_covered' => (string) ($allocation['chapters_covered'] ?? ''),
+            'session_destination' => (string) (
+                $session->session_close_design['hook_transition']
+                ?? $session->session_close_design['session_end_choice']['choice_question']
+                ?? ''
+            ),
+            'next_session_seed' => (string) ($architecture['next_session_awareness']['seed_for_next_session'] ?? ''),
+        ];
+        $persistentState = $this->scopePersistentState(
+            (array) ($sessionMap['persistent_state_schema'] ?? []),
+            $sessionEvents,
+            $sessionSpine,
+            $architecture,
+            $choiceDesign,
+            $consequenceMap,
+        );
 
         $rendered = View::make('ai.agents.chaos.runtime-narrator-template', [
             'storyTitle' => $story->title,
@@ -106,22 +126,11 @@ final class RuntimeNarratorTemplateBuilder
             'storyGuard' => (array) ($sessionMap['story_guard_canon'] ?? []),
             'sceneRules' => (array) ($choiceDesign['scene_rules_layer_4'] ?? []),
             'voice' => $voiceProfile,
-            'persistentState' => (array) ($sessionMap['persistent_state_schema'] ?? []),
+            'persistentState' => $persistentState,
             'reactivityRules' => (array) ($sessionMap['world_reactivity_rules'] ?? []),
             'alignmentLabels' => (array) ($sessionMap['alignment_labels'] ?? []),
 
-            'sessionSpine' => [
-                'dramatic_question' => (string) ($allocation['primary_dramatic_question'] ?? ''),
-                'emotional_promise' => (string) (($session->entry_point_diagnosis['emotional_promise'] ?? '')),
-                'emotional_register' => (string) ($allocation['emotional_register'] ?? ''),
-                'chapters_covered' => (string) ($allocation['chapters_covered'] ?? ''),
-                'session_destination' => (string) (
-                    $session->session_close_design['hook_transition']
-                    ?? $session->session_close_design['session_end_choice']['choice_question']
-                    ?? ''
-                ),
-                'next_session_seed' => (string) ($architecture['next_session_awareness']['seed_for_next_session'] ?? ''),
-            ],
+            'sessionSpine' => $sessionSpine,
             'beatMap' => (array) ($architecture['beat_map'] ?? []),
             'sessionEvents' => $sessionEvents,
 
@@ -171,6 +180,158 @@ final class RuntimeNarratorTemplateBuilder
             'major_turning_points' => (array) ($spine['major_turning_points'] ?? []),
             'irreversible_events' => (array) ($spine['irreversible_events'] ?? []),
         ];
+    }
+
+    /**
+     * Scope the static tracking schema to the current session without touching
+     * actual runtime memory. `chaos_sessions.world_state` still carries every
+     * real player interaction across sessions; this only keeps future schema
+     * details from flooding early prompts.
+     *
+     * @param  array<string, mixed>  $persistentState
+     * @param  array<int, array<string, mixed>>  $sessionEvents
+     * @param  array<string, mixed>  $sessionSpine
+     * @param  array<string, mixed>  $architecture
+     * @param  array<string, mixed>  $choiceDesign
+     * @param  array<string, mixed>  $consequenceMap
+     * @return array<string, mixed>
+     */
+    private function scopePersistentState(
+        array $persistentState,
+        array $sessionEvents,
+        array $sessionSpine,
+        array $architecture,
+        array $choiceDesign,
+        array $consequenceMap,
+    ): array {
+        $haystack = $this->stateScopeHaystack(
+            $sessionEvents,
+            $sessionSpine,
+            $architecture,
+            $choiceDesign,
+            $consequenceMap,
+        );
+
+        $objects = (array) ($persistentState['objects'] ?? []);
+        $npcs = (array) ($persistentState['npcs'] ?? []);
+        $flags = (array) ($persistentState['world_flags'] ?? []);
+
+        $activeObjects = [];
+        $dormantObjects = [];
+        foreach ($objects as $object) {
+            $name = (string) ($object['name'] ?? '');
+            if ($this->stateEntryMatches($name, $haystack, requireAllTokens: true)) {
+                $activeObjects[] = $object;
+            } elseif ($name !== '') {
+                $dormantObjects[] = $name;
+            }
+        }
+
+        $activeNpcs = [];
+        $dormantNpcs = [];
+        foreach ($npcs as $npc) {
+            $name = (string) ($npc['name'] ?? '');
+            if ($this->stateEntryMatches($name, $haystack, requireAllTokens: false)) {
+                $activeNpcs[] = $npc;
+            } elseif ($name !== '') {
+                $dormantNpcs[] = $name;
+            }
+        }
+
+        $activeFlags = [];
+        $dormantFlags = [];
+        foreach ($flags as $flag) {
+            $name = (string) ($flag['name'] ?? '');
+            if ($this->stateEntryMatches($name, $haystack, requireAllTokens: false)) {
+                $activeFlags[] = $flag;
+            } elseif ($name !== '') {
+                $dormantFlags[] = $name;
+            }
+        }
+
+        return [
+            'objects' => $activeObjects,
+            'npcs' => $activeNpcs,
+            'world_flags' => $activeFlags,
+            'dormant_objects' => $dormantObjects,
+            'dormant_npcs' => $dormantNpcs,
+            'dormant_world_flags' => $dormantFlags,
+            'player_historical_archive_categories' => (array) ($persistentState['player_historical_archive_categories'] ?? []),
+        ];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $sessionEvents
+     * @param  array<string, mixed>  $sessionSpine
+     * @param  array<string, mixed>  $architecture
+     * @param  array<string, mixed>  $choiceDesign
+     * @param  array<string, mixed>  $consequenceMap
+     */
+    private function stateScopeHaystack(
+        array $sessionEvents,
+        array $sessionSpine,
+        array $architecture,
+        array $choiceDesign,
+        array $consequenceMap,
+    ): string {
+        $payload = [
+            'events' => array_map(static fn (array $event) => [
+                'title' => $event['title'] ?? '',
+                'objectives' => $event['objectives'] ?? '',
+                'content' => $event['content'] ?? '',
+                'chapter_title' => $event['chapter_title'] ?? '',
+            ], $sessionEvents),
+            'session_spine' => $sessionSpine,
+            'beat_map' => $architecture['beat_map'] ?? [],
+            'choice_design' => [
+                'branching_choices' => $choiceDesign['branching_choices'] ?? [],
+                'emotional_choices' => $choiceDesign['emotional_choices'] ?? [],
+                'posture_shifts' => $choiceDesign['posture_shifts'] ?? [],
+            ],
+            'consequence_map' => $consequenceMap,
+        ];
+
+        return $this->normalizeStateText(json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '');
+    }
+
+    private function stateEntryMatches(string $name, string $haystack, bool $requireAllTokens): bool
+    {
+        $tokens = $this->stateNameTokens($name);
+        if ($tokens === []) {
+            return false;
+        }
+
+        $hits = array_filter($tokens, static fn (string $token) => str_contains($haystack, $token));
+
+        return $requireAllTokens
+            ? count($hits) === count($tokens)
+            : $hits !== [];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function stateNameTokens(string $name): array
+    {
+        $normalized = $this->normalizeStateText($name);
+        $tokens = preg_split('/\s+/', $normalized) ?: [];
+        $stopwords = [
+            'a', 'an', 'and', 'as', 'by', 'current', 'for', 'in', 'of', 'or',
+            'state', 'status', 'the', 'to', 'with',
+        ];
+
+        return array_values(array_unique(array_filter(
+            $tokens,
+            static fn (string $token) => mb_strlen($token) >= 3 && ! in_array($token, $stopwords, true),
+        )));
+    }
+
+    private function normalizeStateText(string $text): string
+    {
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = mb_strtolower($text);
+
+        return trim((string) preg_replace('/[^a-z0-9]+/u', ' ', $text));
     }
 
     /**

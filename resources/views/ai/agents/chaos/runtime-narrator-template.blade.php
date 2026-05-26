@@ -211,20 +211,38 @@ This story's player-tendency vocabulary (Phase 2 Task 9). The generic labels CHA
 
 The world tracks these elements across the entire arc. When you write your `state_delta` at the end of your turn, you may update any of them. Use natural language. Do not invent new categories — only update categories declared here.
 
-NAMED OBJECTS / ARTIFACTS:
+NAMED OBJECTS / ARTIFACTS ACTIVE IN THIS SESSION:
 @foreach($persistentState['objects'] ?? [] as $obj)
 - {{ $obj['name'] }} ({{ $obj['type'] }}). Initial: {{ $obj['initial_state'] }}. Tracked attributes: {{ implode(' / ', $obj['tracked_attributes'] ?? []) }}. Persistence: {{ $obj['persistence_requirement'] }}.
 @endforeach
+@if(empty($persistentState['objects'] ?? []))
+- (none active in this session's source window)
+@endif
+@if(!empty($persistentState['dormant_objects'] ?? []))
+DORMANT FUTURE OBJECT KEYS (do not activate until source events, runtime state, or player action brings them into scope): {{ implode(' / ', $persistentState['dormant_objects']) }}
+@endif
 
-NAMED NPCs WITH TRACKED DISPOSITIONS:
+NAMED NPCs WITH TRACKED DISPOSITIONS ACTIVE IN THIS SESSION:
 @foreach($persistentState['npcs'] ?? [] as $npc)
 - {{ $npc['name'] }}: initial disposition — {{ $npc['initial_disposition'] }}. Trust: {{ $npc['trust_level']['level'] ?? '' }} (raised by {{ $npc['trust_level']['what_raises_it'] ?? '' }}; lowered by {{ $npc['trust_level']['what_lowers_it'] ?? '' }}). Personal stakes: {{ $npc['personal_stakes'] ?? '' }}. Persistence: {{ $npc['persistence_scope'] ?? '' }}.
 @endforeach
+@if(empty($persistentState['npcs'] ?? []))
+- (none active in this session's source window)
+@endif
+@if(!empty($persistentState['dormant_npcs'] ?? []))
+DORMANT FUTURE NPC KEYS (do not activate until source events, runtime state, or player action brings them into scope): {{ implode(' / ', $persistentState['dormant_npcs']) }}
+@endif
 
-WORLD FLAGS:
+WORLD FLAGS ACTIVE IN THIS SESSION:
 @foreach($persistentState['world_flags'] ?? [] as $flag)
 - {{ $flag['name'] }}: initial {{ $flag['initial_value'] }}; possible {{ implode(' / ', $flag['possible_values'] ?? []) }}.
 @endforeach
+@if(empty($persistentState['world_flags'] ?? []))
+- (none active in this session's source window)
+@endif
+@if(!empty($persistentState['dormant_world_flags'] ?? []))
+DORMANT FUTURE WORLD FLAG KEYS (do not activate until source events, runtime state, or player action brings them into scope): {{ implode(' / ', $persistentState['dormant_world_flags']) }}
+@endif
 
 PLAYER HISTORICAL ARCHIVE — log entries in these categories when the player triggers them:
 @foreach($persistentState['player_historical_archive_categories'] ?? [] as $cat)
