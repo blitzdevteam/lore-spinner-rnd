@@ -62,7 +62,7 @@ final class ChaosNarrationSchema
                 ->array()
                 ->required()
                 ->title('Choices')
-                ->description('Exactly 3 suggested actions. Each begins with a strong verb. Surprising, story-specific, tempting. The player may type anything — these are suggestions, not constraints.')
+                ->description('Exactly 3 visible suggested actions. Each begins with a strong verb. Short, direct, action-first intent labels: prefer 4-8 words, never exceed 12 words. Do not explain consequences inside the choice text. The player may type anything — these are suggestions, not constraints.')
                 ->items($schema->string()->required()),
 
             'session_complete' => $schema
