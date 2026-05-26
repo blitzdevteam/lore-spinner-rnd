@@ -59,20 +59,27 @@ final class DumpChaosPromptCommand extends Command
         $loadSessionContext->setAccessible(true);
         $sessionContext = $loadSessionContext->invoke($controller, $story, $session, null);
 
-        $worldState = [
-            'location'      => '',
-            'conditions'    => [],
-            'items'         => [],
-            'relationships' => [],
-            'knowledge'     => [],
-            'notes'         => [],
-        ];
+        $emptyWorldState = new ReflectionMethod($controller, 'emptyWorldState');
+        $emptyWorldState->setAccessible(true);
+        $worldState = $emptyWorldState->invoke($controller);
 
-        $coldOpen = (string) ($sessionContext['cold_open'] ?? '');
+        $emptyAlignmentScaffold = new ReflectionMethod($controller, 'emptyAlignmentScaffold');
+        $emptyAlignmentScaffold->setAccessible(true);
+        $alignmentScaffold = $emptyAlignmentScaffold->invoke($controller);
+
+        $openingScene = ($sessionContext['opening_scene'] ?? '') ?: null;
 
         $renderSystemPrompt = new ReflectionMethod($controller, 'renderSystemPrompt');
         $renderSystemPrompt->setAccessible(true);
-        $rendered = $renderSystemPrompt->invoke($controller, $storyConfig, $sessionContext, $worldState, null, $coldOpen);
+        $rendered = $renderSystemPrompt->invoke(
+            $controller,
+            $sessionContext,
+            $worldState,
+            $alignmentScaffold,
+            null,
+            $openingScene,
+            false,
+        );
 
         $this->line('');
         $this->line('════════════════════════════════════════════════════════════════');
