@@ -4,11 +4,12 @@ import GameOpeningNarration from '@/components/GameOpeningNarration.vue';
 import GameplayChatCard from '@/components/GameplayChatCard.vue';
 import GameplaySidebarJournalEventCard from '@/components/GameplaySidebarJournalEventCard.vue';
 import GameplayLayout from '@/layouts/GameplayLayout.vue';
+import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { EventInterface, GameInterface } from '@/types';
 import { router } from '@inertiajs/vue3';
 import { store as storePrompt } from '@/wayfinder/actions/App/Http/Controllers/User/Game/PromptController';
 import { LucideUser } from 'lucide-vue-next';
-import { computed, nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 const CONTINUE_MARKER = '__continue__';
 
@@ -155,6 +156,21 @@ const showOpening = computed(() => !hasPrompts.value && !!storyOpening.value);
 
 // Cinematic opening: shown on first visit (no prompts yet); hidden once begin fires
 const showCinematic = ref(!hasPrompts.value);
+// True when this session started via the cinematic (gates TTS auto-play to new games only)
+const cameFromCinematic = ref(!hasPrompts.value);
+
+const tts = useTextToSpeech();
+// Auto-play the first narration while the showcard is still visible
+watch(
+    () => prompts.value[0]?.response,
+    (response) => {
+        if (!response || !cameFromCinematic.value) return;
+        const first = prompts.value[0];
+        if (!first) return;
+        cameFromCinematic.value = false; // fire once only
+        tts.play(String(props.game.id), String(first.id));
+    },
+);
 
 const canSubmitInput = computed(() => {
     if (isSubmitting.value) return false;
