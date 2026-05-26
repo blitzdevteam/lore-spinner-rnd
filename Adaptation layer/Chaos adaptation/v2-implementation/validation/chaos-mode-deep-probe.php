@@ -261,11 +261,19 @@ function checkSchemaCompleteness(array $resp, int $turnNum): void
     echo "\n  " . ($allOk ? '✔ Schema complete' : '✘ Schema incomplete — see MISS lines above') . "\n";
 }
 
+// ── patch Request::validate() for CLI context ─────────────────────────────────
+// Laravel 11 removed setContainer() from Request. Macro-patch validate() to use
+// the global app() helper so controller validation works without HTTP middleware.
+\Illuminate\Http\Request::macro('validate', function (array $rules, array $messages = [], array $attributes = []) {
+    /** @var \Illuminate\Http\Request $this */
+    return app('validator')->make($this->all(), $rules, $messages, $attributes)->validate();
+});
+
 // ── make an authenticated controller request ──────────────────────────────────
 function makeRequest(string $uri, string $method, array $data): Request
 {
     $request = Request::create($uri, $method, $data);
-    $request->setContainer(app());
+    app()->instance('request', $request);
 
     return $request;
 }
