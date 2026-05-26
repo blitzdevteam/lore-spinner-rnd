@@ -198,9 +198,24 @@ final class RuntimeNarratorTemplateBuilder
             ->where('events.session_number', $sessionNumber)
             ->orderBy('chapters.position')
             ->orderBy('events.position')
-            ->get(['events.position', 'events.title', 'events.content', 'events.objectives'])
+            ->get([
+                'events.id',
+                'events.chapter_id',
+                'events.position',
+                'events.title',
+                'events.content',
+                'events.objectives',
+                'events.session_number',
+                'chapters.position as chapter_position',
+                'chapters.title as chapter_title',
+            ])
             ->map(fn (Event $e) => [
+                'id' => (int) $e->id,
+                'chapter_id' => (int) $e->chapter_id,
+                'chapter_position' => (int) $e->chapter_position,
+                'chapter_title' => (string) $e->chapter_title,
                 'position' => (int) $e->position,
+                'session_number' => (int) $e->session_number,
                 'title' => (string) $e->title,
                 'content' => (string) $e->content,
                 'objectives' => $e->objectives,
@@ -225,7 +240,12 @@ final class RuntimeNarratorTemplateBuilder
         $last = array_pop($events);
 
         $middle = array_map(static fn ($e) => [
+            'id' => $e['id'] ?? null,
+            'chapter_id' => $e['chapter_id'] ?? null,
+            'chapter_position' => $e['chapter_position'] ?? null,
+            'chapter_title' => $e['chapter_title'] ?? null,
             'position' => $e['position'],
+            'session_number' => $e['session_number'] ?? null,
             'title' => $e['title'],
             'objectives' => $e['objectives'],
             'content' => '(content compressed to save context budget — see objective above for dramatic shape; this beat falls between the first and last events.)',
@@ -243,7 +263,12 @@ final class RuntimeNarratorTemplateBuilder
     private function titlesOnlySourceEvents(array $events): array
     {
         return array_map(static fn ($e) => [
+            'id' => $e['id'] ?? null,
+            'chapter_id' => $e['chapter_id'] ?? null,
+            'chapter_position' => $e['chapter_position'] ?? null,
+            'chapter_title' => $e['chapter_title'] ?? null,
             'position' => $e['position'],
+            'session_number' => $e['session_number'] ?? null,
             'title' => $e['title'],
             'objectives' => $e['objectives'],
             'content' => '(source compressed to title + objective only.)',

@@ -278,7 +278,7 @@ WHAT MUST BE SEEDED BEFORE CLOSE (for next session to pay off): {{ $sessionSpine
 
 FULL SOURCE SCRIPT FOR THIS SESSION (use as source of voice, tone, dramatic material, character continuity — never as a cage):
 @foreach($sessionEvents as $event)
---- EVENT {{ $event['position'] ?? '' }}: {{ $event['title'] ?? '' }} ---
+--- CHAPTER {{ $event['chapter_position'] ?? '?' }} / EVENT {{ $event['position'] ?? '' }}: {{ $event['title'] ?? '' }} ---
 @if(!empty($event['objectives']))
 OBJECTIVE: {{ $event['objectives'] }}
 @endif
