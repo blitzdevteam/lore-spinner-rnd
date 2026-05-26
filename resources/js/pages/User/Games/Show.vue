@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GameCinematicOpening from '@/components/GameCinematicOpening.vue';
 import GameOpeningNarration from '@/components/GameOpeningNarration.vue';
 import GameplayChatCard from '@/components/GameplayChatCard.vue';
 import GameplaySidebarJournalEventCard from '@/components/GameplaySidebarJournalEventCard.vue';
@@ -152,6 +153,9 @@ const hasPrompts = computed(() => prompts.value.length > 0);
 const storyOpening = computed(() => props.game.story?.opening ?? null);
 const showOpening = computed(() => !hasPrompts.value && !!storyOpening.value);
 
+// Cinematic opening: shown on first visit (no prompts yet); hidden once begin fires
+const showCinematic = ref(!hasPrompts.value);
+
 const canSubmitInput = computed(() => {
     if (isSubmitting.value) return false;
     const latest = prompts.value[prompts.value.length - 1];
@@ -219,36 +223,39 @@ const submitPrompt = (prompt: string) => {
     );
 };
 
+// Called by GameCinematicOpening when the showcard phase auto-ends
+const handleCinematicBegin = () => {
+    showCinematic.value = false;
+    isAutoBeginning.value = true;
+    handleBegin();
+};
+
 onMounted(() => {
     if (hasPrompts.value) {
+        showCinematic.value = false;
         nextTick(() => {
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         });
-    } else if (!storyOpening.value) {
-        isAutoBeginning.value = true;
-        handleBegin();
     }
 });
 </script>
 
 <template>
-    <!-- Opening narration phase -->
-    <GameOpeningNarration
-        v-if="showOpening"
-        :opening="storyOpening!"
-        :story-title="game.story?.title ?? 'the story'"
-        @begin="handleBegin"
+    <!-- ── Cinematic opening sequence (new games only) ── -->
+    <GameCinematicOpening
+        v-if="showCinematic"
+        @begin="handleCinematicBegin"
     />
 
-    <!-- Loading state while auto-beginning (no opening available) -->
+    <!-- Loading state while begin POST is in-flight -->
     <div v-else-if="isAutoBeginning" class="grid h-svh place-items-center bg-gray-950">
         <div class="flex flex-col items-center gap-4">
             <div class="size-8 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
-            <p class="text-sm text-gray-400">Preparing your adventure...</p>
+            <p class="text-sm text-gray-400">Preparing your adventure…</p>
         </div>
     </div>
 
-    <!-- Gameplay phase -->
+    <!-- ── Gameplay phase ── -->
     <GameplayLayout v-else :input-disabled="!canSubmitInput" :game-id="game.id" @submit="handleSubmit" @back="handleBack">
         <template #header>
             <div class="hidden flex-col gap-1.5 md:flex">
