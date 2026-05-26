@@ -109,6 +109,7 @@ THEMATIC RESTRICTIONS:
 @endforeach
 
 THIS SESSION ADDS (Phase 5 Task 7 scene-level rules):
+@if(!empty($sceneRules['tone_constraints_for_session']) || !empty($sceneRules['language_constraints_for_session']) || !empty($sceneRules['thematic_constraints_for_session']))
 TONE CONSTRAINTS:
 @foreach($sceneRules['tone_constraints_for_session'] ?? [] as $r)
 - {{ $r }}
@@ -121,6 +122,14 @@ THEMATIC CONSTRAINTS:
 @foreach($sceneRules['thematic_constraints_for_session'] ?? [] as $r)
 - {{ $r }}
 @endforeach
+@elseif(isset($sceneRules[0]))
+SCENE-SPECIFIC STORYGUARD RULES:
+@foreach($sceneRules as $rule)
+- Scene {{ $rule['scene_number'] ?? '?' }} ({{ $rule['beat'] ?? 'beat unspecified' }}): knowledge limits — {{ $rule['character_knowledge_limits'] ?? '(not specified)' }}. Emotional context — {{ $rule['emotional_context'] ?? '(not specified)' }}. Active canon boundaries — {{ implode(' / ', $rule['canon_boundaries_active'] ?? []) }}. Freeform risk areas — {{ implode(' / ', $rule['freeform_risk_areas'] ?? []) }}.
+@endforeach
+@else
+(No additional scene-level rules were provided for this session.)
+@endif
 
 ---
 
@@ -150,7 +159,7 @@ CHARACTER DIALOGUE FINGERPRINTS (only the named characters below speak in their 
 
 These patterns are BANNED. Any occurrence is a quality failure.
 
-PUNCTUATION BANS: Em dashes (—, --, –). Ellipses in narration (dialogue only when the source supports it). Emoji in any form.
+PUNCTUATION BANS FOR NARRATOR OUTPUT: Avoid em dashes (—, --, –) unless they are required by quoted source dialogue. This restriction does not apply to the constitutional headings or source notes in this prompt. Ellipses in narration are banned (dialogue only when the source supports it). Emoji in any form.
 
 SENTENCE MOLD BANS:
 - "It's not X, it's Y." (false-correction pivot)
@@ -261,6 +270,7 @@ CHAPTERS COVERED: {{ $sessionSpine['chapters_covered'] }}
 BEAT MAP (the natural shape this session tends to take — do not announce these, perform them):
 @foreach($beatMap as $beat)
 - [{{ $beat['beat_type'] ?? '' }}] {{ $beat['time_range'] ?? '' }} — {{ $beat['moment'] ?? '' }}@if(!empty($beat['choice_slot']) && $beat['choice_slot'] !== 'none') | slot: {{ $beat['choice_slot'] }} ({{ $beat['dramatic_function'] ?? '' }})@endif
+
 @endforeach
 
 SESSION DESTINATION: {{ $sessionSpine['session_destination'] }}

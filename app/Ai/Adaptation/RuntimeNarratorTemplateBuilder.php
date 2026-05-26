@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Ai\Adaptation;
 
+use App\ChaosMode\ChaosStoryConfig;
 use App\Models\Event;
 use App\Models\SessionAdaptation;
 use App\Models\Story;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\View;
  * 17-section template at `ai.agents.chaos.runtime-narrator-template` into a
  * single string suitable for caching on `session_adaptations.runtime_narrator_prompt`.
  *
- * Bounded to 65,000 characters per Deliverable 8. Implements the compression
+ * Bounded to MAX_PROMPT_CHARS. Implements the compression
  * cascade described in the deliverable:
  *   1. Compress Section 12 (Full Source Script) — keep first/last event
  *      verbatim, summarize middle events to titles + objectives only.
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\View;
 final class RuntimeNarratorTemplateBuilder
 {
     /**
-     * Hard cap from Deliverable 8.
+     * Hard cap for the cached runtime narrator prompt.
      */
     public const MAX_PROMPT_CHARS = 128_000;
 
@@ -93,12 +94,12 @@ final class RuntimeNarratorTemplateBuilder
         $choiceDesign = (array) ($session->session_choice_design ?? []);
         $consequenceMap = (array) ($session->choice_consequence_map ?? []);
 
-        return View::make('ai.agents.chaos.runtime-narrator-template', [
+        $rendered = View::make('ai.agents.chaos.runtime-narrator-template', [
             'storyTitle' => $story->title,
             'authorName' => $story->creator?->name ?? 'the author',
             'sessionNumber' => $session->session_number,
             'totalSessions' => $totalSessions,
-            'protagonist' => $this->protagonistName($adaptation),
+            'protagonist' => $this->protagonistName($story, $adaptation),
 
             'spine' => $this->normalizeSpine($trimming),
             'worldRules' => (array) ($trimming['world_rules'] ?? []),
@@ -131,17 +132,25 @@ final class RuntimeNarratorTemplateBuilder
             'consequenceMaps' => (array) ($consequenceMap['branching_consequences'] ?? []),
             'freeformGuidelines' => (array) ($consequenceMap['freeform_guidelines'] ?? []),
 
-            'editorialStatus' => (string) (($session->editorial_verification['production_status'] ?? 'UNVERIFIED')),
+            'editorialStatus' => (string) (
+                data_get($session->editorial_verification, 'final_verdict.production_status')
+                ?? data_get($session->editorial_verification, 'production_status')
+                ?? 'UNVERIFIED'
+            ),
         ])->render();
+
+        return html_entity_decode($rendered, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
     /**
      * @param  array<string, mixed>  $adaptation
      */
-    private function protagonistName($adaptation): string
+    private function protagonistName(Story $story, $adaptation): string
     {
         return (string) (
-            $adaptation->ip_trimming['story_spine']['protagonist']
+            ChaosStoryConfig::find($story->slug)['protagonist'] ?? null
+            ?? $adaptation->ip_trimming['story_spine']['protagonist_name'] ?? null
+            ?? $adaptation->ip_trimming['story_spine']['protagonist']
             ?? $adaptation->voice_profile['author_voice_dna_profile']['dialogue_fingerprint_per_character'][0]['character']
             ?? 'the protagonist'
         );

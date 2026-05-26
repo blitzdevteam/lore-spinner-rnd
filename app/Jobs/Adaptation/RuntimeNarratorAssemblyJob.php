@@ -23,9 +23,9 @@ use Throwable;
  * symbolic memory / opening scene on top.
  *
  * Failure modes:
- *   - Builder raises if compression cascade fails (prompt exceeds 65k chars even
- *     after dropping voice quotes + collapsing source to titles). Logged so the
- *     editor can mark the session for a manual split.
+ *   - Builder raises if compression cascade fails (prompt exceeds its configured
+ *     cap even after dropping voice quotes + collapsing source to titles). Logged
+ *     so the editor can mark the session for a manual split.
  */
 final class RuntimeNarratorAssemblyJob implements ShouldQueue
 {

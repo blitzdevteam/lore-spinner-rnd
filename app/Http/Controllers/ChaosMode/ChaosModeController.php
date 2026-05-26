@@ -550,14 +550,18 @@ final class ChaosModeController extends Controller
 
         // If the caller didn't pass an explicit handoff, fall back to the
         // arc_progression row for this session (when present).
-        if ($openingHandoff === null || trim($openingHandoff) === '') {
+        $openingHandoff = $this->normalizeOpeningScene($openingHandoff);
+
+        if ($openingHandoff === '') {
             $arcRow         = $this->findArcProgressionRow($adaptation, $sessionNumber);
-            $openingHandoff = (string) ($arcRow['opens_with'] ?? '');
+            $openingHandoff = $this->normalizeOpeningScene($arcRow['opens_with'] ?? '');
         }
+
+        $coldOpen = $this->normalizeOpeningScene($entry['cold_open'] ?? '');
 
         $openingScene = trim($openingHandoff) !== ''
             ? $openingHandoff
-            : (string) ($entry['cold_open'] ?? '');
+            : $coldOpen;
 
         $totalSessions = (int) ($adaptation?->sessionAdaptations?->count() ?? 0);
 
@@ -598,6 +602,15 @@ final class ChaosModeController extends Controller
             }
         }
         return [];
+    }
+
+    private function normalizeOpeningScene(mixed $value): string
+    {
+        $text = trim((string) $value);
+
+        return in_array(strtolower($text), ['n/a', 'na', 'none', 'null', '(none)'], true)
+            ? ''
+            : $text;
     }
 
     // -------------------------------------------------------------------------
@@ -670,7 +683,7 @@ final class ChaosModeController extends Controller
 
         $total = $chaotic + $lawful + $neutral;
         if ($total === 0) {
-            return 'The player\'s alignment has not yet declared itself. Narrate with neutral tonal tilt.';
+            return 'No player tendency has declared itself yet. Keep all story-native tonal registers available without naming alignment.';
         }
 
         $dominant = 'mixed';
