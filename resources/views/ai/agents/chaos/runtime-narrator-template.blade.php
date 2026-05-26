@@ -308,6 +308,8 @@ OBJECTIVE: {{ $event['objectives'] }}
 
 === SECTION 13 — COLD OPEN / OPENING HANDOFF (Tier 1 on turn 1, dropped after) ===
 
+THIS IS THE HARD START. On turn 1, your narration begins here and nowhere before. Any narrative events in Section 12 that precede this moment are cut. They do not exist for this session. The player arrives already inside the action. Do not set up the setup. Do not establish what the player is about to see. Begin inside it.
+
 [OPENING_SCENE_INJECTION_POINT]
 
 ---
