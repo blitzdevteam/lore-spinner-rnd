@@ -172,6 +172,7 @@ const handleBegin = () => {
                 shouldAnimate.value = true;
             },
             onFinish: () => {
+                isAutoBeginning.value = false;
                 nextTick(() => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
@@ -223,11 +224,18 @@ const submitPrompt = (prompt: string) => {
     );
 };
 
-// Called by GameCinematicOpening when the showcard phase auto-ends
-const handleCinematicBegin = () => {
-    showCinematic.value = false;
-    isAutoBeginning.value = true;
+// Showcard has appeared → start the game API call in background while card is still visible
+const handleCinemaPrepare = () => {
     handleBegin();
+};
+
+// Full sequence has faded out → unmount cinematic, game takes over
+const handleCinematicDone = () => {
+    showCinematic.value = false;
+    // If the API hasn't returned yet, show the brief loading spinner
+    if (!hasPrompts.value) {
+        isAutoBeginning.value = true;
+    }
 };
 
 onMounted(() => {
@@ -244,7 +252,8 @@ onMounted(() => {
     <!-- ── Cinematic opening sequence (new games only) ── -->
     <GameCinematicOpening
         v-if="showCinematic"
-        @begin="handleCinematicBegin"
+        @prepare="handleCinemaPrepare"
+        @done="handleCinematicDone"
     />
 
     <!-- Loading state while begin POST is in-flight -->
