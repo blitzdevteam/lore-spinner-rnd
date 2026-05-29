@@ -55,6 +55,7 @@ const MODELS = [
     { value: 'gpt-4.1',           label: 'GPT-4.1',           provider: 'OpenAI',    est: '~$0.65', defaultTemp: 1.0  },
     { value: 'chat-latest',       label: 'ChatGPT Latest',    provider: 'OpenAI',    est: '~$0.65', defaultTemp: 1.0  },
     { value: 'claude-opus-4-8',   label: 'Claude Opus 4.8',   provider: 'Anthropic', est: '~$1.85', defaultTemp: 1.0  },
+    { value: 'claude-opus-4-7',   label: 'Claude Opus 4.7',   provider: 'Anthropic', est: '~$1.85', defaultTemp: 1.0  },
     { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', provider: 'Anthropic', est: '~$1.05', defaultTemp: 0.9  },
     { value: 'claude-haiku-4-5',  label: 'Claude Haiku 4.5',  provider: 'Anthropic', est: '~$0.30', defaultTemp: 0.95 },
 ];
@@ -506,7 +507,10 @@ function resetAdventure(): void {
         </template>
 
         <!-- ── Game screen ───────────────────────────────────────────────────── -->
-        <div v-else class="relative z-[1] flex h-full flex-col">
+        <div v-else class="chaos-game-shell relative z-[1] flex h-full flex-col overflow-hidden">
+            <div class="chaos-lava-background" aria-hidden="true" />
+            <div class="chaos-lava-grain" aria-hidden="true" />
+            <div class="chaos-lava-vignette" aria-hidden="true" />
 
             <!-- Sticky header -->
             <div class="chaos-mode-game-header sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between px-4 sm:px-8">
@@ -571,7 +575,7 @@ function resetAdventure(): void {
             </div>
 
             <!-- Scrollable story — narration + choices scroll together -->
-            <div class="relative flex-1 overflow-hidden">
+            <div class="relative z-[1] flex-1 overflow-hidden">
                 <div
                     ref="scrollEl"
                     class="chaos-scroll absolute inset-0 overflow-y-auto"
@@ -683,7 +687,7 @@ function resetAdventure(): void {
             </div>
 
             <!-- Error -->
-            <p v-if="errorMessage" class="px-4 pb-1 text-center text-xs text-red-400 sm:px-8">{{ errorMessage }}</p>
+            <p v-if="errorMessage" class="relative z-[1] px-4 pb-1 text-center text-xs text-red-400 sm:px-8">{{ errorMessage }}</p>
 
             <!-- Sticky input only -->
             <div v-if="!sessionComplete" class="sticky bottom-0 z-10 shrink-0">
@@ -700,6 +704,12 @@ function resetAdventure(): void {
     /* Brand: Amber Gold — Chaos Mode signature, distinct from Story Guard's Tiffany Blue */
     --chaos-brand: #e5ad53;
     --chaos-brand-rgb: 229, 173, 83;
+    --chaos-lava-cream-rgb: 253, 245, 228;
+    --chaos-lava-honey-rgb: 237, 186, 104;
+    --chaos-lava-amber-rgb: 229, 173, 83;
+    --chaos-lava-bronze-rgb: 143, 92, 13;
+    --chaos-lava-ember-rgb: 74, 43, 6;
+    --chaos-lava-void-rgb: 10, 6, 3;
 }
 
 .chaos-mode-brand-bg {
@@ -707,6 +717,108 @@ function resetAdventure(): void {
         radial-gradient(ellipse 120% 80% at 50% -20%, rgba(var(--chaos-brand-rgb), 0.16), transparent 55%),
         radial-gradient(ellipse 90% 70% at 100% 50%, rgba(var(--chaos-brand-rgb), 0.08), transparent 50%),
         radial-gradient(ellipse 80% 60% at 0% 80%, rgba(var(--chaos-brand-rgb), 0.10), transparent 45%);
+}
+
+.chaos-game-shell {
+    background:
+        radial-gradient(ellipse 120% 90% at 50% -18%, rgba(var(--chaos-lava-amber-rgb), 0.08), transparent 58%),
+        rgb(var(--chaos-lava-void-rgb));
+}
+
+.chaos-lava-background,
+.chaos-lava-grain,
+.chaos-lava-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.chaos-lava-background {
+    inset: -18vmax;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(var(--chaos-lava-cream-rgb), 0.11), transparent 26%),
+        radial-gradient(circle at 76% 18%, rgba(var(--chaos-lava-honey-rgb), 0.14), transparent 30%),
+        radial-gradient(circle at 62% 72%, rgba(var(--chaos-lava-amber-rgb), 0.13), transparent 34%),
+        radial-gradient(circle at 18% 78%, rgba(var(--chaos-lava-bronze-rgb), 0.12), transparent 31%),
+        linear-gradient(135deg, rgba(var(--chaos-lava-void-rgb), 0.98) 0%, rgba(var(--chaos-lava-ember-rgb), 0.32) 48%, rgba(3, 7, 18, 0.98) 100%);
+    filter: blur(58px) saturate(1.16) contrast(1.02);
+    opacity: 0.78;
+    transform-origin: center;
+    animation: chaos-lava-drift 38s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+.chaos-lava-background::before,
+.chaos-lava-background::after {
+    content: "";
+    position: absolute;
+    inset: 5%;
+    background:
+        radial-gradient(circle at 35% 38%, rgba(var(--chaos-lava-cream-rgb), 0.07), transparent 10%),
+        radial-gradient(circle at 58% 42%, rgba(var(--chaos-lava-amber-rgb), 0.15), transparent 23%),
+        radial-gradient(circle at 42% 65%, rgba(var(--chaos-lava-honey-rgb), 0.12), transparent 22%),
+        radial-gradient(circle at 72% 62%, rgba(var(--chaos-lava-bronze-rgb), 0.11), transparent 24%),
+        radial-gradient(circle at 25% 60%, rgba(var(--chaos-lava-ember-rgb), 0.14), transparent 23%);
+    mix-blend-mode: screen;
+    filter: blur(54px) saturate(1.1);
+    opacity: 0.6;
+    animation: chaos-lava-swim 44s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+}
+
+.chaos-lava-background::after {
+    inset: 0;
+    opacity: 0.42;
+    transform: rotate(38deg) scale(1.08);
+    animation: chaos-lava-pulse 32s ease-in-out infinite alternate;
+}
+
+.chaos-lava-grain {
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.16) 0 1px, transparent 1px),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 0 1px, transparent 1px);
+    background-size: 19px 19px, 27px 27px;
+}
+
+.chaos-lava-vignette {
+    background:
+        radial-gradient(circle at center, transparent 0 42%, rgba(0, 0, 0, 0.28) 70%, rgba(0, 0, 0, 0.78) 100%),
+        linear-gradient(180deg, rgba(3, 7, 18, 0.2), rgba(3, 7, 18, 0.68));
+}
+
+@keyframes chaos-lava-drift {
+    0% { transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1.03); }
+    50% { transform: translate3d(2%, 2%, 0) rotate(8deg) scale(1.09); }
+    100% { transform: translate3d(-1%, 3%, 0) rotate(-6deg) scale(1.05); }
+}
+
+@keyframes chaos-lava-swim {
+    0% { transform: translate(-4%, 2%) rotate(0deg) scale(1.02); }
+    50% { transform: translate(4%, -3%) rotate(130deg) scale(1.13); }
+    100% { transform: translate(-2%, 1%) rotate(360deg) scale(1.04); }
+}
+
+@keyframes chaos-lava-pulse {
+    from { transform: translate(-3%, 3%) rotate(35deg) scale(1.06); }
+    to { transform: translate(4%, -4%) rotate(-22deg) scale(1.15); }
+}
+
+@media (max-width: 768px) {
+    .chaos-lava-background {
+        filter: blur(44px) saturate(1.08) contrast(1);
+        opacity: 0.68;
+        animation-duration: 46s;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chaos-lava-background,
+    .chaos-lava-background::before,
+    .chaos-lava-background::after {
+        animation: none;
+    }
 }
 
 /* ── Entrance animation ── */
