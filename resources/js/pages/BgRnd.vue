@@ -80,116 +80,73 @@ vec2 rot(vec2 p, float a) {
     return mat2(c, -s, s, c) * p;
 }
 
-// Soft elliptical lobe (a metaball-like petal mass).
-float lobe(vec2 p, vec2 c, vec2 r, float ang) {
-    vec2 d = rot(p - c, ang) / r;
-    return exp(-dot(d, d));
-}
-
-// Backlit petal mass at a point. Drifts slowly with uTime.
-float petalField(vec2 uv) {
-    float t = uTime * 0.06;
-
-    // Strong low-frequency domain warp so the silhouette folds organically
-    // instead of reading as plain circles.
-    vec2 w1 = vec2(
-        fbm(uv * 1.3 + vec2(0.0, t)),
-        fbm(uv * 1.3 + vec2(7.3, -t)));
-    vec2 w2 = vec2(
-        fbm(uv * 2.6 + 1.4 * w1 + vec2(3.1, t * 0.6)),
-        fbm(uv * 2.6 + 1.4 * w1 + vec2(9.7, -t * 0.6)));
-    vec2 p = uv + (w1 - 0.5) * 0.22 + (w2 - 0.5) * 0.09;
-
-    // A main petal mass high-centre, a fold to the upper-right, and a bright
-    // ridge feeding the bloom. Lower-left is deliberately left empty so the
-    // deep field reads there, exactly like the reference crop.
-    float m = 0.0;
-    m = max(m, lobe(p, vec2(0.46, 0.60), vec2(0.36, 0.32), -0.35));
-    m = max(m, lobe(p, vec2(0.78, 0.66), vec2(0.28, 0.27),  0.55));
-    m = max(m, lobe(p, vec2(0.52, 0.86), vec2(0.42, 0.22),  0.05));
-
-    // Perturb the silhouette with mid-frequency noise so the edge waves like
-    // the soft folds of a petal rather than a clean ellipse.
-    m += (fbm(p * 3.1 + vec2(t, -t)) - 0.5) * 0.30;
-    return m;
+// A smooth, continuously flowing scalar field (domain-warped fbm). This is
+// what gives silky aurora folds instead of visible circular blobs.
+float flow(vec2 p) {
+    float t = uTime * 0.04;
+    vec2 q = vec2(
+        fbm(p + vec2(0.0, t)),
+        fbm(p + vec2(5.2, 1.3) - t));
+    vec2 r = vec2(
+        fbm(p + 1.5 * q + vec2(1.7, 9.2) + 0.3 * t),
+        fbm(p + 1.5 * q + vec2(8.3, 2.8) - 0.3 * t));
+    float f = fbm(p + 1.8 * r);
+    return f * 0.62 + r.x * 0.38;
 }
 
 void main() {
     vec2 fc = gl_FragCoord.xy;
     vec2 uv = fc / uRes;
 
-    // Cover-fit into a square field, then apply the per-load crop.
     float aspect = uRes.x / uRes.y;
-    vec2 suv = uv;
-    if (aspect > 1.0) suv.y = (uv.y - 0.5) / aspect * 1.0 + 0.5; else suv.x = (uv.x - 0.5) * aspect + 0.5;
-    vec2 cuv = (suv - 0.5) * uZoom + 0.5 + uPan;
+    vec2 cuv = (uv - 0.5) * uZoom + 0.5 + uPan;
 
-    // Petal mass + its gradient (the bright back-lit rim).
-    float petal = petalField(cuv);
-    float e = 0.0035;
-    float gx = petalField(cuv + vec2(e, 0.0)) - petalField(cuv - vec2(e, 0.0));
-    float gy = petalField(cuv + vec2(0.0, e)) - petalField(cuv - vec2(0.0, e));
-    float rim = length(vec2(gx, gy)) / (2.0 * e);
+    // Continuous silky flow field — sampled at a comfortable macro scale so we
+    // see broad folds, not fine noise.
+    vec2 fp = vec2((cuv.x - 0.5) * aspect + 0.5, cuv.y) * 2.1 + vec2(uSeed, 0.0);
+    float f = flow(fp);
 
-    // Crisp-ish petal silhouette so the folds read as distinct forms and the
-    // deep field keeps its territory.
-    float pm = smoothstep(0.42, 0.86, petal);
+    // A SINGLE soft light source, parked off-centre in the upper third. Its
+    // smooth falloff is what creates depth and a focal point; everywhere else
+    // settles into the deep brand field (lots of calm negative space).
+    vec2 lightC = vec2(0.40 + 0.03 * sin(uTime * 0.05), 0.74 + 0.02 * cos(uTime * 0.04));
+    float d = length((cuv - lightC) * vec2(aspect * 0.78, 1.0));
+    float glow = smoothstep(1.05, 0.0, d);
 
-    // Tight soft bloom near the top-centre, where back-light pours through.
-    vec2 bloomC = vec2(0.50 + 0.04 * sin(uTime * 0.05), 0.80 + 0.02 * cos(uTime * 0.06));
-    float bloom = exp(-pow(length((cuv - bloomC) * vec2(1.05, 1.35)), 2.0) * 11.0);
+    // Luminance: the light pools into the flowing folds, and the bottom of the
+    // frame stays deeper so foreground text reads cleanly.
+    float L = glow * (0.34 + 0.92 * f);
+    L *= mix(0.62, 1.06, smoothstep(-0.1, 1.0, cuv.y));
+    L = clamp(L, 0.0, 1.25);
 
-    // Deep field bias — saturated colour pools toward the lower-left & bottom.
-    float deepBias = smoothstep(0.0, 1.3, (1.0 - cuv.y) * 0.85 + (1.0 - cuv.x) * 0.55);
+    // ---- LoreSpinner palette (clean, saturated, used with restraint) ----
+    vec3 deepNavy = vec3(0.016, 0.070, 0.150);   // deep blue-teal base
+    vec3 teal     = vec3(0.028, 0.330, 0.450);   // mid Tiffany
+    vec3 tiffany  = vec3(0.063, 0.730, 0.835);   // #08cee6 vivid
+    vec3 cream    = vec3(0.984, 0.953, 0.882);   // #fdf5e4
+    vec3 honey    = vec3(0.929, 0.729, 0.408);   // #edba68
 
-    // Composite brightness (the "height" we colour through). Kept restrained
-    // so the deep field dominates and the petal reads as a soft, low-opacity
-    // glow rather than a bright mass.
-    float v = clamp(0.02 + 0.62 * pm + 0.34 * bloom - 0.62 * deepBias * (1.0 - pm), 0.0, 1.2);
+    vec3 col = deepNavy;
+    col = mix(col, teal,    smoothstep(0.12, 0.52, L));
+    col = mix(col, tiffany, smoothstep(0.50, 0.82, L));
+    col = mix(col, cream,   smoothstep(0.84, 1.08, L));
 
-    // Fine fibre striations along the petal, fading with depth-of-field.
-    float fib = fbm(rot(cuv, 0.5) * vec2(5.0, 46.0) + vec2(uSeed, 0.0));
-    float focus = pm * (1.0 - smoothstep(0.9, 1.2, petal));
-    v += (fib - 0.5) * 0.06 * focus;
+    // A whisper of honey only at the very brightest core keeps it on-brand and
+    // stops the highlight reading as clinical white.
+    col = mix(col, honey, smoothstep(0.92, 1.12, L) * 0.30);
 
-    // ---- LoreSpinner palette ----
-    vec3 deepTeal  = vec3(0.008, 0.150, 0.275);   // deep Tiffany-cobalt field
-    vec3 teal      = vec3(0.031, 0.470, 0.580);   // mid Tiffany
-    vec3 cream     = vec3(0.992, 0.961, 0.894);   // #fdf5e4
-    vec3 honey     = vec3(0.929, 0.729, 0.408);   // #edba68
-    vec3 warmWhite = vec3(1.000, 0.985, 0.945);
-    vec3 tiffany   = vec3(0.031, 0.808, 0.902);   // #08cee6
+    // Cool Tiffany breath in the mid shadows so the deep field is alive, not flat.
+    col = mix(col, tiffany * 0.4, smoothstep(0.04, 0.26, L) * (1.0 - smoothstep(0.4, 0.7, L)) * 0.18);
 
-    vec3 col = mix(deepTeal, teal, smoothstep(0.0, 0.44, v));
-    col = mix(col, cream, smoothstep(0.56, 0.92, v));
-    col = mix(col, warmWhite, smoothstep(0.95, 1.18, v));
+    // Gentle vignette — settles the corners without crushing to black.
+    float vign = smoothstep(1.35, 0.25, length((uv - 0.5) * vec2(aspect, 1.0)));
+    col *= mix(0.82, 1.0, vign);
 
-    // Warm honey glow through the lit mid-body of the petal (kept subtle).
-    col = mix(col, honey, smoothstep(0.55, 0.74, v) * (1.0 - smoothstep(0.82, 0.96, v)) * 0.10 * pm);
+    // Soft filmic tonemap for a smooth, gallery-clean falloff.
+    col = col / (1.0 + col * 0.06);
 
-    // Tiffany breath in the cool field around the petal.
-    col = mix(col, tiffany * 0.55, smoothstep(0.06, 0.32, v) * (1.0 - pm) * 0.22);
-
-    // Soft back-lit rim along the petal silhouette (gentle, not a bright line).
-    col = mix(col, cream, clamp(rim * 0.35, 0.0, 0.4) * smoothstep(0.15, 0.55, petal));
-
-    // Bloom screen-blended on top — restrained.
-    col = 1.0 - (1.0 - col) * (1.0 - warmWhite * bloom * 0.28);
-
-    // Pull the whole image back toward the deep field so it sits low and
-    // ambient, like the Apple-style background — never bright or distracting.
-    col = mix(deepTeal * 1.05, col, 0.66);
-
-    // Calmer vignette to settle the edges.
-    float vign = smoothstep(1.25, 0.20, length((uv - 0.5) * vec2(aspect, 1.0)));
-    col *= mix(0.74, 1.0, vign);
-
-    // Soft tonemap + gentle gamma for the diffuse, photographic feel.
-    col = col / (0.98 + col * 0.06);
-    col = pow(col, vec3(0.97));
-
-    // Fine film grain.
-    col += (hash21(fc + uTime * 60.0) - 0.5) * 0.012;
+    // Very fine grain so large flats never band.
+    col += (hash21(fc + uTime * 60.0) - 0.5) * 0.010;
 
     gl_FragColor = vec4(col, 1.0);
 }
@@ -365,8 +322,8 @@ onBeforeUnmount(() => {
     position: relative;
     min-height: 100dvh;
     overflow: hidden;
-    color: #06212a;
-    background: #0a3f4d;
+    color: #f3ede0;
+    background: #04101f;
     font-family:
         ui-sans-serif,
         -apple-system,
@@ -403,7 +360,7 @@ onBeforeUnmount(() => {
 
 .codex-brand {
     gap: 10px;
-    color: rgba(6, 33, 42, 0.9);
+    color: rgba(243, 237, 224, 0.92);
     text-decoration: none;
     font-size: clamp(17px, 2vw, 21px);
     font-weight: 720;
@@ -428,13 +385,13 @@ onBeforeUnmount(() => {
     align-items: center;
     justify-content: center;
     border-radius: 999px;
-    background: #07242c;
-    color: #fdf5e4;
+    background: #fdf5e4;
+    color: #06222b;
     text-decoration: none;
     font-size: 14px;
     font-weight: 650;
     letter-spacing: -0.02em;
-    box-shadow: 0 12px 35px rgba(6, 33, 42, 0.28);
+    box-shadow: 0 14px 40px rgba(3, 14, 26, 0.45);
 }
 
 .codex-cloud-button {
@@ -518,19 +475,21 @@ onBeforeUnmount(() => {
 
 .codex-hero h1 {
     margin: 0;
-    color: #052028;
+    color: #fbf6ec;
     font-size: clamp(56px, 7vw, 82px);
     font-weight: 650;
     letter-spacing: -0.06em;
     line-height: 0.9;
+    text-shadow: 0 2px 30px rgba(3, 14, 26, 0.45);
 }
 
 .codex-hero p {
     margin: 30px 0 34px;
-    color: rgba(6, 33, 42, 0.78);
+    color: rgba(243, 237, 224, 0.82);
     font-size: clamp(19px, 2.1vw, 25px);
     font-weight: 470;
     letter-spacing: -0.03em;
+    text-shadow: 0 1px 18px rgba(3, 14, 26, 0.4);
 }
 
 .codex-download {
@@ -548,7 +507,7 @@ onBeforeUnmount(() => {
 
 .codex-trust p {
     margin: 0 0 48px;
-    color: rgba(6, 33, 42, 0.55);
+    color: rgba(243, 237, 224, 0.6);
     font-size: 18px;
     font-weight: 520;
     letter-spacing: -0.025em;
@@ -564,7 +523,7 @@ onBeforeUnmount(() => {
 }
 
 .codex-logos span {
-    color: rgba(6, 33, 42, 0.52);
+    color: rgba(243, 237, 224, 0.5);
     font-size: clamp(22px, 3vw, 36px);
     font-weight: 760;
     letter-spacing: -0.08em;
