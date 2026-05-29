@@ -48,12 +48,12 @@ const props = defineProps<{
 }>();
 
 const MODELS = [
-    { value: 'gpt-5.5',           label: 'GPT-5.5',           provider: 'OpenAI',    est: '~$1.00', defaultTemp: 1.0  },
-    { value: 'gpt-5.4',           label: 'GPT-5.4',           provider: 'OpenAI',    est: '~$0.85', defaultTemp: 1.0  },
-    { value: 'gpt-5.4-mini',      label: 'GPT-5.4 Mini',      provider: 'OpenAI',    est: '~$0.30', defaultTemp: 0.95 },
-    { value: 'gpt-5.2',           label: 'GPT-5.2',           provider: 'OpenAI',    est: '~$0.45', defaultTemp: 1.0  },
-    { value: 'gpt-4.1',           label: 'GPT-4.1',           provider: 'OpenAI',    est: '~$0.65', defaultTemp: 1.0  },
-    { value: 'chat-latest',       label: 'ChatGPT Latest',    provider: 'OpenAI',    est: '~$0.65', defaultTemp: 1.0  },
+    { value: 'gpt-5.5',           label: 'GPT-5.5',           provider: 'OpenAI',    est: '~$1.00', defaultTemp: 0.9  },
+    { value: 'gpt-5.4',           label: 'GPT-5.4',           provider: 'OpenAI',    est: '~$0.85', defaultTemp: 0.9  },
+    { value: 'gpt-5.4-mini',      label: 'GPT-5.4 Mini',      provider: 'OpenAI',    est: '~$0.30', defaultTemp: 0.9  },
+    { value: 'gpt-5.2',           label: 'GPT-5.2',           provider: 'OpenAI',    est: '~$0.45', defaultTemp: 0.9  },
+    { value: 'gpt-4.1',           label: 'GPT-4.1',           provider: 'OpenAI',    est: '~$0.65', defaultTemp: 0.9  },
+    { value: 'chat-latest',       label: 'ChatGPT Latest',    provider: 'OpenAI',    est: '~$0.65', defaultTemp: 0.9  },
     { value: 'claude-opus-4-8',   label: 'Claude Opus 4.8',   provider: 'Anthropic', est: '~$1.85', defaultTemp: 1.0  },
     { value: 'claude-opus-4-7',   label: 'Claude Opus 4.7',   provider: 'Anthropic', est: '~$1.85', defaultTemp: 1.0  },
     { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', provider: 'Anthropic', est: '~$1.05', defaultTemp: 0.9  },
@@ -67,9 +67,11 @@ const tts = useChaosTextToSpeech();
 const availableStories = computed(() => props.stories.filter((s) => s.available));
 const firstAvailableSlug = computed(() => availableStories.value[0]?.slug ?? props.stories[0]?.slug ?? '');
 
+const DEFAULT_MODEL = 'gpt-5.2';
+
 const selectedStorySlug = ref<string>(firstAvailableSlug.value);
-const selectedModel = ref('gpt-5.2');
-const selectedTemperature = ref(1.0);
+const selectedModel = ref(DEFAULT_MODEL);
+const selectedTemperature = ref(MODELS.find((m) => m.value === DEFAULT_MODEL)?.defaultTemp ?? 0.9);
 const started = ref(false);
 const loading = ref(false);
 const sessionId = ref<string | null>(null);
@@ -100,8 +102,8 @@ const gameLavaStyle = computed<Record<string, string>>(() => {
 
 onMounted(() => {
     document.body.classList.add('chaos-mode-active');
-    // Auto-start story - skip selection UI
-    startWithChoices();
+    // Show the selection screen (story / model / tone) first — the player starts
+    // the adventure explicitly via the "Begin the Adventure" button.
 });
 onUnmounted(() => document.body.classList.remove('chaos-mode-active'));
 
@@ -746,11 +748,12 @@ function resetAdventure(): void {
 
 .chaos-game-shell {
     background:
-        radial-gradient(ellipse 78% 42% at 50% 20%, rgba(var(--chaos-story-accent-rgb), 0.035), transparent 64%),
-        #06070c;
+        radial-gradient(ellipse 92% 58% at 50% 14%, rgba(var(--chaos-story-accent-rgb), 0.12), transparent 68%),
+        radial-gradient(ellipse 90% 48% at 50% 102%, rgba(var(--chaos-tiffany-rgb), 0.08), transparent 64%),
+        #080912;
 }
 
-/* Reference-inspired lava, tuned down so prose remains the focus. */
+/* Reference-inspired lava, balanced as an atmospheric story palette. */
 .chaos-lava-background {
     position: absolute;
     inset: -18vmax;
@@ -758,13 +761,13 @@ function resetAdventure(): void {
     overflow: hidden;
     pointer-events: none;
     background:
-        radial-gradient(circle at 22% 24%, rgba(var(--chaos-story-accent-rgb), 0.74), transparent 28%),
-        radial-gradient(circle at 75% 23%, rgba(var(--chaos-lava-amber-rgb), 0.54), transparent 28%),
-        radial-gradient(circle at 58% 72%, rgba(var(--chaos-tiffany-rgb), 0.42), transparent 31%),
-        radial-gradient(circle at 20% 78%, rgba(var(--chaos-story-base-rgb), 0.54), transparent 28%),
-        linear-gradient(135deg, rgba(var(--chaos-story-shadow-rgb), 0.72) 0%, #141008 40%, #07020c 100%);
-    filter: blur(44px) saturate(1.12) contrast(1.02);
-    opacity: 0.27;
+        radial-gradient(circle at 22% 24%, rgba(var(--chaos-story-accent-rgb), 0.66), transparent 28%),
+        radial-gradient(circle at 75% 23%, rgba(var(--chaos-lava-amber-rgb), 0.48), transparent 28%),
+        radial-gradient(circle at 58% 72%, rgba(var(--chaos-tiffany-rgb), 0.46), transparent 31%),
+        radial-gradient(circle at 20% 78%, rgba(var(--chaos-story-base-rgb), 0.5), transparent 28%),
+        linear-gradient(135deg, rgba(var(--chaos-story-shadow-rgb), 0.72) 0%, #161009 42%, #070812 100%);
+    filter: blur(46px) saturate(1.28) contrast(1.04);
+    opacity: 0.5;
     transform-origin: center;
     animation: chaos-lava-drift 18s ease-in-out infinite alternate;
 }
@@ -775,20 +778,20 @@ function resetAdventure(): void {
     position: absolute;
     inset: 5%;
     background:
-        radial-gradient(circle at 35% 38%, rgba(255, 255, 255, 0.12), transparent 9%),
-        radial-gradient(circle at 58% 42%, rgba(var(--chaos-story-accent-rgb), 0.46), transparent 22%),
-        radial-gradient(circle at 42% 65%, rgba(var(--chaos-lava-amber-rgb), 0.32), transparent 21%),
-        radial-gradient(circle at 72% 62%, rgba(var(--chaos-tiffany-rgb), 0.28), transparent 22%),
-        radial-gradient(circle at 25% 60%, rgba(var(--chaos-story-base-rgb), 0.34), transparent 20%);
+        radial-gradient(circle at 35% 38%, rgba(255, 255, 255, 0.16), transparent 9%),
+        radial-gradient(circle at 58% 42%, rgba(var(--chaos-story-accent-rgb), 0.54), transparent 22%),
+        radial-gradient(circle at 42% 65%, rgba(var(--chaos-lava-amber-rgb), 0.38), transparent 21%),
+        radial-gradient(circle at 72% 62%, rgba(var(--chaos-tiffany-rgb), 0.36), transparent 22%),
+        radial-gradient(circle at 25% 60%, rgba(var(--chaos-story-base-rgb), 0.42), transparent 20%);
     mix-blend-mode: screen;
-    filter: blur(58px) saturate(1.08);
-    opacity: 0.2;
+    filter: blur(54px) saturate(1.22);
+    opacity: 0.34;
     animation: chaos-lava-spin 24s cubic-bezier(0.45, 0, 0.25, 1) infinite;
 }
 
 .chaos-lava-background::after {
     inset: 0;
-    opacity: 0.16;
+    opacity: 0.24;
     transform: rotate(40deg) scale(1.08);
     animation: chaos-lava-swim 16s ease-in-out infinite alternate;
 }
@@ -808,8 +811,8 @@ function resetAdventure(): void {
 
 .chaos-lava-vignette {
     background:
-        radial-gradient(circle at center, rgba(0, 0, 0, 0.08) 0 42%, rgba(0, 0, 0, 0.54) 100%),
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.58));
+        radial-gradient(circle at center, transparent 0 56%, rgba(0, 0, 0, 0.42) 100%),
+        linear-gradient(to bottom, rgba(3, 7, 18, 0.12), rgba(3, 7, 18, 0.34));
 }
 
 @keyframes chaos-lava-drift {
@@ -831,8 +834,8 @@ function resetAdventure(): void {
 
 @media (max-width: 768px) {
     .chaos-lava-background {
-        filter: blur(36px) saturate(1.16) contrast(1.03);
-        opacity: 0.26;
+        filter: blur(38px) saturate(1.22) contrast(1.03);
+        opacity: 0.42;
     }
 }
 
@@ -1107,33 +1110,26 @@ function resetAdventure(): void {
 /* ── Reading field ── */
 .chaos-reading-panel {
     position: relative;
-    background:
-        linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(3, 7, 18, 0.28) 11%,
-            rgba(3, 7, 18, 0.46) 50%,
-            rgba(3, 7, 18, 0.28) 89%,
-            transparent 100%
-        );
 }
 
 .chaos-reading-panel::before {
     content: "";
     position: absolute;
-    inset: 0 -18px;
+    inset: -8vh -18vw;
     z-index: -1;
     pointer-events: none;
     background:
-        radial-gradient(ellipse 80% 55% at 50% 30%, rgba(3, 7, 18, 0.46), transparent 72%),
-        linear-gradient(180deg, rgba(3, 7, 18, 0.18), rgba(3, 7, 18, 0.38));
+        radial-gradient(ellipse 58% 58% at 50% 34%, rgba(3, 7, 18, 0.22), transparent 76%);
 }
 
 /* ── Narration prose ── */
 .chaos-prose {
     line-height: 1.85;
-    color: rgba(250, 243, 228, 0.88);
+    color: rgba(250, 243, 228, 0.9);
     font-size: 1rem;
+    text-shadow:
+        0 1px 12px rgba(0, 0, 0, 0.58),
+        0 0 28px rgba(3, 7, 18, 0.35);
 }
 .chaos-prose :deep(p) { margin-bottom: 1em; }
 .chaos-prose :deep(p:last-child) { margin-bottom: 0; }
