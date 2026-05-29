@@ -701,9 +701,11 @@ function resetAdventure(): void {
 
 <style scoped>
 .chaos-mode-root {
-    /* Brand: Amber Gold — Chaos Mode signature, distinct from Story Guard's Tiffany Blue */
+    /* Brand: Amber Gold + LoreSpinner Tiffany (#08CEE6) in lava layers */
     --chaos-brand: #e5ad53;
     --chaos-brand-rgb: 229, 173, 83;
+    --chaos-tiffany: #08cee6;
+    --chaos-tiffany-rgb: 8, 206, 230;
     --chaos-lava-cream-rgb: 253, 245, 228;
     --chaos-lava-honey-rgb: 237, 186, 104;
     --chaos-lava-amber-rgb: 229, 173, 83;
@@ -720,33 +722,25 @@ function resetAdventure(): void {
 }
 
 .chaos-game-shell {
-    background:
-        radial-gradient(ellipse 120% 90% at 50% -18%, rgba(var(--chaos-lava-amber-rgb), 0.08), transparent 58%),
-        rgb(var(--chaos-lava-void-rgb));
+    background: #08020d;
 }
 
-.chaos-lava-background,
-.chaos-lava-grain,
-.chaos-lava-vignette {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-}
-
+/* Layer stack mirrors apple_music_lava_background_clean.html */
 .chaos-lava-background {
+    position: absolute;
     inset: -18vmax;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
     background:
-        radial-gradient(circle at 20% 20%, rgba(var(--chaos-lava-cream-rgb), 0.11), transparent 26%),
-        radial-gradient(circle at 76% 18%, rgba(var(--chaos-lava-honey-rgb), 0.14), transparent 30%),
-        radial-gradient(circle at 62% 72%, rgba(var(--chaos-lava-amber-rgb), 0.13), transparent 34%),
-        radial-gradient(circle at 18% 78%, rgba(var(--chaos-lava-bronze-rgb), 0.12), transparent 31%),
-        linear-gradient(135deg, rgba(var(--chaos-lava-void-rgb), 0.98) 0%, rgba(var(--chaos-lava-ember-rgb), 0.32) 48%, rgba(3, 7, 18, 0.98) 100%);
-    filter: blur(58px) saturate(1.16) contrast(1.02);
-    opacity: 0.78;
+        radial-gradient(circle at 22% 24%, rgba(var(--chaos-lava-honey-rgb), 0.92), transparent 28%),
+        radial-gradient(circle at 75% 23%, rgba(var(--chaos-lava-amber-rgb), 0.9), transparent 28%),
+        radial-gradient(circle at 58% 72%, rgba(var(--chaos-tiffany-rgb), 0.9), transparent 31%),
+        radial-gradient(circle at 20% 78%, rgba(var(--chaos-tiffany-rgb), 0.88), transparent 28%),
+        linear-gradient(135deg, #0d0508 0%, #141008 40%, #07020c 100%);
+    filter: blur(34px) saturate(1.55) contrast(1.08);
     transform-origin: center;
-    animation: chaos-lava-drift 38s ease-in-out infinite alternate;
-    will-change: transform;
+    animation: chaos-lava-drift 18s ease-in-out infinite alternate;
 }
 
 .chaos-lava-background::before,
@@ -755,61 +749,62 @@ function resetAdventure(): void {
     position: absolute;
     inset: 5%;
     background:
-        radial-gradient(circle at 35% 38%, rgba(var(--chaos-lava-cream-rgb), 0.07), transparent 10%),
-        radial-gradient(circle at 58% 42%, rgba(var(--chaos-lava-amber-rgb), 0.15), transparent 23%),
-        radial-gradient(circle at 42% 65%, rgba(var(--chaos-lava-honey-rgb), 0.12), transparent 22%),
-        radial-gradient(circle at 72% 62%, rgba(var(--chaos-lava-bronze-rgb), 0.11), transparent 24%),
-        radial-gradient(circle at 25% 60%, rgba(var(--chaos-lava-ember-rgb), 0.14), transparent 23%);
+        radial-gradient(circle at 35% 38%, rgba(255, 255, 255, 0.22), transparent 9%),
+        radial-gradient(circle at 58% 42%, rgba(var(--chaos-lava-amber-rgb), 0.72), transparent 22%),
+        radial-gradient(circle at 42% 65%, rgba(var(--chaos-lava-honey-rgb), 0.66), transparent 21%),
+        radial-gradient(circle at 72% 62%, rgba(var(--chaos-tiffany-rgb), 0.66), transparent 22%),
+        radial-gradient(circle at 25% 60%, rgba(var(--chaos-lava-bronze-rgb), 0.58), transparent 20%);
     mix-blend-mode: screen;
-    filter: blur(54px) saturate(1.1);
-    opacity: 0.6;
-    animation: chaos-lava-swim 44s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+    filter: blur(46px) saturate(1.4);
+    animation: chaos-lava-spin 24s cubic-bezier(0.45, 0, 0.25, 1) infinite;
 }
 
 .chaos-lava-background::after {
     inset: 0;
-    opacity: 0.42;
-    transform: rotate(38deg) scale(1.08);
-    animation: chaos-lava-pulse 32s ease-in-out infinite alternate;
+    opacity: 0.66;
+    transform: rotate(40deg) scale(1.08);
+    animation: chaos-lava-swim 16s ease-in-out infinite alternate;
+}
+
+.chaos-lava-grain,
+.chaos-lava-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .chaos-lava-grain {
-    opacity: 0.045;
-    mix-blend-mode: overlay;
-    background-image:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.16) 0 1px, transparent 1px),
-        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 0 1px, transparent 1px);
-    background-size: 19px 19px, 27px 27px;
+    opacity: 0.16;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
 }
 
 .chaos-lava-vignette {
     background:
-        radial-gradient(circle at center, transparent 0 42%, rgba(0, 0, 0, 0.28) 70%, rgba(0, 0, 0, 0.78) 100%),
-        linear-gradient(180deg, rgba(3, 7, 18, 0.2), rgba(3, 7, 18, 0.68));
+        radial-gradient(circle at center, transparent 0 48%, rgba(0, 0, 0, 0.52) 100%),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.48));
 }
 
 @keyframes chaos-lava-drift {
     0% { transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1.03); }
-    50% { transform: translate3d(2%, 2%, 0) rotate(8deg) scale(1.09); }
-    100% { transform: translate3d(-1%, 3%, 0) rotate(-6deg) scale(1.05); }
+    50% { transform: translate3d(2%, 2%, 0) rotate(10deg) scale(1.09); }
+    100% { transform: translate3d(-1%, 3%, 0) rotate(-8deg) scale(1.05); }
 }
 
-@keyframes chaos-lava-swim {
+@keyframes chaos-lava-spin {
     0% { transform: translate(-4%, 2%) rotate(0deg) scale(1.02); }
-    50% { transform: translate(4%, -3%) rotate(130deg) scale(1.13); }
+    50% { transform: translate(4%, -3%) rotate(140deg) scale(1.15); }
     100% { transform: translate(-2%, 1%) rotate(360deg) scale(1.04); }
 }
 
-@keyframes chaos-lava-pulse {
+@keyframes chaos-lava-swim {
     from { transform: translate(-3%, 3%) rotate(35deg) scale(1.06); }
-    to { transform: translate(4%, -4%) rotate(-22deg) scale(1.15); }
+    to { transform: translate(4%, -4%) rotate(-25deg) scale(1.16); }
 }
 
 @media (max-width: 768px) {
     .chaos-lava-background {
-        filter: blur(44px) saturate(1.08) contrast(1);
-        opacity: 0.68;
-        animation-duration: 46s;
+        filter: blur(30px) saturate(1.5) contrast(1.08);
     }
 }
 
