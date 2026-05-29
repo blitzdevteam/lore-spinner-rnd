@@ -12,9 +12,10 @@ const partners = ['virgin atlantic', 'miro', 'Rakuten', 'WHOOP', 'cisco'];
     <main class="codex-rnd-page" aria-label="Codex background reproduction">
         <div class="codex-background" aria-hidden="true">
             <div class="codex-background__base" />
-            <div class="codex-background__milk" />
+            <div class="codex-background__fold" />
+            <div class="codex-background__corner" />
             <div class="codex-background__violet" />
-            <div class="codex-background__azure" />
+            <div class="codex-background__bloom" />
             <div class="codex-background__focal" />
             <div class="codex-background__texture" />
             <div class="codex-background__vignette" />
@@ -97,64 +98,89 @@ const partners = ['virgin atlantic', 'miro', 'Rakuten', 'WHOOP', 'cisco'];
     isolation: isolate;
 }
 
+/* Periwinkle field: lighter top-right, cooler lower-left — the macro-photo base. */
 .codex-background__base {
     inset: -18vmax;
     background:
-        radial-gradient(ellipse 78% 86% at 56% 44%, rgba(255, 255, 255, 0.98) 0 18%, rgba(230, 238, 255, 0.74) 38%, transparent 66%),
-        radial-gradient(ellipse 82% 72% at 24% 68%, rgba(41, 103, 255, 0.76) 0 22%, rgba(68, 139, 255, 0.36) 46%, transparent 72%),
-        radial-gradient(ellipse 68% 64% at 84% 36%, rgba(106, 91, 255, 0.56) 0 24%, rgba(136, 120, 255, 0.34) 48%, transparent 75%),
-        linear-gradient(125deg, #1f61f2 0%, #c9ddff 33%, #fbfbff 52%, #938cff 100%);
-    filter: blur(24px) saturate(1.12) contrast(1.02);
-    transform: scale(1.09);
-    animation: codex-field-drift 24s ease-in-out infinite alternate;
+        linear-gradient(118deg,
+            #4f5fe6 0%,
+            #7c83ee 22%,
+            #b9c4f6 44%,
+            #eef0fc 60%,
+            #cfd0f7 80%,
+            #9f9cf0 100%);
+    filter: blur(8px) saturate(1.04);
+    transform: scale(1.08);
+    animation: codex-field-drift 26s ease-in-out infinite alternate;
 }
 
-.codex-background__milk {
-    inset: -10vmax;
+/* Soft diagonal fold of light sweeping from lower-left up toward the centre. */
+.codex-background__fold {
+    inset: -16vmax;
     background:
-        radial-gradient(ellipse 56% 78% at 47% 42%, rgba(255, 255, 255, 0.96), rgba(247, 249, 255, 0.68) 34%, transparent 68%),
-        radial-gradient(ellipse 34% 44% at 67% 40%, rgba(241, 238, 255, 0.72), transparent 72%);
-    filter: blur(16px);
+        linear-gradient(122deg,
+            transparent 0 18%,
+            rgba(126, 158, 245, 0.55) 28%,
+            rgba(196, 214, 252, 0.7) 40%,
+            rgba(255, 255, 255, 0.32) 50%,
+            transparent 64%);
+    filter: blur(26px);
     mix-blend-mode: screen;
-    opacity: 0.94;
-    animation: codex-milk-breathe 18s cubic-bezier(0.45, 0, 0.25, 1) infinite alternate;
+    opacity: 0.85;
+    transform: rotate(-2deg);
+    animation: codex-fold-shift 22s cubic-bezier(0.45, 0, 0.25, 1) infinite alternate;
 }
 
-.codex-background__violet {
-    width: 48vmax;
-    height: 40vmax;
-    top: -12vmax;
-    right: -7vmax;
-    border-radius: 44% 56% 62% 38% / 44% 42% 58% 56%;
+/* Deep, near-navy out-of-focus mass anchoring the lower-left corner. */
+.codex-background__corner {
+    width: 70vmax;
+    height: 58vmax;
+    left: -26vmax;
+    bottom: -26vmax;
+    border-radius: 56% 44% 52% 48% / 52% 46% 54% 48%;
     background:
-        radial-gradient(circle at 42% 40%, rgba(65, 51, 236, 0.5), rgba(112, 96, 255, 0.38) 38%, rgba(147, 128, 255, 0.16) 62%, transparent 78%);
-    filter: blur(20px) saturate(1.22);
-    opacity: 0.82;
-    transform: rotate(-12deg);
+        radial-gradient(ellipse at 64% 36%,
+            rgba(26, 46, 168, 0.92) 0 18%,
+            rgba(43, 78, 214, 0.6) 38%,
+            rgba(96, 132, 240, 0.26) 60%,
+            transparent 78%);
+    filter: blur(22px) saturate(1.1);
+    opacity: 0.92;
+    animation: codex-corner-float 30s ease-in-out infinite alternate;
+}
+
+/* Violet soft-focus forms across the top — the blurred petal edges. */
+.codex-background__violet {
+    inset: -14vmax;
+    background:
+        radial-gradient(ellipse 40% 34% at 82% 14%, rgba(150, 120, 246, 0.7), rgba(176, 150, 250, 0.32) 46%, transparent 72%),
+        radial-gradient(ellipse 30% 26% at 62% 6%, rgba(120, 96, 240, 0.5), transparent 70%),
+        radial-gradient(ellipse 46% 30% at 96% 64%, rgba(150, 132, 248, 0.46), transparent 74%);
+    filter: blur(24px) saturate(1.12);
+    opacity: 0.8;
     animation: codex-violet-float 28s ease-in-out infinite alternate;
 }
 
-.codex-background__azure {
-    width: 62vmax;
-    height: 54vmax;
-    left: -22vmax;
-    bottom: -21vmax;
-    border-radius: 58% 42% 48% 52% / 48% 48% 52% 52%;
+/* Bright diffuse bloom — the luminous core sitting upper-centre/right. */
+.codex-background__bloom {
+    inset: -8vmax;
     background:
-        radial-gradient(ellipse at 62% 38%, rgba(16, 91, 244, 0.74), rgba(48, 117, 255, 0.56) 34%, rgba(106, 170, 255, 0.22) 58%, transparent 76%);
-    filter: blur(18px) saturate(1.16);
-    opacity: 0.88;
-    animation: codex-azure-float 30s ease-in-out infinite alternate;
+        radial-gradient(ellipse 40% 46% at 54% 34%, rgba(255, 255, 255, 0.96), rgba(248, 250, 255, 0.5) 36%, transparent 66%),
+        radial-gradient(ellipse 26% 40% at 72% 30%, rgba(255, 255, 255, 0.62), transparent 64%);
+    filter: blur(16px);
+    mix-blend-mode: screen;
+    opacity: 0.96;
+    animation: codex-bloom-breathe 18s ease-in-out infinite alternate;
 }
 
+/* Tiny shifting micro-highlights so the focal point feels alive. */
 .codex-background__focal {
     inset: -8vmax;
     background:
-        radial-gradient(ellipse 42% 34% at 46% 43%, rgba(255, 255, 255, 0.9), transparent 68%),
-        radial-gradient(ellipse 30% 24% at 34% 46%, rgba(117, 218, 255, 0.18), transparent 72%),
-        radial-gradient(ellipse 32% 28% at 67% 48%, rgba(127, 112, 255, 0.18), transparent 70%);
+        radial-gradient(ellipse 18% 16% at 50% 38%, rgba(255, 255, 255, 0.5), transparent 70%),
+        radial-gradient(ellipse 22% 18% at 33% 52%, rgba(150, 188, 255, 0.2), transparent 72%);
     mix-blend-mode: screen;
-    filter: blur(8px);
+    filter: blur(10px);
     opacity: 0.9;
     animation: codex-focus-shift 20s ease-in-out infinite alternate;
 }
@@ -378,24 +404,29 @@ const partners = ['virgin atlantic', 'miro', 'Rakuten', 'WHOOP', 'cisco'];
 }
 
 @keyframes codex-field-drift {
-    0% { transform: translate3d(-1.8%, -1.2%, 0) scale(1.09) rotate(0deg); }
-    50% { transform: translate3d(1.2%, 1.4%, 0) scale(1.14) rotate(4deg); }
-    100% { transform: translate3d(-0.6%, 2.1%, 0) scale(1.11) rotate(-3deg); }
+    0% { transform: translate3d(-1.4%, -1%, 0) scale(1.08); }
+    50% { transform: translate3d(1%, 1.2%, 0) scale(1.11); }
+    100% { transform: translate3d(-0.5%, 1.8%, 0) scale(1.09); }
 }
 
-@keyframes codex-milk-breathe {
-    from { transform: translate3d(-1%, 0.5%, 0) scale(1.02) rotate(-2deg); opacity: 0.82; }
-    to { transform: translate3d(1.5%, -1%, 0) scale(1.08) rotate(3deg); opacity: 0.98; }
+@keyframes codex-fold-shift {
+    from { transform: translate3d(-2%, 1%, 0) rotate(-2deg) scale(1.02); opacity: 0.74; }
+    to { transform: translate3d(2%, -1.5%, 0) rotate(1deg) scale(1.08); opacity: 0.92; }
+}
+
+@keyframes codex-corner-float {
+    from { transform: translate3d(0, 0, 0) rotate(-4deg) scale(1.02); }
+    to { transform: translate3d(5%, -4%, 0) rotate(3deg) scale(1.1); }
 }
 
 @keyframes codex-violet-float {
-    from { transform: translate3d(-1%, -1%, 0) rotate(-12deg) scale(1); }
-    to { transform: translate3d(-7%, 6%, 0) rotate(-2deg) scale(1.12); }
+    from { transform: translate3d(-1%, -1%, 0) scale(1.02); opacity: 0.72; }
+    to { transform: translate3d(-5%, 4%, 0) scale(1.1); opacity: 0.88; }
 }
 
-@keyframes codex-azure-float {
-    from { transform: translate3d(0, 0, 0) rotate(-10deg) scale(1.04); }
-    to { transform: translate3d(8%, -5%, 0) rotate(4deg) scale(1.12); }
+@keyframes codex-bloom-breathe {
+    from { transform: translate3d(-0.8%, 0.6%, 0) scale(1.01); opacity: 0.86; }
+    to { transform: translate3d(1.4%, -1%, 0) scale(1.07); opacity: 1; }
 }
 
 @keyframes codex-focus-shift {
@@ -434,9 +465,10 @@ const partners = ['virgin atlantic', 'miro', 'Rakuten', 'WHOOP', 'cisco'];
 
 @media (prefers-reduced-motion: reduce) {
     .codex-background__base,
-    .codex-background__milk,
+    .codex-background__fold,
+    .codex-background__corner,
     .codex-background__violet,
-    .codex-background__azure,
+    .codex-background__bloom,
     .codex-background__focal,
     .codex-background__texture {
         animation: none;
