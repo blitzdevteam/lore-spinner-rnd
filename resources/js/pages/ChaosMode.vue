@@ -531,6 +531,7 @@ function resetAdventure(): void {
         <!-- ── Game screen ───────────────────────────────────────────────────── -->
         <div v-else class="chaos-game-shell relative z-[1] flex h-full flex-col overflow-hidden" :style="gameLavaStyle">
             <div class="chaos-lava-background" aria-hidden="true" />
+            <div class="chaos-lava-bloom" aria-hidden="true" />
             <div class="chaos-lava-grain" aria-hidden="true" />
             <div class="chaos-lava-vignette" aria-hidden="true" />
 
@@ -748,9 +749,9 @@ function resetAdventure(): void {
 
 .chaos-game-shell {
     background:
-        radial-gradient(ellipse 92% 58% at 50% 14%, rgba(var(--chaos-story-accent-rgb), 0.12), transparent 68%),
-        radial-gradient(ellipse 90% 48% at 50% 102%, rgba(var(--chaos-tiffany-rgb), 0.08), transparent 64%),
-        #080912;
+        radial-gradient(ellipse 96% 62% at 50% 12%, rgba(var(--chaos-story-accent-rgb), 0.2), transparent 70%),
+        radial-gradient(ellipse 94% 52% at 50% 102%, rgba(var(--chaos-tiffany-rgb), 0.14), transparent 68%),
+        #0b0e18;
 }
 
 /* Reference-inspired lava, balanced as an atmospheric story palette. */
@@ -761,15 +762,15 @@ function resetAdventure(): void {
     overflow: hidden;
     pointer-events: none;
     background:
-        radial-gradient(circle at 22% 24%, rgba(var(--chaos-story-accent-rgb), 0.66), transparent 28%),
-        radial-gradient(circle at 75% 23%, rgba(var(--chaos-lava-amber-rgb), 0.48), transparent 28%),
-        radial-gradient(circle at 58% 72%, rgba(var(--chaos-tiffany-rgb), 0.46), transparent 31%),
-        radial-gradient(circle at 20% 78%, rgba(var(--chaos-story-base-rgb), 0.5), transparent 28%),
-        linear-gradient(135deg, rgba(var(--chaos-story-shadow-rgb), 0.72) 0%, #161009 42%, #070812 100%);
-    filter: blur(46px) saturate(1.28) contrast(1.04);
-    opacity: 0.5;
+        radial-gradient(circle at 22% 24%, rgba(var(--chaos-story-accent-rgb), 0.78), transparent 30%),
+        radial-gradient(circle at 75% 23%, rgba(var(--chaos-lava-amber-rgb), 0.58), transparent 30%),
+        radial-gradient(circle at 58% 72%, rgba(var(--chaos-tiffany-rgb), 0.62), transparent 34%),
+        radial-gradient(circle at 20% 78%, rgba(var(--chaos-story-base-rgb), 0.56), transparent 30%),
+        linear-gradient(135deg, rgba(var(--chaos-story-shadow-rgb), 0.48) 0%, #1a140c 42%, #0a0f1a 100%);
+    filter: blur(52px) saturate(1.36) contrast(1.03);
+    opacity: 0.62;
     transform-origin: center;
-    animation: chaos-lava-drift 18s ease-in-out infinite alternate;
+    animation: chaos-lava-drift 20s ease-in-out infinite alternate;
 }
 
 .chaos-lava-background::before,
@@ -784,18 +785,19 @@ function resetAdventure(): void {
         radial-gradient(circle at 72% 62%, rgba(var(--chaos-tiffany-rgb), 0.36), transparent 22%),
         radial-gradient(circle at 25% 60%, rgba(var(--chaos-story-base-rgb), 0.42), transparent 20%);
     mix-blend-mode: screen;
-    filter: blur(54px) saturate(1.22);
-    opacity: 0.34;
+    filter: blur(62px) saturate(1.28);
+    opacity: 0.42;
     animation: chaos-lava-spin 24s cubic-bezier(0.45, 0, 0.25, 1) infinite;
 }
 
 .chaos-lava-background::after {
     inset: 0;
-    opacity: 0.24;
+    opacity: 0.3;
     transform: rotate(40deg) scale(1.08);
     animation: chaos-lava-swim 16s ease-in-out infinite alternate;
 }
 
+.chaos-lava-bloom,
 .chaos-lava-grain,
 .chaos-lava-vignette {
     position: absolute;
@@ -804,15 +806,26 @@ function resetAdventure(): void {
     pointer-events: none;
 }
 
+.chaos-lava-bloom {
+    background:
+        radial-gradient(ellipse 52% 40% at 30% 34%, rgba(var(--chaos-story-accent-rgb), 0.22), transparent 72%),
+        radial-gradient(ellipse 46% 36% at 72% 62%, rgba(var(--chaos-tiffany-rgb), 0.18), transparent 76%),
+        radial-gradient(ellipse 40% 28% at 54% 52%, rgba(255, 255, 255, 0.06), transparent 80%);
+    mix-blend-mode: screen;
+    opacity: 0.38;
+    filter: blur(22px) saturate(1.15);
+    animation: chaos-lava-focus 22s ease-in-out infinite alternate;
+}
+
 .chaos-lava-grain {
-    opacity: 0.045;
+    opacity: 0.06;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
 }
 
 .chaos-lava-vignette {
     background:
-        radial-gradient(circle at center, transparent 0 56%, rgba(0, 0, 0, 0.42) 100%),
-        linear-gradient(to bottom, rgba(3, 7, 18, 0.12), rgba(3, 7, 18, 0.34));
+        radial-gradient(circle at center, transparent 0 62%, rgba(0, 0, 0, 0.35) 100%),
+        linear-gradient(to bottom, rgba(3, 7, 18, 0.08), rgba(3, 7, 18, 0.24));
 }
 
 @keyframes chaos-lava-drift {
@@ -832,10 +845,16 @@ function resetAdventure(): void {
     to { transform: translate(4%, -4%) rotate(-25deg) scale(1.16); }
 }
 
+@keyframes chaos-lava-focus {
+    0% { transform: translate3d(-1.5%, -1%, 0) scale(1); }
+    50% { transform: translate3d(2%, 1.5%, 0) scale(1.08); }
+    100% { transform: translate3d(-2.2%, 2.5%, 0) scale(1.03); }
+}
+
 @media (max-width: 768px) {
     .chaos-lava-background {
-        filter: blur(38px) saturate(1.22) contrast(1.03);
-        opacity: 0.42;
+        filter: blur(42px) saturate(1.26) contrast(1.03);
+        opacity: 0.55;
     }
 }
 
@@ -1119,7 +1138,7 @@ function resetAdventure(): void {
     z-index: -1;
     pointer-events: none;
     background:
-        radial-gradient(ellipse 58% 58% at 50% 34%, rgba(3, 7, 18, 0.22), transparent 76%);
+        radial-gradient(ellipse 58% 58% at 50% 34%, rgba(3, 7, 18, 0.15), transparent 76%);
 }
 
 /* ── Narration prose ── */
@@ -1128,8 +1147,8 @@ function resetAdventure(): void {
     color: rgba(250, 243, 228, 0.9);
     font-size: 1rem;
     text-shadow:
-        0 1px 12px rgba(0, 0, 0, 0.58),
-        0 0 28px rgba(3, 7, 18, 0.35);
+        0 1px 10px rgba(0, 0, 0, 0.48),
+        0 0 22px rgba(3, 7, 18, 0.26);
 }
 .chaos-prose :deep(p) { margin-bottom: 1em; }
 .chaos-prose :deep(p:last-child) { margin-bottom: 0; }
