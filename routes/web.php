@@ -16,6 +16,7 @@ Route::middleware(['auth:manager'])
 Route::get('/', Controllers\IndexController::class)->name('index');
 
 Route::get('design-rnd', fn () => inertia('DesignRnd'))->name('design-rnd');
+Route::get('bg-rnd', fn () => inertia('BgRnd'))->name('bg-rnd');
 
 Route::resource('creators', Controllers\CreatorController::class)
     ->scoped([
