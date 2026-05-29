@@ -142,14 +142,15 @@ void main() {
     // Deep field bias — saturated colour pools toward the lower-left & bottom.
     float deepBias = smoothstep(0.0, 1.3, (1.0 - cuv.y) * 0.85 + (1.0 - cuv.x) * 0.55);
 
-    // Composite brightness (the "height" we colour through). The field stays
-    // deep where there is no petal; the petal and bloom carry the light.
-    float v = clamp(0.04 + 1.0 * pm + 0.78 * bloom - 0.5 * deepBias * (1.0 - pm), 0.0, 1.35);
+    // Composite brightness (the "height" we colour through). Kept restrained
+    // so the deep field dominates and the petal reads as a soft, low-opacity
+    // glow rather than a bright mass.
+    float v = clamp(0.02 + 0.62 * pm + 0.34 * bloom - 0.62 * deepBias * (1.0 - pm), 0.0, 1.2);
 
     // Fine fibre striations along the petal, fading with depth-of-field.
     float fib = fbm(rot(cuv, 0.5) * vec2(5.0, 46.0) + vec2(uSeed, 0.0));
     float focus = pm * (1.0 - smoothstep(0.9, 1.2, petal));
-    v += (fib - 0.5) * 0.08 * focus;
+    v += (fib - 0.5) * 0.06 * focus;
 
     // ---- LoreSpinner palette ----
     vec3 deepTeal  = vec3(0.008, 0.150, 0.275);   // deep Tiffany-cobalt field
@@ -159,29 +160,33 @@ void main() {
     vec3 warmWhite = vec3(1.000, 0.985, 0.945);
     vec3 tiffany   = vec3(0.031, 0.808, 0.902);   // #08cee6
 
-    vec3 col = mix(deepTeal, teal, smoothstep(0.0, 0.38, v));
-    col = mix(col, cream, smoothstep(0.40, 0.74, v));
-    col = mix(col, warmWhite, smoothstep(0.78, 1.05, v));
+    vec3 col = mix(deepTeal, teal, smoothstep(0.0, 0.44, v));
+    col = mix(col, cream, smoothstep(0.56, 0.92, v));
+    col = mix(col, warmWhite, smoothstep(0.95, 1.18, v));
 
     // Warm honey glow through the lit mid-body of the petal (kept subtle).
-    col = mix(col, honey, smoothstep(0.50, 0.68, v) * (1.0 - smoothstep(0.74, 0.9, v)) * 0.13 * pm);
+    col = mix(col, honey, smoothstep(0.55, 0.74, v) * (1.0 - smoothstep(0.82, 0.96, v)) * 0.10 * pm);
 
     // Tiffany breath in the cool field around the petal.
-    col = mix(col, tiffany * 0.6, smoothstep(0.06, 0.32, v) * (1.0 - pm) * 0.30);
+    col = mix(col, tiffany * 0.55, smoothstep(0.06, 0.32, v) * (1.0 - pm) * 0.22);
 
-    // Bright back-lit rim along the petal silhouette.
-    col = mix(col, warmWhite, clamp(rim * 0.7, 0.0, 0.75) * smoothstep(0.15, 0.55, petal));
+    // Soft back-lit rim along the petal silhouette (gentle, not a bright line).
+    col = mix(col, cream, clamp(rim * 0.35, 0.0, 0.4) * smoothstep(0.15, 0.55, petal));
 
-    // Bloom screen-blended on top.
-    col = 1.0 - (1.0 - col) * (1.0 - warmWhite * bloom * 0.6);
+    // Bloom screen-blended on top — restrained.
+    col = 1.0 - (1.0 - col) * (1.0 - warmWhite * bloom * 0.28);
 
-    // Light, airy vignette — never crushes to black.
-    float vign = smoothstep(1.25, 0.30, length((uv - 0.5) * vec2(aspect, 1.0)));
-    col *= mix(0.86, 1.0, vign);
+    // Pull the whole image back toward the deep field so it sits low and
+    // ambient, like the Apple-style background — never bright or distracting.
+    col = mix(deepTeal * 1.05, col, 0.66);
+
+    // Calmer vignette to settle the edges.
+    float vign = smoothstep(1.25, 0.20, length((uv - 0.5) * vec2(aspect, 1.0)));
+    col *= mix(0.74, 1.0, vign);
 
     // Soft tonemap + gentle gamma for the diffuse, photographic feel.
-    col = col / (0.95 + col * 0.09);
-    col = pow(col, vec3(0.93));
+    col = col / (0.98 + col * 0.06);
+    col = pow(col, vec3(0.97));
 
     // Fine film grain.
     col += (hash21(fc + uTime * 60.0) - 0.5) * 0.012;
