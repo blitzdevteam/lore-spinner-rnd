@@ -88,6 +88,15 @@ const scrollEl = ref<HTMLElement | null>(null);
 const selectedStory = computed(() => props.stories.find((s) => s.slug === selectedStorySlug.value));
 
 const storyTheme = (slug: string) => STORY_THEMES[slug] ?? STORY_THEMES['__default__'];
+const gameLavaStyle = computed<Record<string, string>>(() => {
+    const theme = storyTheme(selectedStorySlug.value);
+
+    return {
+        '--chaos-story-accent-rgb': hexToRgbString(theme.accent),
+        '--chaos-story-base-rgb': hexToRgbString(theme.from),
+        '--chaos-story-shadow-rgb': hexToRgbString(theme.via),
+    };
+});
 
 onMounted(() => {
     document.body.classList.add('chaos-mode-active');
@@ -118,6 +127,17 @@ const narratorIndexMap = computed(() => {
 
 function emptyWorldState(): WorldState {
     return { location: '', conditions: [], items: [], relationships: [], knowledge: [], notes: [] };
+}
+
+function hexToRgbString(hex: string): string {
+    const normalized = hex.replace('#', '');
+    const value = normalized.length === 3
+        ? normalized.split('').map((char) => char + char).join('')
+        : normalized;
+
+    const numeric = Number.parseInt(value, 16);
+
+    return `${(numeric >> 16) & 255}, ${(numeric >> 8) & 255}, ${numeric & 255}`;
 }
 
 function getCsrf(): string {
@@ -507,7 +527,7 @@ function resetAdventure(): void {
         </template>
 
         <!-- ── Game screen ───────────────────────────────────────────────────── -->
-        <div v-else class="chaos-game-shell relative z-[1] flex h-full flex-col overflow-hidden">
+        <div v-else class="chaos-game-shell relative z-[1] flex h-full flex-col overflow-hidden" :style="gameLavaStyle">
             <div class="chaos-lava-background" aria-hidden="true" />
             <div class="chaos-lava-grain" aria-hidden="true" />
             <div class="chaos-lava-vignette" aria-hidden="true" />
@@ -580,7 +600,7 @@ function resetAdventure(): void {
                     ref="scrollEl"
                     class="chaos-scroll absolute inset-0 overflow-y-auto"
                 >
-                    <div class="mx-auto flex max-w-3xl flex-col divide-y divide-gray-100/10 px-4 pb-8 sm:px-8">
+                    <div class="chaos-reading-panel mx-auto flex max-w-3xl flex-col divide-y divide-gray-100/10 px-4 pb-8 sm:px-8">
 
                         <template v-for="(turn, idx) in turns" :key="idx">
                             <!-- Narrator turn -->
@@ -712,6 +732,9 @@ function resetAdventure(): void {
     --chaos-lava-bronze-rgb: 143, 92, 13;
     --chaos-lava-ember-rgb: 74, 43, 6;
     --chaos-lava-void-rgb: 10, 6, 3;
+    --chaos-story-accent-rgb: 229, 173, 83;
+    --chaos-story-base-rgb: 58, 40, 0;
+    --chaos-story-shadow-rgb: 15, 11, 0;
 }
 
 .chaos-mode-brand-bg {
@@ -722,10 +745,12 @@ function resetAdventure(): void {
 }
 
 .chaos-game-shell {
-    background: #08020d;
+    background:
+        radial-gradient(ellipse 78% 42% at 50% 20%, rgba(var(--chaos-story-accent-rgb), 0.035), transparent 64%),
+        #06070c;
 }
 
-/* Layer stack mirrors apple_music_lava_background_clean.html */
+/* Reference-inspired lava, tuned down so prose remains the focus. */
 .chaos-lava-background {
     position: absolute;
     inset: -18vmax;
@@ -733,12 +758,13 @@ function resetAdventure(): void {
     overflow: hidden;
     pointer-events: none;
     background:
-        radial-gradient(circle at 22% 24%, rgba(var(--chaos-lava-honey-rgb), 0.92), transparent 28%),
-        radial-gradient(circle at 75% 23%, rgba(var(--chaos-lava-amber-rgb), 0.9), transparent 28%),
-        radial-gradient(circle at 58% 72%, rgba(var(--chaos-tiffany-rgb), 0.9), transparent 31%),
-        radial-gradient(circle at 20% 78%, rgba(var(--chaos-tiffany-rgb), 0.88), transparent 28%),
-        linear-gradient(135deg, #0d0508 0%, #141008 40%, #07020c 100%);
-    filter: blur(34px) saturate(1.55) contrast(1.08);
+        radial-gradient(circle at 22% 24%, rgba(var(--chaos-story-accent-rgb), 0.74), transparent 28%),
+        radial-gradient(circle at 75% 23%, rgba(var(--chaos-lava-amber-rgb), 0.54), transparent 28%),
+        radial-gradient(circle at 58% 72%, rgba(var(--chaos-tiffany-rgb), 0.42), transparent 31%),
+        radial-gradient(circle at 20% 78%, rgba(var(--chaos-story-base-rgb), 0.54), transparent 28%),
+        linear-gradient(135deg, rgba(var(--chaos-story-shadow-rgb), 0.72) 0%, #141008 40%, #07020c 100%);
+    filter: blur(44px) saturate(1.12) contrast(1.02);
+    opacity: 0.27;
     transform-origin: center;
     animation: chaos-lava-drift 18s ease-in-out infinite alternate;
 }
@@ -749,19 +775,20 @@ function resetAdventure(): void {
     position: absolute;
     inset: 5%;
     background:
-        radial-gradient(circle at 35% 38%, rgba(255, 255, 255, 0.22), transparent 9%),
-        radial-gradient(circle at 58% 42%, rgba(var(--chaos-lava-amber-rgb), 0.72), transparent 22%),
-        radial-gradient(circle at 42% 65%, rgba(var(--chaos-lava-honey-rgb), 0.66), transparent 21%),
-        radial-gradient(circle at 72% 62%, rgba(var(--chaos-tiffany-rgb), 0.66), transparent 22%),
-        radial-gradient(circle at 25% 60%, rgba(var(--chaos-lava-bronze-rgb), 0.58), transparent 20%);
+        radial-gradient(circle at 35% 38%, rgba(255, 255, 255, 0.12), transparent 9%),
+        radial-gradient(circle at 58% 42%, rgba(var(--chaos-story-accent-rgb), 0.46), transparent 22%),
+        radial-gradient(circle at 42% 65%, rgba(var(--chaos-lava-amber-rgb), 0.32), transparent 21%),
+        radial-gradient(circle at 72% 62%, rgba(var(--chaos-tiffany-rgb), 0.28), transparent 22%),
+        radial-gradient(circle at 25% 60%, rgba(var(--chaos-story-base-rgb), 0.34), transparent 20%);
     mix-blend-mode: screen;
-    filter: blur(46px) saturate(1.4);
+    filter: blur(58px) saturate(1.08);
+    opacity: 0.2;
     animation: chaos-lava-spin 24s cubic-bezier(0.45, 0, 0.25, 1) infinite;
 }
 
 .chaos-lava-background::after {
     inset: 0;
-    opacity: 0.66;
+    opacity: 0.16;
     transform: rotate(40deg) scale(1.08);
     animation: chaos-lava-swim 16s ease-in-out infinite alternate;
 }
@@ -775,14 +802,14 @@ function resetAdventure(): void {
 }
 
 .chaos-lava-grain {
-    opacity: 0.16;
+    opacity: 0.045;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
 }
 
 .chaos-lava-vignette {
     background:
-        radial-gradient(circle at center, transparent 0 48%, rgba(0, 0, 0, 0.52) 100%),
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.48));
+        radial-gradient(circle at center, rgba(0, 0, 0, 0.08) 0 42%, rgba(0, 0, 0, 0.54) 100%),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.58));
 }
 
 @keyframes chaos-lava-drift {
@@ -804,7 +831,8 @@ function resetAdventure(): void {
 
 @media (max-width: 768px) {
     .chaos-lava-background {
-        filter: blur(30px) saturate(1.5) contrast(1.08);
+        filter: blur(36px) saturate(1.16) contrast(1.03);
+        opacity: 0.26;
     }
 }
 
@@ -1074,6 +1102,31 @@ function resetAdventure(): void {
         rgba(var(--chaos-brand-rgb), 0.02) 100%
     );
     border-bottom: 1px solid rgba(var(--chaos-brand-rgb), 0.10);
+}
+
+/* ── Reading field ── */
+.chaos-reading-panel {
+    position: relative;
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(3, 7, 18, 0.28) 11%,
+            rgba(3, 7, 18, 0.46) 50%,
+            rgba(3, 7, 18, 0.28) 89%,
+            transparent 100%
+        );
+}
+
+.chaos-reading-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0 -18px;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 80% 55% at 50% 30%, rgba(3, 7, 18, 0.46), transparent 72%),
+        linear-gradient(180deg, rgba(3, 7, 18, 0.18), rgba(3, 7, 18, 0.38));
 }
 
 /* ── Narration prose ── */
