@@ -18,8 +18,14 @@ return [
             'version' => env('ANTHROPIC_API_VERSION', '2023-06-01'),
             'url' => env('ANTHROPIC_URL', 'https://api.anthropic.com/v1'),
             'default_thinking_budget' => env('ANTHROPIC_DEFAULT_THINKING_BUDGET', 1024),
-            // Include beta strings as a comma separated list.
-            'anthropic_beta' => env('ANTHROPIC_BETA', null),
+            // structured-outputs-2025-11-13 makes Prism 0.99.x select its
+            // NativeOutputFormatStructuredStrategy (sends the transition-period `output_format`
+            // json_schema param, which Anthropic still honours for current models incl. Opus 4.8).
+            // This returns guaranteed schema-compliant JSON in content[0].text instead of the
+            // tool-calling path, which breaks on Opus 4.8+ (it leaks <parameter ...> XML).
+            // NOTE: when upgrading to Prism 0.100+ (native is the default and uses the GA
+            // `output_config.format`), this header is no longer required and can be removed.
+            'anthropic_beta' => env('ANTHROPIC_BETA', 'structured-outputs-2025-11-13'),
         ],
         'ollama' => [
             'url' => env('OLLAMA_URL', 'http://localhost:11434'),

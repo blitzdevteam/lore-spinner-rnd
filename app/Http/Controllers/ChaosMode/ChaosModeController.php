@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\ChaosMode;
 
 use App\Ai\Agents\Chaos\ChaosNarrationSchema;
+use App\Ai\Agents\Chaos\NativeObjectSchema;
 use App\ChaosMode\ChaosStoryConfig;
 use App\Http\Controllers\Controller;
 use App\Models\ChaosSession;
@@ -18,7 +19,6 @@ use Illuminate\JsonSchema\JsonSchemaTypeFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Response;
-use Laravel\Ai\ObjectSchema;
 use Prism\Prism\Facades\Prism;
 use Throwable;
 
@@ -58,6 +58,7 @@ final class ChaosModeController extends Controller
         'gpt-4.1'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => null],
         'chat-latest'       => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => null],
         'claude-opus-4-8'   => ['provider' => 'anthropic', 'temperature' => 1.0,  'reasoning_effort' => null],
+        'claude-opus-4-7'   => ['provider' => 'anthropic', 'temperature' => 1.0,  'reasoning_effort' => null],
         'claude-sonnet-4-6' => ['provider' => 'anthropic', 'temperature' => 0.9,  'reasoning_effort' => null],
         'claude-haiku-4-5'  => ['provider' => 'anthropic', 'temperature' => 0.95, 'reasoning_effort' => null],
     ];
@@ -940,7 +941,7 @@ final class ChaosModeController extends Controller
 
         $request = Prism::structured()
             ->using($config['provider'], $model)
-            ->withSchema(new ObjectSchema($schemaArray))
+            ->withSchema(new NativeObjectSchema($schemaArray))
             ->withSystemPrompt($systemPrompt)
             ->withPrompt($promptText)
             ->usingTemperature($temperature)
@@ -1005,7 +1006,14 @@ final class ChaosModeController extends Controller
         }
 
         if ($config['provider'] === 'anthropic') {
-            return ['use_tool_calling' => true];
+            // Use Anthropic's native structured outputs (constrained decoding) — NOT tool
+            // calling. Tool-calling structured output breaks on Claude Opus 4.8+, which emits
+            // raw <parameter name="...">value</parameter> XML that leaks into the parsed fields.
+            // Native output returns guaranteed schema-compliant JSON in content[0].text.
+            // (Prism 0.99.x routes to NativeOutputFormatStructuredStrategy when the
+            // structured-outputs beta header is set in config/prism.php; on Prism 0.100+
+            // native is the default and use_tool_calling=true would re-introduce the bug.)
+            return [];
         }
 
         return [];

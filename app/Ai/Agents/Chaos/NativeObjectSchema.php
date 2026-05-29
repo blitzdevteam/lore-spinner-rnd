@@ -1,0 +1,56 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Ai\Agents\Chaos;
+
+use Illuminate\JsonSchema\Types\ObjectType;
+use Prism\Prism\Contracts\HasSchemaType;
+use Prism\Prism\Contracts\Schema;
+
+/**
+ * Prism schema wrapper for Anthropic native structured outputs.
+ *
+ * Laravel\Ai\ObjectSchema injects a root-level "name" key into the serialized
+ * schema (via Schema::toSchema()). Anthropic's native structured output
+ * (output_format.schema / output_config.format.schema) rejects that with:
+ *
+ *   400 invalid_request_error - output_format.schema:
+ *   For 'object' type, property 'name' is not supported
+ *
+ * This wrapper exposes the schema name separately (via name()) while returning
+ * the PURE JSON Schema from toArray() — no stray "name" keyword in the schema
+ * body. That shape is accepted by both Anthropic (native) and OpenAI.
+ */
+final class NativeObjectSchema implements HasSchemaType, Schema
+{
+    private readonly ObjectType $type;
+
+    /**
+     * @param  array<string, mixed>  $properties
+     */
+    public function __construct(
+        array $properties,
+        private readonly string $name = 'chaos_narration',
+    ) {
+        $this->type = (new ObjectType($properties))->withoutAdditionalProperties();
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function schemaType(): string
+    {
+        return 'object';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return $this->type->toArray();
+    }
+}
