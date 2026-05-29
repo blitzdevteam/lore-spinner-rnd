@@ -308,3 +308,84 @@ Path repointing applied:
 - Post-move smoke: `php "…/validation/pipeline-upgrade-v2-validation-runner.php" step3` → green (every Blade renders), confirming bootstrap path still resolves.
 
 The existing peer doc `Adaptation layer/debug/curt-fix-validation-runner.php` is intentionally left in `debug/` — that runner predates this batch and is unrelated to the V2 upgrade.
+
+---
+
+## New stories wave — 2026-05-29
+
+Four stories need to be made playable in Chaos Mode under V2. Two were already seeded and in `ChaosStoryConfig` (just need the V2 pipeline run); two are new additions requiring seeding first.
+
+### Status at handoff
+
+| Story | In ChaosStoryConfig | In DB | TXT exists | V2 pipeline |
+|---|---|---|---|---|
+| The Adventure of the Speckled Band (Sherlock) | ✅ | ✅ | ✅ | ❌ needs run |
+| The Tell-Tale Heart | ✅ | ✅ | ✅ | ❌ needs run |
+| The Masque of the Red Death | ✅ (added 2026-05-29) | ❌ needs seeding | ✅ (converted from PDF) | ❌ needs run |
+| The Wonderful Wizard of Oz | ✅ (added 2026-05-29) | ❌ needs seeding | ✅ | ❌ needs run |
+
+### Code changes in this batch (2026-05-29)
+
+1. **PDF → TXT conversion** — `database/stories/RnD/The Masque of the Red Death copy.pdf` converted to `database/stories/The Masque of the Red Death_script.txt` (13 768 bytes, 209 lines). Used `smalot/pdfparser` inline via PHP — same logic as `AddSingleStorySeeder::convertPdf()`.
+
+2. **`app/ChaosMode/ChaosStoryConfig.php`** — two entries appended:
+   - `the-masque-of-the-red-death` / protagonist `Prospero` / rating MATURE
+   - `the-wonderful-wizard-of-oz` / protagonist `Dorothy` / rating EVERYONE
+
+3. **`database/seeders/AddSingleStorySeeder.php`** — `getStoryConfig()` now dispatches on `SEED_STORY` env var:
+   - `SEED_STORY=masque` → `configMasque()`
+   - `SEED_STORY=wizard-of-oz` → `configWizardOfOz()`
+   - default → `configLotr()` (unchanged)
+   - Shared creator extracted to `classicsCreator()` helper.
+
+### Commands to run on Laravel Cloud (in order)
+
+#### 1. Seed The Masque of the Red Death
+
+```bash
+SEED_STORY=masque php artisan db:seed --class=AddSingleStorySeeder --force
+```
+
+This runs: chapter extraction → event extraction → system prompt → opening generation → publishes the story.
+
+#### 2. Seed The Wonderful Wizard of Oz
+
+```bash
+SEED_STORY=wizard-of-oz php artisan db:seed --class=AddSingleStorySeeder --force
+```
+
+#### 3. Run V2 adaptation pipeline on all four stories
+
+Each command dispatches `RunAdaptationPipelineJob` onto the `adaptation` queue. Run them one at a time (or together — they are queue-safe).
+
+```bash
+php artisan stories:run-adaptation the-adventure-of-the-speckled-band --force
+php artisan stories:run-adaptation the-tell-tale-heart --force
+php artisan stories:run-adaptation the-masque-of-the-red-death --force
+php artisan stories:run-adaptation the-wonderful-wizard-of-oz --force
+```
+
+Monitor each with:
+```bash
+php artisan adaptation:export <slug>
+```
+
+#### 4. Verify each story is V2-ready
+
+After all four pipelines complete, each story's `session_adaptations.runtime_narrator_prompt` must be non-null. The controller's `show()` endpoint uses `v2_ready` to unhide the story in the selector UI. The quickest spot-check:
+
+```bash
+# Should return the assembled narrator prompt (not null)
+php artisan tinker --execute="
+  \$story = \App\Models\Story::where('slug', 'the-masque-of-the-red-death')->first();
+  echo \$story->sessionAdaptations()->whereNotNull('runtime_narrator_prompt')->count() . ' sessions ready';
+"
+```
+
+Repeat for each slug. Once all sessions show a non-null prompt, the story is playable in Chaos Mode.
+
+### Notes
+
+- **Masque of the Red Death** is a single-chapter short story (~13k chars). The adaptation pipeline will produce 1 session. The assembled prompt will be well inside the 65 000-char cap.
+- **Wizard of Oz** is a full-length novel (~180k chars). Expect the chapter-batch IP Trimming and Voice Lock jobs to spawn roughly 24 chapter workers. Runtime ~15–25 min end-to-end on the adaptation queue.
+- Both new stories use the `The Classics, Unbound` creator (same as Alice, Sherlock, LOTR, etc.).

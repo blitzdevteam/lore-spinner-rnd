@@ -96,49 +96,49 @@ final class ChaosNarrationSchema
                     ->array()
                     ->required()
                     ->title('Object States')
-                    ->description('Natural-language updates for named objects from the Phase 2 Task 6A inventory. Each entry: "Object Name: qualitative state". Empty array if nothing changed.')
+                    ->description('Changed natural-language states for named objects from the Phase 2 Task 6A inventory. Each entry: "Object Name: qualitative state". Include only objects that changed this turn; the runtime carries forward unchanged named objects. Empty array if nothing changed.')
                     ->items($schema->string()->required()),
 
                 'relationship_updates' => $schema
                     ->array()
                     ->required()
                     ->title('Relationship Updates')
-                    ->description('Natural-language updates for named NPCs from the Phase 2 Task 6B registry. Each entry: "NPC Name: relationship shift in plain English (no numeric scores)". Empty array if nothing shifted.')
+                    ->description('Changed natural-language relationship states for named NPCs from the Phase 2 Task 6B registry. Each entry: "NPC Name: relationship shift in plain English (no numeric scores)". Include only NPCs whose relationship state shifted this turn; the runtime carries forward unchanged named NPCs. Empty array if nothing shifted.')
                     ->items($schema->string()->required()),
 
                 'world_flags' => $schema
                     ->array()
                     ->required()
                     ->title('World Flags')
-                    ->description('Updates to world-level flags from Phase 2 Task 6C. Each entry: "Flag Name: new value". Empty array if no flag changed.')
+                    ->description('Changed world-level flags from Phase 2 Task 6C. Each entry: "Flag Name: new value". Include only flags that changed this turn; the runtime carries forward unchanged flags. Empty array if no flag changed.')
                     ->items($schema->string()->required()),
 
                 'knowledge' => $schema
                     ->array()
                     ->required()
                     ->title('Knowledge')
-                    ->description('Durable facts the protagonist has now learned from their own action. Empty array if nothing new was learned.')
+                    ->description('New durable facts the protagonist has learned from their own action this turn. The runtime appends and deduplicates these facts. Empty array if nothing new was learned.')
                     ->items($schema->string()->required()),
 
                 'notes' => $schema
                     ->array()
                     ->required()
                     ->title('Notes')
-                    ->description('Emergent facts that should survive turns (promises made, bargains struck, things released). Empty array if none.')
+                    ->description('New emergent facts that should survive turns (promises made, bargains struck, things released). The runtime appends and deduplicates these notes. Empty array if none.')
                     ->items($schema->string()->required()),
 
                 'player_style' => $schema
                     ->array()
                     ->required()
                     ->title('Player Style')
-                    ->description('Observed behavioural patterns. Subtle, never exposed to the player. Empty array if nothing new.')
+                    ->description('Newly observed behavioural patterns from this turn. Subtle, never exposed to the player. The runtime appends and deduplicates these observations. Empty array if nothing new.')
                     ->items($schema->string()->required()),
 
                 'unresolved_promises' => $schema
                     ->array()
                     ->required()
                     ->title('Unresolved Promises')
-                    ->description('Promises made and not yet kept or broken. Empty array if none.')
+                    ->description('Complete current list of promises made and not yet kept or broken. Carry forward still-open promises, add new promises, remove kept or broken promises. Empty array if none.')
                     ->items($schema->string()->required()),
 
                 'emotional_ledger_entries' => $schema

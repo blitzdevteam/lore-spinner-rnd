@@ -44,6 +44,12 @@ use Throwable;
  */
 final class ChaosModeController extends Controller
 {
+    private const COMPLETE_LIST_STATE_FIELDS = ['conditions', 'items', 'unresolved_promises'];
+
+    private const KEYED_DELTA_STATE_FIELDS = ['object_states', 'relationship_updates', 'world_flags'];
+
+    private const APPEND_ONLY_STATE_FIELDS = ['knowledge', 'notes', 'player_style'];
+
     private const MODEL_CONFIG = [
         'gpt-5.4'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => 'low'],
         'gpt-5.4-mini'      => ['provider' => 'openai',    'temperature' => 0.95, 'reasoning_effort' => 'low'],
@@ -1008,10 +1014,10 @@ final class ChaosModeController extends Controller
     // -------------------------------------------------------------------------
 
     /**
-     * Merge a state_delta (the new literary-memory shape) into the persisted
-     * world_state. Each scalar/list field replaces its previous value when
-     * the agent emits one; emotional_ledger_entries are APPENDED to the
-     * existing ledger rather than overwriting.
+     * Merge a state_delta into persisted world_state according to each field's
+     * contract. Complete current lists replace; keyed deltas upsert by their
+     * stable "Name:" prefix; learned memory lists append without duplication.
+     * Emotional ledger entries are appended rather than overwriting.
      *
      * @param  array<string, mixed>  $previous
      * @param  array<string, mixed>  $delta
@@ -1025,12 +1031,25 @@ final class ChaosModeController extends Controller
             ? (string) $delta['location']
             : (string) ($previous['location'] ?? '');
 
-        foreach (['conditions', 'items', 'object_states', 'relationship_updates', 'world_flags',
-                  'knowledge', 'notes', 'player_style', 'unresolved_promises'] as $key) {
+        foreach (self::COMPLETE_LIST_STATE_FIELDS as $key) {
             $value = $delta[$key] ?? null;
             $merged[$key] = is_array($value)
-                ? array_values(array_filter(array_map('strval', $value), static fn ($v) => $v !== ''))
-                : (array) ($previous[$key] ?? []);
+                ? $this->cleanStringList($value)
+                : $this->cleanStringList($previous[$key] ?? []);
+        }
+
+        foreach (self::KEYED_DELTA_STATE_FIELDS as $key) {
+            $value = $delta[$key] ?? null;
+            $merged[$key] = is_array($value)
+                ? $this->mergeKeyedStateList((array) ($previous[$key] ?? []), $value)
+                : $this->cleanStringList($previous[$key] ?? []);
+        }
+
+        foreach (self::APPEND_ONLY_STATE_FIELDS as $key) {
+            $value = $delta[$key] ?? null;
+            $merged[$key] = is_array($value)
+                ? $this->appendUniqueStringList((array) ($previous[$key] ?? []), $value)
+                : $this->cleanStringList($previous[$key] ?? []);
         }
 
         $previousLedger = (array) ($previous['emotional_ledger'] ?? []);
@@ -1048,6 +1067,75 @@ final class ChaosModeController extends Controller
         }
 
         $merged['emotional_ledger'] = array_values(array_merge($previousLedger, $newLedger));
+
+        return $merged;
+    }
+
+    /**
+     * @param  mixed  $value
+     * @return array<int, string>
+     */
+    private function cleanStringList(mixed $value): array
+    {
+        return array_values(array_filter(
+            array_map(static fn ($item) => trim((string) $item), (array) $value),
+            static fn (string $item) => $item !== '',
+        ));
+    }
+
+    /**
+     * @param  array<int, mixed>  $previous
+     * @param  array<int, mixed>  $delta
+     * @return array<int, string>
+     */
+    private function mergeKeyedStateList(array $previous, array $delta): array
+    {
+        $entriesByKey = [];
+        $orderedKeys = [];
+
+        foreach (array_merge($this->cleanStringList($previous), $this->cleanStringList($delta)) as $entry) {
+            $key = $this->stateEntryKey($entry);
+
+            if (! array_key_exists($key, $entriesByKey)) {
+                $orderedKeys[] = $key;
+            }
+
+            $entriesByKey[$key] = $entry;
+        }
+
+        return array_values(array_map(
+            static fn (string $key) => $entriesByKey[$key],
+            $orderedKeys,
+        ));
+    }
+
+    private function stateEntryKey(string $entry): string
+    {
+        $name = trim((string) (explode(':', $entry, 2)[0] ?? $entry));
+
+        return strtolower($name !== '' ? $name : $entry);
+    }
+
+    /**
+     * @param  array<int, mixed>  $previous
+     * @param  array<int, mixed>  $delta
+     * @return array<int, string>
+     */
+    private function appendUniqueStringList(array $previous, array $delta): array
+    {
+        $seen = [];
+        $merged = [];
+
+        foreach (array_merge($this->cleanStringList($previous), $this->cleanStringList($delta)) as $entry) {
+            $key = strtolower($entry);
+
+            if (isset($seen[$key])) {
+                continue;
+            }
+
+            $seen[$key] = true;
+            $merged[] = $entry;
+        }
 
         return $merged;
     }

@@ -102,6 +102,20 @@ final class ChaosStoryConfig
                 'tagline'       => 'Tolkien — carry the Ring out of the Shire.',
                 'tts_voice_id'  => null,
             ],
+            [
+                'slug'          => 'the-masque-of-the-red-death',
+                'title'         => 'The Masque of the Red Death',
+                'protagonist'   => 'Prospero',
+                'tagline'       => 'Poe — hide from the plague behind abbey walls.',
+                'tts_voice_id'  => null,
+            ],
+            [
+                'slug'          => 'the-wonderful-wizard-of-oz',
+                'title'         => 'The Wonderful Wizard of Oz',
+                'protagonist'   => 'Dorothy',
+                'tagline'       => 'Baum — follow the yellow brick road to the Emerald City.',
+                'tts_voice_id'  => null,
+            ],
         ];
     }
 

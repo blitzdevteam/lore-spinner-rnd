@@ -34,7 +34,7 @@ use Throwable;
  *
  * Usage: php artisan db:seed --class=AddSingleStorySeeder --force
  */
-final class AddSingleStorySeeder extends Seeder
+class AddSingleStorySeeder extends Seeder
 {
     private const int MAX_RETRIES = 3;
 
@@ -245,25 +245,78 @@ final class AddSingleStorySeeder extends Seeder
 
     // ── Story configuration ─────────────────────────────────────────
 
-    private function getStoryConfig(): array
+    /**
+     * Select which story to seed via the SEED_STORY env var, e.g.:
+     *   SEED_STORY=masque-of-the-red-death php artisan db:seed --class=AddSingleStorySeeder --force
+     *   SEED_STORY=wizard-of-oz           php artisan db:seed --class=AddSingleStorySeeder --force
+     *   SEED_STORY=lotr                   php artisan db:seed --class=AddSingleStorySeeder --force
+     *
+     * Defaults to LOTR when SEED_STORY is not set.
+     */
+    protected function getStoryConfig(): array
+    {
+        $key = strtolower((string) env('SEED_STORY', 'lotr'));
+
+        return match ($key) {
+            'masque', 'masque-of-the-red-death', 'the-masque-of-the-red-death' => $this->configMasque(),
+            'wizard-of-oz', 'oz', 'the-wonderful-wizard-of-oz'                 => $this->configWizardOfOz(),
+            default                                                              => $this->configLotr(),
+        };
+    }
+
+    private function configLotr(): array
     {
         return [
-            'title' => 'The Lord of the Rings: The Fellowship of the Ring',
-            'slug' => 'the-lord-of-the-rings-the-fellowship-of-the-ring',
-            'category' => 'Fantasy Adventure',
-            'script' => 'LOTR_FELLOWSHIP_script.txt',
+            'title'      => 'The Lord of the Rings: The Fellowship of the Ring',
+            'slug'       => 'the-lord-of-the-rings-the-fellowship-of-the-ring',
+            'category'   => 'Fantasy Adventure',
+            'script'     => 'LOTR_FELLOWSHIP_script.txt',
             'source_pdf' => 'RnD/the-lord-of-the-rings-the-fellowship-of-the-ring-2001.pdf',
-            'teaser' => 'A young hobbit inherits a ring of terrible power. Pursued by darkness across Middle-earth, he must join a Fellowship of unlikely heroes — and carry the fate of the world to the fires of Mount Doom.',
-            'rating' => StoryRatingEnum::TEEN->value,
+            'teaser'     => 'A young hobbit inherits a ring of terrible power. Pursued by darkness across Middle-earth, he must join a Fellowship of unlikely heroes — and carry the fate of the world to the fires of Mount Doom.',
+            'rating'     => StoryRatingEnum::TEEN->value,
+            'opening'    => null,
+            'creator'    => $this->classicsCreator(),
+        ];
+    }
+
+    private function configMasque(): array
+    {
+        return [
+            'title'      => 'The Masque of the Red Death',
+            'slug'       => 'the-masque-of-the-red-death',
+            'category'   => 'Horror',
+            'script'     => 'The Masque of the Red Death_script.txt',
+            'source_pdf' => 'RnD/The Masque of the Red Death copy.pdf',
+            'teaser'     => 'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
+            'rating'     => StoryRatingEnum::MATURE->value,
+            'opening'    => null,
+            'creator'    => $this->classicsCreator(),
+        ];
+    }
+
+    private function configWizardOfOz(): array
+    {
+        return [
+            'title'   => 'The Wonderful Wizard of Oz',
+            'slug'    => 'the-wonderful-wizard-of-oz',
+            'category' => 'Fantasy Adventure',
+            'script'  => 'THE WONDERFUL WIZARD OF OZ_script.txt',
+            'teaser'  => 'A Kansas girl is swept by a cyclone to the magical land of Oz. To find her way home she must follow the yellow brick road — but the Wizard who can help her may not be what he seems.',
+            'rating'  => StoryRatingEnum::EVERYONE->value,
             'opening' => null,
-            'creator' => [
-                'first_name' => 'The Classics, Unbound',
-                'last_name' => '',
-                'username' => 'theclassicsunbound',
-                'email' => 'classics@lorespinner.com',
-                'bio' => "Enter the world's most iconic classic stories—now immersive, interactive adventures where your choices reshape timeless legends.",
-                'avatar' => 'THE CLASSICS, UNBOUND - PROFILE PIC.jpg',
-            ],
+            'creator' => $this->classicsCreator(),
+        ];
+    }
+
+    private function classicsCreator(): array
+    {
+        return [
+            'first_name' => 'The Classics, Unbound',
+            'last_name'  => '',
+            'username'   => 'theclassicsunbound',
+            'email'      => 'classics@lorespinner.com',
+            'bio'        => "Enter the world's most iconic classic stories—now immersive, interactive adventures where your choices reshape timeless legends.",
+            'avatar'     => 'THE CLASSICS, UNBOUND - PROFILE PIC.jpg',
         ];
     }
 }
