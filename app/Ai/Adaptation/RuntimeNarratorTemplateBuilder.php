@@ -121,7 +121,7 @@ final class RuntimeNarratorTemplateBuilder
             'totalSessions' => $totalSessions,
             'protagonist' => $this->protagonistName($story, $adaptation),
 
-            'spine' => $this->normalizeSpine($trimming),
+            'spine' => $this->normalizeSpine($trimming, $story),
             'worldRules' => (array) ($trimming['world_rules'] ?? []),
             'storyGuard' => (array) ($sessionMap['story_guard_canon'] ?? []),
             'sceneRules' => (array) ($choiceDesign['scene_rules_layer_4'] ?? []),
@@ -169,12 +169,17 @@ final class RuntimeNarratorTemplateBuilder
      * @param  array<string, mixed>  $trimming
      * @return array<string, mixed>
      */
-    private function normalizeSpine(array $trimming): array
+    private function normalizeSpine(array $trimming, Story $story): array
     {
         $spine = (array) ($trimming['story_spine'] ?? []);
 
+        // ChaosStoryConfig is the canonical playable protagonist — it takes
+        // priority over whatever the AI wrote during the trimming merge pass.
+        $protagonist = ChaosStoryConfig::find($story->slug)['protagonist']
+            ?? (string) ($spine['protagonist'] ?? 'the protagonist');
+
         return [
-            'protagonist' => (string) ($spine['protagonist'] ?? 'the protagonist'),
+            'protagonist' => $protagonist,
             'dramatic_question' => (string) ($spine['dramatic_question'] ?? '(not specified)'),
             'world' => (string) ($spine['world'] ?? '(not specified)'),
             'major_turning_points' => (array) ($spine['major_turning_points'] ?? []),

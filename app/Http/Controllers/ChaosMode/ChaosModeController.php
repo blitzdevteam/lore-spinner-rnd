@@ -51,12 +51,14 @@ final class ChaosModeController extends Controller
     private const APPEND_ONLY_STATE_FIELDS = ['knowledge', 'notes', 'player_style'];
 
     private const MODEL_CONFIG = [
-        'gpt-5.4'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => 'low'],
-        'gpt-5.4-mini'      => ['provider' => 'openai',    'temperature' => 0.95, 'reasoning_effort' => 'low'],
-        'gpt-5.2'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => 'low'],
+        'gpt-5.5'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => null],
+        'gpt-5.4'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => null],
+        'gpt-5.4-mini'      => ['provider' => 'openai',    'temperature' => 0.95, 'reasoning_effort' => null],
+        'gpt-5.2'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => null],
         'gpt-4.1'           => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => null],
-        'claude-opus-4-7'   => ['provider' => 'anthropic', 'temperature' => 1.0,  'reasoning_effort' => null],
-        'claude-sonnet-4-6' => ['provider' => 'anthropic', 'temperature' => 1.0,  'reasoning_effort' => null],
+        'chat-latest'       => ['provider' => 'openai',    'temperature' => 1.0,  'reasoning_effort' => null],
+        'claude-opus-4-8'   => ['provider' => 'anthropic', 'temperature' => 1.0,  'reasoning_effort' => null],
+        'claude-sonnet-4-6' => ['provider' => 'anthropic', 'temperature' => 0.9,  'reasoning_effort' => null],
         'claude-haiku-4-5'  => ['provider' => 'anthropic', 'temperature' => 0.95, 'reasoning_effort' => null],
     ];
 

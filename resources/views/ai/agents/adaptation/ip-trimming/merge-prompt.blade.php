@@ -3,6 +3,10 @@ SOURCE IP: {{ $title ?? 'Untitled' }}
 Author: {{ $author }}
 @endisset
 Total chapters: {{ $totalChapters }}
+@if(!empty($playableProtagonist))
+
+CANONICAL PLAYABLE PROTAGONIST (BINDING): The player avatar for this IP is {{ $playableProtagonist }}. You MUST use this as the protagonist in story_spine.protagonist. Do not substitute a different character regardless of how prominent they appear in the source text.
+@endif
 
 STORY SPINE FRAGMENTS (one per chapter, in chapter order):
 

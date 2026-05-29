@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs\Adaptation;
 
 use App\Ai\Agents\Adaptation\IpTrimmingMergeAgent;
+use App\ChaosMode\ChaosStoryConfig;
 use App\Enums\Adaptation\AdaptationStatusEnum;
 use App\Models\Story;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -147,16 +148,25 @@ final class IpTrimmingMergeJob implements ShouldQueue
             $fragments
         );
 
+        $chaosConfig = ChaosStoryConfig::find($this->story->slug);
+
         $spineResponse = (new IpTrimmingMergeAgent)->prompt(
             view('ai.agents.adaptation.ip-trimming.merge-prompt', [
-                'title' => $this->story->title,
-                'author' => $this->story->creator?->name ?? 'Unknown Author',
-                'totalChapters' => count($fragments),
-                'spineFragments' => $spineFragments,
+                'title'               => $this->story->title,
+                'author'              => $this->story->creator?->name ?? 'Unknown Author',
+                'totalChapters'       => count($fragments),
+                'spineFragments'      => $spineFragments,
+                'playableProtagonist' => $chaosConfig['protagonist'] ?? null,
             ])->render()
         );
 
         $unifiedSpine = $spineResponse->toArray();
+
+        // Hard-lock: if this story has a registered Chaos protagonist, enforce it
+        // regardless of what the AI wrote — the config is the source of truth.
+        if (!empty($chaosConfig['protagonist'])) {
+            $unifiedSpine['protagonist'] = $chaosConfig['protagonist'];
+        }
 
         // --- Assemble final Deliverable 7 package ---
         $ipTrimming = [
