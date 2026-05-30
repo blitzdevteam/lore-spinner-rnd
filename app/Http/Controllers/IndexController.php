@@ -30,8 +30,6 @@ final class IndexController extends Controller
                     ->where('user_id', Auth::id())
                     ->with([
                         'story' => fn ($q) => $q->with(['media', 'category:id,title', 'creator:id,first_name,last_name']),
-                        'currentEvent:id,title,position',
-                        'currentEvent.chapter:id,position,title',
                     ])
                     ->withCount('prompts')
                     ->latest('updated_at')

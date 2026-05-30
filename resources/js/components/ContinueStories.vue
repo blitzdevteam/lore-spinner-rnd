@@ -3,7 +3,7 @@ import BaseButton from '@/components/BaseButton.vue';
 import BaseContentTitle from '@/components/BaseContentTitle.vue';
 import { GameInterface } from '@/types';
 import { show } from '@/wayfinder/routes/user/games';
-import { LucidePlay, LucideBookOpen, LucideClock } from 'lucide-vue-next';
+import { LucidePlay, LucideClock } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -27,17 +27,9 @@ const timeAgo = computed(() => {
     return `${Math.floor(days / 30)}mo ago`;
 });
 
-const chapterLabel = computed(() => {
-    const event = props.game.currentEvent as any;
-    if (event?.chapter?.position) {
-        return `Chapter ${event.chapter.position}`;
-    }
-    return null;
-});
-
-const eventTitle = computed(() => {
-    const event = props.game.currentEvent as any;
-    return event?.title ?? null;
+const sessionLabel = computed(() => {
+    const n = props.game.current_session_number;
+    return n ? `Session ${n}` : null;
 });
 </script>
 
@@ -75,9 +67,8 @@ const eventTitle = computed(() => {
                         <div class="flex flex-1 flex-col justify-between gap-3 p-4 sm:gap-4 sm:p-5 md:p-6">
                             <div class="flex flex-col gap-2 sm:gap-3">
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <span v-if="chapterLabel" class="rounded-full bg-primary-500/15 px-2 py-0.5 text-[10px] font-medium text-primary-300 sm:px-2.5 sm:text-xs">
-                                        <LucideBookOpen class="mb-0.5 inline size-3" />
-                                        {{ chapterLabel }}
+                                    <span v-if="sessionLabel" class="rounded-full bg-primary-500/15 px-2 py-0.5 text-[10px] font-medium text-primary-300 sm:px-2.5 sm:text-xs">
+                                        {{ sessionLabel }}
                                     </span>
                                     <span class="flex items-center gap-1 text-[10px] text-gray-400 sm:text-xs">
                                         <LucideClock class="size-3" />
@@ -89,10 +80,6 @@ const eventTitle = computed(() => {
 
                                 <p v-if="story?.creator" class="text-xs text-gray-400 sm:text-sm">
                                     By {{ story.creator.full_name }}
-                                </p>
-
-                                <p v-if="eventTitle" class="truncate text-xs text-gray-300 sm:text-sm">
-                                    Currently at: <span class="text-primary-300">{{ eventTitle }}</span>
                                 </p>
                             </div>
 

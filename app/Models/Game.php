@@ -15,19 +15,20 @@ use Illuminate\Support\Carbon;
  * @property string $id
  * @property int $story_id
  * @property int $user_id
- * @property int $current_event_id
  * @property int|null $current_session_number
- * @property string|null $current_beat_type
- * @property array|null $branching_choices_taken
- * @property array|null $tracked_dimensions
- * @property array|null $branch_resolution_log
- * @property array|null $world_state
+ * @property string $model
+ * @property array<string, mixed>|null $world_state
+ * @property string|null $symbolic_memory
+ * @property array{chaotic:int, lawful:int, neutral:int}|null $alignment_scaffold
+ * @property string|null $defining_choice_id
+ * @property string|null $defining_choice_line
+ * @property bool $is_climactic_choice
+ * @property bool $current_session_complete
  * @property bool $is_preview
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Story $story
  * @property-read User $user
- * @property-read Event $currentEvent
  * @property-read Collection<int, Prompt> $prompts
  */
 final class Game extends Model
@@ -42,11 +43,11 @@ final class Game extends Model
     protected function casts(): array
     {
         return [
-            'branching_choices_taken' => 'json',
-            'tracked_dimensions' => 'json',
-            'branch_resolution_log' => 'json',
-            'world_state' => 'json',
-            'is_preview' => 'boolean',
+            'world_state'              => 'json',
+            'alignment_scaffold'       => 'json',
+            'is_climactic_choice'      => 'boolean',
+            'current_session_complete' => 'boolean',
+            'is_preview'               => 'boolean',
         ];
     }
 
@@ -67,23 +68,7 @@ final class Game extends Model
     }
 
     /**
-     * @return BelongsTo<Event, $this>
-     */
-    public function currentEvent(): BelongsTo
-    {
-        return $this->belongsTo(Event::class, 'current_event_id');
-    }
-
-    /**
      * Intentionally returns an UNORDERED HasMany.
-     *
-     * Earlier this relation chained ->oldest() so iteration was always
-     * chronological. That collided with call sites doing ->latest()->first()
-     * and ->latest()->limit(6): Laravel stacks ORDER BY clauses, so the
-     * resulting SQL was ORDER BY created_at ASC, created_at DESC and the DB
-     * honored the first clause — silently returning the oldest row from
-     * latest() and the oldest 6 rows from the conversation-history query.
-     *
      * Call sites that need a specific order MUST add it explicitly
      * (oldest() for UI rendering, latest() for newest-first reads).
      *
