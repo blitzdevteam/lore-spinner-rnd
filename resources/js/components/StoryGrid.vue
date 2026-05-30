@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import StoryGridCard, { type StoryGridCta } from '@/components/StoryGridCard.vue';
+import StoryCard, { type StoryCardCta } from '@/components/StoryCard.vue';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
@@ -11,12 +11,10 @@ const props = withDefaults(
     defineProps<{
         stories: StoryInterface[];
         enableHoverPopup?: boolean;
-        progressByStoryId?: Record<number, number>;
-        ctaByStoryId?: Record<number, StoryGridCta>;
+        ctaByStoryId?: Record<number, StoryCardCta>;
     }>(),
     {
         enableHoverPopup: true,
-        progressByStoryId: () => ({}),
         ctaByStoryId: () => ({}),
     },
 );
@@ -104,13 +102,12 @@ function branchesForStory(story: StoryInterface): string | null {
     return STORY_HOVER_META_BY_SLUG[story.slug]?.branches ?? null;
 }
 
-function progressForStory(story: StoryInterface): number | null {
-    const value = props.progressByStoryId[story.id];
-    return value != null ? value : null;
+function ctaForStory(story: StoryInterface): StoryCardCta | undefined {
+    return props.ctaByStoryId[story.id];
 }
 
-function ctaForStory(story: StoryInterface): StoryGridCta | undefined {
-    return props.ctaByStoryId[story.id];
+function isComingSoon(story: StoryInterface): boolean {
+    return story.status?.value !== StoryStatusEnum.PUBLISHED;
 }
 </script>
 
@@ -125,9 +122,12 @@ function ctaForStory(story: StoryInterface): StoryGridCta | undefined {
                 @mouseenter="onCardEnter(story)"
                 @mouseleave="onCardLeave"
             >
-                <StoryGridCard
-                    :story="story"
-                    :progress="progressForStory(story)"
+                <StoryCard
+                    :title="story.title"
+                    :cover-image="story.cover"
+                    :slug="story.slug"
+                    :status="story.status?.value"
+                    :is-coming-soon="isComingSoon(story)"
                     :cta="ctaForStory(story)"
                     :dimmed="enableHoverPopup && hoveredStoryId !== null && hoveredStoryId !== story.id"
                 />
@@ -142,7 +142,7 @@ function ctaForStory(story: StoryInterface): StoryGridCta | undefined {
                 @mouseenter="onPopupEnter"
                 @mouseleave="onPopupLeave"
             >
-                <div class="relative aspect-[2/3] w-full overflow-hidden rounded-md">
+                <div class="relative aspect-[2/3] w-full overflow-hidden rounded-md border border-white/5">
                     <img
                         v-if="hoveredStory.cover"
                         :src="hoveredStory.cover"
@@ -190,13 +190,13 @@ function ctaForStory(story: StoryInterface): StoryGridCta | undefined {
                 <Link
                     v-if="hoveredPublished"
                     :href="storyShow(hoveredStory.slug).url"
-                    class="flex h-9 w-full items-center justify-center rounded-md bg-cta-fill text-base font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                    class="flex h-[2.25rem] w-full items-center justify-center rounded-[0.375rem] bg-cta-fill text-[1.125rem] font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
                 >
                     Play
                 </Link>
                 <div
                     v-else
-                    class="flex h-9 w-full cursor-default items-center justify-center rounded-md border border-[#4d4d4d] bg-[#3f3f3f] text-base font-medium text-[#8e8e8e]"
+                    class="flex h-[2.25rem] w-full cursor-default items-center justify-center rounded-[0.375rem] border border-[#4d4d4d] bg-[#3f3f3f] text-[1.125rem] font-medium text-[#8e8e8e]"
                 >
                     Coming soon
                 </div>
