@@ -275,12 +275,9 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                                     <p class="text-[20px] font-medium leading-normal text-white">
                                         {{ hoveredGame.title }}
                                     </p>
-                                    <div class="flex flex-wrap items-center gap-[4px] text-[14px] text-white">
-                                        <template v-for="theme in hoveredGame.themes" :key="theme">
-                                            <span class="size-[6px] shrink-0 rounded-full bg-white" />
-                                            <span>{{ theme }}</span>
-                                        </template>
-                                    </div>
+                                    <p class="text-[14px] leading-normal text-white">
+                                        {{ hoveredGame.themes.join(' | ') }}
+                                    </p>
                                 </div>
 
                                 <!-- Teaser -->

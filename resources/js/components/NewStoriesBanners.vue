@@ -218,14 +218,9 @@ function coverForPopup(story: NewStory): string {
                                     <p class="text-[18px] font-semibold leading-normal text-white">
                                         {{ story.title }}
                                     </p>
-                                    <div class="flex flex-wrap items-center gap-[4px] text-[15px] leading-normal text-[#8f8f8f]">
-                                        <span class="size-[6px] shrink-0 rounded-full bg-primary" />
-                                        <span>{{ story.category }}</span>
-                                        <span class="size-[6px] shrink-0 rounded-full bg-primary" />
-                                        <span>{{ story.rating }}</span>
-                                        <span class="size-[6px] shrink-0 rounded-full bg-primary" />
-                                        <span>{{ story.playable ? 'Published' : 'Coming soon' }}</span>
-                                    </div>
+                                    <p class="text-[15px] leading-normal text-[#8f8f8f]">
+                                        {{ story.category }} | {{ story.rating }} | {{ story.playable ? 'Published' : 'Coming soon' }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -266,12 +261,9 @@ function coverForPopup(story: NewStory): string {
                                     <p class="text-[20px] font-medium leading-normal text-white">
                                         {{ hoveredStory.title }}
                                     </p>
-                                    <div class="flex flex-wrap items-center gap-[4px] text-[14px] text-white">
-                                        <template v-for="theme in hoveredStory.themes" :key="theme">
-                                            <span class="size-[6px] shrink-0 rounded-full bg-white" />
-                                            <span>{{ theme }}</span>
-                                        </template>
-                                    </div>
+                                    <p class="text-[14px] leading-normal text-white">
+                                        {{ hoveredStory.themes.join(' | ') }}
+                                    </p>
                                 </div>
 
                                 <!-- Teaser -->
