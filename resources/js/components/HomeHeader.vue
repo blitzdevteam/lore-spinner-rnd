@@ -21,19 +21,21 @@ import { Link } from '@inertiajs/vue3';
                         :src="mainLogo"
                         alt="LoreSpinner"
                         class="brand-logo select-none"
-                        width="45"
+                        width="229"
                         height="45"
                         decoding="async"
                     />
                 </Link>
 
-                <div class="hidden min-w-0 items-center justify-center gap-6 justify-self-center md:flex lg:gap-7">
+                <div class="hidden min-h-[75px] min-w-0 items-center justify-center gap-0 justify-self-center md:flex">
                     <HomeHeaderMenu />
                     <Link
                         :href="storiesIndex().url"
-                        class="featured-worlds-btn inline-flex h-9 shrink-0 items-center justify-center rounded-full px-5 text-[15px] font-normal whitespace-nowrap"
+                        class="featured-worlds-wrap flex h-10 w-[170px] shrink-0 items-center justify-center p-[10px] outline-none ring-offset-2 ring-offset-black focus-visible:ring-2 focus-visible:ring-[#00C6DE]"
                     >
-                        Featured worlds
+                        <span class="featured-worlds-btn inline-flex h-[30px] w-[147px] shrink-0 items-center justify-center rounded-[8px] text-[15px] font-normal whitespace-nowrap text-white">
+                            Featured worlds
+                        </span>
                     </Link>
                 </div>
 
@@ -53,20 +55,14 @@ import { Link } from '@inertiajs/vue3';
     -webkit-backdrop-filter: blur(6px);
 }
 
-/* 6rem lockup on md+; drop max-width caps so the asset isn’t letterboxed smaller than the box */
+/* Figma: logo frame 229.5×45.098 — render at 45px height, width from aspect ratio */
 .brand-logo {
     display: block;
     width: auto;
-    max-width: 100%;
-    height: clamp(3.75rem, 10vw, 6rem);
+    max-width: min(100%, 229.5px);
+    height: 45px;
     object-fit: contain;
     object-position: left center;
-}
-
-@media (min-width: 768px) {
-    .brand-logo {
-        height: 6rem;
-    }
 }
 
 .logo-link {
@@ -74,29 +70,27 @@ import { Link } from '@inertiajs/vue3';
     align-items: center;
 }
 
-@media (min-width: 768px) {
-    .logo-link {
-        min-height: 6rem;
-    }
-}
-
 .featured-worlds-btn {
-    background: linear-gradient(180deg, #3a4d52 0%, #2c3b3f 100%);
-    color: #c8ced1;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    background: linear-gradient(119.62deg, rgba(0, 128, 144, 0.25) 3.47%, rgba(0, 74, 83, 0.25) 105.69%),
+        rgba(53, 53, 53, 0.6);
     box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        0 4px 80px rgba(0, 0, 0, 0.2),
+        inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.22),
+        inset -0.2px -0.5px 0.15px 0.5px rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     transition:
-        color 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
+        filter 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .featured-worlds-btn:hover {
-    color: #e8ebed;
-    background: linear-gradient(180deg, #45595f 0%, #35474c 100%);
-    border-color: rgba(0, 198, 222, 0.25);
+    filter: brightness(1.08);
+    box-shadow:
+        0 4px 80px rgba(0, 0, 0, 0.28),
+        inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.28),
+        inset -0.2px -0.5px 0.15px 0.5px rgba(255, 255, 255, 0.08);
 }
 
 .featured-worlds-btn:focus-visible {

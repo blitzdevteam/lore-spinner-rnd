@@ -44,16 +44,22 @@ const moodLinks: { title: string; slug: string; href: string }[] = [
     { title: 'Whimsical', slug: 'whimsical', href: `${storiesIndex().url}?mood=whimsical` },
 ];
 
-const ACTIVE_UNDERLINE =
-    'pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-16 -translate-x-1/2 translate-y-px rounded-t-full bg-[#00C6DE] shadow-[0px_4px_4px_rgba(0,0,0,0.25)]';
+/* Same box for every item: inactive uses invisible bar so labels never shift when active */
+const underlineSlotClass = (active: boolean): string =>
+    [
+        'pointer-events-none mt-2 h-[3px] w-16 shrink-0 rounded-bl-[7px] rounded-br-[7px]',
+        active ? 'bg-[#00C6DE]' : 'invisible',
+    ].join(' ');
+const navItemShell =
+    'relative flex h-[75px] w-[100px] items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-[#00C6DE] focus-visible:ring-offset-2 focus-visible:ring-offset-black';
+const navStack = 'relative flex flex-col items-center';
+const navLabelRow =
+    'relative z-[1] flex items-center justify-center p-[10px] font-[Inter] text-[16px] font-medium leading-[33px] transition-colors';
 
-const itemBase =
-    'relative flex h-10 w-[100px] items-center justify-center rounded-lg px-2.5 font-[Inter] text-[16px] font-medium leading-[1.2] transition-colors';
-
-const inactiveText = 'text-[#B4B4B4] hover:text-[#00C6DE]';
+const inactiveText = 'text-[#7E7E7E] hover:text-[#00C6DE]';
 const activeText = 'text-[#00C6DE]';
 
-const navClass = (active: boolean): string => `${itemBase} ${active ? activeText : inactiveText}`;
+const navClass = (active: boolean): string => `${navLabelRow} ${active ? activeText : inactiveText}`;
 const moodItemClass = (slug: string): string =>
     [
         'flex h-[30px] w-full items-center rounded-[8px] px-[15px] font-[Inter] text-[14px] font-normal leading-[33px] text-white outline-none transition-colors first:text-[16px]',
@@ -65,29 +71,42 @@ const moodItemClass = (slug: string): string =>
 
 <template>
     <nav aria-label="Primary">
-        <ul class="flex items-center gap-1 md:gap-2">
+        <ul class="flex h-[75px] items-center gap-1 md:gap-0">
             <li>
-                <Link :href="index().url" :class="navClass(isHomeActive)">
-                    <span class="relative z-[1]">Home</span>
-                    <span v-if="isHomeActive" :class="ACTIVE_UNDERLINE" aria-hidden="true" />
+                <Link :href="index().url" :class="navItemShell">
+                    <span :class="navStack">
+                        <span :class="navClass(isHomeActive)">Home</span>
+                        <span :class="underlineSlotClass(isHomeActive)" aria-hidden="true" />
+                    </span>
                 </Link>
             </li>
 
             <li ref="moodsWrap" class="relative">
                 <button
                     type="button"
-                    class="flex h-10 w-[100px] items-center justify-center gap-1 rounded-lg px-2.5 py-2.5 font-[Inter] text-[16px] font-medium transition-colors"
-                    :class="isMoodsActive || moodsOpen ? activeText : inactiveText"
+                    :class="[
+                        navItemShell,
+                        'cursor-pointer border-0 bg-transparent p-0',
+                        isMoodsActive || moodsOpen ? activeText : inactiveText,
+                    ]"
                     :aria-expanded="moodsOpen"
                     aria-haspopup="true"
                     @click="moodsOpen = !moodsOpen"
                 >
-                    Moods
-                    <ChevronDown
-                        class="size-[22px] shrink-0 text-current transition-transform"
-                        :stroke-width="1.75"
-                        :class="moodsOpen ? 'rotate-180' : ''"
-                    />
+                    <span :class="navStack">
+                        <span
+                            class="inline-flex items-center justify-center gap-0 p-[10px] font-[Inter] text-[16px] font-medium leading-[33px]"
+                        >
+                            Moods
+                            <ChevronDown
+                                class="h-[22px] w-[26px] shrink-0 text-current transition-transform"
+                                :stroke-width="1.75"
+                                :class="moodsOpen ? 'rotate-180' : ''"
+                            />
+                        </span>
+                        <!-- Reserve bar space so label aligns with other nav items (no show line for Moods) -->
+                        <span :class="underlineSlotClass(false)" aria-hidden="true" />
+                    </span>
                 </button>
 
                 <div
@@ -109,16 +128,20 @@ const moodItemClass = (slug: string): string =>
             </li>
 
             <li>
-                <Link :href="storiesIndex().url" :class="navClass(isLibraryActive)">
-                    <span class="relative z-[1]">Library</span>
-                    <span v-if="isLibraryActive" :class="ACTIVE_UNDERLINE" aria-hidden="true" />
+                <Link :href="storiesIndex().url" :class="navItemShell">
+                    <span :class="navStack">
+                        <span :class="navClass(isLibraryActive)">Library</span>
+                        <span :class="underlineSlotClass(isLibraryActive)" aria-hidden="true" />
+                    </span>
                 </Link>
             </li>
 
             <li>
-                <Link :href="`${storiesIndex().url}?ref=bookmarks`" :class="navClass(isBookmarksActive)">
-                    <span class="relative z-[1]">Bookmarks</span>
-                    <span v-if="isBookmarksActive" :class="ACTIVE_UNDERLINE" aria-hidden="true" />
+                <Link :href="`${storiesIndex().url}?ref=bookmarks`" :class="navItemShell">
+                    <span :class="navStack">
+                        <span :class="navClass(isBookmarksActive)">Bookmarks</span>
+                        <span :class="underlineSlotClass(isBookmarksActive)" aria-hidden="true" />
+                    </span>
                 </Link>
             </li>
         </ul>

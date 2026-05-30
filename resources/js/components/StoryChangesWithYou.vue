@@ -30,7 +30,9 @@ import iconXen from '@/assets/story/right .svg';
 
                     <div class="relative flex w-full flex-col items-center md:flex-row md:justify-center md:gap-[35px]">
                         <!-- You Choose -->
-                        <div class="flex w-full max-w-[280px] flex-col items-center gap-[14px] text-center md:w-[280px]">
+                        <div
+                            class="story-changes-col story-changes-col--choose flex w-full max-w-[280px] flex-col items-center gap-[14px] text-center md:w-[280px]"
+                        >
                             <div
                                 class="icon-circle you-choose-icon relative flex size-[90px] shrink-0 items-center justify-center overflow-hidden rounded-full"
                             >
@@ -58,9 +60,9 @@ import iconXen from '@/assets/story/right .svg';
                         <div class="story-changes-rule mt-10 hidden shrink-0 md:mt-0 md:block" aria-hidden="true" />
 
                         <!-- The Story Responds -->
-                        <div class="mt-10 flex w-full max-w-[280px] flex-col items-center gap-[14px] text-center md:mt-0 md:w-[280px]">
-                            <div
-                                class="icon-circle story-responds-icon relative flex size-[90px] shrink-0 items-center justify-center overflow-hidden rounded-full"
+                        <div
+                            class="story-changes-col story-changes-col--responds mt-10 flex w-full max-w-[280px] flex-col items-center gap-[14px] text-center md:mt-0 md:w-[280px]"
+                        > relative flex size-[90px] shrink-0 items-center justify-center overflow-hidden rounded-full"
                             >
                                 <div class="absolute inset-0 rounded-full bg-[rgba(255,255,255,0.02)]" aria-hidden="true" />
                                 <div class="absolute inset-0 rounded-full backdrop-blur-[2.25px] mix-blend-plus-lighter" aria-hidden="true" />
@@ -86,9 +88,9 @@ import iconXen from '@/assets/story/right .svg';
                         <div class="story-changes-rule mt-10 hidden shrink-0 md:mt-0 md:block" aria-hidden="true" />
 
                         <!-- Xen Guides You -->
-                        <div class="mt-10 flex w-full max-w-[280px] flex-col items-center gap-[14px] text-center md:mt-0 md:w-[280px]">
-                            <div
-                                class="icon-circle xen-icon relative flex size-[90px] shrink-0 items-center justify-center overflow-hidden rounded-full"
+                        <div
+                            class="story-changes-col story-changes-col--xen mt-10 flex w-full max-w-[280px] flex-col items-center gap-[14px] text-center md:mt-0 md:w-[280px]"
+                        > relative flex size-[90px] shrink-0 items-center justify-center overflow-hidden rounded-full"
                             >
                                 <div class="absolute inset-0 rounded-full bg-[rgba(255,255,255,0.02)]" aria-hidden="true" />
                                 <div class="absolute inset-0 rounded-full backdrop-blur-[2.25px] mix-blend-plus-lighter" aria-hidden="true" />
@@ -142,27 +144,26 @@ import iconXen from '@/assets/story/right .svg';
         border-color 0.3s ease;
 }
 
-/* Teal circles -- dark border, drop shadow only (glow lives in the inset overlay) */
+/* Default: all three circles match (no gold until Xen column hover) */
 .you-choose-icon,
-.story-responds-icon {
+.story-responds-icon,
+.xen-icon {
     border-color: #131313;
     box-shadow: 0px 3px 60px 0px rgba(0, 0, 0, 0.2);
 }
-.you-choose-icon:hover,
-.story-responds-icon:hover {
-    border-color: rgba(255, 255, 255, 0.35);
+
+/* Tiffany border when hovering first or second column (icon or copy) */
+.story-changes-col--choose:hover .you-choose-icon,
+.story-changes-col--responds:hover .story-responds-icon {
+    border-color: color-mix(in srgb, var(--color-primary-400) 92%, transparent);
     box-shadow:
         0px 3px 60px 0px rgba(0, 0, 0, 0.35),
-        0 0 20px 2px rgba(255, 255, 255, 0.08);
+        0 0 22px 3px color-mix(in srgb, var(--color-primary-400) 28%, transparent);
 }
 
-/* Xen circle -- amber border */
-.xen-icon {
+/* Gold border + glow when hovering third column — former default Xen treatment */
+.story-changes-col--xen:hover .xen-icon {
     border-color: rgba(255, 190, 88, 0.96);
-    box-shadow: 0px 3px 60px 0px rgba(0, 0, 0, 0.2);
-}
-.xen-icon:hover {
-    border-color: rgba(255, 190, 88, 0.55);
     box-shadow:
         0px 3px 60px 0px rgba(0, 0, 0, 0.2),
         0 0 22px 4px rgba(255, 190, 88, 0.5),
@@ -178,7 +179,15 @@ import iconXen from '@/assets/story/right .svg';
         inset -0.15px -0.375px 0.113px 0.375px rgba(255, 255, 255, 0.05);
 }
 
+/* Xen: neutral inset at rest so the circle matches the other two */
 .xen-glow {
+    box-shadow:
+        inset 0px 0px 13.9px 0px rgba(255, 255, 255, 0.06),
+        inset 0.188px 0.375px 0.375px 0.188px rgba(255, 255, 255, 0.22),
+        inset -0.15px -0.375px 0.113px 0.375px rgba(255, 255, 255, 0.05);
+}
+
+.story-changes-col--xen:hover .xen-glow {
     box-shadow:
         inset 0px 0px 9.4px 0px rgba(255, 190, 88, 0.1),
         inset 0.188px 0.375px 0.375px 0.188px rgba(255, 255, 255, 0.22),
