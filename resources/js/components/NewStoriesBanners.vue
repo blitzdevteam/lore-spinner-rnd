@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import banner1 from '@/assets/newStories/New stories 1- 2x.jpg';
 import banner2 from '@/assets/newStories/New stories 2 - 2x .jpg';
-import banner3 from '@/assets/newStories/new stories 3 - 2x.jpg';
+import banner3 from '@/assets/newStories/New stories 3 - 2x.png';
 import banner1Hover from '@/assets/newStories/s1-hover.jpg';
 import banner2Hover from '@/assets/newStories/s2-hover.jpg';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
