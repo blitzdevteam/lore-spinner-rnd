@@ -6,7 +6,7 @@ import nocturneCover from '@/assets/featured/nocturne.png';
 import wizardOzCover from '@/assets/featured/wizardoz.jpg';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 defineProps<{
     storyCount: number;
@@ -75,6 +75,32 @@ const games: FeaturedGame[] = [
 // ── Slider scroll ─────────────────────────────────────────────────────────────
 const sliderEl = ref<HTMLElement | null>(null);
 const scrollSlider = (delta: number) => sliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
+
+// ── Shadow visibility ─────────────────────────────────────────────────────────
+const SHADOW_THRESHOLD = 8; // px — small buffer to avoid false triggers on sub-pixel rounding
+const leftShadowVisible = ref(false);
+const rightShadowVisible = ref(true);
+
+function updateShadows() {
+    const el = sliderEl.value;
+    if (!el) return;
+    leftShadowVisible.value = el.scrollLeft > SHADOW_THRESHOLD;
+    rightShadowVisible.value = el.scrollLeft + el.clientWidth < el.scrollWidth - SHADOW_THRESHOLD;
+}
+
+onMounted(() => {
+    const el = sliderEl.value;
+    if (!el) return;
+    updateShadows();
+    el.addEventListener('scroll', updateShadows, { passive: true });
+    window.addEventListener('resize', updateShadows, { passive: true });
+});
+
+onUnmounted(() => {
+    const el = sliderEl.value;
+    if (el) el.removeEventListener('scroll', updateShadows);
+    window.removeEventListener('resize', updateShadows);
+});
 
 // ── Hover / popup state ───────────────────────────────────────────────────────
 const hoveredId = ref<string | null>(null);
@@ -172,11 +198,13 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                 <div ref="sliderWrapperEl" class="relative">
                     <!-- Edge fades over the rails (below nav arrows); pointer-events-none so scroll/drag still works -->
                     <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent md:w-8"
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
+                        :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
                         aria-hidden="true"
                     />
                     <div
-                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent md:w-16"
+                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent transition-opacity duration-300 md:w-16"
+                        :class="rightShadowVisible ? 'opacity-100' : 'opacity-0'"
                         aria-hidden="true"
                     />
 
