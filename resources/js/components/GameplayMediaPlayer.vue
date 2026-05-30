@@ -55,6 +55,6 @@ const tts = useTextToSpeech();
 .player-slide-enter-from,
 .player-slide-leave-to {
     opacity: 0;
-    transform: translateY(-12px) scale(0.95);
+    transform: translateY(-0.75rem) scale(0.95);
 }
 </style>

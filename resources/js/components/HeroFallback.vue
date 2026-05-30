@@ -30,31 +30,31 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
         <!-- <HeroBranchChain /> -->
 
         <div
-            class="relative z-10 flex h-full w-full items-center py-8 md:items-start md:pb-10 md:pt-[89px]"
+            class="relative z-10 flex h-full w-full items-center py-8 md:items-start md:pb-10 md:pt-[5.5625rem]"
         >
             <div class="container w-full">
                 <div class="container-content">
                     <div
-                        class="flex w-full max-w-[min(556px,100%)] flex-col gap-[24px] md:max-w-[556px] md:pr-6"
+                        class="flex w-full max-w-[min(556px,100%)] flex-col gap-[1.5rem] md:max-w-[34.75rem] md:pr-6"
                     >
-                        <div class="flex flex-col gap-[15px]">
-                            <h1 class="hero-title max-w-[492px] font-marcellus-sc uppercase text-white">
+                        <div class="flex flex-col gap-[0.9375rem]">
+                            <h1 class="hero-title max-w-[30.75rem] font-marcellus-sc uppercase text-white">
                                 Alice's Adventures<br />
                                 In Wonderland
                             </h1>
 
-                            <div class="font-[Inter] flex flex-col gap-[10px] text-white">
-                                <p class="max-w-[411px] text-[18px] leading-[26px] text-white md:max-w-[411px]">
+                            <div class="font-[Inter] flex flex-col gap-[0.625rem] text-white">
+                                <p class="max-w-[25.6875rem] text-[1.125rem] leading-[1.625rem] text-white md:max-w-[25.6875rem]">
                                     Step into a world where logic bends and<br />
                                     curiosity leads the way. Nothing is as it seems.
                                 </p>
                                 <div class="flex flex-col gap-0">
-                                    <p class="text-[14px] leading-[26px] text-white">
-                                        Written by: <span class="font-normal leading-[26px] text-primary">Lewis Carroll</span>
+                                    <p class="text-[0.875rem] leading-[1.625rem] text-white">
+                                        Written by: <span class="font-normal leading-[1.625rem] text-primary">Lewis Carroll</span>
                                     </p>
-                                    <p class="text-[14px] leading-[26px] text-white">
-                                        <span class="leading-[26px] text-primary">1.267</span>
-                                        <span class="leading-[26px] text-white"> Branching paths explored</span>
+                                    <p class="text-[0.875rem] leading-[1.625rem] text-white">
+                                        <span class="leading-[1.625rem] text-primary">1.267</span>
+                                        <span class="leading-[1.625rem] text-white"> Branching paths explored</span>
                                     </p>
                                 </div>
                             </div>
@@ -65,7 +65,7 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
                                 severity="primary"
                                 type="internal-link"
                                 :href="storiesIndex().url"
-                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[53px] w-full max-w-[284px] items-center justify-center overflow-visible whitespace-nowrap px-8 py-3 text-[16px] font-medium !leading-none"
+                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[3.3125rem] w-full max-w-[17.75rem] items-center justify-center overflow-visible whitespace-nowrap px-8 py-3 text-[1rem] font-medium !leading-none"
                             >
                                 Begin Your Journey
                             </BaseButton>
@@ -79,36 +79,36 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 
 <style scoped>
 .hero-banner {
-    min-height: 400px;
-    height: clamp(420px, 70vh, 561px);
-    max-height: 561px;
+    min-height: 25rem;
+    height: clamp(26.25rem, 70vh, 35.0625rem);
+    max-height: 35.0625rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .hero-banner {
-        height: 561px;
-        min-height: 561px;
-        max-height: 561px;
+        height: 35.0625rem;
+        min-height: 35.0625rem;
+        max-height: 35.0625rem;
     }
 }
 
 .hero-title {
-    font-size: clamp(1.875rem, 4vw, 48px);
+    font-size: clamp(1.875rem, 4vw, 3rem);
     line-height: 1.08;
     text-shadow: 0 0 21.2px black;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .hero-title {
-        font-size: 48px;
-        line-height: 80px;
+        font-size: 3rem;
+        line-height: 5rem;
     }
 }
 
 .begin-btn {
-    border-radius: 12px;
+    border-radius: 0.75rem;
     box-shadow:
-        0 4px 80px rgba(0, 0, 0, 0.2),
+        0 4px 5rem rgba(0, 0, 0, 0.2),
         inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.22),
         inset -0.2px -0.5px 0.15px 0.5px rgba(255, 255, 255, 0.05);
 }

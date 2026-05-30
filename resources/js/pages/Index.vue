@@ -51,7 +51,7 @@ withDefaults(
         <ComingSoonBanners :story-count="stories.length" />
 
         <!-- FAQ: slightly tighter top padding after Coming Soon so spacing matches Figma (hover glow → heading). -->
-        <div class="pt-10 pb-14 md:pt-12 md:pb-[60px]">
+        <div class="pt-10 pb-14 md:pt-12 md:pb-[3.75rem]">
             <div class="container">
                 <div class="container-content">
                     <FrequentlyAskedQuestion />

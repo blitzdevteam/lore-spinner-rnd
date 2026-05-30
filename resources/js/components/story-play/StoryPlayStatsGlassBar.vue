@@ -8,11 +8,11 @@ defineProps<{
     items: StoryPlayStatSlot[];
 }>();
 
-const widths = ['w-[135px]', 'w-[134px]', 'w-[134px]', 'w-[134px]'];
+const widths = ['w-[8.4375rem]', 'w-[8.375rem]', 'w-[8.375rem]', 'w-[8.375rem]'];
 </script>
 
 <template>
-    <div class="relative h-[80px] w-full shrink-0 overflow-hidden rounded-xl" style="box-shadow: 0px 4px 80px rgba(0, 0, 0, 0.2)">
+    <div class="relative h-[5rem] w-full shrink-0 overflow-hidden rounded-xl" style="box-shadow: 0px 4px 80px rgba(0, 0, 0, 0.2)">
         <div aria-hidden="true" class="pointer-events-none absolute inset-0 rounded-xl bg-[rgba(255,255,255,0.04)]" />
         <div
             aria-hidden="true"
@@ -29,19 +29,19 @@ const widths = ['w-[135px]', 'w-[134px]', 'w-[134px]', 'w-[134px]'];
             "
         />
 
-        <div class="relative z-[1] flex items-center gap-0 px-1 pt-[5px]">
+        <div class="relative z-[1] flex items-center gap-0 px-1 pt-[0.3125rem]">
             <template v-for="(item, i) in items" :key="item.label">
                 <div
                     :class="[widths[i] ?? widths[widths.length - 1]]"
-                    class="flex h-[70px] flex-col items-center justify-center gap-0 px-2.5 py-2 text-center font-['Inter',sans-serif] leading-7 text-white not-italic"
+                    class="flex h-[4.375rem] flex-col items-center justify-center gap-0 px-2.5 py-2 text-center font-['Inter',sans-serif] leading-7 text-white not-italic"
                 >
-                    <p class="w-full shrink-0 text-[15px] font-semibold tracking-wide">{{ item.label }}</p>
-                    <p class="w-full shrink-0 text-[14px] font-medium">{{ item.value }}</p>
+                    <p class="w-full shrink-0 text-[0.9375rem] font-semibold tracking-wide">{{ item.label }}</p>
+                    <p class="w-full shrink-0 text-[0.875rem] font-medium">{{ item.value }}</p>
                 </div>
                 <div
                     v-if="i < items.length - 1"
                     role="presentation"
-                    class="mx-px h-[70px] w-px shrink-0 bg-linear-to-b from-transparent via-white/25 to-transparent"
+                    class="mx-px h-[4.375rem] w-px shrink-0 bg-linear-to-b from-transparent via-white/25 to-transparent"
                 />
             </template>
         </div>

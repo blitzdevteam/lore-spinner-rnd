@@ -8,7 +8,7 @@ import xenBannerBg from '@/assets/story/xen.png';
         <div class="container">
             <div class="container-content">
                 <div
-                    class="xen-banner relative flex w-full items-center justify-center overflow-hidden rounded-[14px] border border-solid border-white/15 p-[20px]"
+                    class="xen-banner relative flex w-full items-center justify-center overflow-hidden rounded-[0.875rem] border border-solid border-white/15 p-[1.25rem]"
                 >
                     <img
                         :src="xenBannerBg"
@@ -17,7 +17,7 @@ import xenBannerBg from '@/assets/story/xen.png';
                         aria-hidden="true"
                     />
                     <p
-                        class="xen-banner__text relative z-[1] text-center font-[Inter] text-[18px] font-normal leading-[26px] tracking-[2.52px] text-white"
+                        class="xen-banner__text relative z-[1] text-center font-[Inter] text-[1.125rem] font-normal leading-[1.625rem] tracking-[2.52px] text-white"
                     >
                         Written by humans. Powered by your imagination. Brought to life by
                         <span class="text-primary">Xen</span>

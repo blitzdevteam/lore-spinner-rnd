@@ -23,10 +23,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <header class="home-header-bar relative z-20 flex min-h-[72px] items-center overflow-visible md:min-h-[91px]">
+    <header class="home-header-bar relative z-20 flex min-h-[4.5rem] items-center overflow-visible md:min-h-[5.6875rem]">
         <div class="relative container w-full overflow-visible py-0">
             <div
-                class="container-content grid h-[64px] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 overflow-visible md:h-[75px] md:grid-cols-[auto_1fr_auto] md:gap-x-[50px]"
+                class="container-content grid h-[4rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 overflow-visible md:h-[4.6875rem] md:grid-cols-[auto_1fr_auto] md:gap-x-[3.125rem]"
             >
                 <Link
                     :href="index().url"
@@ -42,7 +42,7 @@ onUnmounted(() => {
                     />
                 </Link>
 
-                <div class="hidden min-h-[75px] min-w-0 items-center justify-center justify-self-center md:flex">
+                <div class="hidden min-h-[4.6875rem] min-w-0 items-center justify-center justify-self-center md:flex">
                     <HomeHeaderMenu />
                 </div>
 
@@ -80,16 +80,16 @@ onUnmounted(() => {
 .brand-logo {
     display: block;
     width: auto;
-    max-width: min(100%, 168px);
-    height: 40px;
+    max-width: min(100%, 10.5rem);
+    height: 2.5rem;
     object-fit: contain;
     object-position: left center;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .brand-logo {
-        max-width: min(100%, 280px);
-        height: 56px;
+        max-width: min(100%, 17.5rem);
+        height: 3.5rem;
     }
 }
 

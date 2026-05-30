@@ -154,11 +154,11 @@ function branchesForStory(story: StoryInterface): string | null {
     <HomeLayout>
         <!-- Rail widened to 1035px so five 195px cards fit per row (+ 4×15px gaps). Banner spans full rail. -->
         <!-- z-10: stack above footer (later sibling); hover root must not clip overflow-x (see inner scroll div). -->
-        <div class="relative z-10 pb-14 pt-8 md:pb-[60px] md:pt-[82px]">
+        <div class="relative z-10 pb-14 pt-8 md:pb-[3.75rem] md:pt-[5.125rem]">
             <div class="container">
-                <div class="mx-auto flex w-full max-w-[1035px] min-w-0 flex-col">
-                    <div class="mb-10 w-full shrink-0 overflow-hidden rounded-[8px] md:mb-[60px]">
-                        <div class="relative aspect-[1035/370] w-full md:aspect-auto md:h-[370px] md:max-h-none">
+                <div class="mx-auto flex w-full max-w-[64.6875rem] min-w-0 flex-col">
+                    <div class="mb-10 w-full shrink-0 overflow-hidden rounded-[0.5rem] md:mb-[3.75rem]">
+                        <div class="relative aspect-[1035/370] w-full md:aspect-auto md:h-[23.125rem] md:max-h-none">
                             <img
                                 :src="libraryBannerImage"
                                 alt=""
@@ -170,21 +170,21 @@ function branchesForStory(story: StoryInterface): string | null {
                         </div>
                     </div>
 
-                    <div class="flex w-full min-w-0 flex-col gap-[18px]">
+                    <div class="flex w-full min-w-0 flex-col gap-[1.125rem]">
                         <div class="flex h-auto min-h-10 shrink-0 items-center justify-between gap-4 sm:h-10 sm:justify-between">
                             <h1
-                                class="font-[Inter] text-[22px] font-bold uppercase leading-[33px] text-white sm:h-10 sm:text-[26px] sm:leading-[33px]"
+                                class="font-[Inter] text-[1.375rem] font-bold uppercase leading-[2.0625rem] text-white sm:h-10 sm:text-[1.625rem] sm:leading-[2.0625rem]"
                             >
                                 My Stories ( {{ libraryStories.length }} )
                             </h1>
                             <button
                                 type="button"
-                                class="inline-flex h-[38px] w-[96px] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-solid border-primary bg-[#01343a] px-[6px] text-[18px] font-medium text-primary outline-none transition-colors hover:bg-[#0a454d] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                                class="inline-flex h-[2.375rem] w-[6rem] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[0.5rem] border border-solid border-primary bg-[#01343a] px-[0.375rem] text-[1.125rem] font-medium text-primary outline-none transition-colors hover:bg-[#0a454d] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                                 :title="`Sorting: ${sortLabel}. Click to change.`"
                                 @click="cycleSort"
                             >
-                                <ArrowDownUp class="size-[22px] shrink-0 text-primary" :stroke-width="2" aria-hidden="true" />
-                                <span class="text-primary leading-[33px]">Sort</span>
+                                <ArrowDownUp class="size-[1.375rem] shrink-0 text-primary" :stroke-width="2" aria-hidden="true" />
+                                <span class="text-primary leading-[2.0625rem]">Sort</span>
                             </button>
                         </div>
 
@@ -209,12 +209,12 @@ function branchesForStory(story: StoryInterface): string | null {
                             <Transition name="card-popup">
                                 <div
                                     v-if="hoveredStoryId && hoveredStory && popupPos"
-                                    class="absolute z-50 flex w-[282px] flex-col gap-[10px] rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
+                                    class="absolute z-50 flex w-[17.625rem] flex-col gap-[0.625rem] rounded-[0.5rem] border border-primary bg-[#262626] p-[0.625rem] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
                                     :style="popupStyle"
                                     @mouseenter="onPopupEnter"
                                     @mouseleave="onPopupLeave"
                                 >
-                            <div class="relative h-[239px] w-full overflow-hidden rounded-[6px]">
+                            <div class="relative h-[14.9375rem] w-full overflow-hidden rounded-[0.375rem]">
                                 <img
                                     v-if="hoveredStory.cover"
                                     :src="hoveredStory.cover"
@@ -223,7 +223,7 @@ function branchesForStory(story: StoryInterface): string | null {
                                 />
                                 <div
                                     v-else
-                                    class="absolute inset-0 flex items-center justify-center rounded-[6px] bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
+                                    class="absolute inset-0 flex items-center justify-center rounded-[0.375rem] bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
                                 >
                                     <span class="text-4xl font-bold text-primary/50">
                                         {{ hoveredStory.title?.charAt(0)?.toUpperCase() }}
@@ -231,27 +231,27 @@ function branchesForStory(story: StoryInterface): string | null {
                                 </div>
                             </div>
 
-                            <div class="flex flex-col gap-[8px]">
-                                <div class="flex flex-col gap-[4px]">
-                                    <p class="text-[20px] font-medium leading-normal text-white">
+                            <div class="flex flex-col gap-[0.5rem]">
+                                <div class="flex flex-col gap-[0.25rem]">
+                                    <p class="text-[1.25rem] font-medium leading-normal text-white">
                                         {{ hoveredStory.title }}
                                     </p>
                                     <div
                                         v-if="themesForStory(hoveredStory).length"
-                                        class="flex flex-wrap items-center gap-x-[8px] gap-y-[4px] text-[14px] text-white"
+                                        class="flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.25rem] text-[0.875rem] text-white"
                                     >
                                         <template v-for="theme in themesForStory(hoveredStory)" :key="theme">
-                                            <span class="size-[6px] shrink-0 rounded-full bg-white" />
+                                            <span class="size-[0.375rem] shrink-0 rounded-full bg-white" />
                                             <span>{{ theme }}</span>
                                         </template>
                                     </div>
                                 </div>
 
-                                <p v-if="hoveredStory.teaser" class="line-clamp-3 text-[14px] leading-[1.5] text-[#8f8f8f]">
+                                <p v-if="hoveredStory.teaser" class="line-clamp-3 text-[0.875rem] leading-[1.5] text-[#8f8f8f]">
                                     {{ hoveredStory.teaser }}
                                 </p>
 
-                                <p v-if="branchesForStory(hoveredStory)" class="text-[14px] text-[#ffbe58]">
+                                <p v-if="branchesForStory(hoveredStory)" class="text-[0.875rem] text-[#ffbe58]">
                                     {{ branchesForStory(hoveredStory) }} Branches explored
                                 </p>
                             </div>
@@ -259,14 +259,14 @@ function branchesForStory(story: StoryInterface): string | null {
                             <template v-if="hoveredPublished">
                                 <Link
                                     :href="storyShow(hoveredStory.slug).url"
-                                    class="flex h-9 w-full items-center justify-center rounded-[6px] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                                    class="flex h-9 w-full items-center justify-center rounded-[0.375rem] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
                                 >
                                     Play
                                 </Link>
                             </template>
                             <template v-else>
                                 <div
-                                    class="flex h-9 w-full cursor-default items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]"
+                                    class="flex h-9 w-full cursor-default items-center justify-center rounded-[0.375rem] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]"
                                 >
                                     Coming soon
                                 </div>
@@ -282,13 +282,13 @@ function branchesForStory(story: StoryInterface): string | null {
 </template>
 
 <style scoped>
-/* Exactly 5 columns × 195px + 15px gutters = 1035px per row */
+/* Exactly 5 columns × 12.1875rem + 0.9375rem gutters = 64.6875rem per row */
 .library-story-grid {
     display: grid;
-    grid-template-columns: repeat(5, 195px);
-    column-gap: 15px;
-    row-gap: 18px;
-    width: 1035px;
+    grid-template-columns: repeat(5, 12.1875rem);
+    column-gap: 0.9375rem;
+    row-gap: 1.125rem;
+    width: 64.6875rem;
 }
 
 /* Popup fade (matches Featured Worlds) */
@@ -305,6 +305,6 @@ function branchesForStory(story: StoryInterface): string | null {
 .card-popup-enter-from,
 .card-popup-leave-to {
     opacity: 0;
-    transform: translateY(6px) scale(0.97);
+    transform: translateY(0.375rem) scale(0.97);
 }
 </style>

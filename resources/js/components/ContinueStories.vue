@@ -45,10 +45,10 @@ const eventTitle = computed(() => {
         <div class="container">
             <div class="container-content home-section-gap">
                 <div>
-                    <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">
+                    <h2 class="flex h-10 items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
                         Continue Your Story
                     </h2>
-                    <p class="text-[16px] font-normal leading-[26px] text-[#b6b6b6]">
+                    <p class="text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">
                         Pick up right where you left off
                     </p>
                 </div>
@@ -77,11 +77,11 @@ const eventTitle = computed(() => {
                         <div class="flex flex-1 flex-col justify-between gap-3 p-4 sm:gap-4 sm:p-5 md:p-6">
                             <div class="flex flex-col gap-2 sm:gap-3">
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <span v-if="chapterLabel" class="rounded-full bg-primary-500/15 px-2 py-0.5 text-[10px] font-medium text-primary-300 sm:px-2.5 sm:text-xs">
+                                    <span v-if="chapterLabel" class="rounded-full bg-primary-500/15 px-2 py-0.5 text-[0.625rem] font-medium text-primary-300 sm:px-2.5 sm:text-xs">
                                         <LucideBookOpen class="mb-0.5 inline size-3" />
                                         {{ chapterLabel }}
                                     </span>
-                                    <span class="flex items-center gap-1 text-[10px] text-gray-400 sm:text-xs">
+                                    <span class="flex items-center gap-1 text-[0.625rem] text-gray-400 sm:text-xs">
                                         <LucideClock class="size-3" />
                                         Last played {{ timeAgo }}
                                     </span>
@@ -108,7 +108,7 @@ const eventTitle = computed(() => {
                                     <LucidePlay class="size-4 fill-current" />
                                     Continue
                                 </BaseButton>
-                                <span v-if="game.prompts_count" class="text-[10px] text-gray-500 sm:text-xs">
+                                <span v-if="game.prompts_count" class="text-[0.625rem] text-gray-500 sm:text-xs">
                                     {{ game.prompts_count }} turns played
                                 </span>
                             </div>

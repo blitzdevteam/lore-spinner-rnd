@@ -18,10 +18,10 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="flex w-full max-w-[660px] flex-wrap items-center justify-between gap-x-4 gap-y-4">
+    <div class="flex w-full max-w-[41.25rem] flex-wrap items-center justify-between gap-x-4 gap-y-4">
         <StoryPlayTabPair :model-value="tab" @update:model-value="emit('update:tab', $event)" />
 
-        <div class="flex items-center gap-[10px]">
+        <div class="flex items-center gap-[0.625rem]">
             <StoryPlayGlassRoundButton aria-label="Share" @click="$emit('share')">
                 <LucideShare2 class="!size-5" :stroke-width="1.65" aria-hidden="true" />
             </StoryPlayGlassRoundButton>

@@ -63,10 +63,10 @@ function toggleItem(index: number) {
     <div class="home-section-gap w-full">
         <!-- Title + intro (left-aligned with other homepage sections) -->
         <div class="flex w-full flex-col items-start">
-            <h2 class="flex h-10 w-full items-center text-[26px] font-bold uppercase leading-[33px] text-white">
+            <h2 class="flex h-10 w-full items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
                 Frequently Asked Questions
             </h2>
-            <p class="max-w-[789px] text-[16px] font-normal leading-[26px] text-[#b6b6b6]">
+            <p class="max-w-[49.3125rem] text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">
                 Can’t find what you need? Visit our community forum, reach out on Twitter, or email our
                 support team.
             </p>
@@ -76,52 +76,52 @@ function toggleItem(index: number) {
         <button
             v-if="!sectionOpen"
             type="button"
-            class="relative h-12 w-[152px] shrink-0 overflow-hidden rounded-[12px] text-left shadow-[0px_4px_80px_0px_rgba(0,0,0,0.2)] transition-opacity hover:opacity-90"
+            class="relative h-12 w-[9.5rem] shrink-0 overflow-hidden rounded-[0.75rem] text-left shadow-[0px_4px_80px_0px_rgba(0,0,0,0.2)] transition-opacity hover:opacity-90"
             aria-expanded="false"
             @click="toggleSection"
         >
-            <span class="pointer-events-none absolute inset-0 rounded-[12px] bg-[rgba(53,53,53,0.6)]" />
+            <span class="pointer-events-none absolute inset-0 rounded-[0.75rem] bg-[rgba(53,53,53,0.6)]" />
             <span
-                class="pointer-events-none absolute inset-0 rounded-[12px] bg-[rgba(30,30,30,0.25)] mix-blend-plus-lighter backdrop-blur-[3px]"
+                class="pointer-events-none absolute inset-0 rounded-[0.75rem] bg-[rgba(30,30,30,0.25)] mix-blend-plus-lighter backdrop-blur-[3px]"
             />
             <span
                 class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
             />
-            <span class="relative flex h-full items-center justify-center gap-[10px] pl-[13px]">
-                <span class="flex h-[9px] w-[18px] items-center justify-center text-white">
-                    <LucideChevronDown class="size-[18px] shrink-0 stroke-[2]" aria-hidden="true" />
+            <span class="relative flex h-full items-center justify-center gap-[0.625rem] pl-[0.8125rem]">
+                <span class="flex h-[0.5625rem] w-[1.125rem] items-center justify-center text-white">
+                    <LucideChevronDown class="size-[1.125rem] shrink-0 stroke-[2]" aria-hidden="true" />
                 </span>
-                <span class="text-center text-[16px] font-medium leading-normal text-white">Show More</span>
+                <span class="text-center text-[1rem] font-medium leading-normal text-white">Show More</span>
             </span>
         </button>
 
         <!-- Expanded: glass panel -->
         <div
             v-else
-            class="relative w-full min-h-[624px] overflow-hidden rounded-[14px] shadow-[0px_4px_80px_0px_rgba(0,0,0,0.2)]"
+            class="relative w-full min-h-[39rem] overflow-hidden rounded-[0.875rem] shadow-[0px_4px_80px_0px_rgba(0,0,0,0.2)]"
         >
-            <span class="pointer-events-none absolute inset-0 rounded-[14px] bg-[rgba(53,53,53,0.6)]" />
+            <span class="pointer-events-none absolute inset-0 rounded-[0.875rem] bg-[rgba(53,53,53,0.6)]" />
             <span
-                class="pointer-events-none absolute inset-0 rounded-[14px] bg-[rgba(30,30,30,0.25)] mix-blend-plus-lighter backdrop-blur-[3px]"
+                class="pointer-events-none absolute inset-0 rounded-[0.875rem] bg-[rgba(30,30,30,0.25)] mix-blend-plus-lighter backdrop-blur-[3px]"
             />
             <span
                 class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
             />
 
-            <div class="relative px-[18px] pb-6 pt-[72px]">
+            <div class="relative px-[1.125rem] pb-6 pt-[4.5rem]">
                 <button
                     type="button"
-                    class="absolute left-[13px] top-px z-10 flex h-[51px] items-center justify-center gap-[10px] text-primary hover:opacity-90"
+                    class="absolute left-[0.8125rem] top-px z-10 flex h-[3.1875rem] items-center justify-center gap-[0.625rem] text-primary hover:opacity-90"
                     aria-expanded="true"
                     @click="toggleSection"
                 >
-                    <span class="flex h-[9px] w-[18px] items-center justify-center">
-                        <LucideChevronDown class="size-[18px] shrink-0 -rotate-180 stroke-[2]" aria-hidden="true" />
+                    <span class="flex h-[0.5625rem] w-[1.125rem] items-center justify-center">
+                        <LucideChevronDown class="size-[1.125rem] shrink-0 -rotate-180 stroke-[2]" aria-hidden="true" />
                     </span>
-                    <span class="text-center text-[16px] font-medium leading-normal">Show Less</span>
+                    <span class="text-center text-[1rem] font-medium leading-normal">Show Less</span>
                 </button>
 
-                <div class="mx-auto flex w-full max-w-[982px] flex-col gap-[10px]">
+                <div class="mx-auto flex w-full max-w-[61.375rem] flex-col gap-[0.625rem]">
                     <FrequentlyAskedQuestionItem
                         v-for="(faq, index) in faqs"
                         :key="faq.id"
@@ -133,7 +133,7 @@ function toggleItem(index: number) {
 
                     <button
                         type="button"
-                        class="w-full pt-1 text-center text-[14px] font-normal leading-[33px] text-primary hover:underline"
+                        class="w-full pt-1 text-center text-[0.875rem] font-normal leading-[2.0625rem] text-primary hover:underline"
                     >
                         View More
                     </button>

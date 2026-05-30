@@ -170,17 +170,17 @@ function coverForPopup(story: NewStory): string {
 
                 <!-- Section header -->
                 <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="max-w-[550px] min-w-0">
-                        <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">
+                    <div class="max-w-[34.375rem] min-w-0">
+                        <h2 class="flex h-10 items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
                             New Stories
                         </h2>
-                        <p class="text-[16px] font-normal leading-[26px] text-[#b6b6b6]">
+                        <p class="text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">
                             New branches, hidden paths, and fresh story worlds.
                         </p>
                     </div>
                     <Link
                         :href="storiesIndex().url"
-                        class="inline-block w-[98px] shrink-0 whitespace-nowrap text-right text-[14px] font-normal leading-[33px] text-primary hover:underline"
+                        class="inline-block w-[6.125rem] shrink-0 whitespace-nowrap text-right text-[0.875rem] font-normal leading-[2.0625rem] text-primary hover:underline"
                     >
                         View All ({{ storyCount }})
                     </Link>
@@ -214,7 +214,7 @@ function coverForPopup(story: NewStory): string {
                     <!-- Scrollable card row -->
                     <div
                         ref="sliderEl"
-                        class="story-slider flex gap-[10px] overflow-x-auto pb-2 md:ml-[17px]"
+                        class="story-slider flex gap-[0.625rem] overflow-x-auto pb-2 md:ml-[1.0625rem]"
                     >
                         <div
                             v-for="story in stories"
@@ -224,10 +224,10 @@ function coverForPopup(story: NewStory): string {
                             @mouseenter="onCardEnter(story)"
                             @mouseleave="onCardLeave"
                         >
-                            <div class="flex w-[450px] flex-col gap-[10px]">
+                            <div class="flex w-[28.125rem] flex-col gap-[0.625rem]">
                                 <!-- Banner image -->
-                                <div class="rounded-[8px] border border-[#373737] bg-[#262626] p-1">
-                                    <div class="relative h-[262px] w-full overflow-hidden rounded-[8px]">
+                                <div class="rounded-[0.5rem] border border-[#373737] bg-[#262626] p-1">
+                                    <div class="relative h-[16.375rem] w-full overflow-hidden rounded-[0.5rem]">
                                         <img
                                             :src="story.cover"
                                             :alt="story.title"
@@ -252,11 +252,11 @@ function coverForPopup(story: NewStory): string {
                                 </div>
 
                                 <!-- Title + meta tags -->
-                                <div class="flex w-[430px] flex-col gap-[3px] px-px">
-                                    <p class="text-[18px] font-semibold leading-normal text-white">
+                                <div class="flex w-[26.875rem] flex-col gap-[3px] px-px">
+                                    <p class="text-[1.125rem] font-semibold leading-normal text-white">
                                         {{ story.title }}
                                     </p>
-                                    <p class="text-[15px] leading-normal text-[#8f8f8f]">
+                                    <p class="text-[0.9375rem] leading-normal text-[#8f8f8f]">
                                         {{ story.category }} | {{ story.rating }} | {{ story.playable ? 'Published' : 'Coming soon' }}
                                     </p>
                                 </div>
@@ -280,13 +280,13 @@ function coverForPopup(story: NewStory): string {
                     <Transition name="story-popup">
                         <div
                             v-if="hoveredId && hoveredStory && popupPos"
-                            class="absolute z-30 flex w-[502px] flex-row rounded-[8px] border border-primary bg-[#262626] px-[12px] py-[6px] shadow-[0_0_18.3px_rgba(111,175,186,0.4)]"
+                            class="absolute z-30 flex w-[31.375rem] flex-row rounded-[0.5rem] border border-primary bg-[#262626] px-[0.75rem] py-[0.375rem] shadow-[0_0_18.3px_rgba(111,175,186,0.4)]"
                             :style="popupStyle"
                             @mouseenter="onPopupEnter"
                             @mouseleave="onPopupLeave"
                         >
                             <!-- Left: portrait cover (248×298) -->
-                            <div class="h-[298px] w-[248px] shrink-0 overflow-hidden rounded-[5px]">
+                            <div class="h-[18.625rem] w-[15.5rem] shrink-0 overflow-hidden rounded-[0.3125rem]">
                                 <img
                                     :src="coverForPopup(hoveredStory)"
                                     :alt="hoveredStory.title"
@@ -295,24 +295,24 @@ function coverForPopup(story: NewStory): string {
                             </div>
 
                             <!-- Right: content panel (217px) -->
-                            <div class="ml-[13px] flex w-[217px] flex-col gap-[10px] py-[4px]">
+                            <div class="ml-[0.8125rem] flex w-[13.5625rem] flex-col gap-[0.625rem] py-[0.25rem]">
                                 <!-- Title + themes -->
-                                <div class="flex flex-col gap-[4px]">
-                                    <p class="text-[20px] font-medium leading-normal text-white">
+                                <div class="flex flex-col gap-[0.25rem]">
+                                    <p class="text-[1.25rem] font-medium leading-normal text-white">
                                         {{ hoveredStory.title }}
                                     </p>
-                                    <p class="text-[14px] leading-normal text-white">
+                                    <p class="text-[0.875rem] leading-normal text-white">
                                         {{ hoveredStory.themes.join(' | ') }}
                                     </p>
                                 </div>
 
                                 <!-- Teaser -->
-                                <p class="line-clamp-4 text-[14px] leading-[1.55] text-[#8f8f8f]">
+                                <p class="line-clamp-4 text-[0.875rem] leading-[1.55] text-[#8f8f8f]">
                                     {{ hoveredStory.teaser }}
                                 </p>
 
                                 <!-- Branches explored -->
-                                <p v-if="hoveredStory.branches" class="text-[14px] text-[#ffbe58]">
+                                <p v-if="hoveredStory.branches" class="text-[0.875rem] text-[#ffbe58]">
                                     {{ hoveredStory.branches }} Branches explored
                                 </p>
 
@@ -321,13 +321,13 @@ function coverForPopup(story: NewStory): string {
                                     <template v-if="hoveredStory.playable && hoveredStory.slug">
                                         <Link
                                             :href="storyShow(hoveredStory.slug).url"
-                                            class="flex h-9 w-full items-center justify-center rounded-[6px] bg-cta-fill text-[18px] font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                                            class="flex h-9 w-full items-center justify-center rounded-[0.375rem] bg-cta-fill text-[1.125rem] font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
                                         >
                                             Play
                                         </Link>
                                     </template>
                                     <template v-else>
-                                        <div class="flex h-9 items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-[18px] font-medium text-[#8e8e8e]">
+                                        <div class="flex h-9 items-center justify-center rounded-[0.375rem] border border-[#4d4d4d] bg-[#3f3f3f] text-[1.125rem] font-medium text-[#8e8e8e]">
                                             Coming soon
                                         </div>
                                     </template>
@@ -352,8 +352,8 @@ function coverForPopup(story: NewStory): string {
 }
 
 .slider-arrow {
-    width: 34px;
-    height: 34px;
+    width: 2.125rem;
+    height: 2.125rem;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -361,9 +361,9 @@ function coverForPopup(story: NewStory): string {
     border: 1px solid rgba(255, 255, 255, 0.15);
     transition: background 0.2s;
 }
-/* Vertically centered on banner posters only — matches `.p-1` wrapper + inner `h-[262px]` */
+/* Vertically centered on banner posters only — matches `.p-1` wrapper + inner `h-[16.375rem]` */
 .slider-arrow-banner {
-    top: calc((262px + 0.5rem + 2px) / 2); /* inner image + vertical padding + 1px border top/bottom */
+    top: calc((16.375rem + 0.5rem + 2px) / 2); /* inner image + vertical padding + 1px border top/bottom */
     transform: translateY(-50%);
 }
 .slider-arrow:hover {
@@ -380,6 +380,6 @@ function coverForPopup(story: NewStory): string {
 .story-popup-enter-from,
 .story-popup-leave-to {
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(0.5rem) scale(0.98);
 }
 </style>

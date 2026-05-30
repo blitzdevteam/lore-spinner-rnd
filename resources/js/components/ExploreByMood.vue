@@ -171,16 +171,16 @@ onUnmounted(() => {
             <div class="container-content home-section-gap">
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <div class="not-italic">
-                        <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">
+                        <h2 class="flex h-10 items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
                             Explore by mood
                         </h2>
-                        <p class="text-base font-normal leading-[26px] text-[#b6b6b6]">
+                        <p class="text-base font-normal leading-[1.625rem] text-[#b6b6b6]">
                             Choose the feeling you want to step into.
                         </p>
                     </div>
                     <Link
                         :href="storiesIndex().url"
-                        class="inline-block shrink-0 whitespace-nowrap text-right text-[14px] font-normal leading-[33px] text-primary hover:underline"
+                        class="inline-block shrink-0 whitespace-nowrap text-right text-[0.875rem] font-normal leading-[2.0625rem] text-primary hover:underline"
                     >
                         View All{{ storyCount != null ? ` (${storyCount})` : '' }}
                     </Link>
@@ -189,12 +189,12 @@ onUnmounted(() => {
                 <!-- Figma 5412:908: flex row, gap exactly 10px (not stretched 1fr columns) -->
                 <div class="relative">
                     <div
-                        class="mood-scroll flex w-full max-w-full flex-nowrap items-center gap-[10px] overflow-x-auto pb-1 md:w-max md:overflow-visible"
+                        class="mood-scroll flex w-full max-w-full flex-nowrap items-center gap-[0.625rem] overflow-x-auto pb-1 md:w-max md:overflow-visible"
                     >
                     <!-- Heartfelt -->
                     <button
                         type="button"
-                        class="mood-card mood-card--heartfelt relative z-0 h-[148px] w-[195px] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
+                        class="mood-card mood-card--heartfelt relative z-0 h-[9.25rem] w-[12.1875rem] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
                         :class="{ 'mood-card--active': openMoodId === 'heartfelt' }"
                         :aria-expanded="openMoodId === 'heartfelt'"
                         aria-controls="mood-explore-panel"
@@ -207,15 +207,17 @@ onUnmounted(() => {
                             />
                         </div>
                         <div
-                            class="absolute left-[59.5px] top-[17px] size-[76px] overflow-hidden rounded-[150px] shadow-[0px_0px_125.7px_0px_#792020,0px_3px_60px_0px_rgba(0,0,0,0.2)]"
-                        >
-                            <div class="pointer-events-none absolute inset-0 rounded-[150px]" aria-hidden="true">
-                                <div class="absolute inset-0 rounded-[150px] bg-[rgba(255,175,175,0.03)]" />
+                            class="mood-card-glow mood-card-glow--heartfelt pointer-events-none absolute inset-0 z-[1] rounded-lg"
+                            aria-hidden="true"
+                        />
+                        <div class="mood-icon-orbit absolute z-[2] left-[3.7188rem] top-[1.0625rem] size-[4.75rem] overflow-hidden rounded-[9.375rem]">
+                            <div class="mood-icon-orbit-bg pointer-events-none absolute inset-0 rounded-[9.375rem]" aria-hidden="true">
+                                <div class="absolute inset-0 rounded-[9.375rem] bg-[rgba(255,175,175,0.03)]" />
                                 <div
-                                    class="absolute inset-0 rounded-[150px] bg-[rgba(121,13,13,0.16)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
+                                    class="absolute inset-0 rounded-[9.375rem] bg-[rgba(121,13,13,0.16)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
                                 />
                             </div>
-                            <div class="absolute left-[22px] top-[22px] size-8">
+                            <div class="absolute left-[1.375rem] top-[1.375rem] size-8">
                                 <img :src="heartImg" alt="" width="32" height="32" class="block size-full max-w-none" />
                             </div>
                             <div
@@ -223,7 +225,7 @@ onUnmounted(() => {
                             />
                         </div>
                         <p
-                            class="absolute left-[65.5px] top-[113.5px] -translate-y-1/2 whitespace-nowrap text-[15px] font-medium capitalize leading-[33px] not-italic text-[#c93434]"
+                            class="absolute z-[2] left-[4.0938rem] top-[7.0938rem] -translate-y-1/2 whitespace-nowrap text-[0.9375rem] font-medium capitalize leading-[2.0625rem] not-italic text-[#c93434]"
                         >
                             Heartfelt
                         </p>
@@ -235,7 +237,7 @@ onUnmounted(() => {
                     <!-- Adventurous -->
                     <button
                         type="button"
-                        class="mood-card mood-card--adventurous relative z-0 h-[148px] w-[195px] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
+                        class="mood-card mood-card--adventurous relative z-0 h-[9.25rem] w-[12.1875rem] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
                         :class="{ 'mood-card--active': openMoodId === 'adventurous' }"
                         :aria-expanded="openMoodId === 'adventurous'"
                         aria-controls="mood-explore-panel"
@@ -248,15 +250,17 @@ onUnmounted(() => {
                             />
                         </div>
                         <div
-                            class="absolute left-[60px] top-[17px] size-[76px] overflow-hidden rounded-[150px] shadow-[0px_0px_111.9px_0px_#7c5e0b,0px_3px_60px_0px_rgba(0,0,0,0.2)]"
-                        >
-                            <div class="pointer-events-none absolute inset-0 rounded-[150px]" aria-hidden="true">
-                                <div class="absolute inset-0 rounded-[150px] bg-[rgba(255,175,175,0.03)]" />
+                            class="mood-card-glow mood-card-glow--adventurous pointer-events-none absolute inset-0 z-[1] rounded-lg"
+                            aria-hidden="true"
+                        />
+                        <div class="mood-icon-orbit absolute z-[2] left-[3.75rem] top-[1.0625rem] size-[4.75rem] overflow-hidden rounded-[9.375rem]">
+                            <div class="mood-icon-orbit-bg pointer-events-none absolute inset-0 rounded-[9.375rem]" aria-hidden="true">
+                                <div class="absolute inset-0 rounded-[9.375rem] bg-[rgba(255,175,175,0.03)]" />
                                 <div
-                                    class="absolute inset-0 rounded-[150px] bg-[rgba(247,179,8,0.07)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
+                                    class="absolute inset-0 rounded-[9.375rem] bg-[rgba(247,179,8,0.07)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
                                 />
                             </div>
-                            <div class="absolute left-[22px] top-[22px] size-8">
+                            <div class="absolute left-[1.375rem] top-[1.375rem] size-8">
                                 <img
                                     :src="mountainsImg"
                                     alt=""
@@ -270,7 +274,7 @@ onUnmounted(() => {
                             />
                         </div>
                         <p
-                            class="absolute left-[51.5px] top-[113.5px] -translate-y-1/2 whitespace-nowrap text-[15px] font-medium capitalize leading-[33px] not-italic text-[#ecc863]"
+                            class="absolute z-[2] left-[3.2188rem] top-[7.0938rem] -translate-y-1/2 whitespace-nowrap text-[0.9375rem] font-medium capitalize leading-[2.0625rem] not-italic text-[#ecc863]"
                         >
                             Adventurous
                         </p>
@@ -282,7 +286,7 @@ onUnmounted(() => {
                     <!-- Mysterious -->
                     <button
                         type="button"
-                        class="mood-card mood-card--mysterious relative z-0 h-[148px] w-[195px] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
+                        class="mood-card mood-card--mysterious relative z-0 h-[9.25rem] w-[12.1875rem] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
                         :class="{ 'mood-card--active': openMoodId === 'mysterious' }"
                         :aria-expanded="openMoodId === 'mysterious'"
                         aria-controls="mood-explore-panel"
@@ -295,15 +299,17 @@ onUnmounted(() => {
                             />
                         </div>
                         <div
-                            class="absolute left-[59.5px] top-[17px] size-[76px] overflow-hidden rounded-[150px] shadow-[0px_0px_142.1px_0px_#248077,0px_3px_60px_0px_rgba(0,0,0,0.2)]"
-                        >
-                            <div class="pointer-events-none absolute inset-0 rounded-[150px]" aria-hidden="true">
-                                <div class="absolute inset-0 rounded-[150px] bg-[rgba(255,175,175,0.03)]" />
+                            class="mood-card-glow mood-card-glow--mysterious pointer-events-none absolute inset-0 z-[1] rounded-lg"
+                            aria-hidden="true"
+                        />
+                        <div class="mood-icon-orbit absolute z-[2] left-[3.7188rem] top-[1.0625rem] size-[4.75rem] overflow-hidden rounded-[9.375rem]">
+                            <div class="mood-icon-orbit-bg pointer-events-none absolute inset-0 rounded-[9.375rem]" aria-hidden="true">
+                                <div class="absolute inset-0 rounded-[9.375rem] bg-[rgba(255,175,175,0.03)]" />
                                 <div
-                                    class="absolute inset-0 rounded-[150px] bg-[rgba(98,232,219,0.09)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
+                                    class="absolute inset-0 rounded-[9.375rem] bg-[rgba(98,232,219,0.09)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
                                 />
                             </div>
-                            <div class="absolute left-[22px] top-[25px] size-8">
+                            <div class="absolute left-[1.375rem] top-[1.5625rem] size-8">
                                 <img :src="eyeImg" alt="" width="32" height="32" class="block size-full max-w-none" />
                             </div>
                             <div
@@ -311,7 +317,7 @@ onUnmounted(() => {
                             />
                         </div>
                         <p
-                            class="absolute left-[57.5px] top-[113.5px] -translate-y-1/2 whitespace-nowrap text-[15px] font-medium capitalize leading-[33px] not-italic text-[#62e8db]"
+                            class="absolute z-[2] left-[3.5938rem] top-[7.0938rem] -translate-y-1/2 whitespace-nowrap text-[0.9375rem] font-medium capitalize leading-[2.0625rem] not-italic text-[#62e8db]"
                         >
                             Mysterious
                         </p>
@@ -323,7 +329,7 @@ onUnmounted(() => {
                     <!-- Epic -->
                     <button
                         type="button"
-                        class="mood-card mood-card--epic relative z-0 h-[148px] w-[195px] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
+                        class="mood-card mood-card--epic relative z-0 h-[9.25rem] w-[12.1875rem] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
                         :class="{ 'mood-card--active': openMoodId === 'epic' }"
                         :aria-expanded="openMoodId === 'epic'"
                         aria-controls="mood-explore-panel"
@@ -336,21 +342,19 @@ onUnmounted(() => {
                             />
                         </div>
                         <p
-                            class="absolute left-[81.5px] top-[113.5px] -translate-y-1/2 whitespace-nowrap text-[15px] font-medium capitalize leading-[33px] not-italic text-[#58d9a1]"
+                            class="absolute z-[2] left-[5.0938rem] top-[7.0938rem] -translate-y-1/2 whitespace-nowrap text-[0.9375rem] font-medium capitalize leading-[2.0625rem] not-italic text-[#58d9a1]"
                         >
                             Epic
                         </p>
-                        <div
-                            class="absolute left-[59.5px] top-[17px] size-[76px] overflow-hidden rounded-[150px] shadow-[0px_0px_95.8px_0px_#257351,0px_3px_60px_0px_rgba(0,0,0,0.2)]"
-                        >
-                            <div class="pointer-events-none absolute inset-0 rounded-[150px]" aria-hidden="true">
-                                <div class="absolute inset-0 rounded-[150px] bg-[rgba(255,175,175,0.03)]" />
+                        <div class="mood-icon-orbit absolute z-[2] left-[3.7188rem] top-[1.0625rem] size-[4.75rem] overflow-hidden rounded-[9.375rem]">
+                            <div class="mood-icon-orbit-bg pointer-events-none absolute inset-0 rounded-[9.375rem]" aria-hidden="true">
+                                <div class="absolute inset-0 rounded-[9.375rem] bg-[rgba(255,175,175,0.03)]" />
                                 <div
-                                    class="absolute inset-0 rounded-[150px] bg-[rgba(88,217,161,0.15)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
+                                    class="absolute inset-0 rounded-[9.375rem] bg-[rgba(88,217,161,0.15)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
                                 />
                             </div>
                             <div
-                                class="absolute left-[15px] top-[15px] flex size-[45.255px] items-center justify-center"
+                                class="absolute left-[0.9375rem] top-[0.9375rem] flex size-[2.8284rem] items-center justify-center"
                             >
                                 <div class="flex-none -rotate-45">
                                     <div class="relative size-8">
@@ -370,7 +374,7 @@ onUnmounted(() => {
                     <!-- Whimsical -->
                     <button
                         type="button"
-                        class="mood-card mood-card--whimsical relative z-0 h-[148px] w-[195px] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
+                        class="mood-card mood-card--whimsical relative z-0 h-[9.25rem] w-[12.1875rem] shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left transition-[transform] duration-200 hover:scale-[1.02] active:scale-[0.99]"
                         :class="{ 'mood-card--active': openMoodId === 'whimsical' }"
                         :aria-expanded="openMoodId === 'whimsical'"
                         aria-controls="mood-explore-panel"
@@ -383,20 +387,18 @@ onUnmounted(() => {
                             />
                         </div>
                         <p
-                            class="absolute left-[60.5px] top-[113.5px] -translate-y-1/2 whitespace-nowrap text-[15px] font-medium capitalize leading-[33px] not-italic text-[#a979c2]"
+                            class="absolute z-[2] left-[3.7813rem] top-[7.0938rem] -translate-y-1/2 whitespace-nowrap text-[0.9375rem] font-medium capitalize leading-[2.0625rem] not-italic text-[#a979c2]"
                         >
                             Whimsical
                         </p>
-                        <div
-                            class="absolute left-[59.5px] top-[17px] size-[76px] overflow-hidden rounded-[150px] shadow-[0px_0px_117.8px_0px_#7e5296,0px_3px_60px_0px_rgba(0,0,0,0.2)]"
-                        >
-                            <div class="pointer-events-none absolute inset-0 rounded-[150px]" aria-hidden="true">
-                                <div class="absolute inset-0 rounded-[150px] bg-[rgba(255,175,175,0.03)]" />
+                        <div class="mood-icon-orbit absolute z-[2] left-[3.7188rem] top-[1.0625rem] size-[4.75rem] overflow-hidden rounded-[9.375rem]">
+                            <div class="mood-icon-orbit-bg pointer-events-none absolute inset-0 rounded-[9.375rem]" aria-hidden="true">
+                                <div class="absolute inset-0 rounded-[9.375rem] bg-[rgba(255,175,175,0.03)]" />
                                 <div
-                                    class="absolute inset-0 rounded-[150px] bg-[rgba(169,121,194,0.07)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
+                                    class="absolute inset-0 rounded-[9.375rem] bg-[rgba(169,121,194,0.07)] backdrop-blur-[2.25px] mix-blend-plus-lighter"
                                 />
                             </div>
-                            <div class="absolute left-[22px] top-[24px] size-8">
+                            <div class="absolute left-[1.375rem] top-[1.5rem] size-8">
                                 <img
                                     :src="spiralImg"
                                     alt=""
@@ -445,7 +447,7 @@ onUnmounted(() => {
                     <Transition name="mood-sheet" appear>
                         <div
                             v-if="activeMoodConfig"
-                            class="relative z-10 flex max-h-[min(92vh,880px)] w-full max-w-5xl flex-col overflow-hidden rounded-t-[20px] border border-white/10 bg-[#0c0c0c] shadow-[0_-8px_60px_rgba(0,0,0,0.65)] sm:rounded-2xl"
+                            class="relative z-10 flex max-h-[min(92vh,880px)] w-full max-w-5xl flex-col overflow-hidden rounded-t-[1.25rem] border border-white/10 bg-[#0c0c0c] shadow-[0_-8px_60px_rgba(0,0,0,0.65)] sm:rounded-2xl"
                             :style="{
                                 boxShadow: `0 0 0 1px rgba(${activeMoodConfig.accentRgb}, 0.2), 0 24px 80px rgba(0,0,0,0.55), 0 0 120px rgba(${activeMoodConfig.accentRgb}, 0.12)`,
                             }"
@@ -461,16 +463,16 @@ onUnmounted(() => {
                                 class="relative flex items-start justify-between gap-4 border-b border-white/10 px-5 pb-4 pt-5 sm:px-8 sm:pt-7"
                             >
                                 <div class="min-w-0 flex-1 space-y-1.5">
-                                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55">
+                                    <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-white/55">
                                         Explore by mood
                                     </p>
                                     <h3
                                         id="mood-panel-title"
-                                        class="text-2xl font-bold uppercase leading-tight tracking-tight text-white sm:text-[28px]"
+                                        class="text-2xl font-bold uppercase leading-tight tracking-tight text-white sm:text-[1.75rem]"
                                     >
                                         {{ activeMoodConfig.label }}
                                     </h3>
-                                    <p class="max-w-xl text-[15px] leading-relaxed text-[#a8a8a8]">
+                                    <p class="max-w-xl text-[0.9375rem] leading-relaxed text-[#a8a8a8]">
                                         {{ activeMoodConfig.blurb }}
                                     </p>
                                 </div>
@@ -505,7 +507,7 @@ onUnmounted(() => {
                                     />
                                     <button
                                         type="button"
-                                        class="slider-arrow absolute -left-1 top-[140px] z-10 hidden -translate-y-1/2 sm:flex"
+                                        class="slider-arrow absolute -left-1 top-[8.75rem] z-10 hidden -translate-y-1/2 sm:flex"
                                         aria-label="Scroll picks left"
                                         @click="scrollMoodGames(-228)"
                                     >
@@ -513,7 +515,7 @@ onUnmounted(() => {
                                     </button>
                                     <button
                                         type="button"
-                                        class="slider-arrow absolute -right-1 top-[140px] z-10 hidden -translate-y-1/2 sm:flex"
+                                        class="slider-arrow absolute -right-1 top-[8.75rem] z-10 hidden -translate-y-1/2 sm:flex"
                                         aria-label="Scroll picks right"
                                         @click="scrollMoodGames(228)"
                                     >
@@ -552,13 +554,13 @@ onUnmounted(() => {
                                                 <p class="truncate text-base font-semibold text-white">
                                                     {{ game.title }}
                                                 </p>
-                                                <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] leading-snug text-[#5fd4e8]">
+                                                <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem] leading-snug text-[#5fd4e8]">
                                                     <template v-for="(theme, ti) in game.themes" :key="theme">
                                                         <span v-if="ti > 0" class="text-white/25">·</span>
                                                         <span>{{ theme }}</span>
                                                     </template>
                                                 </p>
-                                                <p class="line-clamp-2 text-[13px] leading-relaxed text-[#8a8a8a]">
+                                                <p class="line-clamp-2 text-[0.8125rem] leading-relaxed text-[#8a8a8a]">
                                                     {{ game.teaser }}
                                                 </p>
                                                 <template v-if="game.playable && game.slug">
@@ -616,8 +618,8 @@ onUnmounted(() => {
 }
 
 .slider-arrow {
-    width: 38px;
-    height: 38px;
+    width: 2.375rem;
+    height: 2.375rem;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -630,7 +632,7 @@ onUnmounted(() => {
     transform: translateY(-50%) scale(1.04);
 }
 .slider-arrow-icon {
-    font-size: 22px;
+    font-size: 1.375rem;
     line-height: 1;
     color: white;
 }
@@ -670,8 +672,8 @@ onUnmounted(() => {
 .mood-card--heartfelt:hover .mood-icon-orbit,
 .mood-card--heartfelt.mood-card--active .mood-icon-orbit {
     box-shadow:
-        0px 0px 125.7px 0px #792020,
-        0px 3px 60px 0px rgba(0, 0, 0, 0.2);
+        0px 0px 7.8563rem 0px #792020,
+        0px 3px 3.75rem 0px rgba(0, 0, 0, 0.2);
 }
 
 .mood-card--adventurous .mood-icon-orbit {
@@ -681,8 +683,8 @@ onUnmounted(() => {
 .mood-card--adventurous:hover .mood-icon-orbit,
 .mood-card--adventurous.mood-card--active .mood-icon-orbit {
     box-shadow:
-        0px 0px 111.9px 0px #7c5e0b,
-        0px 3px 60px 0px rgba(0, 0, 0, 0.2);
+        0px 0px 6.9938rem 0px #7c5e0b,
+        0px 3px 3.75rem 0px rgba(0, 0, 0, 0.2);
 }
 
 .mood-card--mysterious .mood-icon-orbit {
@@ -692,8 +694,8 @@ onUnmounted(() => {
 .mood-card--mysterious:hover .mood-icon-orbit,
 .mood-card--mysterious.mood-card--active .mood-icon-orbit {
     box-shadow:
-        0px 0px 142.1px 0px #248077,
-        0px 3px 60px 0px rgba(0, 0, 0, 0.2);
+        0px 0px 8.8812rem 0px #248077,
+        0px 3px 3.75rem 0px rgba(0, 0, 0, 0.2);
 }
 
 .mood-card--epic .mood-icon-orbit {
@@ -703,8 +705,8 @@ onUnmounted(() => {
 .mood-card--epic:hover .mood-icon-orbit,
 .mood-card--epic.mood-card--active .mood-icon-orbit {
     box-shadow:
-        0px 0px 95.8px 0px #257351,
-        0px 3px 60px 0px rgba(0, 0, 0, 0.2);
+        0px 0px 5.9875rem 0px #257351,
+        0px 3px 3.75rem 0px rgba(0, 0, 0, 0.2);
 }
 
 .mood-card--whimsical .mood-icon-orbit {
@@ -714,16 +716,16 @@ onUnmounted(() => {
 .mood-card--whimsical:hover .mood-icon-orbit,
 .mood-card--whimsical.mood-card--active .mood-icon-orbit {
     box-shadow:
-        0px 0px 117.8px 0px #7e5296,
-        0px 3px 60px 0px rgba(0, 0, 0, 0.2);
+        0px 0px 7.3625rem 0px #7e5296,
+        0px 3px 3.75rem 0px rgba(0, 0, 0, 0.2);
 }
 
 .mood-card:hover,
 .mood-card.mood-card--active {
     box-shadow:
-        0px 4px 80px 0px rgba(0, 0, 0, 0.2),
-        inset 0 0 48px var(--mood-glow-inset),
-        0 0 20px var(--mood-glow-outer);
+        0px 4px 5rem 0px rgba(0, 0, 0, 0.2),
+        inset 0 0 3rem var(--mood-glow-inset),
+        0 0 1.25rem var(--mood-glow-outer);
 }
 
 .mood-card-glow {
@@ -847,13 +849,13 @@ onUnmounted(() => {
 }
 .mood-sheet-enter-from {
     opacity: 0;
-    transform: translateY(24px) scale(0.98);
+    transform: translateY(1.5rem) scale(0.98);
 }
 .mood-sheet-leave-to {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(1rem);
 }
-@media (max-width: 639px) {
+@media (max-width: 39.9375rem) {
     .mood-sheet-enter-from {
         transform: translateY(100%);
     }

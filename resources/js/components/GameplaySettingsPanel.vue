@@ -193,16 +193,16 @@ const handleResetGame = () => {
 <style scoped>
 .gameplay-range {
     appearance: none;
-    height: 4px;
+    height: 0.25rem;
     background: #373737;
-    border-radius: 4px;
+    border-radius: 0.25rem;
     outline: none;
 }
 
 .gameplay-range::-webkit-slider-thumb {
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 1rem;
+    height: 1rem;
     border-radius: 50%;
     background: #54f4da;
     cursor: pointer;
@@ -210,8 +210,8 @@ const handleResetGame = () => {
 }
 
 .gameplay-range::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
+    width: 1rem;
+    height: 1rem;
     border-radius: 50%;
     background: #54f4da;
     cursor: pointer;

@@ -18,7 +18,7 @@ const storyItems = [
         iconClass: 'you-choose-icon',
         glowClass: 'you-choose-glow',
         icon: iconYouChoose,
-        iconImgClass: 'h-[35px] w-[34px]',
+        iconImgClass: 'h-[2.1875rem] w-[2.125rem]',
         width: 34,
         height: 35,
         title: 'You Choose',
@@ -30,7 +30,7 @@ const storyItems = [
         iconClass: 'story-responds-icon',
         glowClass: 'story-responds-glow',
         icon: iconStoryResponds,
-        iconImgClass: 'h-[28px] w-[38px]',
+        iconImgClass: 'h-[1.75rem] w-[2.375rem]',
         width: 38,
         height: 28,
         title: 'The Story Responds',
@@ -42,7 +42,7 @@ const storyItems = [
         iconClass: 'xen-icon',
         glowClass: 'xen-glow',
         icon: iconXen,
-        iconImgClass: 'h-[17px] w-[52px]',
+        iconImgClass: 'h-[1.0625rem] w-[3.25rem]',
         width: 52,
         height: 17,
         title: 'Xen Guides You',
@@ -56,14 +56,14 @@ const storyItems = [
         <div class="container">
             <div class="container-content home-section-gap">
                 <div class="flex w-full flex-col gap-3">
-                    <h2 class="text-[26px] font-bold uppercase leading-[33px] text-white">
+                    <h2 class="text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
                         The Story Changes With You
                     </h2>
-                    <p class="text-[16px] font-normal leading-[26px] text-[#b6b6b6]">Speak, choose, or write your own path.</p>
+                    <p class="text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">Speak, choose, or write your own path.</p>
                 </div>
 
                 <div
-                    class="story-changes-card relative flex min-h-[220px] flex-col overflow-hidden rounded-[24px] border border-solid border-white/15 p-5 outline-none md:min-h-[220px] md:p-5"
+                    class="story-changes-card relative flex min-h-[13.75rem] flex-col overflow-hidden rounded-[1.5rem] border border-solid border-white/15 p-5 outline-none md:min-h-[13.75rem] md:p-5"
                 >
                     <div
                         class="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]"
@@ -93,11 +93,11 @@ const storyItems = [
                     >
                         <SwiperSlide v-for="item in storyItems" :key="item.id">
                             <div
-                                class="story-changes-col flex w-full max-w-[280px] flex-col items-center text-center md:mx-auto md:w-[280px]"
+                                class="story-changes-col flex w-full max-w-[17.5rem] flex-col items-center text-center md:mx-auto md:w-[17.5rem]"
                                 :class="item.colClass"
                             >
                                 <div
-                                    class="icon-circle relative flex size-[90px] shrink-0 items-center justify-center overflow-hidden rounded-full"
+                                    class="icon-circle relative flex size-[5.625rem] shrink-0 items-center justify-center overflow-hidden rounded-full"
                                     :class="item.iconClass"
                                 >
                                     <div class="absolute inset-0 rounded-full bg-[rgba(255,255,255,0.02)]" aria-hidden="true" />
@@ -158,8 +158,8 @@ const storyItems = [
 
 /* Shared vertical rhythm — identical across all three columns */
 .story-changes-col {
-    --col-gap-icon-title: 14px;
-    --col-gap-title-body: 20px;
+    --col-gap-icon-title: 0.875rem;
+    --col-gap-title-body: 1.25rem;
     gap: var(--col-gap-icon-title);
 }
 
@@ -170,27 +170,27 @@ const storyItems = [
 .story-changes-col__title {
     margin: 0;
     width: 100%;
-    max-width: 240px;
+    max-width: 15rem;
     text-align: center;
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 600;
-    line-height: 22px;
-    min-height: 22px;
+    line-height: 1.375rem;
+    min-height: 1.375rem;
 }
 
 .story-changes-col__body {
     margin: calc(var(--col-gap-title-body) - var(--col-gap-icon-title)) 0 0;
     width: 100%;
-    max-width: 240px;
-    min-height: 40px;
+    max-width: 15rem;
+    min-height: 2.5rem;
     text-align: center;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 300;
-    line-height: 20px;
+    line-height: 1.25rem;
     text-shadow: 0px 0px 26.9px #0f0f0f;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .story-changes-swiper :deep(.swiper-slide:not(:last-child)) {
         border-right: 1px solid rgba(255, 255, 255, 0.14);
     }
@@ -206,20 +206,20 @@ const storyItems = [
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 0.375rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .story-changes-swiper :deep(.swiper-pagination) {
         display: none;
     }
 }
 
 .story-changes-swiper :deep(.swiper-pagination-bullet) {
-    width: 28px;
+    width: 1.75rem;
     height: 3px;
     margin: 0 !important;
-    border-radius: 999px;
+    border-radius: 62.4375rem;
     background: rgba(255, 255, 255, 0.35);
     opacity: 1;
     transition:
@@ -228,7 +228,7 @@ const storyItems = [
 }
 
 .story-changes-swiper :deep(.swiper-pagination-bullet-active) {
-    width: 40px;
+    width: 2.5rem;
     background: var(--color-primary);
 }
 
@@ -255,29 +255,29 @@ const storyItems = [
 .story-changes-col--choose:hover .you-choose-icon {
     border-color: color-mix(in srgb, var(--color-primary-400) 92%, transparent);
     box-shadow:
-        0px 3px 60px 0px rgba(0, 0, 0, 0.35),
-        0 0 22px 3px color-mix(in srgb, var(--color-primary-400) 28%, transparent);
+        0px 3px 3.75rem 0px rgba(0, 0, 0, 0.35),
+        0 0 1.375rem 3px color-mix(in srgb, var(--color-primary-400) 28%, transparent);
 }
 
 .story-changes-col--responds:hover .story-responds-icon {
     border-color: rgba(255, 255, 255, 0.92);
     box-shadow:
-        0px 3px 60px 0px rgba(0, 0, 0, 0.35),
-        0 0 22px 3px rgba(255, 255, 255, 0.28);
+        0px 3px 3.75rem 0px rgba(0, 0, 0, 0.35),
+        0 0 1.375rem 3px rgba(255, 255, 255, 0.28);
 }
 
 .story-changes-col--xen:hover .xen-icon {
     border-color: rgba(255, 190, 88, 0.96);
     box-shadow:
-        0px 3px 60px 0px rgba(0, 0, 0, 0.35),
-        0 0 22px 3px rgba(255, 190, 88, 0.28);
+        0px 3px 3.75rem 0px rgba(0, 0, 0, 0.35),
+        0 0 1.375rem 3px rgba(255, 190, 88, 0.28);
 }
 
 /* Inset glow overlays rendered as the topmost layer inside each circle */
 .you-choose-glow,
 .story-responds-glow {
     box-shadow:
-        inset 0px 0px 13.9px 0px rgba(255, 255, 255, 0.06),
+        inset 0px 0px 0.8688rem 0px rgba(255, 255, 255, 0.06),
         inset 0.188px 0.375px 0.375px 0.188px rgba(255, 255, 255, 0.22),
         inset -0.15px -0.375px 0.113px 0.375px rgba(255, 255, 255, 0.05);
 }
@@ -285,7 +285,7 @@ const storyItems = [
 /* Xen: neutral inset at rest so the circle matches the other two */
 .xen-glow {
     box-shadow:
-        inset 0px 0px 13.9px 0px rgba(255, 255, 255, 0.06),
+        inset 0px 0px 0.8688rem 0px rgba(255, 255, 255, 0.06),
         inset 0.188px 0.375px 0.375px 0.188px rgba(255, 255, 255, 0.22),
         inset -0.15px -0.375px 0.113px 0.375px rgba(255, 255, 255, 0.05);
 }

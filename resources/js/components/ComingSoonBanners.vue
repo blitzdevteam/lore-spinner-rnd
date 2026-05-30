@@ -164,21 +164,21 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 
 <template>
     <!-- Tighter bottom than .home-section-y so spacing to FAQ matches Figma; hover reserves extra space via wrapper padding. -->
-    <section class="pt-14 pb-0 md:pt-[60px]">
+    <section class="pt-14 pb-0 md:pt-[3.75rem]">
         <div class="container">
             <div class="container-content home-section-gap">
                 <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="max-w-[550px] min-w-0">
-                        <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">
+                    <div class="max-w-[34.375rem] min-w-0">
+                        <h2 class="flex h-10 items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
                             Coming Soon
                         </h2>
-                        <p class="text-[16px] font-normal leading-[26px] text-[#b6b6b6]">
+                        <p class="text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">
                             New worlds are coming soon.
                         </p>
                     </div>
                     <Link
                         :href="storiesIndex().url"
-                        class="inline-block w-[98px] shrink-0 whitespace-nowrap text-right text-[14px] font-normal leading-[33px] text-primary hover:underline"
+                        class="inline-block w-[6.125rem] shrink-0 whitespace-nowrap text-right text-[0.875rem] font-normal leading-[2.0625rem] text-primary hover:underline"
                     >
                         View All ({{ storyCount }})
                     </Link>
@@ -188,7 +188,7 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
                 <div
                     ref="sliderWrapperEl"
                     class="relative transition-[padding-bottom] duration-200 ease-out"
-                    :class="hoveredId ? 'pb-[140px] md:pb-[148px]' : 'pb-2'"
+                    :class="hoveredId ? 'pb-[8.75rem] md:pb-[9.25rem]' : 'pb-2'"
                 >
                     <div
                         class="pointer-events-none absolute inset-y-0 left-0 z-[15] w-12 bg-gradient-to-r from-black to-transparent transition-opacity duration-300 md:w-16"
@@ -221,7 +221,7 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 
                     <div
                         ref="sliderEl"
-                        class="story-slider relative z-10 flex gap-[10px] overflow-x-auto pb-2 md:ml-[17px]"
+                        class="story-slider relative z-10 flex gap-[0.625rem] overflow-x-auto pb-2 md:ml-[1.0625rem]"
                     >
                         <div
                             v-for="card in cards"
@@ -232,10 +232,10 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
                             @mouseleave="onCardLeave"
                         >
                             <div
-                                class="flex flex-col rounded-[8px] border border-solid border-[#373737] bg-[#262626] p-[6px]"
+                                class="flex flex-col rounded-[0.5rem] border border-solid border-[#373737] bg-[#262626] p-[0.375rem]"
                             >
-                                <div class="flex w-[192px] flex-col items-center">
-                                    <div class="relative h-[287px] w-full overflow-hidden rounded-[5px]">
+                                <div class="flex w-[12rem] flex-col items-center">
+                                    <div class="relative h-[17.9375rem] w-full overflow-hidden rounded-[0.3125rem]">
                                         <img
                                             :src="card.cover"
                                             :alt="card.title"
@@ -261,24 +261,24 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
                     <Transition name="coming-soon-popup">
                         <div
                             v-if="hoveredId && hoveredCard && popupPos"
-                            class="absolute z-30 flex h-[444px] w-[282px] flex-col rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
+                            class="absolute z-30 flex h-[27.75rem] w-[17.625rem] flex-col rounded-[0.5rem] border border-primary bg-[#262626] p-[0.625rem] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
                             :style="popupStyle"
                             @mouseenter="onPopupEnter"
                             @mouseleave="onPopupLeave"
                         >
-                            <div class="flex w-[262px] flex-col gap-[10px]">
-                                <div class="relative h-[363px] w-full shrink-0 overflow-hidden rounded-[5px]">
+                            <div class="flex w-[16.375rem] flex-col gap-[0.625rem]">
+                                <div class="relative h-[22.6875rem] w-full shrink-0 overflow-hidden rounded-[0.3125rem]">
                                     <img
                                         :src="hoveredCard.cover"
                                         :alt="hoveredCard.title"
                                         class="h-full w-full object-cover"
                                     />
                                 </div>
-                                <div class="flex flex-col gap-[4px]">
-                                    <p class="text-[20px] font-medium leading-normal text-white">
+                                <div class="flex flex-col gap-[0.25rem]">
+                                    <p class="text-[1.25rem] font-medium leading-normal text-white">
                                         {{ hoveredCard.title }}
                                     </p>
-                                    <p class="text-[14px] leading-normal text-white">
+                                    <p class="text-[0.875rem] leading-normal text-white">
                                         {{ hoveredCard.themes.join(' | ') }}
                                     </p>
                                 </div>
@@ -301,8 +301,8 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 }
 
 .slider-arrow {
-    width: 34px;
-    height: 34px;
+    width: 2.125rem;
+    height: 2.125rem;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -328,6 +328,6 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 .coming-soon-popup-enter-from,
 .coming-soon-popup-leave-to {
     opacity: 0;
-    transform: translateY(6px) scale(0.98);
+    transform: translateY(0.375rem) scale(0.98);
 }
 </style>

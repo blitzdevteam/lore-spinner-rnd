@@ -59,19 +59,19 @@ function isNativeAnchor(href: string): boolean {
 }
 
 const linkRowClass =
-    'flex flex-col gap-[10px] font-light text-[13px] leading-[18px] tracking-[-0.48px] text-white sm:text-[12px] sm:leading-[15px]';
+    'flex flex-col gap-[0.625rem] font-light text-[0.8125rem] leading-[1.125rem] tracking-[-0.48px] text-white sm:text-[0.75rem] sm:leading-[0.9375rem]';
 const headingClass =
-    'text-[15px] font-semibold leading-normal tracking-[-0.64px] text-white sm:text-[16px]';
+    'text-[0.9375rem] font-semibold leading-normal tracking-[-0.64px] text-white sm:text-[1rem]';
 </script>
 
 <template>
     <footer class="relative bg-[#0f0f0f] text-white">
         <div class="container">
             <div
-                class="container-content pt-12 pb-10 sm:pt-16 sm:pb-12 lg:pt-[74px] lg:pb-[93px]"
+                class="container-content pt-12 pb-10 sm:pt-16 sm:pb-12 lg:pt-[4.625rem] lg:pb-[5.8125rem]"
             >
                 <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-                    <div class="w-full max-w-[445px] shrink-0">
+                    <div class="w-full max-w-[27.8125rem] shrink-0">
                         <img
                             :src="mainLogo"
                             alt="LoreSpinner"
@@ -81,7 +81,7 @@ const headingClass =
                             decoding="async"
                         />
                         <p
-                            class="mt-3 max-w-[34ch] text-[13px] font-light leading-[1.45] tracking-[-0.52px] text-white/90 sm:mt-2.5 sm:max-w-none sm:leading-[100%] lg:mt-[11px]"
+                            class="mt-3 max-w-[34ch] text-[0.8125rem] font-light leading-[1.45] tracking-[-0.52px] text-white/90 sm:mt-2.5 sm:max-w-none sm:leading-[100%] lg:mt-[0.6875rem]"
                         >
                             For dreamers, creators, and wanderers ; Lorespinner brings your stories to life.
                         </p>
@@ -94,7 +94,7 @@ const headingClass =
                         <div
                             v-for="col in linkColumns"
                             :key="col.title"
-                            class="flex min-w-0 flex-col gap-[17px]"
+                            class="flex min-w-0 flex-col gap-[1.0625rem]"
                         >
                             <p :class="headingClass">
                                 {{ col.title }}
@@ -126,7 +126,7 @@ const headingClass =
                         </div>
 
                         <div
-                            class="col-span-2 flex flex-col gap-[17px] rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:col-span-1 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 lg:w-[160px]"
+                            class="col-span-2 flex flex-col gap-[1.0625rem] rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:col-span-1 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 lg:w-[10rem]"
                         >
                             <p :class="headingClass">
                                 {{ getInTouch.title }}
@@ -151,10 +151,10 @@ const headingClass =
                 </div>
 
                 <div
-                    class="mt-10 border-t border-white/10 pt-6 sm:mt-14 lg:mt-[128px] lg:border-0 lg:pt-0"
+                    class="mt-10 border-t border-white/10 pt-6 sm:mt-14 lg:mt-[8rem] lg:border-0 lg:pt-0"
                 >
                     <p
-                        class="text-center text-[13px] font-normal leading-normal tracking-[-0.56px] text-[#8e8e8e] sm:text-[14px] lg:text-right"
+                        class="text-center text-[0.8125rem] font-normal leading-normal tracking-[-0.56px] text-[#8e8e8e] sm:text-[0.875rem] lg:text-right"
                     >
                         © Copyright 2026. Lorespinner Inc. All rights reserved.
                     </p>
@@ -166,28 +166,28 @@ const headingClass =
 
 <style scoped>
 .footer-logo {
-    height: 48px;
-    max-width: min(100%, 220px);
+    height: 3rem;
+    max-width: min(100%, 13.75rem);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 40rem) {
     .footer-logo {
-        height: 72px;
-        max-width: min(100%, 325px);
+        height: 4.5rem;
+        max-width: min(100%, 20.3125rem);
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .footer-logo {
-        height: 80px;
-        max-width: min(100%, 371px);
+        height: 5rem;
+        max-width: min(100%, 23.1875rem);
     }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 64rem) {
     .footer-logo {
-        height: 96px;
-        max-width: 396px;
+        height: 6rem;
+        max-width: 24.75rem;
     }
 }
 </style>

@@ -34,7 +34,7 @@ function closeMenu(): void {
 
 const navLinkClass = (active: boolean): string =>
     [
-        'flex min-h-[52px] items-center rounded-xl px-4 font-[Inter] text-[17px] font-medium leading-none transition-colors',
+        'flex min-h-[3.25rem] items-center rounded-xl px-4 font-[Inter] text-[1.0625rem] font-medium leading-none transition-colors',
         active
             ? 'bg-cta-fill text-primary'
             : 'text-[#c8ced1] hover:bg-white/5 hover:text-white',
@@ -42,7 +42,7 @@ const navLinkClass = (active: boolean): string =>
 
 const moodLinkClass = (slug: string): string =>
     [
-        'flex min-h-[44px] items-center rounded-lg px-4 font-[Inter] text-[15px] font-normal transition-colors',
+        'flex min-h-[2.75rem] items-center rounded-lg px-4 font-[Inter] text-[0.9375rem] font-normal transition-colors',
         activeMood.value === slug
             ? 'border border-primary/60 bg-cta-fill text-primary'
             : 'text-[#a8aeb1] hover:bg-white/5 hover:text-white',

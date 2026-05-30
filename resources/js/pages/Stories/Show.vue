@@ -133,7 +133,7 @@ const creatorAvatar = computed(() => {
         <StoryPlayAmbientGlows />
 
         <div
-            class="relative z-[1] mx-auto flex max-w-[1152px] flex-col px-5 pt-10 pb-8 md:px-[52px] md:pb-12 md:pt-[60px] lg:flex-row lg:items-stretch lg:justify-between xl:max-w-[1200px]"
+            class="relative z-[1] mx-auto flex max-w-[72rem] flex-col px-5 pt-10 pb-8 md:px-[3.25rem] md:pb-12 md:pt-[3.75rem] lg:flex-row lg:items-stretch lg:justify-between xl:max-w-[75rem]"
         >
             <!-- Cover -->
             <div class="relative mb-10 shrink-0 lg:mb-0 lg:mr-6 xl:mr-10">
@@ -145,7 +145,7 @@ const creatorAvatar = computed(() => {
                 >
                     <template #overlay>
                         <StoryPlayGlassRoundButton
-                            class="pointer-events-auto absolute left-5 top-[18px] z-[5] lg:left-7 lg:top-5"
+                            class="pointer-events-auto absolute left-5 top-[1.125rem] z-[5] lg:left-7 lg:top-5"
                             aria-label="Go back"
                             @click="handleBack"
                         >
@@ -166,7 +166,7 @@ const creatorAvatar = computed(() => {
 
             <!-- Main column -->
             <div
-                class="relative flex min-h-0 min-w-0 flex-1 flex-col gap-[21px] lg:max-w-[660px] lg:min-h-[calc(100svh-120px)]"
+                class="relative flex min-h-0 min-w-0 flex-1 flex-col gap-[1.3125rem] lg:max-w-[41.25rem] lg:min-h-[calc(100svh-120px)]"
             >
                 <StoryPlayTopBar
                     :tab="panel"
@@ -175,8 +175,8 @@ const creatorAvatar = computed(() => {
                     @bookmark="toggleBookmark"
                 />
 
-                <div v-if="panel === 'details'" class="flex flex-col gap-[21px] pb-4">
-                    <div class="flex flex-col gap-[10px]">
+                <div v-if="panel === 'details'" class="flex flex-col gap-[1.3125rem] pb-4">
+                    <div class="flex flex-col gap-[0.625rem]">
                         <StoryPlayTitleProgress :title="story.title" :progress-label="progressBadge" />
                         <StoryPlayMetaRow
                             :duration-label="durationLabel"
@@ -197,7 +197,7 @@ const creatorAvatar = computed(() => {
                         aria-label="Community comments"
                         class="rounded-xl border border-white/12 bg-black/35 p-4 backdrop-blur-sm"
                     >
-                        <div class="mb-4 font-['Inter',sans-serif] text-[13px] font-semibold uppercase tracking-wide text-gray-400">
+                        <div class="mb-4 font-['Inter',sans-serif] text-[0.8125rem] font-semibold uppercase tracking-wide text-gray-400">
                             Comments · {{ story.comments_count ?? story.comments.length }}
                         </div>
                         <div class="flex flex-col gap-4">
@@ -226,9 +226,9 @@ const creatorAvatar = computed(() => {
                 </div>
 
                 <!-- Fade + CTA (desktop: in column, matches Figma) -->
-                <div class="relative z-[6] mx-auto mt-10 hidden max-w-[660px] lg:mt-auto lg:block">
+                <div class="relative z-[6] mx-auto mt-10 hidden max-w-[41.25rem] lg:mt-auto lg:block">
                     <div
-                        class="pointer-events-none absolute -inset-x-6 -top-[120px] bottom-0 mx-auto mb-[-20px] h-[clamp(148px,18vw,200px)] bg-linear-to-t from-black from-[32%] via-black/92 to-transparent lg:-inset-x-10"
+                        class="pointer-events-none absolute -inset-x-6 -top-[7.5rem] bottom-0 mx-auto mb-[-20px] h-[clamp(148px,18vw,200px)] bg-linear-to-t from-black from-[32%] via-black/92 to-transparent lg:-inset-x-10"
                     />
                     <div class="relative pt-14">
                         <StoryPlayStartCta :label="primaryCtaLabel" @click="handleStartStory" />
@@ -239,7 +239,7 @@ const creatorAvatar = computed(() => {
 
         <!-- Mobile CTA strip -->
         <div class="fixed inset-x-0 bottom-0 z-30 lg:hidden">
-            <div class="pointer-events-none absolute inset-x-0 bottom-[72px] h-[132px] bg-linear-to-t from-black via-black/88 to-transparent" />
+            <div class="pointer-events-none absolute inset-x-0 bottom-[4.5rem] h-[8.25rem] bg-linear-to-t from-black via-black/88 to-transparent" />
             <div class="relative border-t border-white/10 bg-black/85 px-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] pt-5 backdrop-blur-md">
                 <StoryPlayStartCta :label="primaryCtaLabel" @click="handleStartStory" />
             </div>

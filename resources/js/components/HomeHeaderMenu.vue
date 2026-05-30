@@ -27,14 +27,14 @@ const {
 /* Same box for every item: inactive uses invisible bar so labels never shift when active */
 const underlineSlotClass = (active: boolean): string =>
     [
-        'pointer-events-none mt-2 h-[3px] w-16 shrink-0 rounded-bl-[7px] rounded-br-[7px]',
+        'pointer-events-none mt-2 h-[3px] w-16 shrink-0 rounded-bl-[0.4375rem] rounded-br-[0.4375rem]',
         active ? 'bg-primary' : 'invisible',
     ].join(' ');
 const navItemShell =
-    'relative flex h-[75px] w-[100px] items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black';
+    'relative flex h-[4.6875rem] w-[6.25rem] items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black';
 const navStack = 'relative flex flex-col items-center';
 const navLabelRow =
-    'relative z-[1] flex items-center justify-center p-[10px] font-[Inter] text-[16px] font-medium leading-[33px] transition-colors';
+    'relative z-[1] flex items-center justify-center p-[0.625rem] font-[Inter] text-[1rem] font-medium leading-[2.0625rem] transition-colors';
 
 const inactiveText = 'text-[#7E7E7E] hover:text-primary';
 const activeText = 'text-primary';
@@ -42,7 +42,7 @@ const activeText = 'text-primary';
 const navClass = (active: boolean): string => `${navLabelRow} ${active ? activeText : inactiveText}`;
 const moodItemClass = (slug: string): string =>
     [
-        'flex h-[30px] w-full items-center rounded-[8px] px-[15px] font-[Inter] text-[14px] font-normal leading-[33px] text-white outline-none transition-colors first:text-[16px]',
+        'flex h-[1.875rem] w-full items-center rounded-[0.5rem] px-[0.9375rem] font-[Inter] text-[0.875rem] font-normal leading-[2.0625rem] text-white outline-none transition-colors first:text-[1rem]',
         activeMood.value === slug
             ? 'border border-primary bg-cta-fill'
             : 'border border-transparent hover:border-primary hover:bg-cta-fill focus-visible:border-primary focus-visible:bg-cta-fill',
@@ -51,7 +51,7 @@ const moodItemClass = (slug: string): string =>
 
 <template>
     <nav aria-label="Primary">
-        <ul class="flex h-[75px] items-center gap-1 md:gap-0">
+        <ul class="flex h-[4.6875rem] items-center gap-1 md:gap-0">
             <li>
                 <Link :href="homeHref" :class="navItemShell">
                     <span :class="navStack">
@@ -75,11 +75,11 @@ const moodItemClass = (slug: string): string =>
                 >
                     <span :class="navStack">
                         <span
-                            class="inline-flex items-center justify-center gap-0 p-[10px] font-[Inter] text-[16px] font-medium leading-[33px]"
+                            class="inline-flex items-center justify-center gap-0 p-[0.625rem] font-[Inter] text-[1rem] font-medium leading-[2.0625rem]"
                         >
                             Moods
                             <ChevronDown
-                                class="h-[22px] w-[26px] shrink-0 text-current transition-transform"
+                                class="h-[1.375rem] w-[1.625rem] shrink-0 text-current transition-transform"
                                 :stroke-width="1.75"
                                 :class="moodsOpen ? 'rotate-180' : ''"
                             />
@@ -91,7 +91,7 @@ const moodItemClass = (slug: string): string =>
 
                 <div
                     v-show="moodsOpen"
-                    class="moods-dropdown absolute top-full left-1/2 z-50 mt-[14px] w-[189px] -translate-x-1/2 overflow-hidden rounded-[15px] px-[15px] py-[15px]"
+                    class="moods-dropdown absolute top-full left-1/2 z-50 mt-[0.875rem] w-[11.8125rem] -translate-x-1/2 overflow-hidden rounded-[0.9375rem] px-[0.9375rem] py-[0.9375rem]"
                     role="menu"
                 >
                     <Link
@@ -134,7 +134,7 @@ const moodItemClass = (slug: string): string =>
         linear-gradient(180deg, rgba(111, 175, 186, 0.2) 1.34%, rgba(102, 102, 102, 0) 12.75%),
         linear-gradient(0deg, rgba(2, 3, 3, 0.58), rgba(2, 3, 3, 0.58)), rgba(23, 26, 27, 0.86);
     box-shadow:
-        0 4px 80px rgba(0, 0, 0, 0.2),
+        0 4px 5rem rgba(0, 0, 0, 0.2),
         inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.22),
         inset -0.2px -0.5px 0.15px 0.5px rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(3px);
@@ -142,6 +142,6 @@ const moodItemClass = (slug: string): string =>
 }
 
 .moods-dropdown > :not(:last-child) {
-    margin-bottom: 4px;
+    margin-bottom: 0.25rem;
 }
 </style>

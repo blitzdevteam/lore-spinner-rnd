@@ -8,7 +8,7 @@ import branchChainImg from '@/assets/brach-chain.png';
         aria-hidden="true"
     >
         <div
-            class="relative w-[min(118vw,640px)] max-w-none sm:w-[min(92vw,580px)] md:w-[520px] lg:w-[580px]"
+            class="relative w-[min(118vw,640px)] max-w-none sm:w-[min(92vw,580px)] md:w-[32.5rem] lg:w-[36.25rem]"
         >
             <div class="relative w-full">
                 <figure class="relative m-0 w-full">
@@ -54,7 +54,7 @@ import branchChainImg from '@/assets/brach-chain.png';
     bottom: 0;
     width: 185%;
     aspect-ratio: 1;
-    border-radius: 9999px;
+    border-radius: 624.9375rem;
     transform: translate(-50%, 58%) scale(0.08);
     mix-blend-mode: plus-lighter;
     pointer-events: none;
@@ -89,13 +89,13 @@ import branchChainImg from '@/assets/brach-chain.png';
 }
 
 .hero-filaments--left {
-    background-image: repeating-linear-gradient(250deg, transparent 0 42px, rgba(255, 255, 255, 0.78) 43px 45px, rgba(0, 198, 222, 0.24) 46px 58px, transparent 59px 92px);
+    background-image: repeating-linear-gradient(250deg, transparent 0 2.625rem, rgba(255, 255, 255, 0.78) 2.6875rem 2.8125rem, rgba(0, 198, 222, 0.24) 2.875rem 3.625rem, transparent 3.6875rem 5.75rem);
     background-size: 170% 170%;
     animation: hero-filaments-left 0.74s linear infinite;
 }
 
 .hero-filaments--right {
-    background-image: repeating-linear-gradient(112deg, transparent 0 46px, rgba(255, 255, 255, 0.72) 47px 49px, rgba(255, 190, 88, 0.22) 50px 62px, transparent 63px 98px);
+    background-image: repeating-linear-gradient(112deg, transparent 0 2.875rem, rgba(255, 255, 255, 0.72) 2.9375rem 3.0625rem, rgba(255, 190, 88, 0.22) 3.125rem 3.875rem, transparent 3.9375rem 6.125rem);
     background-size: 180% 180%;
     animation: hero-filaments-right 0.82s linear infinite;
     animation-delay: 0.16s;

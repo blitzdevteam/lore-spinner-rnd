@@ -20,20 +20,20 @@ const dropGlow = '0px 4px 80px rgba(0, 0, 0, 0.2)';
 </script>
 
 <template>
-    <div class="flex gap-[10px]">
+    <div class="flex gap-[0.625rem]">
         <!-- Details (6471:356) -->
-        <button type="button" class="relative h-[45px] w-[125px] shrink-0 overflow-hidden rounded-[27px] outline-none" @click="select('details')">
-            <span aria-hidden="true" class="pointer-events-none absolute inset-0 rounded-[27px]" :style="{ boxShadow: dropGlow }" />
+        <button type="button" class="relative h-[2.8125rem] w-[7.8125rem] shrink-0 overflow-hidden rounded-[1.6875rem] outline-none" @click="select('details')">
+            <span aria-hidden="true" class="pointer-events-none absolute inset-0 rounded-[1.6875rem]" :style="{ boxShadow: dropGlow }" />
             <span
                 aria-hidden="true"
-                class="pointer-events-none absolute inset-0 rounded-[27px] bg-[rgba(255,255,255,0.04)] backdrop-blur-[3px] mix-blend-plus-lighter"
+                class="pointer-events-none absolute inset-0 rounded-[1.6875rem] bg-[rgba(255,255,255,0.04)] backdrop-blur-[3px] mix-blend-plus-lighter"
             />
             <span
                 aria-hidden="true"
-                class="pointer-events-none absolute inset-0 rounded-[27px] bg-[rgba(30,30,30,0.25)] mix-blend-plus-lighter"
+                class="pointer-events-none absolute inset-0 rounded-[1.6875rem] bg-[rgba(30,30,30,0.25)] mix-blend-plus-lighter"
             />
             <span
-                class="relative z-[1] flex size-full flex-col justify-center px-2 text-center font-['Inter',sans-serif] text-[16px] font-medium not-italic leading-[18.974px] text-white"
+                class="relative z-[1] flex size-full flex-col justify-center px-2 text-center font-['Inter',sans-serif] text-[1rem] font-medium not-italic leading-[1.1859rem] text-white"
             >
                 Details
             </span>
@@ -45,22 +45,22 @@ const dropGlow = '0px 4px 80px rgba(0, 0, 0, 0.2)';
         </button>
 
         <!-- Chapters lure (6471:358 — tiffany outline) -->
-        <button type="button" class="relative h-[45px] w-[125px] shrink-0 overflow-hidden rounded-[27px] outline-none" @click="select('chapters')">
+        <button type="button" class="relative h-[2.8125rem] w-[7.8125rem] shrink-0 overflow-hidden rounded-[1.6875rem] outline-none" @click="select('chapters')">
             <span
                 aria-hidden="true"
-                class="pointer-events-none absolute inset-0 rounded-[27px]"
+                class="pointer-events-none absolute inset-0 rounded-[1.6875rem]"
                 :style="{ boxShadow: modelValue === 'chapters' ? dropGlow : undefined }"
             />
             <span
                 aria-hidden="true"
-                class="pointer-events-none absolute inset-0 rounded-[27px] border border-solid border-primary-500 bg-[rgba(255,255,255,0.04)] mix-blend-plus-lighter"
+                class="pointer-events-none absolute inset-0 rounded-[1.6875rem] border border-solid border-primary-500 bg-[rgba(255,255,255,0.04)] mix-blend-plus-lighter"
             />
             <span
                 aria-hidden="true"
-                class="pointer-events-none absolute inset-0 rounded-[27px] bg-[rgba(30,30,30,0.25)] mix-blend-plus-lighter"
+                class="pointer-events-none absolute inset-0 rounded-[1.6875rem] bg-[rgba(30,30,30,0.25)] mix-blend-plus-lighter"
             />
             <span
-                class="relative z-[1] flex size-full flex-col justify-center px-2 text-center font-['Inter',sans-serif] text-[16px] font-medium not-italic leading-[18.974px] text-primary-500"
+                class="relative z-[1] flex size-full flex-col justify-center px-2 text-center font-['Inter',sans-serif] text-[1rem] font-medium not-italic leading-[1.1859rem] text-primary-500"
             >
                 Chapters
             </span>

@@ -161,7 +161,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideCl
                 alt=""
                 :class="[
                     'cursor-pointer rounded-full border-2 border-primary outline-2 outline-transparent transition hover:brightness-110',
-                    compact ? 'size-11' : 'size-[45px]',
+                    compact ? 'size-11' : 'size-[2.8125rem]',
                 ]"
             />
         </button>

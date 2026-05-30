@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import nocturneImage from '@/assets/carosel/Nocturne 16_9 landscape art.png';
-import ozImage from '@/assets/carosel/Oz Landscape art only.png';
-import tellTaleImage from '@/assets/carosel/Pride Landscape art only.png';
+import nocturneImage from '@/assets/carosel/Ultrawide nocturne.png';
+import ozImage from '@/assets/carosel/Ultrawide Oz.png';
+import tellTaleImage from '@/assets/carosel/Ultrawide the tell tale heart.png';
 import BaseButton from '@/components/BaseButton.vue';
 import { StoryInterface } from '@/types';
 import { show } from '@/wayfinder/routes/stories';
@@ -33,13 +33,14 @@ interface HeroSlideConfig {
     fallbackTeaser: string;
     fallbackAuthor: string;
     fallbackBranching: number;
+    comingSoon?: boolean;
 }
 
 const heroSlideConfigs: HeroSlideConfig[] = [
     {
         slug: 'the-tell-tale-heart',
         image: tellTaleImage,
-        imagePosition: 'object-[62%_center] md:object-center',
+        imagePosition: 'object-[62%_top] md:object-top',
         titleLines: ['The Tell-Tale', 'Heart'],
         fallbackTitle: 'The Tell-Tale Heart',
         teaserLines: [
@@ -54,7 +55,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
     {
         slug: 'nocturne',
         image: nocturneImage,
-        imagePosition: 'object-[70%_center] md:object-center',
+        imagePosition: 'object-[70%_top] md:object-top',
         titleLines: null,
         fallbackTitle: 'Nocturne',
         teaserLines: [
@@ -69,7 +70,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
     {
         slug: 'the-wonderful-wizard-of-oz',
         image: ozImage,
-        imagePosition: 'object-[58%_center] md:object-center',
+        imagePosition: 'object-[58%_top] md:object-top',
         titleLines: ['The Wonderful', 'Wizard of Oz'],
         fallbackTitle: 'The Wonderful Wizard of Oz',
         teaserLines: [
@@ -80,6 +81,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
             'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
         fallbackAuthor: 'L. Frank Baum',
         fallbackBranching: 156789,
+        comingSoon: true,
     },
 ];
 
@@ -94,6 +96,7 @@ interface ResolvedHeroSlide {
     author: string | null;
     branchingCount: string;
     storyUrl: string;
+    comingSoon: boolean;
 }
 
 const swiperModules = [Autoplay, EffectFade, Pagination];
@@ -155,6 +158,7 @@ const slides = computed((): ResolvedHeroSlide[] =>
             author: story?.creator?.full_name ?? config.fallbackAuthor,
             branchingCount: branchingFromStory(story, config.fallbackBranching),
             storyUrl: show(config.slug).url,
+            comingSoon: config.comingSoon ?? false,
         };
     }),
 );
@@ -269,10 +273,20 @@ function goNext() {
                             </div>
 
                             <BaseButton
+                                v-if="activeSlide.comingSoon"
+                                severity="transparent"
+                                type="span"
+                                disabled
+                                class="begin-btn begin-btn--coming-soon font-[Inter] !box-border !inline-flex !h-auto !min-h-[3rem] !w-auto max-w-full items-center justify-center self-start whitespace-nowrap px-6 py-3 text-[0.9375rem] font-medium !leading-none sm:min-h-[3.3125rem] sm:max-w-[17.75rem] sm:px-8 sm:text-[1rem]"
+                            >
+                                Coming soon
+                            </BaseButton>
+                            <BaseButton
+                                v-else
                                 severity="transparent"
                                 type="internal-link"
                                 :href="activeSlide.storyUrl"
-                                class="begin-btn font-[Inter] !box-border !inline-flex !h-auto !min-h-[48px] !w-auto max-w-full items-center justify-center self-start whitespace-nowrap px-6 py-3 text-[15px] font-medium !leading-none text-white sm:min-h-[53px] sm:max-w-[284px] sm:px-8 sm:text-[16px]"
+                                class="begin-btn font-[Inter] !box-border !inline-flex !h-auto !min-h-[3rem] !w-auto max-w-full items-center justify-center self-start whitespace-nowrap px-6 py-3 text-[0.9375rem] font-medium !leading-none text-white sm:min-h-[3.3125rem] sm:max-w-[17.75rem] sm:px-8 sm:text-[1rem]"
                             >
                                 Begin Your Journey
                             </BaseButton>
@@ -297,8 +311,8 @@ function goNext() {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    min-height: 200px;
-    max-height: min(52vh, 360px);
+    min-height: 12.5rem;
+    max-height: min(48vh, 20.5rem);
     flex-shrink: 0;
 }
 
@@ -314,6 +328,7 @@ function goNext() {
 
 .hero-slide-image {
     display: block;
+    object-position: top;
 }
 
 .hero-slide-gradient {
@@ -371,7 +386,7 @@ function goNext() {
 
 /* See-through glass with subtle brand tint — slide still visible behind */
 .begin-btn {
-    border-radius: 12px;
+    border-radius: 0.75rem;
     background: color-mix(in srgb, var(--color-primary-700) 16%, transparent) !important;
     border: 1px solid color-mix(in srgb, var(--color-primary-400) 55%, rgba(255, 255, 255, 0.28)) !important;
     box-shadow:
@@ -395,13 +410,30 @@ function goNext() {
     outline: none !important;
 }
 
+.begin-btn--coming-soon {
+    background: rgba(63, 63, 63, 0.72) !important;
+    border-color: rgba(77, 77, 77, 0.9) !important;
+    box-shadow: none !important;
+    color: #8e8e8e !important;
+    text-shadow: none;
+    cursor: default;
+    pointer-events: none;
+}
+
+.begin-btn--coming-soon:hover,
+.begin-btn--coming-soon:focus-visible {
+    background: rgba(63, 63, 63, 0.72) !important;
+    border-color: rgba(77, 77, 77, 0.9) !important;
+    box-shadow: none !important;
+}
+
 .hero-arrow {
     position: absolute;
     top: 50%;
     z-index: 20;
     display: flex;
-    width: 34px;
-    height: 34px;
+    width: 2.125rem;
+    height: 2.125rem;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -435,17 +467,17 @@ function goNext() {
 
 .hero-copy-enter-from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(0.625rem);
 }
 
 .hero-copy-leave-to {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-0.375rem);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 40rem) {
     .hero-media {
-        max-height: min(48vh, 400px);
+        max-height: min(44vh, 23rem);
     }
 
     .hero-copy-wrap {
@@ -476,8 +508,8 @@ function goNext() {
     }
 
     .hero-arrow {
-        width: 38px;
-        height: 38px;
+        width: 2.375rem;
+        height: 2.375rem;
     }
 
     .hero-arrow-prev {
@@ -489,7 +521,7 @@ function goNext() {
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.9375rem) {
     .hero-copy-wrap {
         background: #000;
     }
@@ -500,12 +532,12 @@ function goNext() {
 
     .begin-btn {
         width: auto;
-        max-width: min(100%, 284px);
+        max-width: min(100%, 17.75rem);
         align-self: flex-start;
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .hero-slide-gradient {
         display: block;
         /* LoreSpinner Desktop Hero Readability Gradient — left-to-right cinematic fade */
@@ -522,9 +554,9 @@ function goNext() {
     .hero-banner {
         position: relative;
         display: block;
-        height: 561px;
-        min-height: 561px;
-        max-height: 561px;
+        height: 33rem;
+        min-height: 33rem;
+        max-height: 33rem;
     }
 
     .hero-media {
@@ -542,7 +574,7 @@ function goNext() {
         display: flex;
         align-items: flex-start;
         background: transparent;
-        padding: 5.5625rem 0 2.5rem;
+        padding: 5.5625rem 0 1.75rem;
         pointer-events: none;
     }
 
@@ -553,7 +585,7 @@ function goNext() {
 
     .hero-copy {
         pointer-events: auto;
-        max-width: min(556px, 100%);
+        max-width: min(34.75rem, 100%);
         gap: 1.5rem;
         padding-right: 1.5rem;
     }
@@ -563,14 +595,14 @@ function goNext() {
     }
 
     .hero-title {
-        max-width: 492px;
+        max-width: 30.75rem;
         font-size: clamp(2rem, 4vw, 3rem);
         line-height: 1.08;
         text-shadow: 0 0 21.2px rgba(0, 0, 0, 0.85);
     }
 
     .hero-teaser {
-        max-width: 411px;
+        max-width: 25.6875rem;
         font-size: 1.125rem;
         line-height: 1.444;
         text-shadow: 0 1px 12px rgba(0, 0, 0, 0.75);
@@ -581,8 +613,8 @@ function goNext() {
     }
 
     .hero-arrow {
-        width: 40px;
-        height: 40px;
+        width: 2.5rem;
+        height: 2.5rem;
     }
 
     .hero-arrow-prev {
@@ -595,7 +627,7 @@ function goNext() {
 
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 64rem) {
     .hero-title {
         font-size: 3rem;
         line-height: 5rem;
@@ -618,23 +650,23 @@ function goNext() {
     width: auto !important;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 0.375rem;
     z-index: 20;
     padding: 0 0.5rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .hero-swiper .swiper-pagination {
         bottom: 1.25rem !important;
-        gap: 8px;
+        gap: 0.5rem;
     }
 }
 
 .hero-swiper .swiper-pagination-bullet {
-    width: 28px;
+    width: 1.75rem;
     height: 3px;
     margin: 0 !important;
-    border-radius: 999px;
+    border-radius: 62.4375rem;
     background: rgba(255, 255, 255, 0.35);
     opacity: 1;
     transition:
@@ -642,21 +674,21 @@ function goNext() {
         background 0.3s ease;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .hero-swiper .swiper-pagination-bullet {
-        width: 36px;
-        height: 4px;
+        width: 2.25rem;
+        height: 0.25rem;
     }
 }
 
 .hero-swiper .swiper-pagination-bullet-active {
-    width: 40px;
+    width: 2.5rem;
     background: var(--color-primary);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
     .hero-swiper .swiper-pagination-bullet-active {
-        width: 52px;
+        width: 3.25rem;
     }
 }
 </style>

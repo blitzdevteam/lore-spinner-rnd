@@ -178,17 +178,17 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
 
                 <!-- Section header -->
                 <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="max-w-[550px] min-w-0">
-                        <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">
+                    <div class="max-w-[34.375rem] min-w-0">
+                        <h2 class="flex h-10 items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
                             Featured Worlds
                         </h2>
-                        <p class="text-[16px] font-normal leading-[26px] text-[#b6b6b6]">
+                        <p class="text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">
                             Curated story worlds built for choice, consequence, and return.
                         </p>
                     </div>
                     <Link
                         :href="storiesIndex().url"
-                        class="inline-block w-[98px] shrink-0 whitespace-nowrap text-right text-[14px] font-normal leading-[33px] text-primary hover:underline"
+                        class="inline-block w-[6.125rem] shrink-0 whitespace-nowrap text-right text-[0.875rem] font-normal leading-[2.0625rem] text-primary hover:underline"
                     >
                         View All ({{ storyCount }})
                     </Link>
@@ -223,7 +223,7 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                     <!-- Scrollable card row (flush with section copy / explainer above — no extra indent) -->
                     <div
                         ref="sliderEl"
-                        class="story-slider flex gap-[10px] overflow-x-auto pb-2"
+                        class="story-slider flex gap-[0.625rem] overflow-x-auto pb-2"
                     >
                         <div
                             v-for="game in games"
@@ -234,7 +234,7 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                             @mouseleave="onCardLeave"
                         >
                             <div
-                                class="featured-game-card relative flex flex-col gap-2 rounded-[8px] border border-[#373737] bg-[#262626] p-[6px] transition-opacity duration-200"
+                                class="featured-game-card relative flex flex-col gap-2 rounded-[0.5rem] border border-[#373737] bg-[#262626] p-[0.375rem] transition-opacity duration-200"
                                 :class="hoveredId && hoveredId !== game.id ? 'opacity-[0.3]' : 'opacity-100'"
                             >
                                 <!-- Cover -->
@@ -243,7 +243,7 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                                     :href="game.playable && game.slug ? storyShow(game.slug).url : undefined"
                                     class="block outline-none"
                                 >
-                                    <div class="relative h-[287.438px] w-[192px] overflow-hidden rounded-[5px] border border-white/5">
+                                    <div class="relative h-[17.9649rem] w-[12rem] overflow-hidden rounded-[0.3125rem] border border-white/5">
                                         <img
                                             :src="game.cover"
                                             :alt="game.title"
@@ -254,7 +254,7 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
 
                                 <!-- Title -->
                                 <div class="flex h-5 items-center px-px">
-                                    <p class="w-[192px] truncate text-base font-semibold leading-normal text-white">
+                                    <p class="w-[12rem] truncate text-base font-semibold leading-normal text-white">
                                         {{ game.title }}
                                     </p>
                                 </div>
@@ -263,13 +263,13 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                                 <template v-if="game.playable && game.slug">
                                     <Link
                                         :href="storyShow(game.slug).url"
-                                        class="flex h-9 w-[192px] items-center justify-center rounded-[6px] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                                        class="flex h-9 w-[12rem] items-center justify-center rounded-[0.375rem] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
                                     >
                                         Play
                                     </Link>
                                 </template>
                                 <template v-else>
-                                    <div class="flex h-9 w-[192px] items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">
+                                    <div class="flex h-9 w-[12rem] items-center justify-center rounded-[0.375rem] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">
                                         Coming soon
                                     </div>
                                 </template>
@@ -293,13 +293,13 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                     <Transition name="card-popup">
                         <div
                             v-if="hoveredId && hoveredGame && popupPos"
-                            class="absolute z-30 flex w-[282px] flex-col gap-[10px] rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
+                            class="absolute z-30 flex w-[17.625rem] flex-col gap-[0.625rem] rounded-[0.5rem] border border-primary bg-[#262626] p-[0.625rem] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
                             :style="popupStyle"
                             @mouseenter="onPopupEnter"
                             @mouseleave="onPopupLeave"
                         >
                             <!-- Larger cover -->
-                            <div class="relative h-[239px] w-full overflow-hidden rounded-[6px]">
+                            <div class="relative h-[14.9375rem] w-full overflow-hidden rounded-[0.375rem]">
                                 <img
                                     :src="hoveredGame.cover"
                                     :alt="hoveredGame.title"
@@ -308,24 +308,24 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                             </div>
 
                             <!-- Info block -->
-                            <div class="flex flex-col gap-[8px]">
+                            <div class="flex flex-col gap-[0.5rem]">
                                 <!-- Title + themes -->
-                                <div class="flex flex-col gap-[4px]">
-                                    <p class="text-[20px] font-medium leading-normal text-white">
+                                <div class="flex flex-col gap-[0.25rem]">
+                                    <p class="text-[1.25rem] font-medium leading-normal text-white">
                                         {{ hoveredGame.title }}
                                     </p>
-                                    <p class="text-[14px] leading-normal text-white">
+                                    <p class="text-[0.875rem] leading-normal text-white">
                                         {{ hoveredGame.themes.join(' | ') }}
                                     </p>
                                 </div>
 
                                 <!-- Teaser -->
-                                <p class="line-clamp-3 text-[14px] leading-[1.5] text-[#8f8f8f]">
+                                <p class="line-clamp-3 text-[0.875rem] leading-[1.5] text-[#8f8f8f]">
                                     {{ hoveredGame.teaser }}
                                 </p>
 
                                 <!-- Branches explored (playable only) -->
-                                <p v-if="hoveredGame.branches" class="text-[14px] text-[#ffbe58]">
+                                <p v-if="hoveredGame.branches" class="text-[0.875rem] text-[#ffbe58]">
                                     {{ hoveredGame.branches }} Branches explored
                                 </p>
                             </div>
@@ -334,13 +334,13 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                             <template v-if="hoveredGame.playable && hoveredGame.slug">
                                 <Link
                                     :href="storyShow(hoveredGame.slug).url"
-                                    class="flex h-9 w-full items-center justify-center rounded-[6px] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                                    class="flex h-9 w-full items-center justify-center rounded-[0.375rem] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
                                 >
                                     Play
                                 </Link>
                             </template>
                             <template v-else>
-                                <div class="flex h-9 w-full items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">
+                                <div class="flex h-9 w-full items-center justify-center rounded-[0.375rem] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">
                                     Coming soon
                                 </div>
                             </template>
@@ -363,8 +363,8 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
 }
 
 .slider-arrow {
-    width: 34px;
-    height: 34px;
+    width: 2.125rem;
+    height: 2.125rem;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -386,6 +386,6 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
 .card-popup-enter-from,
 .card-popup-leave-to {
     opacity: 0;
-    transform: translateY(6px) scale(0.97);
+    transform: translateY(0.375rem) scale(0.97);
 }
 </style>

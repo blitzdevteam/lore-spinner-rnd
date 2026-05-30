@@ -31,18 +31,18 @@ const initialLetter = computed(() => props.authorName?.charAt(0)?.toUpperCase() 
 
 <template>
     <div class="flex w-full flex-col gap-2">
-        <div class="flex h-[30px] items-center gap-[5px]">
-            <div class="relative size-[30px] shrink-0 overflow-hidden rounded-full bg-gray-800">
+        <div class="flex h-[1.875rem] items-center gap-[0.3125rem]">
+            <div class="relative size-[1.875rem] shrink-0 overflow-hidden rounded-full bg-gray-800">
                 <img v-if="avatarUrl" :src="avatarUrl" alt="" class="size-full object-cover" />
                 <span
                     v-else
-                    class="flex size-full items-center justify-center font-['Inter',sans-serif] text-[13px] font-semibold text-primary-500"
+                    class="flex size-full items-center justify-center font-['Inter',sans-serif] text-[0.8125rem] font-semibold text-primary-500"
                 >
                     {{ initialLetter }}
                 </span>
             </div>
             <span
-                class="font-['Inter',sans-serif] text-[14px] font-medium not-italic leading-[30px] text-white [word-break:break-word]"
+                class="font-['Inter',sans-serif] text-[0.875rem] font-medium not-italic leading-[1.875rem] text-white [word-break:break-word]"
             >
                 {{ authorName }}
             </span>
@@ -50,7 +50,7 @@ const initialLetter = computed(() => props.authorName?.charAt(0)?.toUpperCase() 
 
         <div class="relative w-full">
             <p
-                class="font-['Inter',sans-serif] text-[15px] font-light not-italic leading-6 tracking-[0.3px] text-white [word-break:break-word]"
+                class="font-['Inter',sans-serif] text-[0.9375rem] font-light not-italic leading-6 tracking-[0.3px] text-white [word-break:break-word]"
             >
                 {{ displayPrimary }}
             </p>
@@ -58,7 +58,7 @@ const initialLetter = computed(() => props.authorName?.charAt(0)?.toUpperCase() 
             <button
                 v-if="canExpand && !expanded"
                 type="button"
-                class="float-end mt-2 ms-4 font-['Inter',sans-serif] text-[13px] font-medium not-italic text-primary-500"
+                class="float-end mt-2 ms-4 font-['Inter',sans-serif] text-[0.8125rem] font-medium not-italic text-primary-500"
                 @click="showMore()"
             >
                 Show More
