@@ -33,7 +33,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideCl
             :href="login.create().url"
             class="flex h-10 items-center justify-center rounded-full border border-[#00C6DE]/70 bg-transparent px-4 text-sm font-medium text-[#c8ced1] transition-colors hover:border-[#00C6DE] hover:text-white"
         >
-            Account
+            Login/Sign Up
         </Link>
     </template>
     <template v-else>
