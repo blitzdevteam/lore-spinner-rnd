@@ -10,7 +10,7 @@ use App\Models\Event;
 use App\Models\SessionAdaptation;
 use App\Models\Story;
 use App\Models\StoryAdaptation;
-use Illuminate\Contracts\JsonSchema\JsonSchemaTypeFactory;
+use Illuminate\JsonSchema\JsonSchemaTypeFactory;
 use Illuminate\Support\Facades\Log;
 use Prism\Prism\Facades\Prism;
 use Throwable;
