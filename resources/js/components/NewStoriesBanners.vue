@@ -6,7 +6,7 @@ import banner1Hover from '@/assets/newStories/s1-hover.jpg';
 import banner2Hover from '@/assets/newStories/s2-hover.jpg';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 defineProps<{
     storyCount: number;
@@ -68,6 +68,32 @@ const stories: NewStory[] = [
 // ── Slider scroll ─────────────────────────────────────────────────────────────
 const sliderEl = ref<HTMLElement | null>(null);
 const scrollSlider = (delta: number) => sliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
+
+// ── Shadow visibility ─────────────────────────────────────────────────────────
+const SHADOW_THRESHOLD = 8;
+const leftShadowVisible = ref(false);
+const rightShadowVisible = ref(true);
+
+function updateShadows() {
+    const el = sliderEl.value;
+    if (!el) return;
+    leftShadowVisible.value = el.scrollLeft > SHADOW_THRESHOLD;
+    rightShadowVisible.value = el.scrollLeft + el.clientWidth < el.scrollWidth - SHADOW_THRESHOLD;
+}
+
+onMounted(() => {
+    const el = sliderEl.value;
+    if (!el) return;
+    updateShadows();
+    el.addEventListener('scroll', updateShadows, { passive: true });
+    window.addEventListener('resize', updateShadows, { passive: true });
+});
+
+onUnmounted(() => {
+    const el = sliderEl.value;
+    if (el) el.removeEventListener('scroll', updateShadows);
+    window.removeEventListener('resize', updateShadows);
+});
 
 // ── Hover / popup state ───────────────────────────────────────────────────────
 const hoveredId = ref<string | null>(null);
@@ -163,11 +189,13 @@ function coverForPopup(story: NewStory): string {
                 <!-- Slider wrapper (popup is absolute inside here) -->
                 <div ref="sliderWrapperEl" class="relative">
                     <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-black to-transparent md:w-16"
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-black to-transparent transition-opacity duration-300 md:w-16"
+                        :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
                         aria-hidden="true"
                     />
                     <div
-                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent md:w-16"
+                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent transition-opacity duration-300 md:w-16"
+                        :class="rightShadowVisible ? 'opacity-100' : 'opacity-0'"
                         aria-hidden="true"
                     />
 
