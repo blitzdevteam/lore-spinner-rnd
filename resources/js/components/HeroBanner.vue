@@ -265,10 +265,10 @@ function goNext() {
                             </div>
 
                             <BaseButton
-                                severity="primary"
+                                severity="transparent"
                                 type="internal-link"
                                 :href="activeSlide.storyUrl"
-                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[48px] w-full items-center justify-center overflow-visible whitespace-nowrap px-6 py-3 text-[15px] font-medium !leading-none sm:min-h-[53px] sm:max-w-[284px] sm:px-8 sm:text-[16px]"
+                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[48px] w-full items-center justify-center whitespace-nowrap px-6 py-3 text-[15px] font-medium !leading-none text-white sm:min-h-[53px] sm:max-w-[284px] sm:px-8 sm:text-[16px]"
                             >
                                 Begin Your Journey
                             </BaseButton>
@@ -373,12 +373,30 @@ function goNext() {
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.75);
 }
 
+/* See-through glass with subtle brand tint — slide still visible behind */
 .begin-btn {
     border-radius: 12px;
+    background: color-mix(in srgb, var(--color-primary-700) 16%, transparent) !important;
+    border: 1px solid color-mix(in srgb, var(--color-primary-400) 55%, rgba(255, 255, 255, 0.28)) !important;
     box-shadow:
-        0 4px 80px rgba(0, 0, 0, 0.2),
-        inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.22),
-        inset -0.2px -0.5px 0.15px 0.5px rgba(255, 255, 255, 0.05);
+        0 0 28px color-mix(in srgb, var(--color-primary-500) 22%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--color-primary-300) 30%, transparent) !important;
+    filter: none !important;
+    outline: none !important;
+    backdrop-filter: blur(10px) saturate(1.15);
+    -webkit-backdrop-filter: blur(10px) saturate(1.15);
+    color: #fff !important;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+.begin-btn:hover,
+.begin-btn:focus-visible {
+    background: color-mix(in srgb, var(--color-primary-600) 26%, transparent) !important;
+    border-color: color-mix(in srgb, var(--color-primary-300) 65%, rgba(255, 255, 255, 0.35)) !important;
+    box-shadow:
+        0 0 36px color-mix(in srgb, var(--color-primary-400) 32%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--color-primary-200) 40%, transparent) !important;
+    outline: none !important;
 }
 
 .hero-arrow {
@@ -477,6 +495,20 @@ function goNext() {
 
     .hero-arrow-next {
         right: 0.875rem;
+    }
+}
+
+@media (max-width: 767px) {
+    /* Nudge CTA onto the slide so backdrop-filter shows the image */
+    .hero-copy-wrap {
+        margin-top: -2.5rem;
+        background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.65) 1.5rem, #000 3.5rem);
+    }
+
+    .begin-btn {
+        position: relative;
+        z-index: 11;
+        margin-top: -2.75rem;
     }
 }
 
