@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SectionHeader from '@/components/SectionHeader.vue';
 import iconYouChoose from '@/assets/story/left.svg';
 import iconStoryResponds from '@/assets/story/center.svg';
 import iconXen from '@/assets/story/right .svg';
@@ -55,10 +56,10 @@ const storyItems = [
     <section class="home-section-y">
         <div class="container">
             <div class="container-content home-section-gap">
-                <div class="home-section-header">
-                    <h2 class="home-section-title">The Story Changes With You</h2>
-                    <p class="home-section-description">Speak, choose, or write your own path.</p>
-                </div>
+                <SectionHeader
+                    title="The Story Changes With You"
+                    subtitle="Speak, choose, or write your own path."
+                />
 
                 <div
                     class="story-changes-card relative flex min-h-[13.75rem] flex-col overflow-hidden rounded-[1.5rem] border border-solid border-white/15 p-5 outline-none md:min-h-[13.75rem] md:p-5"

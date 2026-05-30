@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SectionHeader from '@/components/SectionHeader.vue';
 import banner1 from '@/assets/newStories/New stories 1- 2x.jpg';
 import banner2 from '@/assets/newStories/New stories 2 - 2x .jpg';
 import banner3 from '@/assets/newStories/New stories 3 - 2x.jpg';
@@ -168,21 +169,12 @@ function coverForPopup(story: NewStory): string {
         <div class="container">
             <div class="container-content home-section-gap">
 
-                <!-- Section header -->
-                <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="home-section-header max-w-[34.375rem]">
-                        <h2 class="home-section-title">New Stories</h2>
-                        <p class="home-section-description">
-                            New branches, hidden paths, and fresh story worlds.
-                        </p>
-                    </div>
-                    <Link
-                        :href="storiesIndex().url"
-                        class="inline-block w-[6.125rem] shrink-0 whitespace-nowrap text-right text-[0.875rem] font-normal leading-[2.0625rem] text-primary hover:underline"
-                    >
-                        View All ({{ storyCount }})
-                    </Link>
-                </div>
+                <SectionHeader
+                    title="New Stories"
+                    subtitle="New branches, hidden paths, and fresh story worlds."
+                    :href="storiesIndex().url"
+                    :count="storyCount"
+                />
 
                 <!-- Slider wrapper (popup is absolute inside here) -->
                 <div ref="sliderWrapperEl" class="relative">

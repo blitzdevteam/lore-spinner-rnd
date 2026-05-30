@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FrequentlyAskedQuestionItem from '@/components/FrequentlyAskedQuestionItem.vue';
+import SectionHeader from '@/components/SectionHeader.vue';
 import { LucideChevronDown } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -61,14 +62,10 @@ function toggleItem(index: number) {
 
 <template>
     <div class="home-section-gap w-full">
-        <!-- Title + intro (left-aligned with other homepage sections) -->
-        <div class="home-section-header">
-            <h2 class="home-section-title">Frequently Asked Questions</h2>
-            <p class="home-section-description">
-                Can’t find what you need? Visit our community forum, reach out on Twitter, or email our
-                support team.
-            </p>
-        </div>
+        <SectionHeader
+            title="Frequently Asked Questions"
+            subtitle="Can’t find what you need? Visit our community forum, reach out on Twitter, or email our support team."
+        />
 
         <!-- Collapsed: Show More -->
         <button

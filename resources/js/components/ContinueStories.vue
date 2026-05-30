@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SectionHeader from '@/components/SectionHeader.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import { GameInterface } from '@/types';
 import { show } from '@/wayfinder/routes/user/games';
@@ -44,12 +45,10 @@ const eventTitle = computed(() => {
     <div class="home-section-y">
         <div class="container">
             <div class="container-content home-section-gap">
-                <div class="home-section-header">
-                    <h2 class="home-section-title">Continue Your Story</h2>
-                    <p class="home-section-description">
-                        Pick up right where you left off
-                    </p>
-                </div>
+                <SectionHeader
+                    title="Continue Your Story"
+                    subtitle="Pick up right where you left off"
+                />
 
                 <div class="group relative min-w-0 overflow-hidden rounded-xl border border-gray-700/60 bg-gray-800/50 transition-all hover:border-primary-500/40 sm:rounded-2xl">
                     <div class="flex flex-col sm:flex-row">

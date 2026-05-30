@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SectionHeader from '@/components/SectionHeader.vue';
 import aliceCover from '@/assets/featured/alice.png';
 import animaCover from '@/assets/featured/anima.jpg';
 import jekyllCover from '@/assets/featured/jekyll.png';
@@ -169,20 +170,12 @@ onUnmounted(() => {
     <section class="home-section-y">
         <div class="container">
             <div class="container-content home-section-gap">
-                <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="home-section-header not-italic">
-                        <h2 class="home-section-title">Explore by mood</h2>
-                        <p class="home-section-description">
-                            Choose the feeling you want to step into.
-                        </p>
-                    </div>
-                    <Link
-                        :href="storiesIndex().url"
-                        class="inline-block shrink-0 whitespace-nowrap text-right text-[0.875rem] font-normal leading-[2.0625rem] text-primary hover:underline"
-                    >
-                        View All{{ storyCount != null ? ` (${storyCount})` : '' }}
-                    </Link>
-                </div>
+                <SectionHeader
+                    title="Explore by mood"
+                    subtitle="Choose the feeling you want to step into."
+                    :href="storiesIndex().url"
+                    :count="storyCount"
+                />
 
                 <!-- Figma 5412:908: flex row, gap exactly 10px (not stretched 1fr columns) -->
                 <div class="relative">

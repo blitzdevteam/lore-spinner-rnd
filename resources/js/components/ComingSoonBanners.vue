@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SectionHeader from '@/components/SectionHeader.vue';
 import cover1 from '@/assets/commingSoon/Coming soon 1- 2x.jpg';
 import cover2 from '@/assets/commingSoon/Coming soon 2 - 2x.png';
 import cover3 from '@/assets/commingSoon/Coming soon 3 - 2x.jpg';
@@ -164,23 +165,15 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 
 <template>
     <!-- Tighter bottom than .home-section-y so spacing to FAQ matches Figma; hover reserves extra space via wrapper padding. -->
-    <section class="pt-14 pb-0 md:pt-[3.75rem]">
+    <section class="pt-10 pb-0 md:pt-[3.75rem]">
         <div class="container">
             <div class="container-content home-section-gap">
-                <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="home-section-header max-w-[34.375rem]">
-                        <h2 class="home-section-title">Coming Soon</h2>
-                        <p class="home-section-description">
-                            New worlds are coming soon.
-                        </p>
-                    </div>
-                    <Link
-                        :href="storiesIndex().url"
-                        class="inline-block w-[6.125rem] shrink-0 whitespace-nowrap text-right text-[0.875rem] font-normal leading-[2.0625rem] text-primary hover:underline"
-                    >
-                        View All ({{ storyCount }})
-                    </Link>
-                </div>
+                <SectionHeader
+                    title="Coming Soon"
+                    subtitle="New worlds are coming soon."
+                    :href="storiesIndex().url"
+                    :count="storyCount"
+                />
 
                 <!-- Popup is 444px tall; reserve bottom space only while hovered so the default gap to FAQ stays tight like Figma. -->
                 <div

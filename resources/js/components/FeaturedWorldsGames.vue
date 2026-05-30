@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SectionHeader from '@/components/SectionHeader.vue';
 import aliceCover from '@/assets/featured/alice.png';
 import animaCover from '@/assets/featured/anima.jpg';
 import jekyllCover from '@/assets/featured/jekyll.png';
@@ -176,21 +177,12 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
         <div class="container">
             <div class="container-content home-section-gap">
 
-                <!-- Section header -->
-                <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="home-section-header max-w-[34.375rem]">
-                        <h2 class="home-section-title">Featured Worlds</h2>
-                        <p class="home-section-description">
-                            Curated story worlds built for choice, consequence, and return.
-                        </p>
-                    </div>
-                    <Link
-                        :href="storiesIndex().url"
-                        class="inline-block w-[6.125rem] shrink-0 whitespace-nowrap text-right text-[0.875rem] font-normal leading-[2.0625rem] text-primary hover:underline"
-                    >
-                        View All ({{ storyCount }})
-                    </Link>
-                </div>
+                <SectionHeader
+                    title="Featured Worlds"
+                    subtitle="Curated story worlds built for choice, consequence, and return."
+                    :href="storiesIndex().url"
+                    :count="storyCount"
+                />
 
                 <!-- Slider wrapper — popup is absolute inside here, safe from overflow-clip -->
                 <div ref="sliderWrapperEl" class="relative">
