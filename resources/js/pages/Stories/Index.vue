@@ -1,22 +1,17 @@
 <script setup lang="ts">
-import HomeWorldCard from '@/components/HomeWorldCard.vue';
 import MoodHeroBanner from '@/components/MoodHeroBanner.vue';
+import SectionHeader from '@/components/SectionHeader.vue';
+import StoryGrid from '@/components/StoryGrid.vue';
 import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
 import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moodBanners';
-import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import HomeLayout from '@/layouts/HomeLayout.vue';
 import { StoryInterface } from '@/types';
-import { StoryStatusEnum } from '@/types/enum';
-import { Head, Link } from '@inertiajs/vue3';
-import { show as storyShow } from '@/wayfinder/routes/stories';
+import { Head } from '@inertiajs/vue3';
 import { ArrowDownUp } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 type SortMode = 'recent' | 'title_asc' | 'title_desc';
-
-/** Five 195px cards + four 15px gaps — row width for Library grid. */
-const LIBRARY_RAIL_PX = 1035;
 
 const props = withDefaults(
     defineProps<{
@@ -56,10 +51,7 @@ const listHeading = computed(() => {
     return 'My Stories';
 });
 
-const storyCountLabel = computed(() => {
-    const n = libraryStories.value.length;
-    return n === 1 ? '1 Story' : `${n} Stories`;
-});
+const headerTitle = computed(() => `${listHeading.value} (${libraryStories.value.length})`);
 
 const sortMode = ref<SortMode>('recent');
 
@@ -95,85 +87,6 @@ function cycleSort(): void {
     const i = order.indexOf(sortMode.value);
     sortMode.value = order[(i + 1) % order.length]!;
 }
-
-// Hover popup is positioned relative to this layer — must stay outside overflow-x-auto
-// (otherwise overflow-y becomes auto and clips the tooltip). See CSS overflow spec.
-const libraryHoverLayerEl = ref<HTMLElement | null>(null);
-const wrapperWidth = ref(LIBRARY_RAIL_PX);
-const hoveredStoryId = ref<number | null>(null);
-const popupPos = ref<{ left: number; top: number } | null>(null);
-const cardEls: Record<number, HTMLElement | null> = {};
-
-let _hideTimer: ReturnType<typeof setTimeout> | null = null;
-let _onCard = false;
-let _onPopup = false;
-
-function scheduleHide(): void {
-    if (_hideTimer) clearTimeout(_hideTimer);
-    _hideTimer = setTimeout(() => {
-        if (!_onCard && !_onPopup) {
-            hoveredStoryId.value = null;
-            popupPos.value = null;
-        }
-    }, 120);
-}
-
-function onCardEnter(story: StoryInterface): void {
-    _onCard = true;
-    if (_hideTimer) clearTimeout(_hideTimer);
-
-    hoveredStoryId.value = story.id;
-
-    const cardEl = cardEls[story.id];
-    const layer = libraryHoverLayerEl.value;
-    if (!cardEl || !layer) return;
-
-    wrapperWidth.value = layer.getBoundingClientRect().width;
-
-    const cr = cardEl.getBoundingClientRect();
-    const lr = layer.getBoundingClientRect();
-    popupPos.value = { left: cr.left - lr.left, top: cr.top - lr.top };
-}
-
-function onCardLeave(): void {
-    _onCard = false;
-    scheduleHide();
-}
-
-function onPopupEnter(): void {
-    _onPopup = true;
-    if (_hideTimer) clearTimeout(_hideTimer);
-}
-
-function onPopupLeave(): void {
-    _onPopup = false;
-    scheduleHide();
-}
-
-const popupStyle = computed(() => {
-    if (!popupPos.value) return {};
-    const POPUP_W = 282;
-    let left = popupPos.value.left;
-    const W = Math.min(wrapperWidth.value, LIBRARY_RAIL_PX);
-    if (left + POPUP_W > W) left = W - POPUP_W;
-    if (left < 0) left = 0;
-    return { left: `${left}px`, top: `${popupPos.value.top}px` };
-});
-
-const hoveredStory = computed(() => sortedStories.value.find((s) => s.id === hoveredStoryId.value) ?? null);
-
-const hoveredPublished = computed(() => hoveredStory.value?.status?.value === StoryStatusEnum.PUBLISHED);
-
-function themesForStory(story: StoryInterface): string[] {
-    const meta = STORY_HOVER_META_BY_SLUG[story.slug];
-    if (meta?.themes.length) return meta.themes;
-    if (story.category?.title) return [story.category.title];
-    return [];
-}
-
-function branchesForStory(story: StoryInterface): string | null {
-    return STORY_HOVER_META_BY_SLUG[story.slug]?.branches ?? null;
-}
 </script>
 
 <template>
@@ -182,142 +95,30 @@ function branchesForStory(story: StoryInterface): string | null {
     <HomeLayout>
         <MoodHeroBanner :mood="activeMood" />
 
-        <!-- Rail widened to 1035px so five 195px cards fit per row (+ 4×15px gaps). -->
-        <!-- z-10: stack above footer (later sibling); hover root must not clip overflow-x (see inner scroll div). -->
         <div class="relative z-10 pb-12 pt-6 md:pb-[3.75rem] md:pt-[3.75rem]">
             <div class="container">
-                <div class="mx-auto flex w-full max-w-[64.6875rem] min-w-0 flex-col">
-                    <div class="flex w-full min-w-0 flex-col gap-4 md:gap-[1.125rem]">
-                        <!-- Mobile list header (< md) -->
-                        <div class="flex w-full min-w-0 items-center justify-between gap-3 md:hidden">
-                            <div class="min-w-0 flex-1 pr-1">
-                                <h1
-                                    class="font-[Inter] text-[1.25rem] font-bold leading-[1.3] tracking-[-0.01em] text-white [overflow-wrap:anywhere]"
-                                >
-                                    {{ listHeading }}
-                                </h1>
-                                <p class="mt-1.5 text-[0.8125rem] font-medium leading-none tracking-wide text-primary/75">
-                                    {{ storyCountLabel }}
-                                </p>
-                            </div>
+                <div class="container-content flex min-w-0 flex-col gap-5 md:gap-[1.125rem]">
+                    <SectionHeader :title="headerTitle">
+                        <template #action>
                             <button
                                 type="button"
-                                class="inline-flex h-11 min-w-[4.75rem] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-solid border-primary bg-[#01343a] px-3 text-[0.9375rem] font-medium text-primary outline-none transition-colors hover:bg-[#0a454d] active:bg-[#0a454d] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                                class="library-sort-btn group"
                                 :title="`Sorting: ${sortLabel}. Click to change.`"
                                 :aria-label="`Sort stories. Current: ${sortLabel}.`"
                                 @click="cycleSort"
                             >
-                                <ArrowDownUp class="size-5 shrink-0 text-primary" :stroke-width="2" aria-hidden="true" />
-                                <span class="text-primary">Sort</span>
-                            </button>
-                        </div>
-
-                        <!-- Desktop / tablet list header (md+) — unchanged layout -->
-                        <div class="hidden h-10 w-full shrink-0 items-center justify-between gap-4 md:flex">
-                            <h1
-                                class="font-[Inter] text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white"
-                            >
-                                {{ listHeading }} ( {{ libraryStories.length }} )
-                            </h1>
-                            <button
-                                type="button"
-                                class="inline-flex h-[2.375rem] w-[6rem] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[0.5rem] border border-solid border-primary bg-[#01343a] px-[0.375rem] text-[1.125rem] font-medium text-primary outline-none transition-colors hover:bg-[#0a454d] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-                                :title="`Sorting: ${sortLabel}. Click to change.`"
-                                :aria-label="`Sort stories. Current: ${sortLabel}.`"
-                                @click="cycleSort"
-                            >
-                                <ArrowDownUp class="size-[1.375rem] shrink-0 text-primary" :stroke-width="2" aria-hidden="true" />
-                                <span class="text-primary leading-[2.0625rem]">Sort</span>
-                            </button>
-                        </div>
-
-                        <div ref="libraryHoverLayerEl" class="relative min-h-0 w-full min-w-0 overflow-visible pb-2">
-                            <div class="overflow-x-auto pb-1 [scrollbar-gutter:stable]">
-                                <div class="library-story-grid">
-                                    <div
-                                        v-for="story in sortedStories"
-                                        :key="story.id"
-                                        :ref="(el) => { cardEls[story.id] = el ? (el as HTMLElement) : null }"
-                                        @mouseenter="onCardEnter(story)"
-                                        @mouseleave="onCardLeave"
-                                    >
-                                        <HomeWorldCard
-                                            :story="story"
-                                            :dimmed="hoveredStoryId !== null && hoveredStoryId !== story.id"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Transition name="card-popup">
-                                <div
-                                    v-if="hoveredStoryId && hoveredStory && popupPos"
-                                    class="absolute z-50 flex w-[17.625rem] flex-col gap-[0.625rem] rounded-[0.5rem] border border-primary bg-[#262626] p-[0.625rem] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
-                                    :style="popupStyle"
-                                    @mouseenter="onPopupEnter"
-                                    @mouseleave="onPopupLeave"
-                                >
-                            <div class="relative h-[14.9375rem] w-full overflow-hidden rounded-[0.375rem]">
-                                <img
-                                    v-if="hoveredStory.cover"
-                                    :src="hoveredStory.cover"
-                                    :alt="hoveredStory.title"
-                                    class="absolute inset-0 size-full max-w-none object-cover"
+                                <ArrowDownUp
+                                    class="library-sort-btn__icon"
+                                    :stroke-width="2.25"
+                                    aria-hidden="true"
                                 />
-                                <div
-                                    v-else
-                                    class="absolute inset-0 flex items-center justify-center rounded-[0.375rem] bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
-                                >
-                                    <span class="text-4xl font-bold text-primary/50">
-                                        {{ hoveredStory.title?.charAt(0)?.toUpperCase() }}
-                                    </span>
-                                </div>
-                            </div>
+                                <span class="library-sort-btn__label">Sort</span>
+                                <span class="sr-only"> ({{ sortLabel }})</span>
+                            </button>
+                        </template>
+                    </SectionHeader>
 
-                            <div class="flex flex-col gap-[0.5rem]">
-                                <div class="flex flex-col gap-[0.25rem]">
-                                    <p class="text-[1.25rem] font-medium leading-normal text-white">
-                                        {{ hoveredStory.title }}
-                                    </p>
-                                    <div
-                                        v-if="themesForStory(hoveredStory).length"
-                                        class="flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.25rem] text-[0.875rem] text-white"
-                                    >
-                                        <template v-for="theme in themesForStory(hoveredStory)" :key="theme">
-                                            <span class="size-[0.375rem] shrink-0 rounded-full bg-white" />
-                                            <span>{{ theme }}</span>
-                                        </template>
-                                    </div>
-                                </div>
-
-                                <p v-if="hoveredStory.teaser" class="line-clamp-3 text-[0.875rem] leading-[1.5] text-[#8f8f8f]">
-                                    {{ hoveredStory.teaser }}
-                                </p>
-
-                                <p v-if="branchesForStory(hoveredStory)" class="text-[0.875rem] text-[#ffbe58]">
-                                    {{ branchesForStory(hoveredStory) }} Branches explored
-                                </p>
-                            </div>
-
-                            <template v-if="hoveredPublished">
-                                <Link
-                                    :href="storyShow(hoveredStory.slug).url"
-                                    class="flex h-9 w-full items-center justify-center rounded-[0.375rem] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
-                                >
-                                    Play
-                                </Link>
-                            </template>
-                            <template v-else>
-                                <div
-                                    class="flex h-9 w-full cursor-default items-center justify-center rounded-[0.375rem] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]"
-                                >
-                                    Coming soon
-                                </div>
-                            </template>
-                                </div>
-                            </Transition>
-                        </div>
-                    </div>
+                    <StoryGrid :stories="sortedStories" />
                 </div>
             </div>
         </div>
@@ -325,29 +126,59 @@ function branchesForStory(story: StoryInterface): string | null {
 </template>
 
 <style scoped>
-/* Exactly 5 columns × 12.1875rem + 0.9375rem gutters = 64.6875rem per row */
-.library-story-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 12.1875rem);
-    column-gap: 0.9375rem;
-    row-gap: 1.125rem;
-    width: 64.6875rem;
+.library-sort-btn {
+    position: relative;
+    display: inline-flex;
+    height: calc(1.375rem * 1.1);
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.3125rem;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    color: var(--color-primary, #00d4aa);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: opacity 150ms ease, transform 150ms ease;
 }
 
-/* Popup fade (matches Featured Worlds) */
-.card-popup-enter-active {
-    transition:
-        opacity 0.18s ease,
-        transform 0.18s ease;
+@media (min-width: 768px) {
+    .library-sort-btn {
+        height: calc(1.625rem * 1.1);
+    }
 }
-.card-popup-leave-active {
-    transition:
-        opacity 0.14s ease,
-        transform 0.14s ease;
+
+.library-sort-btn::before {
+    content: '';
+    position: absolute;
+    inset: -0.625rem -0.375rem;
 }
-.card-popup-enter-from,
-.card-popup-leave-to {
-    opacity: 0;
-    transform: translateY(0.375rem) scale(0.97);
+
+.library-sort-btn:hover {
+    opacity: 0.8;
+}
+
+.library-sort-btn:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+}
+
+.library-sort-btn__icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    transition: transform 150ms ease;
+}
+
+.library-sort-btn:hover .library-sort-btn__icon {
+    transform: rotate(180deg);
+}
+
+.library-sort-btn__label {
+    line-height: 1;
 }
 </style>
