@@ -45,7 +45,7 @@ use Throwable;
  */
 #[Model('gpt-5.4')]
 #[Temperature(0.7)]
-#[Timeout(420)]
+#[Timeout(600)]
 class ChoiceDesignAgent implements Agent, HasStructuredOutput
 {
     use Promptable;
