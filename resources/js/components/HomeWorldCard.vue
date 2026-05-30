@@ -66,7 +66,7 @@ const storyUrl = computed(() => show(props.story.slug).url);
                 :href="isPublished ? storyUrl : undefined"
                 :class="isPublished
                     ? 'play-btn cursor-pointer bg-primary border-primary text-black hover:opacity-90'
-                    : 'coming-soon-btn cursor-default bg-[#3f3f3f] border-[#4d4d4d] text-primary'"
+                    : 'coming-soon-btn cursor-default bg-[#3f3f3f] border-[#4d4d4d] text-[#8e8e8e]'"
                 class="flex h-[36px] w-[192px] items-center justify-center rounded-[6px] border text-[18px] font-medium transition"
             >
                 {{ isPublished ? 'Play' : 'Coming soon' }}

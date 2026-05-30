@@ -232,7 +232,7 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                                     </div>
                                 </template>
                                 <template v-else>
-                                    <div class="flex h-9 w-[192px] items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-primary">
+                                    <div class="flex h-9 w-[192px] items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">
                                         Coming soon
                                     </div>
                                 </template>
@@ -303,7 +303,7 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                                 </div>
                             </template>
                             <template v-else>
-                                <div class="flex h-9 w-full items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-primary">
+                                <div class="flex h-9 w-full items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">
                                     Coming soon
                                 </div>
                             </template>

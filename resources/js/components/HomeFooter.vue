@@ -105,7 +105,7 @@ const headingClass =
                                     <a
                                         v-if="isNativeAnchor(link.href)"
                                         :href="link.href"
-                                        class="block transition-colors hover:text-primary"
+                                        class="block transition-colors hover:text-[#8e8e8e]"
                                         :class="link.accent ? 'text-primary' : 'text-white'"
                                         :rel="
                                             link.href.startsWith('http') ? 'noopener noreferrer' : undefined
@@ -129,7 +129,7 @@ const headingClass =
                 </div>
 
                 <p
-                    class="mt-16 text-right text-[14px] font-normal leading-normal tracking-[-0.56px] text-primary sm:mt-20 lg:mt-[128px]"
+                    class="mt-16 text-right text-[14px] font-normal leading-normal tracking-[-0.56px] text-[#8e8e8e] sm:mt-20 lg:mt-[128px]"
                 >
                     © Copyright 2026. Lorespinner Inc. All rights reserved.
                 </p>

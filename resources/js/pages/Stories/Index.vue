@@ -260,7 +260,7 @@ function branchesForStory(story: StoryInterface): string | null {
                             </template>
                             <template v-else>
                                 <div
-                                    class="flex h-9 w-full cursor-default items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-primary"
+                                    class="flex h-9 w-full cursor-default items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]"
                                 >
                                     Coming soon
                                 </div>

@@ -289,7 +289,7 @@ function coverForPopup(story: NewStory): string {
                                         </div>
                                     </template>
                                     <template v-else>
-                                        <div class="flex h-9 items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-[18px] font-medium text-primary">
+                                        <div class="flex h-9 items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-[18px] font-medium text-[#8e8e8e]">
                                             Coming soon
                                         </div>
                                     </template>
