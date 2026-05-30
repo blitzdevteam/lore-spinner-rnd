@@ -13,6 +13,9 @@ import { computed, ref } from 'vue';
 
 type SortMode = 'recent' | 'title_asc' | 'title_desc';
 
+/** Five 195px cards + four 15px gaps — row width for Library grid. */
+const LIBRARY_RAIL_PX = 1035;
+
 const props = withDefaults(
     defineProps<{
         stories?: StoryInterface[];
@@ -67,7 +70,7 @@ function cycleSort(): void {
 
 // ── Featured Worlds–style hover: dim siblings + teaser popup ─────────────────
 const gridWrapperEl = ref<HTMLElement | null>(null);
-const wrapperWidth = ref(1018);
+const wrapperWidth = ref(LIBRARY_RAIL_PX);
 const hoveredStoryId = ref<number | null>(null);
 const popupPos = ref<{ left: number; top: number } | null>(null);
 const cardEls: Record<number, HTMLElement | null> = {};
@@ -122,7 +125,7 @@ const popupStyle = computed(() => {
     if (!popupPos.value) return {};
     const POPUP_W = 282;
     let left = popupPos.value.left;
-    const W = wrapperWidth.value;
+    const W = Math.min(wrapperWidth.value, LIBRARY_RAIL_PX);
     if (left + POPUP_W > W) left = W - POPUP_W;
     if (left < 0) left = 0;
     return { left: `${left}px`, top: `${popupPos.value.top}px` };
@@ -148,65 +151,68 @@ function branchesForStory(story: StoryInterface): string | null {
     <Head title="Library" />
 
     <HomeLayout>
-        <div class="pb-14 pt-8 md:pb-[60px] md:pt-10">
+        <!-- Rail widened to 1035px so five 195px cards fit per row (+ 4×15px gaps). Banner spans full rail. -->
+        <div class="pb-14 pt-8 md:pb-[60px] md:pt-[82px]">
             <div class="container">
-                <!-- Match `.container-content` band everywhere (homepage / header) — avoids `w-fit`
-                     shrink-wrap differing between envs vs banner vs grid intrinsic sizing. -->
-                <div class="container-content flex w-full flex-col items-stretch">
-                    <!-- Figma banner height ~370px, rounded-[8px] -->
-                    <div class="mb-10 shrink-0 overflow-hidden rounded-[8px] md:mb-[60px]">
-                        <div class="relative aspect-[1010/370] w-full md:aspect-auto md:h-[370px]">
+                <div class="mx-auto flex w-full max-w-[1035px] min-w-0 flex-col">
+                    <div class="mb-10 w-full shrink-0 overflow-hidden rounded-[8px] md:mb-[60px]">
+                        <div class="relative aspect-[1035/370] w-full md:aspect-auto md:h-[370px] md:max-h-none">
                             <img
                                 :src="libraryBannerImage"
                                 alt=""
                                 class="pointer-events-none absolute inset-0 size-full object-cover object-center select-none"
-                                width="1018"
+                                width="1035"
                                 height="370"
                                 decoding="async"
                             />
                         </div>
                     </div>
 
-                    <div class="mb-6 flex flex-col gap-4 sm:mb-[18px] sm:flex-row sm:items-start sm:justify-between">
-                    <h1 class="font-[Inter] text-[22px] font-bold uppercase leading-[33px] text-white sm:text-[26px]">
-                        My Stories ( {{ libraryStories.length }} )
-                    </h1>
-                    <button
-                        type="button"
-                        class="inline-flex h-[38px] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-[#1c1c1c] px-4 text-[18px] font-medium text-primary outline-none transition-colors hover:bg-[#252525] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-                        :title="`Sorting: ${sortLabel}. Click to change.`"
-                        @click="cycleSort"
-                    >
-                        <ArrowDownUp class="size-[22px] shrink-0 text-primary" :stroke-width="2" aria-hidden="true" />
-                        <span class="text-primary">Sort</span>
-                    </button>
-                </div>
-
-                <div ref="gridWrapperEl" class="relative">
-                    <div class="flex flex-wrap justify-start gap-[15px]">
-                        <div
-                            v-for="story in sortedStories"
-                            :key="story.id"
-                            :ref="(el) => { cardEls[story.id] = el ? (el as HTMLElement) : null }"
-                            class="shrink-0"
-                            @mouseenter="onCardEnter(story)"
-                            @mouseleave="onCardLeave"
-                        >
-                            <HomeWorldCard
-                                :story="story"
-                                :dimmed="hoveredStoryId !== null && hoveredStoryId !== story.id"
-                            />
+                    <div class="flex w-full min-w-0 flex-col gap-[18px]">
+                        <div class="flex h-auto min-h-10 shrink-0 items-center justify-between gap-4 sm:h-10 sm:justify-between">
+                            <h1
+                                class="font-[Inter] text-[22px] font-bold uppercase leading-[33px] text-white sm:h-10 sm:text-[26px] sm:leading-[33px]"
+                            >
+                                My Stories ( {{ libraryStories.length }} )
+                            </h1>
+                            <button
+                                type="button"
+                                class="inline-flex h-[38px] w-[96px] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-solid border-primary bg-[#01343a] px-[6px] text-[18px] font-medium text-primary outline-none transition-colors hover:bg-[#0a454d] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                                :title="`Sorting: ${sortLabel}. Click to change.`"
+                                @click="cycleSort"
+                            >
+                                <ArrowDownUp class="size-[22px] shrink-0 text-primary" :stroke-width="2" aria-hidden="true" />
+                                <span class="text-primary leading-[33px]">Sort</span>
+                            </button>
                         </div>
-                    </div>
 
-                    <Transition name="card-popup">
                         <div
-                            v-if="hoveredStoryId && hoveredStory && popupPos"
-                            class="absolute z-30 flex w-[282px] flex-col gap-[10px] rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(0,198,222,0.4)]"
-                            :style="popupStyle"
-                            @mouseenter="onPopupEnter"
-                            @mouseleave="onPopupLeave"
+                            ref="gridWrapperEl"
+                            class="relative min-h-0 w-full min-w-0 overflow-x-auto pb-1 [scrollbar-gutter:stable]"
                         >
+                            <div class="library-story-grid">
+                                <div
+                                    v-for="story in sortedStories"
+                                    :key="story.id"
+                                    :ref="(el) => { cardEls[story.id] = el ? (el as HTMLElement) : null }"
+                                    @mouseenter="onCardEnter(story)"
+                                    @mouseleave="onCardLeave"
+                                >
+                                    <HomeWorldCard
+                                        :story="story"
+                                        :dimmed="hoveredStoryId !== null && hoveredStoryId !== story.id"
+                                    />
+                                </div>
+                            </div>
+
+                            <Transition name="card-popup">
+                                <div
+                                    v-if="hoveredStoryId && hoveredStory && popupPos"
+                                    class="absolute z-30 flex w-[282px] flex-col gap-[10px] rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(0,198,222,0.4)]"
+                                    :style="popupStyle"
+                                    @mouseenter="onPopupEnter"
+                                    @mouseleave="onPopupLeave"
+                                >
                             <div class="relative h-[239px] w-full overflow-hidden rounded-[6px]">
                                 <img
                                     v-if="hoveredStory.cover"
@@ -266,9 +272,10 @@ function branchesForStory(story: StoryInterface): string | null {
                                     Coming soon
                                 </div>
                             </template>
+                                </div>
+                            </Transition>
                         </div>
-                    </Transition>
-                </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -276,6 +283,15 @@ function branchesForStory(story: StoryInterface): string | null {
 </template>
 
 <style scoped>
+/* Exactly 5 columns × 195px + 15px gutters = 1035px per row */
+.library-story-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 195px);
+    column-gap: 15px;
+    row-gap: 18px;
+    width: 1035px;
+}
+
 /* Popup fade (matches Featured Worlds) */
 .card-popup-enter-active {
     transition:
