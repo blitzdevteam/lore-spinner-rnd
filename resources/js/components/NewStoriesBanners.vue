@@ -166,7 +166,7 @@ function coverForPopup(story: NewStory): string {
                     <!-- Left arrow -->
                     <button
                         type="button"
-                        class="slider-arrow absolute -left-4 top-1/2 z-10 hidden -translate-y-1/2 md:flex"
+                        class="slider-arrow slider-arrow-banner absolute -left-4 z-10 hidden md:flex"
                         aria-label="Scroll left"
                         @click="scrollSlider(-460)"
                     >
@@ -229,7 +229,7 @@ function coverForPopup(story: NewStory): string {
                     <!-- Right arrow -->
                     <button
                         type="button"
-                        class="slider-arrow absolute -right-4 top-1/2 z-10 hidden -translate-y-1/2 md:flex"
+                        class="slider-arrow slider-arrow-banner absolute -right-4 z-10 hidden md:flex"
                         aria-label="Scroll right"
                         @click="scrollSlider(460)"
                     >
@@ -322,6 +322,11 @@ function coverForPopup(story: NewStory): string {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     transition: background 0.2s;
+}
+/* Vertically centered on banner posters only — matches `.p-1` wrapper + inner `h-[262px]` */
+.slider-arrow-banner {
+    top: calc((262px + 0.5rem + 2px) / 2); /* inner image + vertical padding + 1px border top/bottom */
+    transform: translateY(-50%);
 }
 .slider-arrow:hover {
     background: rgba(255, 255, 255, 0.15);
