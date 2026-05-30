@@ -1,92 +1,104 @@
 <script setup lang="ts">
 import { ChapterInterface } from '@/types';
-import { LucideChevronDown } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ChapterStatusEnum } from '@/types/enum';
 import chapterPlaceholder from '@/assets/temp/chapter.png';
+import { LucideCheck, LucideLock } from 'lucide-vue-next';
+import { computed } from 'vue';
 
-const props = withDefaults(defineProps<{
-    chapter: ChapterInterface
-    isOpen: boolean
-}>(), {
-    isOpen: true
+const props = defineProps<{
+    chapter: ChapterInterface;
+    /** 1-based episode index for display (Episode N). */
+    episodeNumber: number;
+}>();
+
+const coverImage = computed(() => props.chapter.cover || chapterPlaceholder);
+
+const isPlayable = computed(
+    () => props.chapter.status?.value === ChapterStatusEnum.READY_TO_PLAY,
+);
+
+const isLocked = computed(() => !isPlayable.value);
+
+const episodeLabel = computed(() => {
+    const n = props.chapter.position ?? props.episodeNumber;
+    return `Episode ${n}`;
 });
 
-const isOpen = ref<boolean>(props.isOpen);
-
-const coverImage = props.chapter.cover || chapterPlaceholder;
+const eventsLabel = computed(() => {
+    const count = props.chapter.events_count;
+    if (count == null) {
+        return null;
+    }
+    return `Events ${count}`;
+});
 </script>
 
 <template>
-    <div
-        @click="isOpen = ! isOpen"
-        class="rounded-xl border border-gray-700 p-2 bg-gray-800/50 cursor-pointer"
+    <article
+        class="rounded-lg border border-gray-700 bg-[#1c1c1c] p-1.5"
     >
-        <div
-            :class="{
-                'items-start': isOpen,
-                'items-center': ! isOpen
-            }"
-            class="flex gap-2.5"
-        >
-            <div
-                :class="{
-                    'h-36': isOpen,
-                    'h-20': ! isOpen
-                }"
-                class="w-36 overflow-hidden border border-gray-700 rounded-lg relative"
-            >
+        <div class="flex items-center gap-2">
+            <div class="relative h-[7.25rem] w-[4.9375rem] shrink-0 overflow-hidden rounded-md bg-gray-700">
                 <img
                     :src="coverImage"
                     alt=""
-                    class="min-w-36 min-h-36 w-full h-full object-center object-cover"
-                >
-                <div
-                    :class="{
-                        'to-transparent': isOpen,
-                        'to-black/75': ! isOpen
-                    }"
-                    class="absolute inset-0 bg-linear-to-r from-black/75 pointer-events-none"
-                ></div>
-                <div class="absolute top-2 left-2 right-2">
-                    <div class="flex items-center">
-                        <span class="px-3 py-1 bg-muted-glass-effect rounded-full text-secondary-300 text-sm">
-                            Active
-                        </span>
-                    </div>
-                </div>
+                    class="size-full object-cover"
+                />
             </div>
-            <div
-                :class="{
-                    'h-36': isOpen,
-                }"
-                class="flex-1 flex flex-col gap-2"
-            >
-                <div class="flex items-center justify-between">
-                    <h3 class="flex-1 line-clamp-1 text-lg text-secondary-300">{{ chapter.title }}</h3>
-                    <button class="size-6 grid place-items-center mx-2.5">
-                        <LucideChevronDown
-                            :class="{
-                                'rotate-180': isOpen
-                            }"
-                            :stroke-width="1.5"
-                        />
-                    </button>
-                </div>
-                <template v-if="isOpen">
-                    <p class="text-sm font-light line-clamp-3">{{ chapter.teaser }}</p>
-                    <div class="flex items-center justify-between mt-auto">
-                        <div
-                            class="rounded-lg border text-sm text-gray-400 border-gray-700 py-1 px-2 flex items-center gap-1.5">
-                            <span>Events</span>
-                            <span>{{ chapter.events_count }}</span>
+
+            <div class="flex min-h-[6.9375rem] min-w-0 flex-1 flex-col items-end">
+                <div class="flex w-full flex-col gap-1.5">
+                    <div class="flex w-full flex-col">
+                        <div class="flex h-6 items-center justify-between gap-2">
+                            <h3
+                                class="truncate font-['Inter',sans-serif] text-[0.9375rem] font-semibold leading-normal"
+                                :class="isLocked ? 'text-secondary-300/20' : isPlayable ? 'text-white' : 'text-secondary-300'"
+                            >
+                                {{ episodeLabel }}
+                            </h3>
+                            <span
+                                class="inline-flex h-6 shrink-0 items-center rounded-full bg-[rgba(255,255,255,0.04)] px-2.5 font-['Inter',sans-serif] text-xs font-medium backdrop-blur-[3px]"
+                                :class="isLocked ? 'text-secondary-300/20' : 'text-secondary-300'"
+                                style="box-shadow: 0 4px 80px rgba(0, 0, 0, 0.2)"
+                            >
+                                100 Spins
+                            </span>
                         </div>
+                        <p
+                            v-if="eventsLabel"
+                            class="font-['Inter',sans-serif] text-[0.8125rem] font-normal leading-normal"
+                            :class="isPlayable ? 'text-[#00c6de]' : 'text-[#3f3f3f]'"
+                        >
+                            {{ isPlayable ? 'Events completed' : eventsLabel }}
+                        </p>
                     </div>
-                </template>
+
+                    <p
+                        v-if="chapter.teaser"
+                        class="line-clamp-2 font-['Inter',sans-serif] text-sm font-light leading-[1.198] tracking-[-0.02625rem] text-[#d8d8d8]"
+                    >
+                        {{ chapter.teaser }}
+                    </p>
+                </div>
+
+                <div
+                    class="relative mt-auto flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[rgba(255,255,255,0.04)] backdrop-blur-[3px]"
+                    style="box-shadow: 0 4px 80px rgba(0, 0, 0, 0.2)"
+                >
+                    <LucideLock
+                        v-if="isLocked"
+                        class="size-3.5 text-white/70"
+                        :stroke-width="1.75"
+                        aria-hidden="true"
+                    />
+                    <LucideCheck
+                        v-else
+                        class="size-3.5 text-[#00c6de]"
+                        :stroke-width="2.25"
+                        aria-hidden="true"
+                    />
+                </div>
             </div>
         </div>
-    </div>
+    </article>
 </template>
-
-<style scoped>
-
-</style>

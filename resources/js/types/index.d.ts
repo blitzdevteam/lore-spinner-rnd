@@ -74,7 +74,7 @@ export interface ChapterInterface {
     title: string;
     teaser: string | null;
     content: string | null;
-    status: ChapterStatusEnum;
+    status: EnumResource<ChapterStatusEnum>;
     cover: string;
 
     // Relations
