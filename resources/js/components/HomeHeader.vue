@@ -47,7 +47,7 @@ onUnmounted(() => {
                 </div>
 
                 <div class="flex shrink-0 items-center justify-end gap-2 justify-self-end md:gap-3">
-                    <HomeHeaderProfile class="hidden md:block" />
+                    <HomeHeaderProfile class="hidden md:flex" />
 
                     <button
                         type="button"
