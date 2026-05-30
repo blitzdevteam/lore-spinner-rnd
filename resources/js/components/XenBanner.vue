@@ -3,18 +3,15 @@
     <section class="py-9 md:py-10">
         <div class="container">
             <div class="container-content">
-                <!-- 1px gradient stroke (gold → cyan) matches Figma; flat border cannot reproduce it. -->
-                <div class="xen-banner-shell w-full">
-                    <div
-                        class="xen-banner flex items-center justify-center overflow-hidden rounded-[14px] p-[20px]"
+                <div
+                    class="xen-banner flex w-full items-center justify-center overflow-hidden rounded-[14px] p-[20px]"
+                >
+                    <p
+                        class="xen-banner__text text-center font-[Inter] text-[18px] font-normal leading-[26px] tracking-[2.52px] text-white"
                     >
-                        <p
-                            class="xen-banner__text text-center font-[Inter] text-[18px] font-normal leading-[26px] tracking-[2.52px] text-white"
-                        >
-                            Written by humans. Powered by your imagination. Brought to life by
-                            <span class="text-[#00c6de]">Xen</span>
-                        </p>
-                    </div>
+                        Written by humans. Powered by your imagination. Brought to life by
+                        <span class="text-[#00c6de]">Xen</span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -22,19 +19,6 @@
 </template>
 
 <style scoped>
-/* Outer ring: horizontal gold → cyan stroke (see Figma frame stroke, not Dev Mode flat border token). */
-.xen-banner-shell {
-    padding: 1px;
-    border-radius: 15px;
-    background: linear-gradient(
-        90deg,
-        #9c7a52 0%,
-        #c49a68 30%,
-        #2ea8bc 72%,
-        #00c6de 100%
-    );
-}
-
 /* Gold on left, Tiffany cyan on right — CSS angles = Figma export − 180° */
 .xen-banner {
     background-image:
