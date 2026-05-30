@@ -232,7 +232,7 @@ final class ChaosEngineService
         string $protagonist,
         float $temperature = 1.0,
     ): array {
-        $config = self::MODEL_CONFIG[$model] ?? throw new \InvalidArgumentException("Unknown chaos model: {$model}");
+        $config = self::MODEL_CONFIG[$model] ?? self::MODEL_CONFIG[self::DEFAULT_MODEL];
 
         $promptText = view('ai.agents.chaos.turn-prompt', [
             'conversationHistory' => $conversationHistory,

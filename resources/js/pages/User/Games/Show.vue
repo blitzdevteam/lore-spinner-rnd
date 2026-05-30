@@ -24,6 +24,7 @@ const handleBack = () => {
 
 const isSubmitting = ref(false);
 const isAutoBeginning = ref(false);
+const beginSettled = ref(false);
 const isStartingNextSession = ref(false);
 const pendingSelection = ref<Record<string, string>>({});
 const shouldAnimate = ref(false);
@@ -66,6 +67,7 @@ const handleBegin = () => {
                 shouldAnimate.value = true;
             },
             onFinish: () => {
+                beginSettled.value = true;
                 isAutoBeginning.value = false;
                 nextTick(() => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -144,9 +146,15 @@ const handleCinemaPrepare = () => {
     handleBegin();
 };
 
+const handleRetryBegin = () => {
+    beginSettled.value = false;
+    isAutoBeginning.value = true;
+    handleBegin();
+};
+
 const handleCinematicDone = () => {
     showCinematic.value = false;
-    if (!hasPrompts.value) {
+    if (!hasPrompts.value && !beginSettled.value) {
         isAutoBeginning.value = true;
     }
 };
@@ -174,6 +182,19 @@ onMounted(() => {
         <div class="flex flex-col items-center gap-4">
             <div class="size-8 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
             <p class="text-sm text-gray-400">Preparing your adventure…</p>
+        </div>
+    </div>
+
+    <!-- Begin failed — show retry -->
+    <div v-else-if="beginSettled && !hasPrompts" class="grid h-svh place-items-center bg-gray-950">
+        <div class="flex flex-col items-center gap-6 text-center">
+            <p class="text-sm text-gray-400">Opening narration hiccuped — please retry.</p>
+            <button
+                class="rounded-full border border-primary-400/60 bg-primary-400/10 px-8 py-3 text-sm font-medium text-primary-300 transition hover:bg-primary-400/20 hover:text-primary-200"
+                @click="handleRetryBegin"
+            >
+                Retry
+            </button>
         </div>
     </div>
 
