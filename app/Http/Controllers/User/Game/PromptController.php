@@ -92,7 +92,7 @@ final class PromptController extends Controller
                 'current_session_complete' => $result['session_complete'],
             ]);
 
-            $game->prompts()->create([
+        $game->prompts()->create([
                 'session_number' => $game->current_session_number,
                 'response'       => $result['response'],
                 'choices'        => $result['choices'],
@@ -108,9 +108,9 @@ final class PromptController extends Controller
                 'session_complete' => $result['session_complete'],
                 'player_input'     => mb_substr($playerAction, 0, 120),
                 'response_bytes'   => strlen($result['response']),
-            ]);
+        ]);
 
-            return back();
+        return back();
         } catch (Throwable $e) {
             Log::channel('narration')->error('game.turn_failed', [
                 'game_id'      => $game->id,

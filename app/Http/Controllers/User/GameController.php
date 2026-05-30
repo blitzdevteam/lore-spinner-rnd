@@ -19,6 +19,18 @@ use Throwable;
 
 final class GameController extends Controller
 {
+    /**
+     * Stories available at launch. All other published stories show "Coming Soon".
+     * Update this list when a new story is ready for production.
+     *
+     * @var array<int, string>
+     */
+    public const LAUNCH_SLUGS = [
+        'the-wonderful-wizard-of-oz',
+        'the-adventure-of-the-speckled-band',
+        'the-tell-tale-heart',
+    ];
+
     public function __construct(private readonly ChaosEngineService $engine) {}
 
     public function index(): RedirectResponse
@@ -46,6 +58,10 @@ final class GameController extends Controller
         CreateGameAction $createGameAction
     ): RedirectResponse {
         $story = Story::find($request->string('story_id')->toString());
+
+        if ($story === null || ! in_array($story->slug, self::LAUNCH_SLUGS, true)) {
+            return back()->with('error', 'This story is not available yet. Stay tuned!');
+        }
 
         $existingGame = $user->games()->whereBelongsTo($story)->first();
 

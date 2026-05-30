@@ -24,12 +24,14 @@ import { router } from '@inertiajs/vue3';
 const props = defineProps<{
     story: StoryInterface;
     existingGameId?: string | null;
+    isPlayable?: boolean;
 }>();
 
 const hasExistingGame = computed(() => !!props.existingGameId);
 const { isBookmarked, toggleBookmark } = useBookmark(props.story.id, props.story.is_bookmarked ?? false);
 
 const handleStartStory = (): void => {
+    if (!props.isPlayable) return;
     if (props.existingGameId) {
         router.visit(showGame.url(props.existingGameId));
     } else {
@@ -114,6 +116,7 @@ const handleBack = (): void => {
                 <div class="p-12">
                     <div class="relative z-5">
                         <BaseButton
+                            v-if="isPlayable"
                             severity="primary"
                             class="w-full py-4 text-lg font-semibold shadow-primary shadow-[0_0px_50px_-12px]"
                             type="button"
@@ -121,6 +124,12 @@ const handleBack = (): void => {
                         >
                             {{ hasExistingGame ? 'Continue' : 'Start' }}
                         </BaseButton>
+                        <div
+                            v-else
+                            class="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800/60 py-4 text-lg font-semibold text-gray-500 cursor-not-allowed select-none"
+                        >
+                            <span class="text-sm font-medium uppercase tracking-widest">Coming Soon</span>
+                        </div>
                     </div>
                     <div class="absolute bottom-0 left-0 right-0 w-full h-full bg-linear-to-t from-black/75 from-50% to-transparent pointer-events-none"></div>
                 </div>
@@ -198,6 +207,7 @@ const handleBack = (): void => {
             <div class="px-4 pb-4 pt-8">
                 <div class="relative z-5">
                     <BaseButton
+                        v-if="isPlayable"
                         severity="primary"
                         class="w-full py-3.5 text-lg font-semibold shadow-primary shadow-[0_0px_50px_-12px]"
                         type="button"
@@ -205,6 +215,12 @@ const handleBack = (): void => {
                     >
                         {{ hasExistingGame ? 'Continue' : 'Start' }}
                     </BaseButton>
+                    <div
+                        v-else
+                        class="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800/60 py-3.5 text-lg font-semibold text-gray-500 cursor-not-allowed select-none"
+                    >
+                        <span class="text-sm font-medium uppercase tracking-widest">Coming Soon</span>
+                    </div>
                 </div>
                 <div class="absolute bottom-0 left-0 right-0 w-full h-full bg-linear-to-t from-black/90 from-50% to-transparent pointer-events-none"></div>
             </div>
