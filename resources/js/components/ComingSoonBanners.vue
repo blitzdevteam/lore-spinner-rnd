@@ -237,12 +237,9 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
                                     <p class="text-[20px] font-medium leading-normal text-white">
                                         {{ hoveredCard.title }}
                                     </p>
-                                    <div class="flex flex-wrap items-center gap-[4px] text-[14px] leading-normal text-white">
-                                        <template v-for="theme in hoveredCard.themes" :key="theme">
-                                            <span class="size-[6px] shrink-0 rounded-full bg-primary" />
-                                            <span>{{ theme }}</span>
-                                        </template>
-                                    </div>
+                                    <p class="text-[14px] leading-normal text-white">
+                                        {{ hoveredCard.themes.join(' | ') }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
