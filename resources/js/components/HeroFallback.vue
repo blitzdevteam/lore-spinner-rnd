@@ -60,7 +60,7 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
                                 severity="primary"
                                 type="internal-link"
                                 :href="storiesIndex().url"
-                                class="begin-btn font-[Inter] !h-[53px] w-full max-w-[284px] px-8 text-[16px] font-medium leading-normal text-black"
+                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[53px] w-full max-w-[284px] items-center justify-center overflow-visible whitespace-nowrap px-8 py-3 text-[16px] font-medium !leading-none text-black"
                             >
                                 Begin Your Journey
                             </BaseButton>
