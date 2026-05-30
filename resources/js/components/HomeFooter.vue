@@ -150,7 +150,7 @@ const headingClass =
                 </div>
 
                 <p
-                    class="mt-16 text-center text-[14px] font-normal leading-normal tracking-[-0.56px] text-primary sm:mt-20 lg:mt-[128px]"
+                    class="mt-16 text-center text-[14px] font-normal leading-normal tracking-[-0.56px] text-[#8e8e8e] sm:mt-20 lg:mt-[128px]"
                 >
                     © Copyright 2026. Lorespinner Inc. All rights reserved.
                 </p>
