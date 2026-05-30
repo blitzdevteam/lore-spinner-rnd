@@ -172,7 +172,7 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                 <div ref="sliderWrapperEl" class="relative">
                     <!-- Edge fades over the rails (below nav arrows); pointer-events-none so scroll/drag still works -->
                     <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-black to-transparent md:w-16"
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent md:w-8"
                         aria-hidden="true"
                     />
                     <div
