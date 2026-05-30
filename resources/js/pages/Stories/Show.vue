@@ -55,11 +55,7 @@ const coverHeadline = computed(() => props.story.title.toUpperCase());
 
 const coverFooterCredit = computed(() => creatorName.value.toUpperCase());
 
-const coverImageUrl = computed(() => {
-    const c = props.story.cover?.trim();
-    const b = props.story.banner?.trim();
-    return c || b || null;
-});
+const coverImageUrl = computed(() => props.story.cover?.trim() || null);
 
 const progressBadge = computed(() => (hasExistingGame.value ? '—' : '00%'));
 
@@ -126,6 +122,14 @@ const creatorAvatar = computed(() => {
     const a = props.story.creator?.avatar?.trim();
     return a || null;
 });
+
+const leftColumnChapters = computed(() =>
+    props.story.chapters?.filter((_, index) => index % 2 === 0) ?? [],
+);
+
+const rightColumnChapters = computed(() =>
+    props.story.chapters?.filter((_, index) => index % 2 === 1) ?? [],
+);
 </script>
 
 <template>
@@ -145,7 +149,7 @@ const creatorAvatar = computed(() => {
                 >
                     <template #overlay>
                         <StoryPlayGlassRoundButton
-                            class="pointer-events-auto absolute left-5 top-[1.125rem] z-[5] lg:left-7 lg:top-5"
+                            class="pointer-events-auto absolute left-4 top-4 z-[5]"
                             aria-label="Go back"
                             @click="handleBack"
                         >
@@ -210,15 +214,30 @@ const creatorAvatar = computed(() => {
                     </section>
                 </div>
 
-                <div v-else class="flex flex-col gap-4 lg:pb-8">
-                    <StoryChapterCard
-                        v-for="(chapter, index) in story.chapters"
-                        :key="chapter.id"
-                        :chapter
-                        :is-open="index === 0"
-                    />
+                <div v-else class="lg:pb-8">
+                    <div
+                        v-if="story.chapters?.length"
+                        class="flex flex-col gap-2.5 sm:flex-row sm:items-start"
+                    >
+                        <div class="flex min-w-0 flex-1 flex-col gap-2.5">
+                            <StoryChapterCard
+                                v-for="(chapter, index) in leftColumnChapters"
+                                :key="chapter.id"
+                                :chapter
+                                :episode-number="index * 2 + 1"
+                            />
+                        </div>
+                        <div class="flex min-w-0 flex-1 flex-col gap-2.5">
+                            <StoryChapterCard
+                                v-for="(chapter, index) in rightColumnChapters"
+                                :key="chapter.id"
+                                :chapter
+                                :episode-number="index * 2 + 2"
+                            />
+                        </div>
+                    </div>
                     <p
-                        v-if="!story.chapters?.length"
+                        v-else
                         class="rounded-xl border border-white/15 bg-black/45 py-14 text-center font-['Inter',sans-serif] text-sm font-medium text-gray-500 backdrop-blur-sm"
                     >
                         No chapters listed yet.

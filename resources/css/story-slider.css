@@ -1,0 +1,81 @@
+/**
+ * Shared home story carousel — track layout + arrow alignment.
+ * Arrows center on the card row (not section headers or poster-only height).
+ */
+.story-slider-viewport {
+    --story-track-pad-top: 0.75rem;
+    --story-track-pad-bottom: 1rem;
+    margin-block: -0.75rem;
+}
+
+@media (min-width: 1024px) {
+    .story-slider-viewport {
+        --story-track-pad-top: 2.5rem;
+        --story-track-pad-bottom: 3rem;
+        margin-block: -2rem;
+    }
+}
+
+.story-slider {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.story-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.story-slider-track {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: var(--story-track-pad-top) 0.25rem var(--story-track-pad-bottom);
+}
+
+@media (min-width: 1024px) {
+    .story-slider-track {
+        padding-inline: 1rem;
+    }
+}
+
+.story-slider-arrow {
+    position: absolute;
+    z-index: 10;
+    display: none;
+    width: 2.125rem;
+    height: 2.125rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    transition: background 0.2s;
+    /*
+     * Center on the card track: offset viewport midpoint for asymmetric
+     * track padding (extra bottom space reserved for hover expansion).
+     */
+    top: calc(50% + (var(--story-track-pad-top) - var(--story-track-pad-bottom)) / 2);
+    transform: translateY(-50%);
+}
+
+@media (min-width: 768px) {
+    .story-slider-arrow {
+        display: flex;
+    }
+}
+
+.story-slider-arrow:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.story-slider-arrow--edge-left {
+    left: 0;
+    transform: translate(-50%, -50%);
+    top: calc(50% + (var(--story-track-pad-top) - var(--story-track-pad-bottom)) / 2);
+}
+
+.story-slider-arrow--edge-right {
+    right: 0;
+    transform: translate(50%, -50%);
+    top: calc(50% + (var(--story-track-pad-top) - var(--story-track-pad-bottom)) / 2);
+}

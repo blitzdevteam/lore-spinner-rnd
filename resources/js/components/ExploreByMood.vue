@@ -229,7 +229,7 @@ onUnmounted(() => {
                             Heartfelt
                         </p>
                         <div
-                            class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
+                            class="pointer-events-none absolute inset-0 z-[3] rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
                         />
                     </button>
 
@@ -278,7 +278,7 @@ onUnmounted(() => {
                             Adventurous
                         </p>
                         <div
-                            class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
+                            class="pointer-events-none absolute inset-0 z-[3] rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
                         />
                     </button>
 
@@ -321,7 +321,7 @@ onUnmounted(() => {
                             Mysterious
                         </p>
                         <div
-                            class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
+                            class="pointer-events-none absolute inset-0 z-[3] rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
                         />
                     </button>
 
@@ -340,6 +340,10 @@ onUnmounted(() => {
                                 class="absolute inset-0 rounded-lg bg-[rgba(30,30,30,0.1)] backdrop-blur-[3px] mix-blend-plus-lighter"
                             />
                         </div>
+                        <div
+                            class="mood-card-glow mood-card-glow--epic pointer-events-none absolute inset-0 z-[1] rounded-lg"
+                            aria-hidden="true"
+                        />
                         <p
                             class="absolute z-[2] left-[5.0938rem] top-[7.0938rem] -translate-y-1/2 whitespace-nowrap text-[0.9375rem] font-medium capitalize leading-[2.0625rem] not-italic text-[#58d9a1]"
                         >
@@ -366,7 +370,7 @@ onUnmounted(() => {
                             />
                         </div>
                         <div
-                            class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
+                            class="pointer-events-none absolute inset-0 z-[3] rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
                         />
                     </button>
 
@@ -385,6 +389,10 @@ onUnmounted(() => {
                                 class="absolute inset-0 rounded-lg bg-[rgba(30,30,30,0.1)] backdrop-blur-[3px] mix-blend-plus-lighter"
                             />
                         </div>
+                        <div
+                            class="mood-card-glow mood-card-glow--whimsical pointer-events-none absolute inset-0 z-[1] rounded-lg"
+                            aria-hidden="true"
+                        />
                         <p
                             class="absolute z-[2] left-[3.7813rem] top-[7.0938rem] -translate-y-1/2 whitespace-nowrap text-[0.9375rem] font-medium capitalize leading-[2.0625rem] not-italic text-[#a979c2]"
                         >
@@ -411,7 +419,7 @@ onUnmounted(() => {
                             />
                         </div>
                         <div
-                            class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
+                            class="pointer-events-none absolute inset-0 z-[3] rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
                         />
                     </button>
                     </div>

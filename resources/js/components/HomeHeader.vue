@@ -96,5 +96,6 @@ onUnmounted(() => {
 .logo-link {
     display: inline-flex;
     align-items: center;
+    align-self: center;
 }
 </style>

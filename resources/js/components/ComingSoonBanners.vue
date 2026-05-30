@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import SectionHeader from '@/components/SectionHeader.vue';
+import HomePortraitStoryCard from '@/components/HomePortraitStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
+import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
 import cover1 from '@/assets/commingSoon/Coming soon 1- 2x.jpg';
 import cover2 from '@/assets/commingSoon/Coming soon 2 - 2x.png';
 import cover3 from '@/assets/commingSoon/Coming soon 3 - 2x.jpg';
 import cover4 from '@/assets/commingSoon/Coming soon 4 - 2x.jpg';
 import cover5 from '@/assets/commingSoon/Coming soon 5 - 2x.png';
+import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
+import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { ref } from 'vue';
@@ -19,6 +23,7 @@ interface ComingSoonCard {
     title: string;
     cover: string;
     themes: string[];
+    teaser: string;
 }
 
 const cards: ComingSoonCard[] = [
@@ -27,37 +32,55 @@ const cards: ComingSoonCard[] = [
         title: "Romeo & Juliet",
         cover: cover1,
         themes: ['Destiny', 'Courage', 'Control'],
+        teaser: 'Two star-crossed lovers defy their feuding families — but every choice tightens the trap of fate.',
     },
     {
         id: 'hansel',
         title: 'Hansel & Gretel',
         cover: cover2,
         themes: ['Survival', 'Fear', 'Family'],
+        teaser: 'Lost in the woods, siblings must outwit a witch whose house is built from hunger itself.',
     },
     {
         id: 'pride',
         title: 'Pride and Prejudice',
         cover: cover3,
         themes: ['Love', 'Duty', 'Society'],
+        teaser: 'First impressions and pride collide in a world where marriage is strategy and love is rebellion.',
     },
     {
         id: 'frankenstein',
         title: 'Frankenstein',
         cover: cover4,
         themes: ['Creation', 'Isolation', 'Ambition'],
+        teaser: 'A creator abandons his masterpiece — and the creature returns to demand an answer only blood can settle.',
     },
     {
         id: 'leagues',
         title: '20,000 Leagues Under the Sea',
         cover: cover5,
         themes: ['Discovery', 'Wonder', 'Peril'],
+        teaser: 'Captives aboard a submarine discover a captain who has turned the ocean into a kingdom of revenge.',
     },
 ];
 
 const sliderEl = ref<HTMLElement | null>(null);
-const scrollSlider = (delta: number) => sliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
+
+function scrollSlider(direction: -1 | 1) {
+    const slider = sliderEl.value;
+    if (!slider) return;
+
+    const card = slider.querySelector<HTMLElement>('.story-card-slot');
+    const gap = 10;
+    const step = card ? card.offsetWidth + gap : 214;
+
+    slider.scrollBy({ left: direction * step, behavior: 'smooth' });
+}
 
 const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
+
+const isDesktopHover = useDesktopStoryPreview();
+const { onCardEnter, onCardLeave, isExpanded, isDimmed } = useStoryCardExpand(isDesktopHover);
 
 const sheetStory = ref<StorySheetData | null>(null);
 
@@ -68,6 +91,7 @@ function toSheetData(card: ComingSoonCard): StorySheetData {
         cover: card.cover,
         themes: card.themes,
         isComingSoon: true,
+        teaser: card.teaser,
     };
 }
 
@@ -77,7 +101,7 @@ function openSheet(card: ComingSoonCard) {
 </script>
 
 <template>
-    <section class="pt-10 pb-0 md:pt-[3.75rem]">
+    <section class="overflow-visible pt-10 pb-2 md:pt-[3.75rem]">
         <div class="container">
             <div class="container-content home-section-gap">
                 <SectionHeader
@@ -87,7 +111,7 @@ function openSheet(card: ComingSoonCard) {
                     :count="storyCount"
                 />
 
-                <div class="relative pb-2">
+                <div class="story-slider-viewport relative overflow-visible">
                     <div
                         class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
                         :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
@@ -101,48 +125,45 @@ function openSheet(card: ComingSoonCard) {
 
                     <button
                         type="button"
-                        class="slider-arrow absolute -left-4 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center md:flex"
+                        class="story-slider-arrow absolute -left-4"
                         aria-label="Scroll left"
-                        @click="scrollSlider(-214)"
+                        @click="scrollSlider(-1)"
                     >
                         <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
                             <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
 
-                    <div
-                        ref="sliderEl"
-                        class="story-slider relative flex gap-[0.625rem] overflow-x-auto pb-2 md:ml-[1.0625rem]"
-                    >
-                        <button
-                            v-for="card in cards"
-                            :key="card.id"
-                            type="button"
-                            class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-left outline-none transition-transform duration-200 active:scale-[0.98]"
-                            :aria-label="`Preview ${card.title}`"
-                            @click="openSheet(card)"
-                        >
-                            <div
-                                class="flex flex-col rounded-[0.5rem] border border-solid border-[#373737] bg-[#262626] p-[0.375rem] transition-colors duration-200 hover:border-primary/40"
+                    <div ref="sliderEl" class="story-slider overflow-x-auto md:ml-[1.0625rem]">
+                        <div class="story-slider-track">
+                            <StoryExpandableCard
+                                v-for="card in cards"
+                                :key="card.id"
+                                :expanded="isExpanded(card.id)"
+                                :dimmed="isDimmed(card.id)"
+                                :desktop-expand="isDesktopHover"
+                                @mouseenter="isDesktopHover && onCardEnter(card.id)"
+                                @mouseleave="isDesktopHover && onCardLeave()"
                             >
-                                <div class="flex w-[12rem] flex-col items-center">
-                                    <div class="relative h-[17.9375rem] w-full overflow-hidden rounded-[0.3125rem]">
-                                        <img
-                                            :src="card.cover"
-                                            :alt="card.title"
-                                            class="pointer-events-none h-full w-full object-cover select-none"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </button>
+                                <HomePortraitStoryCard
+                                    :title="card.title"
+                                    :cover="card.cover"
+                                    :themes="card.themes"
+                                    :teaser="card.teaser"
+                                    :playable="false"
+                                    :focused="isDesktopHover && isExpanded(card.id)"
+                                    :is-desktop-hover="isDesktopHover"
+                                    @preview="openSheet(card)"
+                                />
+                            </StoryExpandableCard>
+                        </div>
                     </div>
 
                     <button
                         type="button"
-                        class="slider-arrow absolute -right-4 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center md:flex"
+                        class="story-slider-arrow absolute -right-4"
                         aria-label="Scroll right"
-                        @click="scrollSlider(214)"
+                        @click="scrollSlider(1)"
                     >
                         <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
@@ -153,29 +174,5 @@ function openSheet(card: ComingSoonCard) {
         </div>
     </section>
 
-    <StoryDetailsSheet :story="sheetStory" @close="sheetStory = null" />
+    <StoryDetailsSheet v-if="!isDesktopHover" :story="sheetStory" @close="sheetStory = null" />
 </template>
-
-<style scoped>
-.story-slider {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-.story-slider::-webkit-scrollbar {
-    display: none;
-}
-
-.slider-arrow {
-    width: 2.125rem;
-    height: 2.125rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    transition: background 0.2s;
-}
-.slider-arrow:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-</style>

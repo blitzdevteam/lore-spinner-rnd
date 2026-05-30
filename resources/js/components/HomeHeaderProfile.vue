@@ -2,10 +2,9 @@
 import BaseButton from '@/components/BaseButton.vue';
 import { logout } from '@/wayfinder/routes/user/authentication';
 import login from '@/wayfinder/routes/user/authentication/login';
-import register from '@/wayfinder/routes/user/authentication/register';
 import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronRight, LucideUpload, PenLine, X } from 'lucide-vue-next';
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { ChevronRight, LucideUpload, X } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 // inheritAttrs must be false so we can manually forward $attrs (class / style)
 // to the correct root element. Without this, Vue silently drops attrs on
@@ -27,19 +26,6 @@ const page = usePage();
 const auth = computed(() => page.props.auth);
 
 const profileDrawerVisibility = ref(false);
-
-// Account dropdown (shown when not logged in)
-const accountMenuOpen = ref(false);
-const accountMenuRef  = ref<HTMLDivElement | null>(null);
-
-const closeOnOutsideClick = (e: MouseEvent) => {
-    if (accountMenuRef.value && !accountMenuRef.value.contains(e.target as Node)) {
-        accountMenuOpen.value = false;
-    }
-};
-
-onMounted(() => document.addEventListener('mousedown', closeOnOutsideClick));
-onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideClick));
 </script>
 
 <template>
@@ -124,15 +110,6 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideCl
                                             <Link href="#" class="flex items-center justify-between p-4 text-white transition-all hover:px-6">
                                                 <p class="text-sm font-normal">Help & Support</p>
                                                 <ChevronRight class="size-5" :stroke-width="2" />
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link
-                                                href="/writer/authentication/login"
-                                                class="flex items-center justify-between p-4 transition-all hover:px-6"
-                                            >
-                                                <p class="text-sm font-normal text-primary-400">Writer Lab</p>
-                                                <PenLine class="size-4 text-primary-500/70" :stroke-width="2" />
                                             </Link>
                                         </li>
                                         <li>
