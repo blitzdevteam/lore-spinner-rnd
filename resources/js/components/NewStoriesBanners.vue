@@ -71,12 +71,22 @@ const stories: NewStory[] = [
 ];
 
 const sliderEl = ref<HTMLElement | null>(null);
-const scrollSlider = (delta: number) => sliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
+
+function scrollSlider(direction: -1 | 1) {
+    const slider = sliderEl.value;
+    if (!slider) return;
+
+    const card = slider.querySelector<HTMLElement>('.story-card-slot');
+    const gap = 10;
+    const step = card ? card.offsetWidth + gap : 460;
+
+    slider.scrollBy({ left: direction * step, behavior: 'smooth' });
+}
 
 const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
 
 const isDesktopHover = useDesktopStoryPreview();
-const { hoveredId, onCardEnter, onCardLeave, isExpanded, isDimmed } = useStoryCardExpand(isDesktopHover);
+const { onCardEnter, onCardLeave, isExpanded, isDimmed } = useStoryCardExpand(isDesktopHover);
 
 const sheetStory = ref<StorySheetData | null>(null);
 
@@ -104,17 +114,6 @@ function storyUrl(story: NewStory): string | undefined {
     return story.playable && story.slug ? storyShow(story.slug).url : undefined;
 }
 
-function themesLine(story: NewStory): string {
-    return story.themes.join(' • ');
-}
-
-function activeCover(story: NewStory): string {
-    return isExpanded(story.id) && story.coverHover ? story.coverHover : story.cover;
-}
-
-function ctaLabel(story: NewStory): string {
-    return story.playable ? 'Play' : 'Coming Soon';
-}
 </script>
 
 <template>
@@ -145,7 +144,7 @@ function ctaLabel(story: NewStory): string {
                         type="button"
                         class="slider-arrow slider-arrow-banner absolute -left-4 z-10 hidden items-center justify-center md:flex"
                         aria-label="Scroll left"
-                        @click="scrollSlider(-460)"
+                        @click="scrollSlider(-1)"
                     >
                         <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
                             <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
@@ -154,8 +153,7 @@ function ctaLabel(story: NewStory): string {
 
                     <div
                         ref="sliderEl"
-                        class="story-slider flex items-start gap-[0.625rem] overflow-x-auto pb-3 transition-[padding] duration-300 ease-out md:ml-[1.0625rem]"
-                        :class="isDesktopHover && hoveredId ? 'lg:pb-[8rem]' : 'lg:pb-3'"
+                        class="story-slider flex items-start gap-[0.625rem] overflow-x-auto py-1 pb-3 md:ml-[1.0625rem]"
                     >
                         <StoryExpandableCard
                             v-for="story in stories"
@@ -173,7 +171,7 @@ function ctaLabel(story: NewStory): string {
                                 type="button"
                                 class="ns-card block w-full border-0 bg-transparent p-0 text-left outline-none"
                                 :class="[
-                                    isDesktopHover && isExpanded(story.id) && 'ns-card--expanded',
+                                    isDesktopHover && isExpanded(story.id) && 'ns-card--focused',
                                     !isDesktopHover ? 'cursor-pointer' : storyUrl(story) ? 'cursor-pointer no-underline' : 'cursor-default',
                                 ]"
                                 :aria-label="isDesktopHover && storyUrl(story) ? `Open ${story.title}` : `Preview ${story.title}`"
@@ -183,7 +181,7 @@ function ctaLabel(story: NewStory): string {
                                     <!-- Cover: always same height -->
                                     <div class="ns-card__cover">
                                         <img
-                                            :src="activeCover(story)"
+                                            :src="story.cover"
                                             :alt="story.title"
                                             class="ns-card__cover-img"
                                         />
@@ -192,35 +190,9 @@ function ctaLabel(story: NewStory): string {
                                     <!-- Meta row: always visible -->
                                     <div class="ns-card__meta">
                                         <p class="ns-card__title">{{ story.title }}</p>
-                                        <p
-                                            v-if="!isDesktopHover || !isExpanded(story.id)"
-                                            class="ns-card__subtitle"
-                                        >
+                                        <p class="ns-card__subtitle">
                                             {{ story.category }} | {{ story.rating }} | {{ story.playable ? 'Published' : 'Coming soon' }}
                                         </p>
-                                    </div>
-
-                                    <!-- Details: slides in via grid trick -->
-                                    <div
-                                        v-if="isDesktopHover"
-                                        class="ns-card__details"
-                                        :class="{ 'ns-card__details--open': isExpanded(story.id) }"
-                                        aria-hidden="true"
-                                    >
-                                        <div class="ns-card__details-inner">
-                                            <p class="ns-card__themes">{{ themesLine(story) }}</p>
-                                            <p class="ns-card__teaser">{{ story.teaser }}</p>
-                                            <p v-if="story.branches" class="ns-card__branches">
-                                                {{ story.branches }} Branches explored
-                                            </p>
-                                            <!-- CTA inside details so it appears with the content -->
-                                            <div
-                                                class="ns-card__cta"
-                                                :class="story.playable ? 'ns-card__cta--active' : 'ns-card__cta--disabled'"
-                                            >
-                                                {{ ctaLabel(story) }}
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </component>
@@ -231,7 +203,7 @@ function ctaLabel(story: NewStory): string {
                         type="button"
                         class="slider-arrow slider-arrow-banner absolute -right-4 z-10 hidden items-center justify-center md:flex"
                         aria-label="Scroll right"
-                        @click="scrollSlider(460)"
+                        @click="scrollSlider(1)"
                     >
                         <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
@@ -289,8 +261,8 @@ function ctaLabel(story: NewStory): string {
     background: #262626;
     padding: 0.25rem;
     transition:
-        border-color 0.22s ease,
-        box-shadow 0.22s ease;
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 /* Cover: fixed height, never resizes */
@@ -316,7 +288,6 @@ function ctaLabel(story: NewStory): string {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
 }
 
 /* Meta */
@@ -344,88 +315,14 @@ function ctaLabel(story: NewStory): string {
     color: #8f8f8f;
 }
 
-/* Details reveal: grid trick */
-.ns-card__details {
-    display: grid;
-    grid-template-rows: 0fr;
-    opacity: 0;
-    transition:
-        grid-template-rows 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.22s ease;
-}
-
-.ns-card__details--open {
-    grid-template-rows: 1fr;
-    opacity: 1;
-}
-
-.ns-card__details-inner {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0 1px 0.375rem;
-}
-
-.ns-card__themes {
-    font-size: 0.8125rem;
-    line-height: 1.4;
-    color: rgba(111, 175, 186, 0.9);
-}
-
-.ns-card__teaser {
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: #8f8f8f;
-}
-
-.ns-card__branches {
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: #ffbe58;
-}
-
-.ns-card__cta {
-    display: flex;
-    height: 2.25rem;
-    width: 100%;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.375rem;
-    font-size: 1rem;
-    font-weight: 500;
-    margin-top: 0.125rem;
-}
-
-.ns-card__cta--active {
-    background: var(--color-cta-fill, #6fafba);
-    color: var(--color-cta-text, #000);
-}
-
-.ns-card__cta--disabled {
-    border: 1px solid #4d4d4d;
-    background: #3f3f3f;
-    color: #8e8e8e;
-}
-
-/* ── Desktop expanded ────────────────────────────────────────────────────── */
+/* ── Desktop focused hover ───────────────────────────────────────────────── */
 @media (min-width: 1024px) {
-    .ns-card--expanded .ns-card__inner {
+    .ns-card--focused .ns-card__inner {
         border-color: rgba(111, 175, 186, 0.55);
         box-shadow:
-            0 16px 48px rgba(0, 0, 0, 0.6),
-            0 0 36px rgba(111, 175, 186, 0.3);
-    }
-
-    .ns-card--expanded .ns-card__cover-img {
-        transform: scale(1.03);
-    }
-
-    .ns-card--expanded .ns-card__title {
-        white-space: normal;
-        overflow: visible;
-        text-overflow: clip;
+            0 20px 44px rgba(0, 0, 0, 0.58),
+            0 0 36px rgba(111, 175, 186, 0.32),
+            0 0 12px rgba(111, 175, 186, 0.22);
     }
 }
 </style>
