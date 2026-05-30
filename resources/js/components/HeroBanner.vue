@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import HeroBranchChain from '@/components/HeroBranchChain.vue';
-import FallbackBannerImage from '@/assets/banner.jpg';
+import BannerImage from '@/assets/banner.jpg';
 import BaseButton from '@/components/BaseButton.vue';
 import { StoryInterface } from '@/types';
 import { show } from '@/wayfinder/routes/stories';
@@ -11,9 +11,6 @@ const props = defineProps<{
 }>();
 
 const storyUrl = computed(() => show(props.story.slug).url);
-
-/** DB media URLs; bundled asset when missing (e.g. other DB without Spatie media / files). */
-const heroBackgroundSrc = computed(() => props.story.banner || props.story.cover || FallbackBannerImage);
 
 /** Figma stat uses dot thousands separator (e.g. 1.267). */
 const branchingCount = computed(() => {
@@ -44,12 +41,12 @@ const heroTeaserLines = computed((): [string, string] | null => {
 
 <template>
     <section class="hero-banner relative overflow-hidden bg-black">
-        <!-- Background: story banner or cover, else same fallback as HeroFallback -->
+        <!-- Background: static asset only (resources/js/assets/banner.jpg); ignores DB banner/cover -->
         <div class="absolute inset-0 overflow-hidden">
             <img
-                :src="heroBackgroundSrc"
+                :src="BannerImage"
                 alt=""
-                class="absolute left-0 top-[-17.43%] h-[128.34%] w-full max-w-none object-cover"
+                class="absolute left-0 top-[-17.43%] h-[128.34%] w-full max-w-none object-cover object-[60%_center]"
             />
         </div>
 
