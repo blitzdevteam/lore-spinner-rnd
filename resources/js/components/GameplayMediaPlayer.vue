@@ -24,11 +24,11 @@ const onVolumeInput = (event: Event) => {
     <Transition name="player-slide">
         <div
             v-if="tts.isActive.value && !props.collapsed"
-            class="bg-glass-effect pointer-events-auto relative flex items-center gap-2 overflow-hidden rounded-full border border-gray-700/60 bg-gray-900/75! px-2 py-2 shadow-2xl backdrop-blur-xl! sm:gap-3 sm:px-3"
+            class="player-bar pointer-events-auto relative flex items-center gap-2 overflow-hidden rounded-full px-2 py-2 backdrop-blur-md sm:gap-2.5 sm:px-2.5"
         >
             <!-- Play / Pause -->
             <button
-                class="grid size-9 shrink-0 place-items-center rounded-full bg-white/5 text-primary transition-transform hover:scale-105 active:scale-95"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-[#00c6de] transition-transform hover:scale-105 active:scale-95"
                 @click="tts.togglePause"
             >
                 <LucidePause v-if="tts.isPlaying.value" class="size-4" fill="currentColor" />
@@ -36,7 +36,7 @@ const onVolumeInput = (event: Event) => {
             </button>
 
             <!-- Time -->
-            <span class="min-w-12 text-sm font-medium tabular-nums text-primary">
+            <span class="min-w-12 text-base font-medium tabular-nums text-[#00c6de]">
                 {{ tts.formattedCurrentTime.value }}
             </span>
 
@@ -59,12 +59,12 @@ const onVolumeInput = (event: Event) => {
                 />
             </div>
 
-            <span class="hidden h-6 w-px bg-gray-700/60 sm:block" />
+            <span class="hidden h-6 w-px bg-white/15 sm:block" />
 
             <!-- Loop -->
             <button
-                class="grid size-7 shrink-0 place-items-center rounded-full transition-colors hover:text-white"
-                :class="tts.isLooping.value ? 'text-primary' : 'text-gray-300'"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
+                :class="tts.isLooping.value ? 'text-[#00c6de]' : 'text-gray-300'"
                 @click="tts.toggleLoop"
             >
                 <LucideRepeat class="size-4" />
@@ -72,7 +72,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip back 15s -->
             <button
-                class="relative grid size-7 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-white"
+                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-transform hover:scale-105 active:scale-95"
                 @click="tts.seekBy(-15)"
             >
                 <LucideRotateCcw class="size-5" :stroke-width="1.5" />
@@ -81,7 +81,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip forward 15s -->
             <button
-                class="relative grid size-7 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-white"
+                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-transform hover:scale-105 active:scale-95"
                 @click="tts.seekBy(15)"
             >
                 <LucideRotateCw class="size-5" :stroke-width="1.5" />
@@ -90,7 +90,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Close -->
             <button
-                class="grid size-7 shrink-0 place-items-center rounded-full text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-white"
                 @click="tts.dismiss"
             >
                 <LucideX class="size-4" />
@@ -105,10 +105,21 @@ const onVolumeInput = (event: Event) => {
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.player-bar {
+    background-color: #373737;
+    box-shadow:
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
+        inset -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.55),
+        inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.4),
+        inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.4),
+        inset 0 0 1px 1px rgba(153, 153, 153, 0.2),
+        0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
 .player-slide-enter-from,
 .player-slide-leave-to {
     opacity: 0;
-    transform: translateY(-0.75rem) scale(0.95);
+    transform: translateY(-12px) scale(0.95);
 }
 
 .media-range {
@@ -124,7 +135,7 @@ const onVolumeInput = (event: Event) => {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: var(--color-primary);
+    background: #00c6de;
     cursor: pointer;
 }
 
@@ -133,7 +144,7 @@ const onVolumeInput = (event: Event) => {
     height: 12px;
     border: none;
     border-radius: 50%;
-    background: var(--color-primary);
+    background: #00c6de;
     cursor: pointer;
 }
 </style>

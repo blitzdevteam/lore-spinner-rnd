@@ -349,7 +349,7 @@ onMounted(() => {
                 </div>
                 <div v-if="char.log.length" class="mt-3 flex flex-col gap-2.5 border-t border-gray-700/40 pt-3">
                     <div v-for="(entry, i) in char.log" :key="i" class="flex flex-col gap-1">
-                        <p v-if="char.log.length > 1" class="text-[0.625rem] font-semibold uppercase tracking-wide text-gray-600">{{ entry.event }}</p>
+                        <p v-if="char.log.length > 1" class="text-[10px] font-semibold uppercase tracking-wide text-gray-600">{{ entry.event }}</p>
                         <ul class="flex flex-col gap-0.5">
                             <li v-for="(fact, j) in entry.facts" :key="j" class="text-xs leading-relaxed text-gray-400">
                                 · {{ fact }}

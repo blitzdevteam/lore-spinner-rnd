@@ -65,17 +65,17 @@ const showChoicesAndActions = computed(() => {
 });
 
 const getChoiceClass = (choice: string) => {
-    const base = 'flex items-center gap-3 rounded-lg border px-3 py-3.5 transition-all duration-300';
+    const base = 'flex h-[60px] items-center gap-2.5 rounded-lg border px-2 py-1 transition-all duration-300';
 
     if (!effectiveSelection.value) {
-        return `${base} border-gray-700 text-white cursor-pointer hover:border-primary-400 hover:bg-primary-400/5`;
+        return `${base} border-[#373737] text-white cursor-pointer hover:border-[#00c6de] hover:bg-[#00c6de]/5`;
     }
 
     if (effectiveSelection.value === choice) {
-        return `${base} border-primary-400 bg-primary-400/10 text-white pointer-events-none`;
+        return `${base} border-[#00c6de] bg-[#00c6de]/10 text-white pointer-events-none`;
     }
 
-    return `${base} border-gray-700/40 text-gray-400 opacity-50 pointer-events-none`;
+    return `${base} border-[#373737]/40 text-gray-400 opacity-50 pointer-events-none`;
 };
 
 const handleChoiceClick = (choice: string) => {
@@ -150,17 +150,17 @@ watch(
         <!-- ── Listen Again button ── -->
         <div v-if="prompt.response && showChoicesAndActions" class="flex">
             <button
-                class="bg-glass-effect flex items-center gap-2.5 overflow-hidden rounded-full p-1.5 pe-5 transition-transform hover:scale-[1.02] active:scale-95"
+                class="bg-glass-effect flex h-[50px] items-center gap-2 overflow-hidden rounded-full p-1.5 pe-5 transition-transform hover:scale-[1.02] active:scale-95"
                 @click="handleListenAgain"
             >
-                <span class="bg-primary-glass-effect grid size-9 shrink-0 place-items-center rounded-full">
-                    <LucideLoader v-if="isThisLoading" class="size-4 animate-spin text-white" />
-                    <LucidePause v-else-if="isThisPlaying" class="size-4 text-white" fill="currentColor" />
-                    <LucidePlay v-else class="size-4 text-white" fill="currentColor" />
+                <span class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-[#00c6de]">
+                    <LucideLoader v-if="isThisLoading" class="size-4 animate-spin" />
+                    <LucidePause v-else-if="isThisPlaying" class="size-4" fill="currentColor" />
+                    <LucidePlay v-else class="size-4" fill="currentColor" />
                 </span>
                 <span class="flex flex-col items-start leading-tight">
                     <span class="text-sm text-[#00c6de]">Listen Again</span>
-                    <span class="text-xs font-light text-gray-300">Replay Narration</span>
+                    <span class="text-xs font-light text-[#7e7e7e]">Replay Narration</span>
                 </span>
             </button>
         </div>
@@ -182,13 +182,13 @@ watch(
                 >
                     <span
                         v-if="effectiveSelection === choice"
-                        class="grid size-7 shrink-0 place-items-center rounded-full border-2 border-primary bg-primary/20 text-primary"
+                        class="grid size-7 shrink-0 place-items-center rounded-full border-2 border-[#00c6de] bg-[#00c6de]/20 text-[#00c6de]"
                     >
                         <LucideCheck class="size-4" />
                     </span>
                     <span
                         v-else
-                        class="size-7 shrink-0 rounded-full border-2 border-gray-600"
+                        class="size-7 shrink-0 rounded-full border border-gray-500"
                     />
                     <p class="text-[15px] font-normal">{{ choice }}</p>
                 </div>

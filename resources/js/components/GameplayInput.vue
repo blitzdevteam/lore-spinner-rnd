@@ -53,11 +53,11 @@ const handleMicToggle = async () => {
     >
         <!-- Gradient border pill -->
         <div
-            class="flex h-[70px] items-center rounded-full p-px"
-            style="background: linear-gradient(90deg, rgba(0, 198, 222, 0.55) 0%, rgba(26, 26, 26, 0.25) 100%)"
+            class="flex h-[70px] items-center rounded-[39px] border border-[#373737] p-2.5"
+            style="background: linear-gradient(90deg, rgba(0, 198, 222, 0.45) 0%, rgba(13, 112, 124, 0.45) 10.577%, rgba(26, 26, 26, 0.2) 21.154%)"
         >
             <!-- Inner dark field -->
-            <div class="flex h-full flex-1 items-center gap-3 rounded-full bg-[#1c1c1c] px-5">
+            <div class="flex h-full flex-1 items-center gap-3 rounded-[35px] border border-[#373737] bg-[#1c1c1c] px-4">
                 <!-- Recording pulse indicator -->
                 <span v-if="stt.isRecording.value" class="inline-block size-2 shrink-0 animate-pulse rounded-full bg-red-500" />
 
