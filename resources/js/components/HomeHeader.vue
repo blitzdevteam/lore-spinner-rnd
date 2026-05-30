@@ -1,20 +1,36 @@
 <script setup lang="ts">
 import mainLogo from '@/assets/logo/main-logo.png';
 import HomeHeaderMenu from '@/components/HomeHeaderMenu.vue';
+import HomeHeaderMobileMenu from '@/components/HomeHeaderMobileMenu.vue';
 import HomeHeaderProfile from '@/components/HomeHeaderProfile.vue';
 import { index } from '@/wayfinder/routes';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import { Menu } from 'lucide-vue-next';
+import { computed, onUnmounted, ref, watch } from 'vue';
+
+const page = usePage();
+const auth = computed(() => page.props.auth);
+
+const mobileMenuOpen = ref(false);
+
+watch(mobileMenuOpen, (open) => {
+    document.body.style.overflow = open ? 'hidden' : '';
+});
+
+onUnmounted(() => {
+    document.body.style.overflow = '';
+});
 </script>
 
 <template>
-    <header class="home-header-bar relative z-20">
-        <div class="relative container py-3 md:py-4">
+    <header class="home-header-bar relative z-20 flex min-h-[72px] items-center overflow-visible md:min-h-[91px]">
+        <div class="relative container w-full overflow-visible py-0">
             <div
-                class="container-content grid min-h-[7.5rem] grid-cols-[auto_1fr_auto] items-center gap-x-6 gap-y-3 md:min-h-[7.75rem] md:gap-x-12 md:gap-y-0 lg:gap-x-16"
+                class="container-content grid h-[64px] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 overflow-visible md:h-[75px] md:grid-cols-[auto_1fr_auto] md:gap-x-[50px]"
             >
                 <Link
                     :href="index().url"
-                    class="logo-link shrink-0 justify-self-start pr-1 ring-offset-2 ring-offset-black outline-none focus-visible:ring-2 focus-visible:ring-primary md:pr-0"
+                    class="logo-link min-w-0 shrink justify-self-start pr-1 ring-offset-2 ring-offset-black outline-none focus-visible:ring-2 focus-visible:ring-primary md:shrink-0 md:pr-0"
                 >
                     <img
                         :src="mainLogo"
@@ -30,30 +46,51 @@ import { Link } from '@inertiajs/vue3';
                     <HomeHeaderMenu />
                 </div>
 
-                <div class="flex shrink-0 items-center justify-end justify-self-end">
-                    <HomeHeaderProfile />
+                <div class="flex shrink-0 items-center justify-end gap-2 justify-self-end md:gap-3">
+                    <HomeHeaderProfile class="hidden md:block" />
+
+                    <button
+                        type="button"
+                        class="mobile-menu-trigger grid size-11 place-items-center rounded-full border border-white/15 text-white transition-colors hover:border-primary/60 hover:bg-white/5 md:hidden"
+                        :aria-expanded="mobileMenuOpen"
+                        aria-controls="home-mobile-menu"
+                        aria-label="Open menu"
+                        @click="mobileMenuOpen = true"
+                    >
+                        <Menu class="size-5" :stroke-width="2" />
+                    </button>
+
+                    <HomeHeaderProfile v-if="auth !== null" compact class="md:hidden" />
                 </div>
             </div>
         </div>
+
+        <HomeHeaderMobileMenu id="home-mobile-menu" v-model:visible="mobileMenuOpen" />
     </header>
 </template>
 
 <style scoped>
 .home-header-bar {
-    background:rgba(0, 0, 0);
+    background: rgba(0, 0, 0);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
 }
 
-/* Figma: logo frame 229.5×45.098 — scaled ~25% for PNG legibility */
 .brand-logo {
     display: block;
     width: auto;
-    max-width: min(100%, 280px);
-    height: 56px;
+    max-width: min(100%, 168px);
+    height: 40px;
     object-fit: contain;
     object-position: left center;
+}
+
+@media (min-width: 768px) {
+    .brand-logo {
+        max-width: min(100%, 280px);
+        height: 56px;
+    }
 }
 
 .logo-link {

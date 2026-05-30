@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { index } from '@/wayfinder/routes';
-import { index as storiesIndex } from '@/wayfinder/routes/stories';
-import { Link, usePage } from '@inertiajs/vue3';
+import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
+import { Link } from '@inertiajs/vue3';
 import { onClickOutside } from '@vueuse/core';
 import { ChevronDown } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
-const page = usePage();
 const moodsWrap = ref<HTMLElement | null>(null);
 const moodsOpen = ref(false);
 
@@ -14,35 +12,17 @@ onClickOutside(moodsWrap, () => {
     moodsOpen.value = false;
 });
 
-const pageUrl = computed(() => page.url);
-
-const activeMood = computed(() => {
-    const query = pageUrl.value.split('?')[1] ?? '';
-    return new URLSearchParams(query).get('mood');
-});
-
-const isHomeActive = computed(() => {
-    const p = pageUrl.value.split('?')[0];
-    return p === '/' || p === '';
-});
-
-const isLibraryActive = computed(() => {
-    const u = pageUrl.value;
-    const p = u.split('?')[0];
-    return p === storiesIndex().url && !u.includes('ref=bookmarks') && !activeMood.value;
-});
-
-const isBookmarksActive = computed(() => pageUrl.value.includes('ref=bookmarks'));
-
-const isMoodsActive = computed(() => activeMood.value !== null);
-
-const moodLinks: { title: string; slug: string; href: string }[] = [
-    { title: 'Heartfelt', slug: 'heartfelt', href: `${storiesIndex().url}?mood=heartfelt` },
-    { title: 'Adventurous', slug: 'adventurous', href: `${storiesIndex().url}?mood=adventurous` },
-    { title: 'Mysterious', slug: 'mysterious', href: `${storiesIndex().url}?mood=mysterious` },
-    { title: 'Epic', slug: 'epic', href: `${storiesIndex().url}?mood=epic` },
-    { title: 'Whimsical', slug: 'whimsical', href: `${storiesIndex().url}?mood=whimsical` },
-];
+const {
+    activeMood,
+    isHomeActive,
+    isLibraryActive,
+    isBookmarksActive,
+    isMoodsActive,
+    moodLinks,
+    homeHref,
+    libraryHref,
+    bookmarksHref,
+} = useHomeHeaderNav();
 
 /* Same box for every item: inactive uses invisible bar so labels never shift when active */
 const underlineSlotClass = (active: boolean): string =>
@@ -73,7 +53,7 @@ const moodItemClass = (slug: string): string =>
     <nav aria-label="Primary">
         <ul class="flex h-[75px] items-center gap-1 md:gap-0">
             <li>
-                <Link :href="index().url" :class="navItemShell">
+                <Link :href="homeHref" :class="navItemShell">
                     <span :class="navStack">
                         <span :class="navClass(isHomeActive)">Home</span>
                         <span :class="underlineSlotClass(isHomeActive)" aria-hidden="true" />
@@ -128,7 +108,7 @@ const moodItemClass = (slug: string): string =>
             </li>
 
             <li>
-                <Link :href="storiesIndex().url" :class="navItemShell">
+                <Link :href="libraryHref" :class="navItemShell">
                     <span :class="navStack">
                         <span :class="navClass(isLibraryActive)">Library</span>
                         <span :class="underlineSlotClass(isLibraryActive)" aria-hidden="true" />
@@ -137,7 +117,7 @@ const moodItemClass = (slug: string): string =>
             </li>
 
             <li>
-                <Link :href="`${storiesIndex().url}?ref=bookmarks`" :class="navItemShell">
+                <Link :href="bookmarksHref" :class="navItemShell">
                     <span :class="navStack">
                         <span :class="navClass(isBookmarksActive)">Bookmarks</span>
                         <span :class="underlineSlotClass(isBookmarksActive)" aria-hidden="true" />

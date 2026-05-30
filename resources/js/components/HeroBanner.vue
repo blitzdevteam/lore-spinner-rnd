@@ -268,7 +268,7 @@ function goNext() {
                                 severity="transparent"
                                 type="internal-link"
                                 :href="activeSlide.storyUrl"
-                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[48px] w-full items-center justify-center whitespace-nowrap px-6 py-3 text-[15px] font-medium !leading-none text-white sm:min-h-[53px] sm:max-w-[284px] sm:px-8 sm:text-[16px]"
+                                class="begin-btn font-[Inter] !box-border !inline-flex !h-auto !min-h-[48px] !w-auto max-w-full items-center justify-center self-start whitespace-nowrap px-6 py-3 text-[15px] font-medium !leading-none text-white sm:min-h-[53px] sm:max-w-[284px] sm:px-8 sm:text-[16px]"
                             >
                                 Begin Your Journey
                             </BaseButton>
@@ -313,18 +313,10 @@ function goNext() {
 }
 
 .hero-slide-gradient {
+    display: none;
     pointer-events: none;
     position: absolute;
     inset: 0;
-    /* LoreSpinner Desktop Hero Readability Gradient — left-to-right cinematic fade */
-    background: linear-gradient(
-        90deg,
-        rgba(0, 0, 0, 0.86) 0%,
-        rgba(0, 0, 0, 0.7) 16%,
-        rgba(0, 0, 0, 0.42) 30%,
-        rgba(0, 0, 0, 0.16) 40%,
-        rgba(0, 0, 0, 0) 46%
-    );
 }
 
 .hero-copy-wrap {
@@ -499,20 +491,35 @@ function goNext() {
 }
 
 @media (max-width: 767px) {
-    /* Nudge CTA onto the slide so backdrop-filter shows the image */
     .hero-copy-wrap {
-        margin-top: -2.5rem;
-        background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.65) 1.5rem, #000 3.5rem);
+        background: #000;
+    }
+
+    .hero-copy {
+        gap: 1.5rem;
     }
 
     .begin-btn {
-        position: relative;
-        z-index: 11;
-        margin-top: -2.75rem;
+        width: auto;
+        max-width: min(100%, 284px);
+        align-self: flex-start;
     }
 }
 
 @media (min-width: 768px) {
+    .hero-slide-gradient {
+        display: block;
+        /* LoreSpinner Desktop Hero Readability Gradient — left-to-right cinematic fade */
+        background: linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.86) 0%,
+            rgba(0, 0, 0, 0.7) 16%,
+            rgba(0, 0, 0, 0.42) 30%,
+            rgba(0, 0, 0, 0.16) 40%,
+            rgba(0, 0, 0, 0) 46%
+        );
+    }
+
     .hero-banner {
         position: relative;
         display: block;

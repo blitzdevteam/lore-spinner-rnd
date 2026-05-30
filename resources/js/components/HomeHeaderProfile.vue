@@ -7,6 +7,15 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronRight, LucideUpload, PenLine, X } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
+withDefaults(
+    defineProps<{
+        compact?: boolean;
+    }>(),
+    {
+        compact: false,
+    },
+);
+
 const page = usePage();
 
 const auth = computed(() => page.props.auth);
@@ -31,7 +40,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideCl
     <template v-if="auth === null">
         <Link
             :href="login.create().url"
-            class="flex h-10 items-center justify-center rounded-full border border-primary/70 bg-transparent px-4 text-sm font-medium text-[#c8ced1] transition-colors hover:border-primary hover:text-white"
+            class="flex h-10 items-center justify-center rounded-full border border-primary/70 bg-transparent px-4 text-sm font-medium whitespace-nowrap text-[#c8ced1] transition-colors hover:border-primary hover:text-white"
         >
             Login/Sign Up
         </Link>
@@ -143,7 +152,10 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideCl
             <img
                 :src="auth.avatar"
                 alt=""
-                class="size-[45px] cursor-pointer rounded-full border-2 border-primary outline-2 outline-transparent transition hover:brightness-110"
+                :class="[
+                    'cursor-pointer rounded-full border-2 border-primary outline-2 outline-transparent transition hover:brightness-110',
+                    compact ? 'size-11' : 'size-[45px]',
+                ]"
             />
         </button>
     </template>
