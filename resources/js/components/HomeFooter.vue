@@ -71,13 +71,13 @@ const headingClass =
                 class="container-content pt-[56px] pb-[64px] sm:pt-[64px] sm:pb-[72px] lg:pt-[74px] lg:pb-[93px]"
             >
                 <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
-                    <div class="w-full max-w-[448px] shrink-0">
+                    <div class="w-full max-w-[445px] shrink-0">
                         <img
                             :src="mainLogo"
                             alt="LoreSpinner"
-                            class="block h-[44px] w-auto max-w-[min(100%,229.5px)] object-contain object-left md:h-12 lg:h-[52.5px] lg:max-w-[229.5px]"
-                            width="300"
-                            height="45"
+                            class="block h-[56px] w-auto max-w-[min(100%,260px)] object-contain object-left md:h-[64px] md:max-w-[min(100%,297px)] lg:h-[72px] lg:max-w-[317px]"
+                            width="800"
+                            height="180"
                             decoding="async"
                         />
                         <p
