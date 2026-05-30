@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import cover1 from '@/assets/commingSoon/Coming soon 1- 2x.jpg';
 import cover2 from '@/assets/commingSoon/Coming soon 2 - 2x.png';
-import cover3 from '@/assets/commingSoon/Coming soon 3 - 2x.png';
-import cover4 from '@/assets/commingSoon/Coming soon 4 - 2x.png';
+import cover3 from '@/assets/commingSoon/Coming soon 3 - 2x.jpg';
+import cover4 from '@/assets/commingSoon/Coming soon 4 - 2x.jpg';
 import cover5 from '@/assets/commingSoon/Coming soon 5 - 2x.png';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';

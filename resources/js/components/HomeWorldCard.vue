@@ -10,10 +10,13 @@ const props = withDefaults(
         story: StoryInterface;
         showTitle?: boolean;
         showButton?: boolean;
+        /** When true (e.g. another card is hovered), match Featured Worlds row dimming */
+        dimmed?: boolean;
     }>(),
     {
         showTitle: true,
         showButton: true,
+        dimmed: false,
     },
 );
 
@@ -23,15 +26,18 @@ const storyUrl = computed(() => show(props.story.slug).url);
 
 <template>
     <!-- Figma featured card: outer flex-col gap-[8px]; cover+title group gap-[4px] -->
-    <div class="world-card flex flex-col gap-[8px] rounded-[8px] border border-[#373737] bg-[#262626] p-[6px]">
+    <div
+        class="world-card flex flex-col gap-[8px] rounded-[8px] border border-[#373737] bg-[#1c1c1c] p-[6px] transition-opacity duration-200"
+        :class="dimmed ? 'opacity-[0.3]' : 'opacity-100'"
+    >
         <div class="flex flex-col gap-1">
         <!-- Cover image -->
         <component
             :is="isPublished ? Link : 'div'"
             :href="isPublished ? storyUrl : undefined"
-            class="block"
+            class="block outline-none"
         >
-            <div class="relative h-[287.438px] w-[192px] overflow-hidden rounded-[5px]">
+            <div class="relative h-[287.438px] w-[192px] overflow-hidden rounded-[5px] border border-white/5">
                 <img
                     v-if="story.cover"
                     :src="story.cover"
