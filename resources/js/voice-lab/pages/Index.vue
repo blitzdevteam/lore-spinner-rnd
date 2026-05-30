@@ -120,18 +120,18 @@ const handleClearHistory = async () => {
  * XEN experience — Tiffany Blue identity.
  *
  * The full primary-* spectrum is defined globally in resources/css/app.css
- * (Pantone 1837 #0ABAB5 as 500 anchor), so every primary-* Tailwind class
+ * (design Tiffany #00C6DE as 500 anchor), so every primary-* Tailwind class
  * already resolves to tiffany across the whole app.
  *
  * This class pins convenience aliases used by the gradient effects below.
  * Shervin: fine-tune only these tokens to shift the XEN-specific look.
  */
 .xen-tint {
-    --xen-bright: var(--color-primary-300);   /* #5dede0 — highlight */
-    --xen-mid:    var(--color-primary-500);   /* #0abab5 — Pantone 1837 */
-    --xen-deep:   var(--color-primary-600);   /* #089490 — depth */
-    --xen-text:   var(--color-primary-200);   /* #8beee8 — light text */
-    --xen-dark:   var(--color-primary-950);   /* #042e2c — deep bg */
+    --xen-bright: var(--color-primary-300);   /* #5fdbf0 — highlight */
+    --xen-mid:    var(--color-primary-500);   /* #00c6de — Tiffany main */
+    --xen-deep:   var(--color-primary-600);   /* #009eb5 — depth */
+    --xen-text:   var(--color-primary-200);   /* #9fecf7 — light text */
+    --xen-dark:   var(--color-primary-950);   /* #083947 — deep bg */
 }
 
 /* ─── BRAND TITLE ───────────────────────────────────────────────────────── */

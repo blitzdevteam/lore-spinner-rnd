@@ -11,9 +11,30 @@ const props = defineProps<{
 
 const storyUrl = computed(() => show(props.story.slug).url);
 
+/** Figma stat uses dot thousands separator (e.g. 1.267). */
 const branchingCount = computed(() => {
     const n = props.story.chapters_count ?? 0;
-    return (n * 47 + 312).toLocaleString();
+    return new Intl.NumberFormat('de-DE').format(n * 47 + 312);
+});
+
+/** Title lines: ALICE'S ADVENTURES / IN WONDERLAND — break before “In …”. */
+const heroTitleLines = computed((): [string, string] | null => {
+    const t = props.story.title.trim();
+    const m = t.match(/^(.+?)\s+in\s+(.+)$/i);
+    if (!m) return null;
+    return [m[1].trim(), `In ${m[2].trim()}`];
+});
+
+/** Teaser lines per design: after “…bends and” / “curiosity…”. */
+const heroTeaserLines = computed((): [string, string] | null => {
+    const s = props.story.teaser.trim();
+    const needle = ' bends and ';
+    const i = s.indexOf(needle);
+    if (i === -1) return null;
+    const first = (s.slice(0, i) + ' bends and').trimEnd();
+    const second = s.slice(i + needle.length).trim();
+    if (!second) return null;
+    return [first, second];
 });
 </script>
 
@@ -52,21 +73,28 @@ const branchingCount = computed(() => {
                 <!-- gap-[24px] title block ↔ CTA; title block gap-[15px]; meta gap-[10px] -->
                 <div class="flex flex-col gap-[15px]">
                     <h1 class="hero-title max-w-[492px] font-marcellus-sc uppercase text-white">
-                        {{ story.title }}
+                        <template v-if="heroTitleLines">
+                            {{ heroTitleLines[0] }}<br />
+                            {{ heroTitleLines[1] }}
+                        </template>
+                        <template v-else>{{ story.title }}</template>
                     </h1>
 
                     <div class="font-[Inter] flex flex-col gap-[10px] text-white">
                         <p class="max-w-[411px] text-[18px] leading-[26px] text-white">
-                            {{ story.teaser }}
+                            <template v-if="heroTeaserLines">
+                                {{ heroTeaserLines[0] }}<br />
+                                {{ heroTeaserLines[1] }}
+                            </template>
+                            <template v-else>{{ story.teaser }}</template>
                         </p>
-                        <div class="flex flex-col gap-0 leading-[26px]">
-                            <p v-if="story.creator" class="text-[14px] text-white">
-                                Written by:
-                                <span class="font-normal text-[#00c6de]">{{ story.creator.full_name }}</span>
+                        <div class="flex flex-col gap-0">
+                            <p v-if="story.creator" class="text-[14px] leading-[26px] text-white">
+                                Written by: <span class="font-normal leading-[26px] text-[#00c6de]">{{ story.creator.full_name }}</span>
                             </p>
-                            <p class="text-[14px] text-white">
-                                <span class="text-[#00c6de]">{{ branchingCount }}</span>
-                                <span class="text-white"> Branching paths explored</span>
+                            <p class="text-[14px] leading-[26px] text-white">
+                                <span class="leading-[26px] text-[#00c6de]">{{ branchingCount }}</span>
+                                <span class="leading-[26px] text-white"> Branching paths explored</span>
                             </p>
                         </div>
                     </div>
@@ -77,7 +105,7 @@ const branchingCount = computed(() => {
                         severity="primary"
                         type="internal-link"
                         :href="storyUrl"
-                        class="begin-btn font-[Inter] h-[53px] min-w-[284px] px-8 text-base font-medium"
+                        class="begin-btn font-[Inter] !h-[53px] w-full max-w-[284px] px-8 text-[16px] font-medium leading-normal text-black"
                     >
                         Begin Your Journey
                     </BaseButton>

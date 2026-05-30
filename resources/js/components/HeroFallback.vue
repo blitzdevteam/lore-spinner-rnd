@@ -28,18 +28,25 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
             <div class="container">
                 <div class="flex max-w-[90%] flex-col gap-[24px] sm:max-w-xl md:max-w-[556px]">
                     <div class="flex flex-col gap-[15px]">
-                        <h1 class="hero-title font-marcellus-sc uppercase text-white">
-                            Stories That Live<br />Through You
+                        <h1 class="hero-title max-w-[492px] font-marcellus-sc uppercase text-white">
+                            Alice's Adventures<br />
+                            In Wonderland
                         </h1>
 
-                        <div class="flex flex-col gap-[10px] text-white">
-                            <p class="max-w-[411px] text-[18px] leading-[26px] text-white/90 md:max-w-[556px]">
-                                Step into worlds where your choices shape the story. Read, choose, or write your own path
-                                through endlessly branching narratives.
+                        <div class="font-[Inter] flex flex-col gap-[10px] text-white">
+                            <p class="max-w-[411px] text-[18px] leading-[26px] text-white md:max-w-[411px]">
+                                Step into a world where logic bends and<br />
+                                curiosity leads the way. Nothing is as it seems.
                             </p>
-                            <p class="text-[14px] text-primary font-medium leading-[26px]">
-                                Thousands of branching paths to explore
-                            </p>
+                            <div class="flex flex-col gap-0">
+                                <p class="text-[14px] leading-[26px] text-white">
+                                    Written by: <span class="font-normal leading-[26px] text-[#00c6de]">Lewis Carroll</span>
+                                </p>
+                                <p class="text-[14px] leading-[26px] text-white">
+                                    <span class="leading-[26px] text-[#00c6de]">1.267</span>
+                                    <span class="leading-[26px] text-white"> Branching paths explored</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -48,7 +55,7 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
                             severity="primary"
                             type="internal-link"
                             :href="storiesIndex().url"
-                            class="begin-btn h-[53px] min-w-[284px] px-8 text-base font-medium"
+                            class="begin-btn font-[Inter] !h-[53px] w-full max-w-[284px] px-8 text-[16px] font-medium leading-normal text-black"
                         >
                             Begin Your Journey
                         </BaseButton>
@@ -77,7 +84,7 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 .hero-title {
     font-size: clamp(1.875rem, 4vw, 48px);
     line-height: 1.08;
-    text-shadow: 0 0 21px black;
+    text-shadow: 0 0 21.2px black;
 }
 
 @media (min-width: 768px) {
@@ -89,5 +96,10 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 
 .begin-btn {
     border-radius: 12px;
+    box-shadow:
+        0 4px 80px rgba(0, 0, 0, 0.2),
+        inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.22),
+        inset -0.2px -0.5px 0.15px 0.5px rgba(255, 255, 255, 0.05);
+    filter: drop-shadow(0 0 5.65px rgba(0, 198, 222, 0.03)) drop-shadow(0 0 8.4px rgba(0, 198, 222, 0.7));
 }
 </style>

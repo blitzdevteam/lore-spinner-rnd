@@ -68,18 +68,18 @@ const emit = defineEmits<{
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    filter: drop-shadow(0 0 18px color-mix(in srgb, var(--color-primary-500, #0abab5) 35%, transparent));
+    filter: drop-shadow(0 0 18px color-mix(in srgb, var(--color-primary-500, #00c6de) 35%, transparent));
 }
 
 /* Back button — tiffany ring on hover */
 .xen-back-btn {
-    color: var(--color-primary-300, #5dede0) !important;
-    border-color: color-mix(in srgb, var(--color-primary-500, #0abab5) 25%, transparent) !important;
+    color: var(--color-primary-300, #5fdbf0) !important;
+    border-color: color-mix(in srgb, var(--color-primary-500, #00c6de) 25%, transparent) !important;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 .xen-back-btn:hover {
     border-color: color-mix(in srgb, var(--color-primary-400, #2bd9d0) 55%, transparent) !important;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary-500, #0abab5) 20%, transparent),
-                0 0 12px color-mix(in srgb, var(--color-primary-500, #0abab5) 15%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary-500, #00c6de) 20%, transparent),
+                0 0 12px color-mix(in srgb, var(--color-primary-500, #00c6de) 15%, transparent);
 }
 </style>

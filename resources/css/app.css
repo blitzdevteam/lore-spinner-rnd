@@ -10,19 +10,19 @@
     --container-gap: max(0px, calc((100vw - var(--container)) / 2));
     --color-background: #000000;
 
-    /* Tiffany Blue — Pantone 1837 (#0ABAB5) as 500 anchor */
-    --color-primary-50:  #edfcfb;
-    --color-primary-100: #c4f5f2;
-    --color-primary-200: #8beee8;
-    --color-primary-300: #5dede0;
-    --color-primary-400: #2bd9d0;
-    --color-primary-500: #0abab5;
-    --color-primary-600: #089490;
-    --color-primary-700: #0c7270;
-    --color-primary-800: #0c5c59;
-    --color-primary-900: #0b4846;
-    --color-primary-950: #042e2c;
-    --color-primary: #0abab5;
+    /* Tiffany Blue — design primary (#00C6DE) as 500 anchor */
+    --color-primary-50:  #ecfbfd;
+    --color-primary-100: #cff6fb;
+    --color-primary-200: #9fecf7;
+    --color-primary-300: #5fdbf0;
+    --color-primary-400: #23cae8;
+    --color-primary-500: #00c6de;
+    --color-primary-600: #009eb5;
+    --color-primary-700: #008096;
+    --color-primary-800: #086979;
+    --color-primary-900: #0c5765;
+    --color-primary-950: #083947;
+    --color-primary: #00c6de;
 
     --color-secondary-50: #fff8eb;
     --color-secondary-100: #ffebc6;
