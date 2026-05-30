@@ -6,10 +6,9 @@ import animaCover from '@/assets/featured/anima.jpg';
 import jekyllCover from '@/assets/featured/jekyll.png';
 import nocturneCover from '@/assets/featured/nocturne.png';
 import wizardOzCover from '@/assets/featured/wizardoz.jpg';
-import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
-import { Link } from '@inertiajs/vue3';
+import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 defineProps<{
     storyCount: number;
@@ -75,81 +74,11 @@ const games: FeaturedGame[] = [
     },
 ];
 
-// ── Slider scroll ─────────────────────────────────────────────────────────────
 const sliderEl = ref<HTMLElement | null>(null);
 const scrollSlider = (delta: number) => sliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
 
 const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
 
-// ── Hover / popup state ───────────────────────────────────────────────────────
-const hoveredId = ref<string | null>(null);
-const popupPos = ref<{ left: number; top: number } | null>(null);
-
-// The relative div wrapping the slider — popup is absolute inside it.
-const sliderWrapperEl = ref<HTMLElement | null>(null);
-
-// Per-card element refs collected in a plain object (not reactive, DOM-only)
-const cardEls: Record<string, HTMLElement | null> = {};
-
-// Prevent flicker when cursor moves from card → popup extension area
-let _onCard = false;
-let _onPopup = false;
-let _hideTimer: ReturnType<typeof setTimeout> | null = null;
-
-function scheduleHide() {
-    if (_hideTimer) clearTimeout(_hideTimer);
-    _hideTimer = setTimeout(() => {
-        if (!_onCard && !_onPopup) {
-            hoveredId.value = null;
-            popupPos.value = null;
-        }
-    }, 120);
-}
-
-function onCardEnter(game: FeaturedGame) {
-    _onCard = true;
-    if (_hideTimer) clearTimeout(_hideTimer);
-
-    hoveredId.value = game.id;
-
-    const cardEl = cardEls[game.id];
-    const wrapper = sliderWrapperEl.value;
-    if (!cardEl || !wrapper) return;
-
-    const cr = cardEl.getBoundingClientRect();
-    const wr = wrapper.getBoundingClientRect();
-    popupPos.value = { left: cr.left - wr.left, top: cr.top - wr.top };
-}
-
-function onCardLeave() {
-    _onCard = false;
-    scheduleHide();
-}
-
-function onPopupEnter() {
-    _onPopup = true;
-    if (_hideTimer) clearTimeout(_hideTimer);
-}
-
-function onPopupLeave() {
-    _onPopup = false;
-    scheduleHide();
-}
-
-// Clamp popup so it never bleeds past the right edge of the wrapper
-const popupStyle = computed(() => {
-    if (!popupPos.value) return {};
-    const POPUP_W = 282; // 262 inner + 10*2 padding
-    const WRAPPER_W = 1018; // `.container-content` max width / Figma content frame
-    let left = popupPos.value.left;
-    if (left + POPUP_W > WRAPPER_W) left = WRAPPER_W - POPUP_W;
-    if (left < 0) left = 0;
-    return { left: `${left}px`, top: `${popupPos.value.top}px` };
-});
-
-const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?? null);
-
-// ── Mobile bottom sheet ───────────────────────────────────────────────────────
 const sheetStory = ref<StorySheetData | null>(null);
 
 function toSheetData(game: FeaturedGame): StorySheetData {
@@ -165,11 +94,12 @@ function toSheetData(game: FeaturedGame): StorySheetData {
     };
 }
 
-function onCardClick(e: MouseEvent, game: FeaturedGame) {
-    if (!window.matchMedia('(hover: hover)').matches) {
-        e.stopPropagation();
-        sheetStory.value = toSheetData(game);
-    }
+function openSheet(game: FeaturedGame) {
+    sheetStory.value = toSheetData(game);
+}
+
+function ctaLabel(game: FeaturedGame): string {
+    return game.playable ? 'Play' : 'Coming soon';
 }
 </script>
 
@@ -185,9 +115,7 @@ function onCardClick(e: MouseEvent, game: FeaturedGame) {
                     :count="storyCount"
                 />
 
-                <!-- Slider wrapper — popup is absolute inside here, safe from overflow-clip -->
-                <div ref="sliderWrapperEl" class="relative">
-                    <!-- Edge fades over the rails (below nav arrows); pointer-events-none so scroll/drag still works -->
+                <div class="relative">
                     <div
                         class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
                         :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
@@ -199,7 +127,6 @@ function onCardClick(e: MouseEvent, game: FeaturedGame) {
                         aria-hidden="true"
                     />
 
-                    <!-- Left arrow — half on the card row, half past the content edge -->
                     <button
                         type="button"
                         class="slider-arrow absolute top-1/2 left-0 z-10 hidden -translate-x-1/2 -translate-y-1/2 items-center justify-center md:flex"
@@ -211,65 +138,49 @@ function onCardClick(e: MouseEvent, game: FeaturedGame) {
                         </svg>
                     </button>
 
-                    <!-- Scrollable card row (flush with section copy / explainer above — no extra indent) -->
                     <div
                         ref="sliderEl"
                         class="story-slider flex gap-[0.625rem] overflow-x-auto pb-2"
                     >
-                        <div
+                        <button
                             v-for="game in games"
                             :key="game.id"
-                            :ref="(el) => { if (el) cardEls[game.id] = el as HTMLElement; }"
-                            class="shrink-0"
-                            @mouseenter="onCardEnter(game)"
-                            @mouseleave="onCardLeave"
-                            @click.capture="onCardClick($event, game)"
+                            type="button"
+                            class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-left outline-none transition-transform duration-200 active:scale-[0.98]"
+                            :aria-label="`Preview ${game.title}`"
+                            @click="openSheet(game)"
                         >
                             <div
-                                class="featured-game-card relative flex flex-col gap-2 rounded-[0.5rem] border border-[#373737] bg-[#262626] p-[0.375rem] transition-opacity duration-200"
-                                :class="hoveredId && hoveredId !== game.id ? 'opacity-[0.3]' : 'opacity-100'"
+                                class="featured-game-card relative flex flex-col gap-2 rounded-[0.5rem] border border-[#373737] bg-[#262626] p-[0.375rem] transition-[border-color,opacity] duration-200 hover:border-primary/40"
                             >
-                                <!-- Cover -->
-                                <component
-                                    :is="game.playable ? Link : 'div'"
-                                    :href="game.playable && game.slug ? storyShow(game.slug).url : undefined"
-                                    class="block outline-none"
-                                >
-                                    <div class="relative h-[17.9649rem] w-[12rem] overflow-hidden rounded-[0.3125rem] border border-white/5">
-                                        <img
-                                            :src="game.cover"
-                                            :alt="game.title"
-                                            class="absolute inset-0 size-full max-w-none object-cover"
-                                        />
-                                    </div>
-                                </component>
+                                <div class="relative h-[17.9649rem] w-[12rem] overflow-hidden rounded-[0.3125rem] border border-white/5">
+                                    <img
+                                        :src="game.cover"
+                                        :alt="game.title"
+                                        class="absolute inset-0 size-full max-w-none object-cover"
+                                    />
+                                </div>
 
-                                <!-- Title -->
                                 <div class="flex h-5 items-center px-px">
                                     <p class="w-[12rem] truncate text-base font-semibold leading-normal text-white">
                                         {{ game.title }}
                                     </p>
                                 </div>
 
-                                <!-- Button -->
-                                <template v-if="game.playable && game.slug">
-                                    <Link
-                                        :href="storyShow(game.slug).url"
-                                        class="flex h-9 w-[12rem] items-center justify-center rounded-[0.375rem] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
-                                    >
-                                        Play
-                                    </Link>
-                                </template>
-                                <template v-else>
-                                    <div class="flex h-9 w-[12rem] items-center justify-center rounded-[0.375rem] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">
-                                        Coming soon
-                                    </div>
-                                </template>
+                                <div
+                                    class="flex h-9 w-[12rem] items-center justify-center rounded-[0.375rem] text-lg font-medium"
+                                    :class="
+                                        game.playable
+                                            ? 'bg-cta-fill text-cta-text'
+                                            : 'border border-[#4d4d4d] bg-[#3f3f3f] text-[#8e8e8e]'
+                                    "
+                                >
+                                    {{ ctaLabel(game) }}
+                                </div>
                             </div>
-                        </div>
+                        </button>
                     </div>
 
-                    <!-- Right arrow — half on the card row, half past the content edge -->
                     <button
                         type="button"
                         class="slider-arrow absolute top-1/2 right-0 z-10 hidden translate-x-1/2 -translate-y-1/2 items-center justify-center md:flex"
@@ -280,65 +191,6 @@ function onCardClick(e: MouseEvent, game: FeaturedGame) {
                             <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
-
-                    <!-- ── Expanded hover popup ────────────────────────────────── -->
-                    <Transition name="card-popup">
-                        <div
-                            v-if="hoveredId && hoveredGame && popupPos"
-                            class="absolute z-30 flex w-[17.625rem] flex-col gap-[0.625rem] rounded-[0.5rem] border border-primary bg-[#262626] p-[0.625rem] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
-                            :style="popupStyle"
-                            @mouseenter="onPopupEnter"
-                            @mouseleave="onPopupLeave"
-                        >
-                            <!-- Larger cover -->
-                            <div class="relative h-[14.9375rem] w-full overflow-hidden rounded-[0.375rem]">
-                                <img
-                                    :src="hoveredGame.cover"
-                                    :alt="hoveredGame.title"
-                                    class="absolute inset-0 size-full max-w-none object-cover"
-                                />
-                            </div>
-
-                            <!-- Info block -->
-                            <div class="flex flex-col gap-[0.5rem]">
-                                <!-- Title + themes -->
-                                <div class="flex flex-col gap-[0.25rem]">
-                                    <p class="text-[1.25rem] font-medium leading-normal text-white">
-                                        {{ hoveredGame.title }}
-                                    </p>
-                                    <p class="text-[0.875rem] leading-normal text-white">
-                                        {{ hoveredGame.themes.join(' | ') }}
-                                    </p>
-                                </div>
-
-                                <!-- Teaser -->
-                                <p class="line-clamp-3 text-[0.875rem] leading-[1.5] text-[#8f8f8f]">
-                                    {{ hoveredGame.teaser }}
-                                </p>
-
-                                <!-- Branches explored (playable only) -->
-                                <p v-if="hoveredGame.branches" class="text-[0.875rem] text-[#ffbe58]">
-                                    {{ hoveredGame.branches }} Branches explored
-                                </p>
-                            </div>
-
-                            <!-- CTA button -->
-                            <template v-if="hoveredGame.playable && hoveredGame.slug">
-                                <Link
-                                    :href="storyShow(hoveredGame.slug).url"
-                                    class="flex h-9 w-full items-center justify-center rounded-[0.375rem] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
-                                >
-                                    Play
-                                </Link>
-                            </template>
-                            <template v-else>
-                                <div class="flex h-9 w-full items-center justify-center rounded-[0.375rem] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">
-                                    Coming soon
-                                </div>
-                            </template>
-                        </div>
-                    </Transition>
-
                 </div>
             </div>
         </div>
@@ -368,18 +220,5 @@ function onCardClick(e: MouseEvent, game: FeaturedGame) {
 }
 .slider-arrow:hover {
     background: rgba(255, 255, 255, 0.15);
-}
-
-/* Popup fade-in / fade-out */
-.card-popup-enter-active {
-    transition: opacity 0.18s ease, transform 0.18s ease;
-}
-.card-popup-leave-active {
-    transition: opacity 0.14s ease, transform 0.14s ease;
-}
-.card-popup-enter-from,
-.card-popup-leave-to {
-    opacity: 0;
-    transform: translateY(0.375rem) scale(0.97);
 }
 </style>

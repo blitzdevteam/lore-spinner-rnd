@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { show as storyShow } from '@/wayfinder/routes/stories';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { X } from 'lucide-vue-next';
 import { onUnmounted, ref, watch } from 'vue';
 
@@ -27,6 +27,16 @@ const emit = defineEmits<{ close: [] }>();
 function close() {
     emit('close');
 }
+
+const page = usePage();
+
+// Close if the route changes while open (prevents ghost overlays after navigation).
+watch(
+    () => page.url,
+    () => {
+        if (props.story) close();
+    },
+);
 
 // ── Body scroll lock & keyboard ───────────────────────────────────────────────
 watch(

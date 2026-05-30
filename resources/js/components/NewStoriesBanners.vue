@@ -6,10 +6,9 @@ import banner2 from '@/assets/newStories/New stories 2 - 2x .jpg';
 import banner3 from '@/assets/newStories/New stories 3 - 2x.jpg';
 import banner1Hover from '@/assets/newStories/s1-hover.jpg';
 import banner2Hover from '@/assets/newStories/s2-hover.jpg';
-import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
-import { Link } from '@inertiajs/vue3';
+import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 defineProps<{
     storyCount: number;
@@ -19,7 +18,6 @@ interface NewStory {
     id: string;
     title: string;
     cover: string;
-    /** Optional alternate cover shown while the row card (or popup) is hovered */
     coverHover?: string;
     category: string;
     rating: string;
@@ -68,80 +66,11 @@ const stories: NewStory[] = [
     },
 ];
 
-// ── Slider scroll ─────────────────────────────────────────────────────────────
 const sliderEl = ref<HTMLElement | null>(null);
 const scrollSlider = (delta: number) => sliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
 
 const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
 
-// ── Hover / popup state ───────────────────────────────────────────────────────
-const hoveredId = ref<string | null>(null);
-const popupPos = ref<{ left: number; top: number } | null>(null);
-
-const sliderWrapperEl = ref<HTMLElement | null>(null);
-const cardEls: Record<string, HTMLElement | null> = {};
-
-let _onCard = false;
-let _onPopup = false;
-let _hideTimer: ReturnType<typeof setTimeout> | null = null;
-
-function scheduleHide() {
-    if (_hideTimer) clearTimeout(_hideTimer);
-    _hideTimer = setTimeout(() => {
-        if (!_onCard && !_onPopup) {
-            hoveredId.value = null;
-            popupPos.value = null;
-        }
-    }, 120);
-}
-
-function onCardEnter(story: NewStory) {
-    _onCard = true;
-    if (_hideTimer) clearTimeout(_hideTimer);
-    hoveredId.value = story.id;
-
-    const cardEl = cardEls[story.id];
-    const wrapper = sliderWrapperEl.value;
-    if (!cardEl || !wrapper) return;
-
-    const cr = cardEl.getBoundingClientRect();
-    const wr = wrapper.getBoundingClientRect();
-    popupPos.value = { left: cr.left - wr.left, top: cr.top - wr.top };
-}
-
-function onCardLeave() {
-    _onCard = false;
-    scheduleHide();
-}
-
-function onPopupEnter() {
-    _onPopup = true;
-    if (_hideTimer) clearTimeout(_hideTimer);
-}
-
-function onPopupLeave() {
-    _onPopup = false;
-    scheduleHide();
-}
-
-// Clamp so popup never bleeds past the right edge of the 1018px wrapper
-const popupStyle = computed(() => {
-    if (!popupPos.value) return {};
-    const POPUP_W = 502;
-    const WRAPPER_W = 1018; // `.container-content` max width / Figma content frame
-    let left = popupPos.value.left;
-    if (left + POPUP_W > WRAPPER_W) left = WRAPPER_W - POPUP_W;
-    if (left < 0) left = 0;
-    return { left: `${left}px`, top: `${popupPos.value.top}px` };
-});
-
-const hoveredStory = computed(() => stories.find((s) => s.id === hoveredId.value) ?? null);
-
-function coverForPopup(story: NewStory): string {
-    return story.coverHover ?? story.cover;
-}
-
-// ── Mobile bottom sheet ───────────────────────────────────────────────────────
 const sheetStory = ref<StorySheetData | null>(null);
 
 function toSheetData(story: NewStory): StorySheetData {
@@ -159,11 +88,8 @@ function toSheetData(story: NewStory): StorySheetData {
     };
 }
 
-function onCardClick(e: MouseEvent, story: NewStory) {
-    if (!window.matchMedia('(hover: hover)').matches) {
-        e.stopPropagation();
-        sheetStory.value = toSheetData(story);
-    }
+function openSheet(story: NewStory) {
+    sheetStory.value = toSheetData(story);
 }
 </script>
 
@@ -179,8 +105,7 @@ function onCardClick(e: MouseEvent, story: NewStory) {
                     :count="storyCount"
                 />
 
-                <!-- Slider wrapper (popup is absolute inside here) -->
-                <div ref="sliderWrapperEl" class="relative">
+                <div class="relative">
                     <div
                         class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
                         :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
@@ -192,7 +117,6 @@ function onCardClick(e: MouseEvent, story: NewStory) {
                         aria-hidden="true"
                     />
 
-                    <!-- Left arrow -->
                     <button
                         type="button"
                         class="slider-arrow slider-arrow-banner absolute -left-4 z-10 hidden items-center justify-center md:flex"
@@ -204,48 +128,29 @@ function onCardClick(e: MouseEvent, story: NewStory) {
                         </svg>
                     </button>
 
-                    <!-- Scrollable card row -->
                     <div
                         ref="sliderEl"
                         class="story-slider flex gap-[0.625rem] overflow-x-auto pb-2 md:ml-[1.0625rem]"
                     >
-                        <div
+                        <button
                             v-for="story in stories"
                             :key="story.id"
-                            :ref="(el) => { if (el) cardEls[story.id] = el as HTMLElement; }"
-                            class="new-banner-card shrink-0"
-                            @mouseenter="onCardEnter(story)"
-                            @mouseleave="onCardLeave"
-                            @click.capture="onCardClick($event, story)"
+                            type="button"
+                            class="new-banner-card shrink-0 cursor-pointer border-0 bg-transparent p-0 text-left outline-none transition-transform duration-200 active:scale-[0.98]"
+                            :aria-label="`Preview ${story.title}`"
+                            @click="openSheet(story)"
                         >
                             <div class="new-banner-card__inner flex w-[min(28.125rem,78vw)] flex-col gap-[0.625rem] md:w-[28.125rem]">
-                                <!-- Banner image -->
-                                <div class="rounded-[0.5rem] border border-[#373737] bg-[#262626] p-1">
+                                <div class="rounded-[0.5rem] border border-[#373737] bg-[#262626] p-1 transition-colors duration-200 hover:border-primary/40">
                                     <div class="relative aspect-[450/262] w-full overflow-hidden rounded-[0.5rem] md:h-[16.375rem] md:aspect-auto">
                                         <img
                                             :src="story.cover"
                                             :alt="story.title"
-                                            class="absolute inset-0 h-full w-full object-cover transition-all duration-300 ease-out"
-                                            :class="[
-                                                hoveredId === story.id ? 'scale-[1.03]' : 'scale-100',
-                                                story.coverHover && hoveredId === story.id ? 'opacity-0' : 'opacity-100',
-                                            ]"
-                                        />
-                                        <img
-                                            v-if="story.coverHover"
-                                            :src="story.coverHover"
-                                            :alt="`${story.title} (alternate)`"
-                                            class="absolute inset-0 h-full w-full object-cover transition-all duration-300 ease-out"
-                                            :class="[
-                                                hoveredId === story.id ? 'scale-[1.03]' : 'scale-100',
-                                                hoveredId === story.id ? 'opacity-100' : 'opacity-0',
-                                            ]"
-                                            aria-hidden="true"
+                                            class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
                                         />
                                     </div>
                                 </div>
 
-                                <!-- Title + meta tags -->
                                 <div class="flex w-full flex-col gap-[3px] px-px md:w-[26.875rem]">
                                     <p class="text-[1.125rem] font-semibold leading-normal text-white">
                                         {{ story.title }}
@@ -255,10 +160,9 @@ function onCardClick(e: MouseEvent, story: NewStory) {
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </button>
                     </div>
 
-                    <!-- Right arrow -->
                     <button
                         type="button"
                         class="slider-arrow slider-arrow-banner absolute -right-4 z-10 hidden items-center justify-center md:flex"
@@ -269,67 +173,6 @@ function onCardClick(e: MouseEvent, story: NewStory) {
                             <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
-
-                    <!-- ── Expanded hover popup (horizontal: image left + content right) -->
-                    <Transition name="story-popup">
-                        <div
-                            v-if="hoveredId && hoveredStory && popupPos"
-                            class="absolute z-30 flex w-[31.375rem] flex-row rounded-[0.5rem] border border-primary bg-[#262626] px-[0.75rem] py-[0.375rem] shadow-[0_0_18.3px_rgba(111,175,186,0.4)]"
-                            :style="popupStyle"
-                            @mouseenter="onPopupEnter"
-                            @mouseleave="onPopupLeave"
-                        >
-                            <!-- Left: portrait cover (248×298) -->
-                            <div class="h-[18.625rem] w-[15.5rem] shrink-0 overflow-hidden rounded-[0.3125rem]">
-                                <img
-                                    :src="coverForPopup(hoveredStory)"
-                                    :alt="hoveredStory.title"
-                                    class="h-full w-full object-cover"
-                                />
-                            </div>
-
-                            <!-- Right: content panel (217px) -->
-                            <div class="ml-[0.8125rem] flex w-[13.5625rem] flex-col gap-[0.625rem] py-[0.25rem]">
-                                <!-- Title + themes -->
-                                <div class="flex flex-col gap-[0.25rem]">
-                                    <p class="text-[1.25rem] font-medium leading-normal text-white">
-                                        {{ hoveredStory.title }}
-                                    </p>
-                                    <p class="text-[0.875rem] leading-normal text-white">
-                                        {{ hoveredStory.themes.join(' | ') }}
-                                    </p>
-                                </div>
-
-                                <!-- Teaser -->
-                                <p class="line-clamp-4 text-[0.875rem] leading-[1.55] text-[#8f8f8f]">
-                                    {{ hoveredStory.teaser }}
-                                </p>
-
-                                <!-- Branches explored -->
-                                <p v-if="hoveredStory.branches" class="text-[0.875rem] text-[#ffbe58]">
-                                    {{ hoveredStory.branches }} Branches explored
-                                </p>
-
-                                <!-- CTA button pushed to bottom -->
-                                <div class="mt-auto">
-                                    <template v-if="hoveredStory.playable && hoveredStory.slug">
-                                        <Link
-                                            :href="storyShow(hoveredStory.slug).url"
-                                            class="flex h-9 w-full items-center justify-center rounded-[0.375rem] bg-cta-fill text-[1.125rem] font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
-                                        >
-                                            Play
-                                        </Link>
-                                    </template>
-                                    <template v-else>
-                                        <div class="flex h-9 items-center justify-center rounded-[0.375rem] border border-[#4d4d4d] bg-[#3f3f3f] text-[1.125rem] font-medium text-[#8e8e8e]">
-                                            Coming soon
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </Transition>
-
                 </div>
             </div>
         </div>
@@ -357,25 +200,11 @@ function onCardClick(e: MouseEvent, story: NewStory) {
     border: 1px solid rgba(255, 255, 255, 0.15);
     transition: background 0.2s;
 }
-/* Vertically centered on banner posters only — matches `.p-1` wrapper + inner `h-[16.375rem]` */
 .slider-arrow-banner {
-    top: calc((16.375rem + 0.5rem + 2px) / 2); /* inner image + vertical padding + 1px border top/bottom */
+    top: calc((16.375rem + 0.5rem + 2px) / 2);
     transform: translateY(-50%);
 }
 .slider-arrow:hover {
     background: rgba(255, 255, 255, 0.15);
-}
-
-/* Popup transition */
-.story-popup-enter-active {
-    transition: opacity 0.18s ease, transform 0.18s ease;
-}
-.story-popup-leave-active {
-    transition: opacity 0.14s ease, transform 0.14s ease;
-}
-.story-popup-enter-from,
-.story-popup-leave-to {
-    opacity: 0;
-    transform: translateY(0.5rem) scale(0.98);
 }
 </style>
