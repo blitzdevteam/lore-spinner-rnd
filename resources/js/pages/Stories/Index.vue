@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import libraryBannerImage from '@/assets/banner-stories.jpg';
 import HomeWorldCard from '@/components/HomeWorldCard.vue';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
@@ -149,7 +150,23 @@ function branchesForStory(story: StoryInterface): string | null {
     <HomeLayout>
         <div class="pb-14 pt-8 md:pb-[60px] md:pt-10">
             <div class="container">
-                <div class="mb-6 flex flex-col gap-4 sm:mb-[18px] sm:flex-row sm:items-start sm:justify-between">
+                <!-- Desktop: shrink-wrap to tile row width. Mobile: full padded width. -->
+                <div class="mx-auto flex w-full max-w-full flex-col items-stretch sm:w-fit">
+                    <!-- Figma banner height ~370px, rounded-[8px] -->
+                    <div class="mb-10 shrink-0 overflow-hidden rounded-[8px] md:mb-[60px]">
+                        <div class="relative aspect-[1010/370] w-full md:aspect-auto md:h-[370px]">
+                            <img
+                                :src="libraryBannerImage"
+                                alt=""
+                                class="pointer-events-none absolute inset-0 size-full object-cover object-center select-none"
+                                width="1018"
+                                height="370"
+                                decoding="async"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="mb-6 flex flex-col gap-4 sm:mb-[18px] sm:flex-row sm:items-start sm:justify-between">
                     <h1 class="font-[Inter] text-[22px] font-bold uppercase leading-[33px] text-white sm:text-[26px]">
                         My Stories ( {{ libraryStories.length }} )
                     </h1>
@@ -250,6 +267,7 @@ function branchesForStory(story: StoryInterface): string | null {
                             </template>
                         </div>
                     </Transition>
+                </div>
                 </div>
             </div>
         </div>
