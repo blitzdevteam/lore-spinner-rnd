@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import mainLogo from '@/assets/logo/main-logo.png';
+import mainLogo from '@/assets/logo/main-logo.svg';
 import { index } from '@/wayfinder/routes';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { index as dashboardIndex } from '@/wayfinder/routes/user/dashboard';
@@ -86,8 +86,8 @@ const headingClass =
                             :src="mainLogo"
                             alt="LoreSpinner"
                             class="block h-[44px] w-auto max-w-[min(100%,229.5px)] object-contain object-left md:h-12 lg:h-[52.5px] lg:max-w-[229.5px]"
-                            width="512"
-                            height="144"
+                            width="300"
+                            height="45"
                             decoding="async"
                         />
                         <p

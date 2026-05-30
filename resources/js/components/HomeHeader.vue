@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import mainLogo from '@/assets/logo/main-logo.png';
+import mainLogo from '@/assets/logo/main-logo.svg';
 import HomeHeaderMenu from '@/components/HomeHeaderMenu.vue';
 import HomeHeaderProfile from '@/components/HomeHeaderProfile.vue';
 import { index } from '@/wayfinder/routes';
@@ -21,8 +21,8 @@ import { Link } from '@inertiajs/vue3';
                         :src="mainLogo"
                         alt="LoreSpinner"
                         class="brand-logo select-none"
-                        width="530"
-                        height="300"
+                        width="45"
+                        height="45"
                         decoding="async"
                     />
                 </Link>
