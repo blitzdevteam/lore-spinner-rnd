@@ -186,10 +186,7 @@ function coverForPopup(story: NewStory): string {
                             @mouseenter="onCardEnter(story)"
                             @mouseleave="onCardLeave"
                         >
-                            <div
-                                class="flex w-[450px] flex-col gap-[10px] transition-opacity duration-200"
-                                :class="hoveredId && hoveredId !== story.id ? 'opacity-[0.3]' : 'opacity-100'"
-                            >
+                            <div class="flex w-[450px] flex-col gap-[10px]">
                                 <!-- Banner image -->
                                 <div class="rounded-[8px] border border-[#373737] bg-[#262626] p-1">
                                     <div class="relative h-[262px] w-full overflow-hidden rounded-[8px]">
@@ -213,8 +210,6 @@ function coverForPopup(story: NewStory): string {
                                             ]"
                                             aria-hidden="true"
                                         />
-                                        <!-- Left-edge gradient fade (matches existing style) -->
-                                        <div class="absolute inset-y-0 left-0 z-[1] w-20 bg-gradient-to-r from-[#262626] to-transparent" />
                                     </div>
                                 </div>
 
