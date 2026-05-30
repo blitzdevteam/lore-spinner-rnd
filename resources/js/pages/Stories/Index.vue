@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import libraryBannerImage from '@/assets/banner-stories.jpg';
 import HomeWorldCard from '@/components/HomeWorldCard.vue';
+import MoodHeroBanner from '@/components/MoodHeroBanner.vue';
+import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
+import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moodBanners';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import HomeLayout from '@/layouts/HomeLayout.vue';
 import { StoryInterface } from '@/types';
@@ -25,12 +27,33 @@ const props = withDefaults(
     },
 );
 
+const { activeMood } = useHomeHeaderNav();
+
+const normalizedMood = computed(() => normalizeMood(activeMood.value));
+
+const moodHero = computed(() => getMoodBannerConfig(activeMood.value));
+
+const pageTitle = computed(() => (normalizedMood.value ? moodHero.value.title : 'Library'));
+
 /** API stories plus featured mock worlds; mocks skipped when the same slug already exists from the server. */
-const libraryStories = computed((): StoryInterface[] => {
+const allLibraryStories = computed((): StoryInterface[] => {
     const real = props.stories ?? [];
     const realSlugs = new Set(real.map((s) => s.slug));
     const extra = MOCK_LIBRARY_STORIES.filter((m) => !realSlugs.has(m.slug));
     return [...real, ...extra];
+});
+
+const libraryStories = computed((): StoryInterface[] => {
+    const mood = normalizedMood.value;
+    if (!mood) return allLibraryStories.value;
+    return allLibraryStories.value.filter((story) => storyMatchesMood(story.slug, mood));
+});
+
+const listHeading = computed(() => {
+    if (normalizedMood.value) {
+        return `${moodHero.value.label} Stories`;
+    }
+    return 'My Stories';
 });
 
 const sortMode = ref<SortMode>('recent');
@@ -149,21 +172,10 @@ function branchesForStory(story: StoryInterface): string | null {
 </script>
 
 <template>
-    <Head title="Library" />
+    <Head :title="pageTitle" />
 
     <HomeLayout>
-        <section class="library-hero relative z-10 w-full shrink-0 overflow-hidden" aria-hidden="true">
-            <img
-                :src="libraryBannerImage"
-                alt=""
-                class="library-hero__image pointer-events-none absolute inset-0 size-full object-cover object-center select-none"
-                width="1920"
-                height="640"
-                decoding="async"
-                fetchpriority="high"
-            />
-            <div class="library-hero__gradient" aria-hidden="true" />
-        </section>
+        <MoodHeroBanner :mood="activeMood" />
 
         <!-- Rail widened to 1035px so five 195px cards fit per row (+ 4×15px gaps). -->
         <!-- z-10: stack above footer (later sibling); hover root must not clip overflow-x (see inner scroll div). -->
@@ -175,7 +187,7 @@ function branchesForStory(story: StoryInterface): string | null {
                             <h1
                                 class="font-[Inter] text-[1.375rem] font-bold uppercase leading-[2.0625rem] text-white sm:h-10 sm:text-[1.625rem] sm:leading-[2.0625rem]"
                             >
-                                My Stories ( {{ libraryStories.length }} )
+                                {{ listHeading }} ( {{ libraryStories.length }} )
                             </h1>
                             <button
                                 type="button"
@@ -282,26 +294,6 @@ function branchesForStory(story: StoryInterface): string | null {
 </template>
 
 <style scoped>
-.library-hero {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 21 / 9;
-    min-height: 11.25rem;
-    max-height: min(42vh, 28rem);
-    background: #000;
-}
-
-.library-hero__image {
-    display: block;
-}
-
-.library-hero__gradient {
-    pointer-events: none;
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, transparent 55%, rgba(0, 0, 0, 0.65) 100%);
-}
-
 /* Exactly 5 columns × 12.1875rem + 0.9375rem gutters = 64.6875rem per row */
 .library-story-grid {
     display: grid;
