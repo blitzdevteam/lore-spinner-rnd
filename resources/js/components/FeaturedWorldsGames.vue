@@ -211,11 +211,13 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                     <!-- Left arrow — half on the card row, half past the content edge -->
                     <button
                         type="button"
-                        class="slider-arrow absolute top-1/2 left-0 z-10 hidden -translate-x-1/2 -translate-y-1/2 md:flex"
+                        class="slider-arrow absolute top-1/2 left-0 z-10 hidden -translate-x-1/2 -translate-y-1/2 items-center justify-center md:flex"
                         aria-label="Scroll left"
                         @click="scrollSlider(-214)"
                     >
-                        <span class="slider-arrow-icon rotate-180">&#8250;</span>
+                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
+                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </button>
 
                     <!-- Scrollable card row (flush with section copy / explainer above — no extra indent) -->
@@ -278,11 +280,13 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                     <!-- Right arrow — half on the card row, half past the content edge -->
                     <button
                         type="button"
-                        class="slider-arrow absolute top-1/2 right-0 z-10 hidden translate-x-1/2 -translate-y-1/2 md:flex"
+                        class="slider-arrow absolute top-1/2 right-0 z-10 hidden translate-x-1/2 -translate-y-1/2 items-center justify-center md:flex"
                         aria-label="Scroll right"
                         @click="scrollSlider(214)"
                     >
-                        <span class="slider-arrow-icon">&#8250;</span>
+                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </button>
 
                     <!-- ── Expanded hover popup ────────────────────────────────── -->
@@ -370,11 +374,6 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
 }
 .slider-arrow:hover {
     background: rgba(255, 255, 255, 0.15);
-}
-.slider-arrow-icon {
-    font-size: 22px;
-    line-height: 1;
-    color: white;
 }
 
 /* Popup fade-in / fade-out */

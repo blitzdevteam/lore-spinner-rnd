@@ -213,7 +213,9 @@ function goNext() {
                 aria-label="Previous slide"
                 @click="goPrev"
             >
-                <span class="hero-arrow-icon rotate-180">&#8250;</span>
+                <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
+                    <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
             </button>
 
             <button
@@ -222,7 +224,9 @@ function goNext() {
                 aria-label="Next slide"
                 @click="goNext"
             >
-                <span class="hero-arrow-icon">&#8250;</span>
+                <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
             </button>
         </div>
 
@@ -421,11 +425,6 @@ function goNext() {
     border-color: rgba(255, 255, 255, 0.28);
 }
 
-.hero-arrow-icon {
-    font-size: 20px;
-    line-height: 1;
-    color: white;
-}
 
 .hero-copy-enter-active,
 .hero-copy-leave-active {
@@ -594,9 +593,6 @@ function goNext() {
         right: 1rem;
     }
 
-    .hero-arrow-icon {
-        font-size: 22px;
-    }
 }
 
 @media (min-width: 1024px) {

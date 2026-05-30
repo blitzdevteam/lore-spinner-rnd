@@ -182,11 +182,13 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 
                     <button
                         type="button"
-                        class="slider-arrow absolute -left-4 top-1/2 z-10 hidden -translate-y-1/2 md:flex"
+                        class="slider-arrow absolute -left-4 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center md:flex"
                         aria-label="Scroll left"
                         @click="scrollSlider(-214)"
                     >
-                        <span class="slider-arrow-icon rotate-180">&#8250;</span>
+                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
+                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </button>
 
                     <div
@@ -219,11 +221,13 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 
                     <button
                         type="button"
-                        class="slider-arrow absolute -right-4 top-1/2 z-10 hidden -translate-y-1/2 md:flex"
+                        class="slider-arrow absolute -right-4 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center md:flex"
                         aria-label="Scroll right"
                         @click="scrollSlider(214)"
                     >
-                        <span class="slider-arrow-icon">&#8250;</span>
+                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </button>
 
                     <Transition name="coming-soon-popup">
@@ -280,11 +284,6 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 }
 .slider-arrow:hover {
     background: rgba(255, 255, 255, 0.15);
-}
-.slider-arrow-icon {
-    font-size: 22px;
-    line-height: 1;
-    color: white;
 }
 
 .coming-soon-popup-enter-active {
