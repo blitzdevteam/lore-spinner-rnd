@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BannerImage from '@/assets/banner.jpg';
+import BannerImage from '@/assets/aaaaa.jpg';
 // import HeroBranchChain from '@/components/HeroBranchChain.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
@@ -8,21 +8,26 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 <template>
     <section class="hero-banner relative overflow-hidden bg-black">
         <!-- Background image -->
-        <div class="absolute inset-0">
+        <div class="pointer-events-none absolute inset-0 overflow-hidden">
             <img
                 :src="BannerImage"
                 alt="LoreSpinner"
-                class="h-full w-full object-cover object-[60%_center]"
+                class="absolute inset-0 h-full w-full max-w-none object-cover object-[right_top]"
             />
         </div>
 
-        <!-- Complex gradient overlays matching Figma -->
+        <!-- Gradient overlays — Figma node 7053:293 -->
         <div
-            class="absolute inset-0"
-            style="background: linear-gradient(259deg, rgba(0,0,0,0.2) 16.5%, rgba(102,102,102,0) 29.3%), linear-gradient(180deg, rgb(0,0,0) 5.4%, rgba(0,0,0,0) 47.3%, rgb(0,0,0) 100%), linear-gradient(270deg, rgba(0,0,0,0) 56.9%, rgb(0,0,0) 70%)"
+            class="pointer-events-none absolute inset-0"
+            style="
+                background:
+                    linear-gradient(265.166deg, rgb(0, 0, 0) 4.3442%, rgba(0, 0, 0, 0) 19.425%),
+                    linear-gradient(180deg, rgb(0, 0, 0) 12.656%, rgba(0, 0, 0, 0) 44.831%, rgb(0, 0, 0) 102.32%),
+                    linear-gradient(-84.979deg, rgba(0, 0, 0, 0) 3.3237%, rgba(0, 0, 0, 0) 44.373%, rgb(0, 0, 0) 79.38%);
+            "
         />
 
-        <HeroBranchChain />
+        <!-- <HeroBranchChain /> -->
 
         <div
             class="relative z-10 flex h-full w-full items-center py-8 md:items-start md:pb-10 md:pt-[89px]"
@@ -95,7 +100,7 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 
 @media (min-width: 768px) {
     .hero-title {
-        font-size: 46px;
+        font-size: 48px;
         line-height: 80px;
     }
 }

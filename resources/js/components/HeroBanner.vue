@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import HeroBranchChain from '@/components/HeroBranchChain.vue';
-import BannerImage from '@/assets/banner.jpg';
+import BannerImage from '@/assets/aaaaa.jpg';
 import BaseButton from '@/components/BaseButton.vue';
 import { StoryInterface } from '@/types';
 import { show } from '@/wayfinder/routes/stories';
@@ -41,23 +41,23 @@ const heroTeaserLines = computed((): [string, string] | null => {
 
 <template>
     <section class="hero-banner relative overflow-hidden bg-black">
-        <!-- Background: static asset only (resources/js/assets/banner.jpg); ignores DB banner/cover -->
-        <div class="absolute inset-0 overflow-hidden">
+        <!-- Background — Figma node 7053:293 (MCP get_design_context) -->
+        <div class="pointer-events-none absolute inset-0 overflow-hidden">
             <img
                 :src="BannerImage"
                 alt=""
-                class="absolute left-0 top-[-17.43%] h-[128.34%] w-full max-w-none object-cover object-[60%_center]"
+                class="absolute inset-0 h-full w-full max-w-none object-cover object-[right_top]"
             />
         </div>
 
-        <!-- Gradient overlays — node 5412:1227 (Figma MCP dev specs) -->
+        <!-- Gradient overlays — Figma node 7053:293 -->
         <div
             class="pointer-events-none absolute inset-0"
             style="
                 background:
-                    linear-gradient(258.864deg, rgba(0, 0, 0, 0.2) 16.507%, rgba(102, 102, 102, 0) 29.27%),
-                    linear-gradient(180deg, rgb(0, 0, 0) 5.4367%, rgba(0, 0, 0, 0) 47.282%, rgb(0, 0, 0) 100%),
-                    linear-gradient(270deg, rgba(0, 0, 0, 0) 56.938%, rgb(0, 0, 0) 70.005%);
+                    linear-gradient(265.166deg, rgb(0, 0, 0) 4.3442%, rgba(0, 0, 0, 0) 19.425%),
+                    linear-gradient(180deg, rgb(0, 0, 0) 12.656%, rgba(0, 0, 0, 0) 44.831%, rgb(0, 0, 0) 102.32%),
+                    linear-gradient(-84.979deg, rgba(0, 0, 0, 0) 3.3237%, rgba(0, 0, 0, 0) 44.373%, rgb(0, 0, 0) 79.38%);
             "
         />
 
@@ -65,7 +65,7 @@ const heroTeaserLines = computed((): [string, string] | null => {
 
         <!-- Copy block: vertically offset to match design; horizontal position from .container + .container-content -->
         <div
-            class="relative z-10 flex h-full w-full items-center py-8 md:items-start md:pb-10 md:pt-[50px]"
+            class="relative z-10 flex h-full w-full items-center py-8 md:items-start md:pb-10 md:pt-[89px]"
         >
             <div class="container w-full">
                 <div class="container-content">

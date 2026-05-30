@@ -150,8 +150,9 @@ function branchesForStory(story: StoryInterface): string | null {
     <HomeLayout>
         <div class="pb-14 pt-8 md:pb-[60px] md:pt-10">
             <div class="container">
-                <!-- Desktop: shrink-wrap to tile row width. Mobile: full padded width. -->
-                <div class="mx-auto flex w-full max-w-full flex-col items-stretch sm:w-fit">
+                <!-- Match `.container-content` band everywhere (homepage / header) — avoids `w-fit`
+                     shrink-wrap differing between envs vs banner vs grid intrinsic sizing. -->
+                <div class="container-content flex w-full flex-col items-stretch">
                     <!-- Figma banner height ~370px, rounded-[8px] -->
                     <div class="mb-10 shrink-0 overflow-hidden rounded-[8px] md:mb-[60px]">
                         <div class="relative aspect-[1010/370] w-full md:aspect-auto md:h-[370px]">
@@ -182,7 +183,7 @@ function branchesForStory(story: StoryInterface): string | null {
                 </div>
 
                 <div ref="gridWrapperEl" class="relative">
-                    <div class="flex flex-wrap justify-center gap-[15px] sm:justify-start">
+                    <div class="flex flex-wrap justify-start gap-[15px]">
                         <div
                             v-for="story in sortedStories"
                             :key="story.id"
