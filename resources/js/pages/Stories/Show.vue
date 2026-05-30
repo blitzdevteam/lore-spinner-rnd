@@ -139,10 +139,10 @@ const rightColumnChapters = computed(() =>
         <StoryPlayAmbientGlows />
 
         <div
-            class="relative z-[1] mx-auto flex max-w-[72rem] flex-col px-5 pt-10 pb-8 md:px-[3.25rem] md:pb-12 md:pt-[3.75rem] lg:flex-row lg:items-stretch lg:justify-between xl:max-w-[75rem]"
+            class="relative z-[1] mx-auto flex max-w-[72rem] flex-col px-5 pt-10 pb-8 md:px-[3.25rem] md:pb-12 md:pt-[3.75rem] lg:flex-row lg:items-start lg:justify-between xl:max-w-[75rem]"
         >
             <!-- Cover -->
-            <div class="relative mb-10 shrink-0 lg:mb-0 lg:mr-6 xl:mr-10">
+            <div class="relative mb-10 w-[20.875rem] max-w-full shrink-0 self-center lg:mb-0 lg:mr-6 lg:self-start xl:mr-10">
                 <StoryPlayCoverColumn
                     :src="coverImageUrl"
                     :title="story.title"
@@ -247,11 +247,11 @@ const rightColumnChapters = computed(() =>
                 </div>
 
                 <!-- Fade + CTA (desktop: in column, matches Figma) -->
-                <div class="relative z-[6] mx-auto mt-10 hidden max-w-[41.25rem] lg:mt-auto lg:block">
+                <div class="relative z-[6] mt-10 hidden w-full lg:mt-auto lg:block">
                     <div
-                        class="pointer-events-none absolute -inset-x-6 -top-[7.5rem] bottom-0 mx-auto mb-[-20px] h-[clamp(148px,18vw,200px)] bg-linear-to-t from-black from-[32%] via-black/92 to-transparent lg:-inset-x-10"
+                        class="pointer-events-none absolute -inset-x-6 -top-[7.5rem] bottom-0 mb-[-20px] h-[clamp(148px,18vw,200px)] bg-linear-to-t from-black from-[32%] via-black/92 to-transparent lg:-inset-x-10"
                     />
-                    <div class="relative pt-14">
+                    <div class="relative w-full pt-14">
                         <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
                         <div
                             v-else
