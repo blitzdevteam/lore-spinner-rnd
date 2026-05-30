@@ -7,7 +7,8 @@ import banner1Hover from '@/assets/newStories/s1-hover.jpg';
 import banner2Hover from '@/assets/newStories/s2-hover.jpg';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
+import { computed, ref } from 'vue';
 
 defineProps<{
     storyCount: number;
@@ -70,31 +71,7 @@ const stories: NewStory[] = [
 const sliderEl = ref<HTMLElement | null>(null);
 const scrollSlider = (delta: number) => sliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
 
-// ── Shadow visibility ─────────────────────────────────────────────────────────
-const SHADOW_THRESHOLD = 8;
-const leftShadowVisible = ref(false);
-const rightShadowVisible = ref(true);
-
-function updateShadows() {
-    const el = sliderEl.value;
-    if (!el) return;
-    leftShadowVisible.value = el.scrollLeft > SHADOW_THRESHOLD;
-    rightShadowVisible.value = el.scrollLeft + el.clientWidth < el.scrollWidth - SHADOW_THRESHOLD;
-}
-
-onMounted(() => {
-    const el = sliderEl.value;
-    if (!el) return;
-    updateShadows();
-    el.addEventListener('scroll', updateShadows, { passive: true });
-    window.addEventListener('resize', updateShadows, { passive: true });
-});
-
-onUnmounted(() => {
-    const el = sliderEl.value;
-    if (el) el.removeEventListener('scroll', updateShadows);
-    window.removeEventListener('resize', updateShadows);
-});
+const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
 
 // ── Hover / popup state ───────────────────────────────────────────────────────
 const hoveredId = ref<string | null>(null);
@@ -179,7 +156,7 @@ function coverForPopup(story: NewStory): string {
                 <!-- Slider wrapper (popup is absolute inside here) -->
                 <div ref="sliderWrapperEl" class="relative">
                     <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-black to-transparent transition-opacity duration-300 md:w-16"
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
                         :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
                         aria-hidden="true"
                     />
@@ -214,10 +191,10 @@ function coverForPopup(story: NewStory): string {
                             @mouseenter="onCardEnter(story)"
                             @mouseleave="onCardLeave"
                         >
-                            <div class="flex w-[28.125rem] flex-col gap-[0.625rem]">
+                            <div class="new-banner-card__inner flex w-[min(28.125rem,78vw)] flex-col gap-[0.625rem] md:w-[28.125rem]">
                                 <!-- Banner image -->
                                 <div class="rounded-[0.5rem] border border-[#373737] bg-[#262626] p-1">
-                                    <div class="relative h-[16.375rem] w-full overflow-hidden rounded-[0.5rem]">
+                                    <div class="relative aspect-[450/262] w-full overflow-hidden rounded-[0.5rem] md:h-[16.375rem] md:aspect-auto">
                                         <img
                                             :src="story.cover"
                                             :alt="story.title"
@@ -242,7 +219,7 @@ function coverForPopup(story: NewStory): string {
                                 </div>
 
                                 <!-- Title + meta tags -->
-                                <div class="flex w-[26.875rem] flex-col gap-[3px] px-px">
+                                <div class="flex w-full flex-col gap-[3px] px-px md:w-[26.875rem]">
                                     <p class="text-[1.125rem] font-semibold leading-normal text-white">
                                         {{ story.title }}
                                     </p>

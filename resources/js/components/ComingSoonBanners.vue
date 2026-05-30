@@ -7,7 +7,8 @@ import cover4 from '@/assets/commingSoon/Coming soon 4 - 2x.jpg';
 import cover5 from '@/assets/commingSoon/Coming soon 5 - 2x.png';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
+import { computed, nextTick, ref } from 'vue';
 
 defineProps<{
     storyCount: number;
@@ -56,31 +57,7 @@ const cards: ComingSoonCard[] = [
 const sliderEl = ref<HTMLElement | null>(null);
 const scrollSlider = (delta: number) => sliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
 
-// ── Shadow visibility ─────────────────────────────────────────────────────────
-const SHADOW_THRESHOLD = 8;
-const leftShadowVisible = ref(false);
-const rightShadowVisible = ref(true);
-
-function updateShadows() {
-    const el = sliderEl.value;
-    if (!el) return;
-    leftShadowVisible.value = el.scrollLeft > SHADOW_THRESHOLD;
-    rightShadowVisible.value = el.scrollLeft + el.clientWidth < el.scrollWidth - SHADOW_THRESHOLD;
-}
-
-onMounted(() => {
-    const el = sliderEl.value;
-    if (!el) return;
-    updateShadows();
-    el.addEventListener('scroll', updateShadows, { passive: true });
-    window.addEventListener('resize', updateShadows, { passive: true });
-});
-
-onUnmounted(() => {
-    const el = sliderEl.value;
-    if (el) el.removeEventListener('scroll', updateShadows);
-    window.removeEventListener('resize', updateShadows);
-});
+const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
 
 const hoveredId = ref<string | null>(null);
 const popupPos = ref<{ left: number; top: number } | null>(null);
@@ -182,7 +159,7 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
                     :class="hoveredId ? 'pb-[8.75rem] md:pb-[9.25rem]' : 'pb-2'"
                 >
                     <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[15] w-12 bg-gradient-to-r from-black to-transparent transition-opacity duration-300 md:w-16"
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[15] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
                         :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
                         aria-hidden="true"
                     />

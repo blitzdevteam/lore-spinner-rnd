@@ -7,7 +7,8 @@ import nocturneCover from '@/assets/featured/nocturne.png';
 import wizardOzCover from '@/assets/featured/wizardoz.jpg';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
+import { computed, ref } from 'vue';
 
 defineProps<{
     storyCount: number;
@@ -77,31 +78,7 @@ const games: FeaturedGame[] = [
 const sliderEl = ref<HTMLElement | null>(null);
 const scrollSlider = (delta: number) => sliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
 
-// ── Shadow visibility ─────────────────────────────────────────────────────────
-const SHADOW_THRESHOLD = 8; // px — small buffer to avoid false triggers on sub-pixel rounding
-const leftShadowVisible = ref(false);
-const rightShadowVisible = ref(true);
-
-function updateShadows() {
-    const el = sliderEl.value;
-    if (!el) return;
-    leftShadowVisible.value = el.scrollLeft > SHADOW_THRESHOLD;
-    rightShadowVisible.value = el.scrollLeft + el.clientWidth < el.scrollWidth - SHADOW_THRESHOLD;
-}
-
-onMounted(() => {
-    const el = sliderEl.value;
-    if (!el) return;
-    updateShadows();
-    el.addEventListener('scroll', updateShadows, { passive: true });
-    window.addEventListener('resize', updateShadows, { passive: true });
-});
-
-onUnmounted(() => {
-    const el = sliderEl.value;
-    if (el) el.removeEventListener('scroll', updateShadows);
-    window.removeEventListener('resize', updateShadows);
-});
+const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
 
 // ── Hover / popup state ───────────────────────────────────────────────────────
 const hoveredId = ref<string | null>(null);

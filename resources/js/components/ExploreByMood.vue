@@ -13,6 +13,7 @@ import spiralImg from '@/assets/mood/Spiral.svg';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
 import { X } from 'lucide-vue-next';
+import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { computed, onUnmounted, ref, watch } from 'vue';
 
 defineProps<{
@@ -120,9 +121,15 @@ const moodConfigs: {
 ];
 
 const openMoodId = ref<MoodId | null>(null);
+const moodScrollEl = ref<HTMLElement | null>(null);
 const moodSliderEl = ref<HTMLElement | null>(null);
 
 const isPanelOpen = computed(() => openMoodId.value !== null);
+
+const { leftShadowVisible: moodLeftShadow, rightShadowVisible: moodRightShadow } =
+    useSliderEdgeShadows(moodScrollEl);
+const { leftShadowVisible: panelLeftShadow, rightShadowVisible: panelRightShadow } =
+    useSliderEdgeShadows(moodSliderEl, { enabled: isPanelOpen });
 
 const activeMoodConfig = computed(() => moodConfigs.find((m) => m.id === openMoodId.value) ?? null);
 
@@ -180,6 +187,7 @@ onUnmounted(() => {
                 <!-- Figma 5412:908: flex row, gap exactly 10px (not stretched 1fr columns) -->
                 <div class="relative">
                     <div
+                        ref="moodScrollEl"
                         class="mood-scroll flex w-full max-w-full flex-nowrap items-center gap-[0.625rem] overflow-x-auto pb-1 md:w-max md:overflow-visible"
                     >
                     <!-- Heartfelt -->
@@ -410,11 +418,13 @@ onUnmounted(() => {
 
                     <!-- Edge fades — only needed when chips row scrolls (narrow viewports); hidden on md+ -->
                     <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-black to-transparent md:hidden"
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:hidden"
+                        :class="moodLeftShadow ? 'opacity-100' : 'opacity-0'"
                         aria-hidden="true"
                     />
                     <div
-                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent md:hidden"
+                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent transition-opacity duration-300 md:hidden"
+                        :class="moodRightShadow ? 'opacity-100' : 'opacity-0'"
                         aria-hidden="true"
                     />
                 </div>
@@ -489,11 +499,13 @@ onUnmounted(() => {
                             <div class="relative flex flex-1 flex-col gap-4 overflow-hidden px-3 pb-5 pt-2 sm:px-8 sm:pb-8 sm:pt-4">
                                 <div class="relative">
                                     <div
-                                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-[#0c0c0c] to-transparent sm:left-[-0.125rem] sm:w-14"
+                                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-[#0c0c0c] to-transparent transition-opacity duration-300 sm:left-[-0.125rem] sm:w-14"
+                                        :class="panelLeftShadow ? 'opacity-100' : 'opacity-0'"
                                         aria-hidden="true"
                                     />
                                     <div
-                                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-[#0c0c0c] to-transparent sm:right-[-0.125rem] sm:w-14"
+                                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-[#0c0c0c] to-transparent transition-opacity duration-300 sm:right-[-0.125rem] sm:w-14"
+                                        :class="panelRightShadow ? 'opacity-100' : 'opacity-0'"
                                         aria-hidden="true"
                                     />
                                     <button
