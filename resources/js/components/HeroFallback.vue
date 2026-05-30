@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BannerImage from '@/assets/banner.png';
+import HeroBranchChain from '@/components/HeroBranchChain.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 </script>
@@ -20,6 +21,8 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
             class="absolute inset-0"
             style="background: linear-gradient(259deg, rgba(0,0,0,0.2) 16.5%, rgba(102,102,102,0) 29.3%), linear-gradient(180deg, rgb(0,0,0) 5.4%, rgba(0,0,0,0) 47.3%, rgb(0,0,0) 100%), linear-gradient(270deg, rgba(0,0,0,0) 56.9%, rgb(0,0,0) 70%)"
         />
+
+        <HeroBranchChain />
 
         <div class="relative z-10 flex h-full items-center py-8 md:py-0">
             <div class="container">
