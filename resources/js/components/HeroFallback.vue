@@ -89,7 +89,7 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 
 @media (min-width: 768px) {
     .hero-title {
-        font-size: 48px;
+        font-size: 46px;
         line-height: 80px;
     }
 }
