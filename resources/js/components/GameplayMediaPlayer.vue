@@ -43,7 +43,7 @@ const onVolumeInput = (event: Event) => {
         >
             <!-- Play / Pause -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-primary-400 transition-transform hover:scale-105 active:scale-95"
+                class="player-icon-btn bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-primary-400"
                 @click="tts.togglePause"
             >
                 <LucidePause v-if="tts.isPlaying.value" class="size-4" fill="currentColor" />
@@ -58,7 +58,7 @@ const onVolumeInput = (event: Event) => {
             <!-- Mute + volume slider -->
             <div class="hidden items-center gap-2 sm:flex">
                 <button
-                    class="grid size-7 shrink-0 place-items-center rounded-full transition-colors hover:text-white"
+                    class="player-icon-btn grid size-7 shrink-0 place-items-center rounded-full"
                     :class="isVolumeMuted ? 'text-primary-400' : 'text-gray-300'"
                     :aria-pressed="isVolumeMuted"
                     aria-label="Mute audio"
@@ -86,7 +86,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Loop -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
+                class="player-icon-btn bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full"
                 :class="tts.isLooping.value ? 'text-primary-400' : 'text-gray-300'"
                 @click="tts.toggleLoop"
             >
@@ -95,7 +95,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip back 15s -->
             <button
-                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-transform hover:scale-105 active:scale-95"
+                class="player-icon-btn bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300"
                 @click="tts.seekBy(-15)"
             >
                 <LucideRotateCcw class="size-5" :stroke-width="1.5" />
@@ -104,7 +104,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip forward 15s -->
             <button
-                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-transform hover:scale-105 active:scale-95"
+                class="player-icon-btn bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300"
                 @click="tts.seekBy(15)"
             >
                 <LucideRotateCw class="size-5" :stroke-width="1.5" />
@@ -113,7 +113,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Close -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-white"
+                class="player-icon-btn bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-gray-300"
                 @click="tts.dismiss"
             >
                 <LucideX class="size-4" />
@@ -123,6 +123,21 @@ const onVolumeInput = (event: Event) => {
 </template>
 
 <style scoped>
+.player-icon-btn {
+    transition:
+        transform 150ms ease,
+        color 150ms ease;
+}
+
+.player-icon-btn:hover {
+    transform: scale(1.06);
+    color: var(--color-primary-400);
+}
+
+.player-icon-btn:active {
+    transform: scale(0.95);
+}
+
 .player-slide-enter-active,
 .player-slide-leave-active {
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
