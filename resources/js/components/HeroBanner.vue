@@ -1,116 +1,276 @@
 <script setup lang="ts">
-// import HeroBranchChain from '@/components/HeroBranchChain.vue';
-import BannerImage from '@/assets/aaaaa.jpg';
+import nocturneImage from '@/assets/carosel/Nocturne 16_9 landscape art.png';
+import ozImage from '@/assets/carosel/Oz Landscape art only.png';
+import tellTaleImage from '@/assets/carosel/Pride Landscape art only.png';
 import BaseButton from '@/components/BaseButton.vue';
 import { StoryInterface } from '@/types';
 import { show } from '@/wayfinder/routes/stories';
-import { computed } from 'vue';
+import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
+import type { Swiper as SwiperInstance } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { computed, ref } from 'vue';
 
-const props = defineProps<{
-    story: StoryInterface;
-}>();
+import 'swiper/css';
+import 'swiper/css/effect-fade';
+import 'swiper/css/pagination';
 
-const storyUrl = computed(() => show(props.story.slug).url);
+const props = withDefaults(
+    defineProps<{
+        stories?: StoryInterface[];
+    }>(),
+    {
+        stories: () => [],
+    },
+);
 
-/** Figma stat uses dot thousands separator (e.g. 1.267). */
-const branchingCount = computed(() => {
-    const n = props.story.chapters_count ?? 0;
-    return new Intl.NumberFormat('de-DE').format(n * 47 + 312);
-});
+interface HeroSlideConfig {
+    slug: string;
+    image: string;
+    imagePosition: string;
+    titleLines: [string, string] | null;
+    fallbackTitle: string;
+    teaserLines: [string, string] | null;
+    fallbackTeaser: string;
+    fallbackAuthor: string;
+    fallbackBranching: number;
+}
 
-/** Title lines: ALICE'S ADVENTURES / IN WONDERLAND — break before “In …”. */
-const heroTitleLines = computed((): [string, string] | null => {
-    const t = props.story.title.trim();
+const heroSlideConfigs: HeroSlideConfig[] = [
+    {
+        slug: 'the-tell-tale-heart',
+        image: tellTaleImage,
+        imagePosition: 'object-[62%_center] md:object-center',
+        titleLines: ['The Tell-Tale', 'Heart'],
+        fallbackTitle: 'The Tell-Tale Heart',
+        teaserLines: [
+            'Convinced of his own sanity, a man slowly loses his grip on reality',
+            'as guilt transforms the world around him.',
+        ],
+        fallbackTeaser:
+            'Convinced of his own sanity, a man slowly loses his grip on reality as guilt transforms the world around him.',
+        fallbackAuthor: 'Edgar Allan Poe',
+        fallbackBranching: 123456,
+    },
+    {
+        slug: 'nocturne',
+        image: nocturneImage,
+        imagePosition: 'object-[70%_center] md:object-center',
+        titleLines: null,
+        fallbackTitle: 'Nocturne',
+        teaserLines: [
+            'After a public scandal shatters her life, a disgraced Japanese heiress discovers',
+            'the organization helping her disappear is part of an ancient cult.',
+        ],
+        fallbackTeaser:
+            'After a public scandal shatters her life, a disgraced Japanese heiress discovers the organization helping her disappear is part of an ancient cult that erases and rewrites identity.',
+        fallbackAuthor: 'Hilton Williams',
+        fallbackBranching: 98765,
+    },
+    {
+        slug: 'the-wonderful-wizard-of-oz',
+        image: ozImage,
+        imagePosition: 'object-[58%_center] md:object-center',
+        titleLines: ['The Wonderful', 'Wizard of Oz'],
+        fallbackTitle: 'The Wonderful Wizard of Oz',
+        teaserLines: [
+            'Follow the yellow brick road — but every path leads somewhere different,',
+            'and not all roads lead home.',
+        ],
+        fallbackTeaser:
+            'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
+        fallbackAuthor: 'L. Frank Baum',
+        fallbackBranching: 156789,
+    },
+];
+
+interface ResolvedHeroSlide {
+    slug: string;
+    image: string;
+    imagePosition: string;
+    titleLines: [string, string] | null;
+    title: string;
+    teaserLines: [string, string] | null;
+    teaser: string;
+    author: string | null;
+    branchingCount: string;
+    storyUrl: string;
+}
+
+const swiperModules = [Autoplay, EffectFade, Pagination];
+
+const swiperRef = ref<SwiperInstance | null>(null);
+const activeIndex = ref(0);
+
+function formatBranchingCount(n: number): string {
+    return new Intl.NumberFormat('de-DE').format(n);
+}
+
+function resolveTitleLines(title: string): [string, string] | null {
+    const t = title.trim();
     const m = t.match(/^(.+?)\s+in\s+(.+)$/i);
     if (!m) return null;
     return [m[1].trim(), `In ${m[2].trim()}`];
-});
+}
 
-/** Teaser lines per design: after “…bends and” / “curiosity…”. */
-const heroTeaserLines = computed((): [string, string] | null => {
-    const s = props.story.teaser?.trim() ?? '';
+function resolveTeaserLines(teaser: string): [string, string] | null {
+    const s = teaser.trim();
     const needle = ' bends and ';
     const i = s.indexOf(needle);
-    if (i === -1) return null;
-    const first = (s.slice(0, i) + ' bends and').trimEnd();
-    const second = s.slice(i + needle.length).trim();
-    if (!second) return null;
-    return [first, second];
-});
+    if (i !== -1) {
+        const first = (s.slice(0, i) + ' bends and').trimEnd();
+        const second = s.slice(i + needle.length).trim();
+        if (second) return [first, second];
+    }
+
+    const splitAt = s.search(/\s+(as|and|but|—)\s+/i);
+    if (splitAt !== -1) {
+        const first = s.slice(0, splitAt).trim();
+        const second = s.slice(splitAt).trim();
+        if (first && second) return [first, second];
+    }
+
+    return null;
+}
+
+function branchingFromStory(story: StoryInterface | undefined, fallback: number): string {
+    if (!story) return formatBranchingCount(fallback);
+    const n = story.chapters_count ?? 0;
+    return formatBranchingCount(n * 47 + 312);
+}
+
+const slides = computed((): ResolvedHeroSlide[] =>
+    heroSlideConfigs.map((config) => {
+        const story = props.stories.find((s) => s.slug === config.slug);
+        const title = story?.title ?? config.fallbackTitle;
+        const teaser = story?.teaser?.trim() ?? config.fallbackTeaser;
+
+        return {
+            slug: config.slug,
+            image: config.image,
+            imagePosition: config.imagePosition,
+            titleLines: story ? resolveTitleLines(title) ?? config.titleLines : config.titleLines,
+            title,
+            teaserLines: story ? resolveTeaserLines(teaser) ?? config.teaserLines : config.teaserLines,
+            teaser,
+            author: story?.creator?.full_name ?? config.fallbackAuthor,
+            branchingCount: branchingFromStory(story, config.fallbackBranching),
+            storyUrl: show(config.slug).url,
+        };
+    }),
+);
+
+const activeSlide = computed(() => slides.value[activeIndex.value] ?? slides.value[0]);
+
+function onSwiper(swiper: SwiperInstance) {
+    swiperRef.value = swiper;
+}
+
+function onSlideChange(swiper: SwiperInstance) {
+    activeIndex.value = swiper.realIndex;
+}
+
+function goPrev() {
+    swiperRef.value?.slidePrev();
+}
+
+function goNext() {
+    swiperRef.value?.slideNext();
+}
 </script>
 
 <template>
-    <section class="hero-banner relative overflow-hidden bg-black">
-        <!-- Background — Figma node 7053:293 (MCP get_design_context) -->
-        <div class="pointer-events-none absolute inset-0 overflow-hidden">
-            <img
-                :src="BannerImage"
-                alt=""
-                class="absolute inset-0 h-full w-full max-w-none object-cover object-[right_top]"
-            />
+    <section class="hero-banner">
+        <div class="hero-media">
+            <Swiper
+                class="hero-swiper h-full w-full"
+                :modules="swiperModules"
+                :slides-per-view="1"
+                :effect="'fade'"
+                :fade-effect="{ crossFade: true }"
+                :speed="900"
+                :loop="true"
+                :autoplay="{ delay: 6500, disableOnInteraction: false, pauseOnMouseEnter: true }"
+                :pagination="{ clickable: true }"
+                @swiper="onSwiper"
+                @slide-change="onSlideChange"
+            >
+                <SwiperSlide v-for="slide in slides" :key="slide.slug" class="hero-slide">
+                    <img
+                        :src="slide.image"
+                        alt=""
+                        class="hero-slide-image h-full w-full object-cover"
+                        :class="slide.imagePosition"
+                    />
+                </SwiperSlide>
+            </Swiper>
+
+            <button
+                type="button"
+                class="hero-arrow hero-arrow-prev"
+                aria-label="Previous slide"
+                @click="goPrev"
+            >
+                <span class="hero-arrow-icon rotate-180">&#8250;</span>
+            </button>
+
+            <button
+                type="button"
+                class="hero-arrow hero-arrow-next"
+                aria-label="Next slide"
+                @click="goNext"
+            >
+                <span class="hero-arrow-icon">&#8250;</span>
+            </button>
         </div>
 
-        <!-- Gradient overlays — Figma node 7053:293 -->
-        <div
-            class="pointer-events-none absolute inset-0"
-            style="
-                background:
-                    linear-gradient(265.166deg, rgb(0, 0, 0) 4.3442%, rgba(0, 0, 0, 0) 19.425%),
-                    linear-gradient(180deg, rgb(0, 0, 0) 12.656%, rgba(0, 0, 0, 0) 44.831%, rgb(0, 0, 0) 102.32%),
-                    linear-gradient(-84.979deg, rgba(0, 0, 0, 0) 3.3237%, rgba(0, 0, 0, 0) 44.373%, rgb(0, 0, 0) 79.38%);
-            "
-        />
-
-        <!-- <HeroBranchChain /> -->
-
-        <!-- Copy block: vertically offset to match design; horizontal position from .container + .container-content -->
-        <div
-            class="relative z-10 flex h-full w-full items-center py-8 md:items-start md:pb-10 md:pt-[89px]"
-        >
+        <div class="hero-copy-wrap">
             <div class="container w-full">
                 <div class="container-content">
-                    <div class="flex w-full max-w-[min(556px,100%)] flex-col gap-[24px] md:max-w-[556px] md:pr-6">
-                        <!-- gap-[24px] title block ↔ CTA; title block gap-[15px]; meta gap-[10px] -->
-                        <div class="flex flex-col gap-[15px]">
-                            <h1 class="hero-title max-w-[492px] font-marcellus-sc uppercase text-white">
-                                <template v-if="heroTitleLines">
-                                    {{ heroTitleLines[0] }}<br />
-                                    {{ heroTitleLines[1] }}
-                                </template>
-                                <template v-else>{{ story.title }}</template>
-                            </h1>
-
-                            <div class="font-[Inter] flex flex-col gap-[10px] text-white">
-                                <p class="max-w-[411px] text-[18px] leading-[26px] text-white">
-                                    <template v-if="heroTeaserLines">
-                                        {{ heroTeaserLines[0] }}<br />
-                                        {{ heroTeaserLines[1] }}
+                    <Transition name="hero-copy" mode="out-in">
+                        <div :key="activeSlide.slug" class="hero-copy">
+                            <div class="hero-copy-body">
+                                <h1 class="hero-title font-marcellus-sc uppercase text-white">
+                                    <template v-if="activeSlide.titleLines">
+                                        {{ activeSlide.titleLines[0] }}<br />
+                                        {{ activeSlide.titleLines[1] }}
                                     </template>
-                                    <template v-else>{{ story.teaser }}</template>
-                                </p>
-                                <div class="flex flex-col gap-0">
-                                    <p v-if="story.creator" class="text-[14px] leading-[26px] text-white">
-                                        Written by: <span class="font-normal leading-[26px] text-[#00c6de]">{{ story.creator.full_name }}</span>
+                                    <template v-else>{{ activeSlide.title }}</template>
+                                </h1>
+
+                                <div class="hero-meta font-[Inter] text-white">
+                                    <p class="hero-teaser text-white">
+                                        <span class="md:hidden">{{ activeSlide.teaser }}</span>
+                                        <span class="hidden md:inline">
+                                            <template v-if="activeSlide.teaserLines">
+                                                {{ activeSlide.teaserLines[0] }}<br />
+                                                {{ activeSlide.teaserLines[1] }}
+                                            </template>
+                                            <template v-else>{{ activeSlide.teaser }}</template>
+                                        </span>
                                     </p>
-                                    <p class="text-[14px] leading-[26px] text-white">
-                                        <span class="leading-[26px] text-[#00c6de]">{{ branchingCount }}</span>
-                                        <span class="leading-[26px] text-white"> Branching paths explored</span>
-                                    </p>
+                                    <div class="hero-stats flex flex-col gap-0">
+                                        <p v-if="activeSlide.author" class="hero-stat-line text-white">
+                                            Written by:
+                                            <span class="text-[#00c6de]">{{ activeSlide.author }}</span>
+                                        </p>
+                                        <p class="hero-stat-line text-white">
+                                            <span class="text-[#00c6de]">{{ activeSlide.branchingCount }}</span>
+                                            <span> Branching paths explored</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div>
                             <BaseButton
                                 severity="primary"
                                 type="internal-link"
-                                :href="storyUrl"
-                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[53px] w-full max-w-[284px] items-center justify-center overflow-visible whitespace-nowrap px-8 py-3 text-[16px] font-medium !leading-none text-black"
+                                :href="activeSlide.storyUrl"
+                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[48px] w-full items-center justify-center overflow-visible whitespace-nowrap px-6 py-3 text-[15px] font-medium !leading-none text-black sm:min-h-[53px] sm:max-w-[284px] sm:px-8 sm:text-[16px]"
                             >
                                 Begin Your Journey
                             </BaseButton>
                         </div>
-                    </div>
+                    </Transition>
                 </div>
             </div>
         </div>
@@ -120,30 +280,70 @@ const heroTeaserLines = computed((): [string, string] | null => {
 <style scoped>
 /* Full viewport height — no cap */
 .hero-banner {
-    min-height: 400px;
-    height: clamp(420px, 70vh, 561px);
-    max-height: 561px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #000;
 }
 
-@media (min-width: 768px) {
-    .hero-banner {
-        height: 561px;
-        min-height: 561px;
-        max-height: 561px;
-    }
+.hero-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 200px;
+    max-height: min(52vh, 360px);
+    flex-shrink: 0;
+}
+
+.hero-swiper :deep(.swiper-slide) {
+    position: relative;
+}
+
+.hero-slide-image {
+    display: block;
+}
+
+.hero-copy-wrap {
+    position: relative;
+    z-index: 10;
+    background: #000;
+    padding: 1.25rem 0 1.5rem;
+}
+
+.hero-copy {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.hero-copy-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
 }
 
 .hero-title {
-    font-size: clamp(1.875rem, 4vw, 48px);
-    line-height: 1.08;
-    text-shadow: 0 0 21.2px black;
+    max-width: 18ch;
+    font-size: clamp(1.625rem, 7vw, 2.25rem);
+    line-height: 1.12;
 }
 
-@media (min-width: 768px) {
-    .hero-title {
-        font-size: 48px;
-        line-height: 80px;
-    }
+.hero-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.hero-teaser {
+    max-width: 38rem;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+}
+
+.hero-stat-line {
+    font-size: 0.8125rem;
+    line-height: 1.5;
 }
 
 .begin-btn {
@@ -152,5 +352,249 @@ const heroTeaserLines = computed((): [string, string] | null => {
         0 4px 80px rgba(0, 0, 0, 0.2),
         inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.22),
         inset -0.2px -0.5px 0.15px 0.5px rgba(255, 255, 255, 0.05);
+}
+
+.hero-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 20;
+    display: flex;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(6px);
+    transform: translateY(-50%);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.hero-arrow-prev {
+    left: 0.625rem;
+}
+
+.hero-arrow-next {
+    right: 0.625rem;
+}
+
+.hero-arrow:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.hero-arrow-icon {
+    font-size: 20px;
+    line-height: 1;
+    color: white;
+}
+
+.hero-copy-enter-active,
+.hero-copy-leave-active {
+    transition:
+        opacity 0.45s ease,
+        transform 0.45s ease;
+}
+
+.hero-copy-enter-from {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.hero-copy-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
+}
+
+@media (min-width: 640px) {
+    .hero-media {
+        max-height: min(48vh, 400px);
+    }
+
+    .hero-copy-wrap {
+        padding: 1.5rem 0 1.75rem;
+    }
+
+    .hero-copy {
+        gap: 1.5rem;
+    }
+
+    .hero-copy-body {
+        gap: 1rem;
+    }
+
+    .hero-title {
+        max-width: 22ch;
+        font-size: clamp(2rem, 5vw, 2.75rem);
+    }
+
+    .hero-teaser {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .hero-stat-line {
+        font-size: 0.875rem;
+        line-height: 1.625;
+    }
+
+    .hero-arrow {
+        width: 38px;
+        height: 38px;
+    }
+
+    .hero-arrow-prev {
+        left: 0.875rem;
+    }
+
+    .hero-arrow-next {
+        right: 0.875rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .hero-banner {
+        position: relative;
+        display: block;
+        height: 561px;
+        min-height: 561px;
+        max-height: 561px;
+    }
+
+    .hero-media {
+        position: absolute;
+        inset: 0;
+        aspect-ratio: unset;
+        min-height: unset;
+        max-height: none;
+        height: 100%;
+    }
+
+    .hero-copy-wrap {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: flex-start;
+        background: transparent;
+        padding: 5.5625rem 0 2.5rem;
+        pointer-events: none;
+    }
+
+    .hero-copy-wrap .container,
+    .hero-copy-wrap .container-content {
+        height: 100%;
+    }
+
+    .hero-copy {
+        pointer-events: auto;
+        max-width: min(556px, 100%);
+        gap: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    .hero-copy-body {
+        gap: 0.9375rem;
+    }
+
+    .hero-title {
+        max-width: 492px;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1.08;
+        text-shadow: 0 0 21.2px rgba(0, 0, 0, 0.85);
+    }
+
+    .hero-teaser {
+        max-width: 411px;
+        font-size: 1.125rem;
+        line-height: 1.444;
+        text-shadow: 0 1px 12px rgba(0, 0, 0, 0.75);
+    }
+
+    .hero-stat-line {
+        text-shadow: 0 1px 10px rgba(0, 0, 0, 0.75);
+    }
+
+    .hero-arrow {
+        width: 40px;
+        height: 40px;
+    }
+
+    .hero-arrow-prev {
+        left: 1rem;
+    }
+
+    .hero-arrow-next {
+        right: 1rem;
+    }
+
+    .hero-arrow-icon {
+        font-size: 22px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-title {
+        font-size: 3rem;
+        line-height: 5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-copy-enter-active,
+    .hero-copy-leave-active {
+        transition-duration: 0.01ms;
+    }
+}
+</style>
+
+<style>
+.hero-swiper .swiper-pagination {
+    bottom: 0.75rem !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    width: auto !important;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 20;
+    padding: 0 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .hero-swiper .swiper-pagination {
+        bottom: 1.25rem !important;
+        gap: 8px;
+    }
+}
+
+.hero-swiper .swiper-pagination-bullet {
+    width: 28px;
+    height: 3px;
+    margin: 0 !important;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.35);
+    opacity: 1;
+    transition:
+        width 0.3s ease,
+        background 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .hero-swiper .swiper-pagination-bullet {
+        width: 36px;
+        height: 4px;
+    }
+}
+
+.hero-swiper .swiper-pagination-bullet-active {
+    width: 40px;
+    background: #00c6de;
+}
+
+@media (min-width: 768px) {
+    .hero-swiper .swiper-pagination-bullet-active {
+        width: 52px;
+    }
 }
 </style>
