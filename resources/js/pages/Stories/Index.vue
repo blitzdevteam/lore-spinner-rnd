@@ -238,7 +238,7 @@ function branchesForStory(story: StoryInterface): string | null {
                                     </p>
                                     <div
                                         v-if="themesForStory(hoveredStory).length"
-                                        class="flex flex-wrap items-center gap-[4px] text-[14px] text-white"
+                                        class="flex flex-wrap items-center gap-x-[8px] gap-y-[4px] text-[14px] text-white"
                                     >
                                         <template v-for="theme in themesForStory(hoveredStory)" :key="theme">
                                             <span class="size-[6px] shrink-0 rounded-full bg-white" />
