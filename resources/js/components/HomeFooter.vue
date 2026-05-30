@@ -14,16 +14,9 @@ interface FooterLink {
 interface FooterColumn {
     title: string;
     links: FooterLink[];
+    /** Figma: Navigate & Moods 110px; Get in touch 160px */
+    wide?: boolean;
 }
-
-const community: FooterColumn = {
-    title: 'Community',
-    links: [
-        { label: 'Discord', href: 'https://discord.com' },
-        { label: 'Wattpad', href: 'https://www.wattpad.com' },
-        { label: 'Reddit', href: 'https://www.reddit.com' },
-    ],
-};
 
 const navigate: FooterColumn = {
     title: 'Navigate',
@@ -46,18 +39,15 @@ const moods: FooterColumn = {
     ],
 };
 
-const support: FooterColumn = {
-    title: 'Support',
-    links: [
-        { label: 'Help Center', href: '#' },
-        { label: 'Terms of Service', href: '#' },
-        { label: 'Privacy Policy', href: '#' },
-    ],
+const contactEmail = 'Contact@lorespinner.com';
+
+const getInTouch: FooterColumn = {
+    title: 'Get in touch',
+    wide: true,
+    links: [{ label: contactEmail, href: `mailto:${contactEmail}` }],
 };
 
-const columns: FooterColumn[] = [community, navigate, moods, support];
-
-const contactEmail = 'Contact@lorespinner.com';
+const columns: FooterColumn[] = [navigate, moods, getInTouch];
 
 function isNativeAnchor(href: string): boolean {
     return (
@@ -80,8 +70,8 @@ const headingClass =
             <div
                 class="container-content pt-[56px] pb-[64px] sm:pt-[64px] sm:pb-[72px] lg:pt-[74px] lg:pb-[93px]"
             >
-                <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-6">
-                    <div class="w-full max-w-[284px] shrink-0">
+                <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
+                    <div class="w-full max-w-[448px] shrink-0">
                         <img
                             :src="mainLogo"
                             alt="LoreSpinner"
@@ -99,12 +89,13 @@ const headingClass =
 
                     <nav
                         aria-label="Footer"
-                        class="flex flex-1 flex-wrap gap-x-6 gap-y-10 md:gap-y-8 lg:min-w-0 lg:flex-nowrap lg:justify-start lg:gap-x-6 lg:gap-y-0"
+                        class="flex flex-col gap-y-10 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-10 lg:w-auto lg:flex-nowrap lg:justify-end lg:gap-x-6 lg:gap-y-0"
                     >
                         <div
                             v-for="col in columns"
                             :key="col.title"
-                            class="flex w-[calc(50%-12px)] flex-col gap-[17px] min-[480px]:w-[110px] min-[480px]:shrink-0 min-[480px]:grow-0 lg:w-[110px]"
+                            class="flex w-full shrink-0 flex-col gap-[17px]"
+                            :class="col.wide ? 'sm:w-[160px] lg:w-[160px]' : 'sm:w-[110px] lg:w-[110px]'"
                         >
                             <p :class="headingClass">
                                 {{ col.title }}
@@ -134,23 +125,11 @@ const headingClass =
                                 </li>
                             </ul>
                         </div>
-
-                        <div
-                            class="flex w-full flex-col gap-[17px] min-[480px]:w-[160px] min-[480px]:shrink-0 min-[480px]:grow-0 lg:w-[160px]"
-                        >
-                            <p :class="headingClass">Get in touch</p>
-                            <a
-                                :href="`mailto:${contactEmail}`"
-                                class="text-[12px] font-light leading-[15px] tracking-[-0.48px] text-white transition-colors hover:text-primary"
-                            >
-                                {{ contactEmail }}
-                            </a>
-                        </div>
                     </nav>
                 </div>
 
                 <p
-                    class="mt-16 text-center text-[14px] font-normal leading-normal tracking-[-0.56px] text-[#8e8e8e] sm:mt-20 lg:mt-[128px]"
+                    class="mt-16 text-right text-[14px] font-normal leading-normal tracking-[-0.56px] text-primary sm:mt-20 lg:mt-[128px]"
                 >
                     © Copyright 2026. Lorespinner Inc. All rights reserved.
                 </p>
