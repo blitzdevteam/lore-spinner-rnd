@@ -15,6 +15,8 @@ Route::middleware(['auth:manager'])
 
 Route::get('/', Controllers\IndexController::class)->name('index');
 
+Route::get('old-homepage', Controllers\OldHomepageController::class)->name('old-homepage');
+
 Route::get('design-rnd', fn () => inertia('DesignRnd'))->name('design-rnd');
 Route::get('bg-rnd', fn () => inertia('BgRnd'))->name('bg-rnd');
 

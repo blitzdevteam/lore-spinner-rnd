@@ -92,6 +92,16 @@ To restore **Chaos + old UI** without the merge, use **`616d8ca`**, not `story-g
 
 ---
 
+## Legacy homepage (pre-merge UI)
+
+The homepage from before the merge is available at **`/old-homepage`** (`route('old-homepage')`).
+
+- Page: `resources/js/pages/OldHomepage.vue` (snapshot from `616d8ca`)
+- Hero: `resources/js/components/legacy/LegacyHeroBanner.vue`
+- Same data as `/` via `IndexController::homepageProps()`
+
+---
+
 ## Re-apply the UI later
 
 ```bash
