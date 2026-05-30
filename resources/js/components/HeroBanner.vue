@@ -65,7 +65,7 @@ const heroTeaserLines = computed((): [string, string] | null => {
 
         <!-- Copy block: vertically offset to match design; horizontal position from .container + .container-content -->
         <div
-            class="relative z-10 flex h-full w-full items-center py-8 md:items-start md:pb-10 md:pt-[89px]"
+            class="relative z-10 flex h-full w-full items-center py-8 md:items-start md:pb-10 md:pt-[50px]"
         >
             <div class="container w-full">
                 <div class="container-content">
