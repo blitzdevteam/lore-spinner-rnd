@@ -170,11 +170,9 @@ function coverForPopup(story: NewStory): string {
 
                 <!-- Section header -->
                 <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="max-w-[34.375rem] min-w-0">
-                        <h2 class="flex h-10 items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
-                            New Stories
-                        </h2>
-                        <p class="text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">
+                    <div class="home-section-header max-w-[34.375rem]">
+                        <h2 class="home-section-title">New Stories</h2>
+                        <p class="home-section-description">
                             New branches, hidden paths, and fresh story worlds.
                         </p>
                     </div>

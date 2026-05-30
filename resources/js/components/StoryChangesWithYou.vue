@@ -55,11 +55,9 @@ const storyItems = [
     <section class="home-section-y">
         <div class="container">
             <div class="container-content home-section-gap">
-                <div class="flex w-full flex-col gap-3">
-                    <h2 class="text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
-                        The Story Changes With You
-                    </h2>
-                    <p class="text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">Speak, choose, or write your own path.</p>
+                <div class="home-section-header">
+                    <h2 class="home-section-title">The Story Changes With You</h2>
+                    <p class="home-section-description">Speak, choose, or write your own path.</p>
                 </div>
 
                 <div

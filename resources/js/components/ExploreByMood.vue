@@ -170,11 +170,9 @@ onUnmounted(() => {
         <div class="container">
             <div class="container-content home-section-gap">
                 <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="not-italic">
-                        <h2 class="flex h-10 items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
-                            Explore by mood
-                        </h2>
-                        <p class="text-base font-normal leading-[1.625rem] text-[#b6b6b6]">
+                    <div class="home-section-header not-italic">
+                        <h2 class="home-section-title">Explore by mood</h2>
+                        <p class="home-section-description">
                             Choose the feeling you want to step into.
                         </p>
                     </div>

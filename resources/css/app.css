@@ -105,10 +105,27 @@ body {
 }
 
 /**
- * Standard gap from section headings / header row to the block below (Figma: 18px).
+ * Standard gap from section headings / header row to the block below.
+ * Mobile: 32px for comfortable CTA/content separation; desktop matches Figma (18px).
  */
 .home-section-gap {
-    @apply flex flex-col gap-[18px];
+    @apply flex flex-col gap-8 md:gap-[18px];
+}
+
+/**
+ * Title + description stack shared by homepage sections.
+ * Mobile rhythm: 20px title → description; desktop tightens to 12px.
+ */
+.home-section-header {
+    @apply flex w-full min-w-0 flex-col gap-5 md:gap-3;
+}
+
+.home-section-title {
+    @apply w-full text-[1.625rem] font-bold uppercase leading-[1.12] tracking-[0.02em] text-white [overflow-wrap:anywhere] md:leading-[2.0625rem] md:tracking-normal;
+}
+
+.home-section-description {
+    @apply max-w-[49.3125rem] text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6];
 }
 
 .bg-glass-effect {

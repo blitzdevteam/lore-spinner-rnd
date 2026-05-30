@@ -62,11 +62,9 @@ function toggleItem(index: number) {
 <template>
     <div class="home-section-gap w-full">
         <!-- Title + intro (left-aligned with other homepage sections) -->
-        <div class="flex w-full flex-col items-start">
-            <h2 class="flex h-10 w-full items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
-                Frequently Asked Questions
-            </h2>
-            <p class="max-w-[49.3125rem] text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">
+        <div class="home-section-header">
+            <h2 class="home-section-title">Frequently Asked Questions</h2>
+            <p class="home-section-description">
                 Can’t find what you need? Visit our community forum, reach out on Twitter, or email our
                 support team.
             </p>

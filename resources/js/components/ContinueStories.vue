@@ -44,11 +44,9 @@ const eventTitle = computed(() => {
     <div class="home-section-y">
         <div class="container">
             <div class="container-content home-section-gap">
-                <div>
-                    <h2 class="flex h-10 items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
-                        Continue Your Story
-                    </h2>
-                    <p class="text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">
+                <div class="home-section-header">
+                    <h2 class="home-section-title">Continue Your Story</h2>
+                    <p class="home-section-description">
                         Pick up right where you left off
                     </p>
                 </div>

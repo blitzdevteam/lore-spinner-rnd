@@ -178,11 +178,9 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
 
                 <!-- Section header -->
                 <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div class="max-w-[34.375rem] min-w-0">
-                        <h2 class="flex h-10 items-center text-[1.625rem] font-bold uppercase leading-[2.0625rem] text-white">
-                            Featured Worlds
-                        </h2>
-                        <p class="text-[1rem] font-normal leading-[1.625rem] text-[#b6b6b6]">
+                    <div class="home-section-header max-w-[34.375rem]">
+                        <h2 class="home-section-title">Featured Worlds</h2>
+                        <p class="home-section-description">
                             Curated story worlds built for choice, consequence, and return.
                         </p>
                     </div>
