@@ -17,7 +17,7 @@ import iconXen from '@/assets/story/right .svg';
                 </div>
 
                 <div
-                    class="story-changes-card relative flex min-h-[220px] flex-col overflow-hidden rounded-[15px] border border-white/12 p-5 md:h-[220px] md:p-5"
+                    class="story-changes-card relative flex min-h-[220px] flex-col overflow-hidden rounded-[15px] p-5 md:h-[220px] md:p-5"
                     :style="{ backgroundImage: `url(${bannerStoryChange})` }"
                 >
                     <!-- Neutral accent lines (no primary/teal spill onto page background) -->
