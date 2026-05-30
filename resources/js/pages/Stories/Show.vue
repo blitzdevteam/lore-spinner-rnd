@@ -150,13 +150,14 @@ const rightColumnChapters = computed(() =>
                     :footer-credit="coverFooterCredit"
                 >
                     <template #overlay>
-                        <StoryPlayGlassRoundButton
-                            class="pointer-events-auto absolute left-4 top-4 z-[5]"
-                            aria-label="Go back"
-                            @click="handleBack"
-                        >
-                            <LucideChevronLeft class="!size-5 text-white" :stroke-width="1.85" aria-hidden="true" />
-                        </StoryPlayGlassRoundButton>
+                        <div class="pointer-events-auto absolute left-4 top-4">
+                            <StoryPlayGlassRoundButton
+                                aria-label="Go back"
+                                @click="handleBack"
+                            >
+                                <LucideChevronLeft class="!size-5 text-white" :stroke-width="1.85" aria-hidden="true" />
+                            </StoryPlayGlassRoundButton>
+                        </div>
                         <div
                             v-if="!coverImageUrl"
                             class="pointer-events-none absolute inset-0 z-[2] grid place-items-center"
