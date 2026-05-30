@@ -7,7 +7,7 @@
 @theme {
     --container: 1152px;
     --container-gap: max(0px, calc((100vw - var(--container)) / 2));
-    --color-background: #1a1a1a;
+    --color-background: #000000;
 
     /* Tiffany Blue — Pantone 1837 (#0ABAB5) as 500 anchor */
     --color-primary-50:  #edfcfb;
