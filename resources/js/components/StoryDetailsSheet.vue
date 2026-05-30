@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { show as storyShow } from '@/wayfinder/routes/stories';
+import { storyCtaLabel, storyIsInteractive } from '@/utils/storyPreview';
 import { Link, usePage } from '@inertiajs/vue3';
 import { X } from 'lucide-vue-next';
 import { onUnmounted, ref, watch } from 'vue';
@@ -95,16 +96,6 @@ function onCoverTouchEnd(e: TouchEvent) {
     if (delta > 80) close();
 }
 
-// ── CTA helpers ───────────────────────────────────────────────────────────────
-function ctaLabel(story: StorySheetData): string {
-    if (story.isComingSoon || story.cta === 'coming-soon') return 'Coming Soon';
-    if (story.cta === 'continue') return 'Continue';
-    return 'Play';
-}
-
-function isInteractive(story: StorySheetData): boolean {
-    return !story.isComingSoon && story.cta !== 'coming-soon' && !!story.slug;
-}
 </script>
 
 <template>
@@ -260,18 +251,18 @@ function isInteractive(story: StorySheetData): boolean {
                             <!-- Primary CTA -->
                             <div class="mt-1">
                                 <Link
-                                    v-if="isInteractive(story) && story.slug"
+                                    v-if="storyIsInteractive(story) && story.slug"
                                     :href="storyShow(story.slug).url"
                                     class="flex h-12 w-full items-center justify-center rounded-xl bg-cta-fill text-[1.0625rem] font-semibold text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
                                     @click="close"
                                 >
-                                    {{ ctaLabel(story) }}
+                                    {{ storyCtaLabel(story) }}
                                 </Link>
                                 <div
                                     v-else
                                     class="flex h-12 w-full cursor-default items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.035] text-[1.0625rem] font-medium text-white/30"
                                 >
-                                    {{ ctaLabel(story) }}
+                                    {{ storyCtaLabel(story) }}
                                 </div>
                             </div>
                         </div>
