@@ -2,6 +2,7 @@
 import GameCinematicOpening from '@/components/GameCinematicOpening.vue';
 import GameOpeningNarration from '@/components/GameOpeningNarration.vue';
 import GameplayChatCard from '@/components/GameplayChatCard.vue';
+import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
 import GameplaySidebarJournalEventCard from '@/components/GameplaySidebarJournalEventCard.vue';
 import GameplayLayout from '@/layouts/GameplayLayout.vue';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
@@ -283,13 +284,15 @@ onMounted(() => {
     <!-- ── Gameplay phase ── -->
     <GameplayLayout v-else :input-disabled="!canSubmitInput" :game-id="game.id" @submit="handleSubmit" @back="handleBack">
         <template #header>
-            <div class="hidden flex-col gap-1.5 md:flex">
-                <h1 class="text-xl uppercase md:text-3xl">{{ (game as any).currentEvent?.title ?? 'Adventure' }}</h1>
-                <div v-if="(game as any).currentEvent?.chapter?.position">
-                    <span class="rounded-full bg-gray-800 px-2 py-1 text-sm">
-                        Chapter {{ (game as any).currentEvent.chapter.position }}
-                    </span>
-                </div>
+            <div class="flex flex-col items-center gap-3 pb-4 pt-2">
+                <h1 class="text-center text-2xl font-semibold text-white md:text-[28px]">
+                    {{ game.story?.title ?? 'Adventure' }}
+                </h1>
+                <GameplayOrnamentDivider
+                    v-if="(game as any).currentEvent?.chapter?.position"
+                    :label="`Episode ${(game as any).currentEvent.chapter.position}`"
+                    color="#ffffff"
+                />
             </div>
         </template>
 
