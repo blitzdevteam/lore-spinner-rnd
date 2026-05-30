@@ -93,7 +93,7 @@ const storyItems = [
                     >
                         <SwiperSlide v-for="item in storyItems" :key="item.id">
                             <div
-                                class="story-changes-col flex w-full max-w-[280px] flex-col items-center gap-[14px] text-center md:mx-auto md:w-[280px]"
+                                class="story-changes-col flex w-full max-w-[280px] flex-col items-center text-center md:mx-auto md:w-[280px]"
                                 :class="item.colClass"
                             >
                                 <div
@@ -108,7 +108,7 @@ const storyItems = [
                                     <img
                                         :src="item.icon"
                                         alt=""
-                                        class="relative z-[2] shrink-0"
+                                        class="story-changes-col__icon relative z-[2] shrink-0 object-contain"
                                         :class="item.iconImgClass"
                                         :width="item.width"
                                         :height="item.height"
@@ -119,16 +119,12 @@ const storyItems = [
                                         aria-hidden="true"
                                     />
                                 </div>
-                                <div class="flex flex-col gap-5">
-                                    <h3 class="text-center text-[18px] font-semibold leading-normal text-primary">
-                                        {{ item.title }}
-                                    </h3>
-                                    <p
-                                        class="max-w-[270px] text-center text-[14px] font-light leading-[1.43] text-white [text-shadow:0px_0px_26.9px_#0f0f0f]"
-                                    >
-                                        {{ item.description }}
-                                    </p>
-                                </div>
+                                <h3 class="story-changes-col__title text-primary">
+                                    {{ item.title }}
+                                </h3>
+                                <p class="story-changes-col__body text-white">
+                                    {{ item.description }}
+                                </p>
                             </div>
                         </SwiperSlide>
                     </Swiper>
@@ -155,9 +151,43 @@ const storyItems = [
 .story-changes-swiper :deep(.swiper-slide) {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     height: auto !important;
     box-sizing: border-box;
+}
+
+/* Shared vertical rhythm — identical across all three columns */
+.story-changes-col {
+    --col-gap-icon-title: 14px;
+    --col-gap-title-body: 20px;
+    gap: var(--col-gap-icon-title);
+}
+
+.story-changes-col__icon {
+    display: block;
+}
+
+.story-changes-col__title {
+    margin: 0;
+    width: 100%;
+    max-width: 240px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 22px;
+    min-height: 22px;
+}
+
+.story-changes-col__body {
+    margin: calc(var(--col-gap-title-body) - var(--col-gap-icon-title)) 0 0;
+    width: 100%;
+    max-width: 240px;
+    min-height: 40px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 20px;
+    text-shadow: 0px 0px 26.9px #0f0f0f;
 }
 
 @media (min-width: 768px) {
