@@ -7,6 +7,8 @@
 
 @theme {
     --container: 1152px;
+    /** Homepage / landing inner column — matches Figma content frame (~1018px). */
+    --content-width: 1018px;
     --container-gap: max(0px, calc((100vw - var(--container)) / 2));
     --color-background: #000000;
 
@@ -76,6 +78,28 @@ body {
 .container {
     @apply mx-auto w-full px-4;
     max-width: calc(var(--container) + 2rem);
+}
+
+/**
+ * Inner content band shared by hero copy and stacked homepage sections.
+ * Keeps left edges aligned under `.container` horizontal padding on all breakpoints.
+ */
+.container-content {
+    @apply mx-auto w-full max-w-[var(--content-width)];
+}
+
+/**
+ * Vertical rhythm between major homepage blocks (matches Figma section padding).
+ */
+.home-section-y {
+    @apply py-14 md:py-[60px];
+}
+
+/**
+ * Standard gap from section headings / header row to the block below (Figma: 18px).
+ */
+.home-section-gap {
+    @apply flex flex-col gap-[18px];
 }
 
 .bg-glass-effect {

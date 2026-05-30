@@ -1,15 +1,18 @@
 <template>
-    <section class="py-[35px] md:py-10">
+    <!-- Narrow vertical band between carousels; keeps section rhythm without doubling 60px gaps. -->
+    <section class="py-9 md:py-10">
         <div class="container">
-            <div
-                class="xen-banner mx-auto flex w-full max-w-[1018px] items-center justify-center overflow-hidden rounded-[15px] border border-solid border-[#00c6de] p-[20px]"
-            >
-                <p
-                    class="xen-banner__text text-center font-[Inter] text-[18px] font-normal leading-[26px] tracking-[2.52px] text-white"
+            <div class="container-content">
+                <div
+                    class="xen-banner flex items-center justify-center overflow-hidden rounded-[15px] border border-solid border-[#00c6de] p-[20px]"
                 >
-                    Written by humans. Powered by your imagination. Brought to life by
-                    <span class="text-[#00c6de]">Xen</span>
-                </p>
+                    <p
+                        class="xen-banner__text text-center font-[Inter] text-[18px] font-normal leading-[26px] tracking-[2.52px] text-white"
+                    >
+                        Written by humans. Powered by your imagination. Brought to life by
+                        <span class="text-[#00c6de]">Xen</span>
+                    </p>
+                </div>
             </div>
         </div>
     </section>

@@ -130,9 +130,9 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 </script>
 
 <template>
-    <section class="py-14 md:py-[60px]">
+    <section class="home-section-y">
         <div class="container">
-            <div class="mx-auto flex w-full max-w-[1018px] flex-col gap-[14px]">
+            <div class="container-content home-section-gap">
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <div class="max-w-[550px] min-w-0">
                         <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">

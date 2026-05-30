@@ -72,7 +72,7 @@ function isNativeAnchor(href: string): boolean {
 <template>
     <footer class="bg-[#0f0f0f]">
         <div class="container">
-            <div class="mx-auto flex w-full max-w-[1018px] flex-col gap-12 py-16 md:py-20">
+            <div class="container-content flex w-full flex-col gap-12 py-16 md:py-20">
                 <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
                     <!-- Brand -->
                     <div class="max-w-[min(100%,420px)] shrink-0">

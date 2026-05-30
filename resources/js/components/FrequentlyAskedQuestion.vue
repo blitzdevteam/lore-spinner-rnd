@@ -60,18 +60,16 @@ function toggleItem(index: number) {
 </script>
 
 <template>
-    <div class="flex w-full max-w-[1018px] flex-col gap-[14px]">
-        <!-- Title + intro -->
-        <div class="flex w-full flex-col items-center">
+    <div class="home-section-gap w-full">
+        <!-- Title + intro (left-aligned with other homepage sections) -->
+        <div class="flex w-full flex-col items-start">
             <h2 class="flex h-10 w-full items-center text-[26px] font-bold uppercase leading-[33px] text-white">
                 Frequently Asked Questions
             </h2>
-            <div class="flex w-full items-start justify-between">
-                <p class="max-w-[789px] text-[16px] font-normal leading-[26px] text-[#b6b6b6]">
-                    Can’t find what you need? Visit our community forum, reach out on Twitter, or email our
-                    support team.
-                </p>
-            </div>
+            <p class="max-w-[789px] text-[16px] font-normal leading-[26px] text-[#b6b6b6]">
+                Can’t find what you need? Visit our community forum, reach out on Twitter, or email our
+                support team.
+            </p>
         </div>
 
         <!-- Collapsed: Show More -->

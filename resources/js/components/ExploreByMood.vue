@@ -7,9 +7,9 @@ import spiralImg from '@/assets/mood/Spiral.svg';
 </script>
 
 <template>
-    <section class="py-14 md:py-[60px]">
+    <section class="home-section-y">
         <div class="container">
-            <div class="mx-auto flex w-full max-w-[1018px] flex-col gap-[14px]">
+            <div class="container-content home-section-gap">
                 <div class="not-italic">
                     <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">Explore by mood</h2>
                     <p class="text-base font-normal leading-[26px] text-[#b6b6b6]">

@@ -117,7 +117,7 @@ function onPopupLeave() {
 const popupStyle = computed(() => {
     if (!popupPos.value) return {};
     const POPUP_W = 502;
-    const WRAPPER_W = 1018;
+    const WRAPPER_W = 1018; // `.container-content` max width / Figma content frame
     let left = popupPos.value.left;
     if (left + POPUP_W > WRAPPER_W) left = WRAPPER_W - POPUP_W;
     if (left < 0) left = 0;
@@ -128,9 +128,9 @@ const hoveredStory = computed(() => stories.find((s) => s.id === hoveredId.value
 </script>
 
 <template>
-    <section class="py-14 md:py-[60px]">
+    <section class="home-section-y">
         <div class="container">
-            <div class="mx-auto flex w-full max-w-[1018px] flex-col gap-[14px]">
+            <div class="container-content home-section-gap">
 
                 <!-- Section header -->
                 <div class="flex flex-wrap items-end justify-between gap-4">

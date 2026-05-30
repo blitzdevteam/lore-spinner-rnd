@@ -6,9 +6,9 @@ import iconXen from '@/assets/story/right .svg';
 </script>
 
 <template>
-    <section class="py-14 md:py-[60px]">
+    <section class="home-section-y">
         <div class="container">
-            <div class="mx-auto flex w-full max-w-[1018px] flex-col gap-[14px]">
+            <div class="container-content home-section-gap">
                 <div class="w-full">
                     <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">
                         The Story Changes With You

@@ -57,9 +57,9 @@ const props = withDefaults(
         <ComingSoonBanners :story-count="stories.length" />
 
         <!-- FAQ -->
-        <div class="py-14 md:py-[60px]">
+        <div class="home-section-y">
             <div class="container">
-                <div class="mx-auto w-full max-w-[1018px]">
+                <div class="container-content">
                     <FrequentlyAskedQuestion />
                 </div>
             </div>

@@ -9,35 +9,37 @@ import { Link } from '@inertiajs/vue3';
 
 <template>
     <header class="home-header-bar relative z-20">
-        <div
-            class="relative container grid min-h-[7.5rem] grid-cols-[auto_1fr_auto] items-center gap-x-6 gap-y-3 py-3 md:min-h-[7.75rem] md:gap-x-12 md:gap-y-0 md:py-4 lg:gap-x-16"
-        >
-            <Link
-                :href="index().url"
-                class="logo-link shrink-0 justify-self-start pr-1 ring-offset-2 ring-offset-black outline-none focus-visible:ring-2 focus-visible:ring-[#00C6DE] md:pr-2"
+        <div class="relative container py-3 md:py-4">
+            <div
+                class="container-content grid min-h-[7.5rem] grid-cols-[auto_1fr_auto] items-center gap-x-6 gap-y-3 md:min-h-[7.75rem] md:gap-x-12 md:gap-y-0 lg:gap-x-16"
             >
-                <img
-                    :src="mainLogo"
-                    alt="LoreSpinner"
-                    class="brand-logo select-none"
-                    width="530"
-                    height="300"
-                    decoding="async"
-                />
-            </Link>
-
-            <div class="hidden min-w-0 items-center justify-center gap-6 justify-self-center md:flex lg:gap-7">
-                <HomeHeaderMenu />
                 <Link
-                    :href="storiesIndex().url"
-                    class="featured-worlds-btn inline-flex h-9 shrink-0 items-center justify-center rounded-full px-5 text-[15px] font-normal whitespace-nowrap"
+                    :href="index().url"
+                    class="logo-link shrink-0 justify-self-start pr-1 ring-offset-2 ring-offset-black outline-none focus-visible:ring-2 focus-visible:ring-[#00C6DE] md:pr-2"
                 >
-                    Featured worlds
+                    <img
+                        :src="mainLogo"
+                        alt="LoreSpinner"
+                        class="brand-logo select-none"
+                        width="530"
+                        height="300"
+                        decoding="async"
+                    />
                 </Link>
-            </div>
 
-            <div class="flex shrink-0 items-center justify-end justify-self-end">
-                <HomeHeaderProfile />
+                <div class="hidden min-w-0 items-center justify-center gap-6 justify-self-center md:flex lg:gap-7">
+                    <HomeHeaderMenu />
+                    <Link
+                        :href="storiesIndex().url"
+                        class="featured-worlds-btn inline-flex h-9 shrink-0 items-center justify-center rounded-full px-5 text-[15px] font-normal whitespace-nowrap"
+                    >
+                        Featured worlds
+                    </Link>
+                </div>
+
+                <div class="flex shrink-0 items-center justify-end justify-self-end">
+                    <HomeHeaderProfile />
+                </div>
             </div>
         </div>
     </header>

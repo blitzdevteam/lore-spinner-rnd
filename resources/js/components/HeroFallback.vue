@@ -24,41 +24,47 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 
         <HeroBranchChain />
 
-        <div class="relative z-10 flex h-full items-center py-8 md:py-0">
-            <div class="container">
-                <div class="flex max-w-[90%] flex-col gap-[24px] sm:max-w-xl md:max-w-[556px]">
-                    <div class="flex flex-col gap-[15px]">
-                        <h1 class="hero-title max-w-[492px] font-marcellus-sc uppercase text-white">
-                            Alice's Adventures<br />
-                            In Wonderland
-                        </h1>
+        <div
+            class="relative z-10 flex h-full w-full items-center py-8 md:items-start md:pb-10 md:pt-[89px]"
+        >
+            <div class="container w-full">
+                <div class="container-content">
+                    <div
+                        class="flex w-full max-w-[min(556px,100%)] flex-col gap-[24px] md:max-w-[556px] md:pr-6"
+                    >
+                        <div class="flex flex-col gap-[15px]">
+                            <h1 class="hero-title max-w-[492px] font-marcellus-sc uppercase text-white">
+                                Alice's Adventures<br />
+                                In Wonderland
+                            </h1>
 
-                        <div class="font-[Inter] flex flex-col gap-[10px] text-white">
-                            <p class="max-w-[411px] text-[18px] leading-[26px] text-white md:max-w-[411px]">
-                                Step into a world where logic bends and<br />
-                                curiosity leads the way. Nothing is as it seems.
-                            </p>
-                            <div class="flex flex-col gap-0">
-                                <p class="text-[14px] leading-[26px] text-white">
-                                    Written by: <span class="font-normal leading-[26px] text-[#00c6de]">Lewis Carroll</span>
+                            <div class="font-[Inter] flex flex-col gap-[10px] text-white">
+                                <p class="max-w-[411px] text-[18px] leading-[26px] text-white md:max-w-[411px]">
+                                    Step into a world where logic bends and<br />
+                                    curiosity leads the way. Nothing is as it seems.
                                 </p>
-                                <p class="text-[14px] leading-[26px] text-white">
-                                    <span class="leading-[26px] text-[#00c6de]">1.267</span>
-                                    <span class="leading-[26px] text-white"> Branching paths explored</span>
-                                </p>
+                                <div class="flex flex-col gap-0">
+                                    <p class="text-[14px] leading-[26px] text-white">
+                                        Written by: <span class="font-normal leading-[26px] text-[#00c6de]">Lewis Carroll</span>
+                                    </p>
+                                    <p class="text-[14px] leading-[26px] text-white">
+                                        <span class="leading-[26px] text-[#00c6de]">1.267</span>
+                                        <span class="leading-[26px] text-white"> Branching paths explored</span>
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <BaseButton
-                            severity="primary"
-                            type="internal-link"
-                            :href="storiesIndex().url"
-                            class="begin-btn font-[Inter] !h-[53px] w-full max-w-[284px] px-8 text-[16px] font-medium leading-normal text-black"
-                        >
-                            Begin Your Journey
-                        </BaseButton>
+                        <div>
+                            <BaseButton
+                                severity="primary"
+                                type="internal-link"
+                                :href="storiesIndex().url"
+                                class="begin-btn font-[Inter] !h-[53px] w-full max-w-[284px] px-8 text-[16px] font-medium leading-normal text-black"
+                            >
+                                Begin Your Journey
+                            </BaseButton>
+                        </div>
                     </div>
                 </div>
             </div>

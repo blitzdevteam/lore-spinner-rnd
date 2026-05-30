@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
-import BaseContentTitle from '@/components/BaseContentTitle.vue';
 import { GameInterface } from '@/types';
 import { show } from '@/wayfinder/routes/user/games';
 import { LucidePlay, LucideBookOpen, LucideClock } from 'lucide-vue-next';
@@ -42,16 +41,19 @@ const eventTitle = computed(() => {
 </script>
 
 <template>
-    <div class="py-14 md:py-[60px]">
+    <div class="home-section-y">
         <div class="container">
-            <div class="flex flex-col gap-8 md:gap-10">
-                <BaseContentTitle title="Continue Your Story">
-                    <template #description>
+            <div class="container-content home-section-gap">
+                <div>
+                    <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">
+                        Continue Your Story
+                    </h2>
+                    <p class="text-[16px] font-normal leading-[26px] text-[#b6b6b6]">
                         Pick up right where you left off
-                    </template>
-                </BaseContentTitle>
+                    </p>
+                </div>
 
-                <div class="group relative overflow-hidden rounded-xl border border-gray-700/60 bg-gray-800/50 transition-all hover:border-primary-500/40 sm:rounded-2xl">
+                <div class="group relative min-w-0 overflow-hidden rounded-xl border border-gray-700/60 bg-gray-800/50 transition-all hover:border-primary-500/40 sm:rounded-2xl">
                     <div class="flex flex-col sm:flex-row">
                         <!-- Cover image -->
                         <div class="relative h-40 shrink-0 overflow-hidden sm:h-auto sm:w-48 md:w-72">
