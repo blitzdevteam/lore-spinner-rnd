@@ -22,22 +22,22 @@ defineProps<{
 .story-card-slot {
     position: relative;
     flex-shrink: 0;
-    transform-origin: center center;
+    transform-origin: center top;
     transition:
-        transform 0.2s ease,
+        transform 0.22s ease,
         opacity 0.2s ease,
         filter 0.2s ease;
 }
 
 .story-card-slot--dimmed {
-    opacity: 0.65;
-    filter: brightness(0.72);
+    opacity: 0.62;
+    filter: brightness(0.78);
 }
 
 @media (min-width: 1024px) {
     .story-card-slot--focused {
         z-index: 25;
-        transform: scale(1.06);
+        transform: scale(1.05);
     }
 }
 </style>

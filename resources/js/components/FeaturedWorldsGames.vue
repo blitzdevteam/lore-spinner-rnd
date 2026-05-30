@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SectionHeader from '@/components/SectionHeader.vue';
+import HomePortraitStoryCard from '@/components/HomePortraitStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
 import aliceCover from '@/assets/featured/alice.png';
@@ -9,9 +10,8 @@ import nocturneCover from '@/assets/featured/nocturne.png';
 import wizardOzCover from '@/assets/featured/wizardoz.jpg';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
-import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
+import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
-import { Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 defineProps<{
@@ -115,15 +115,6 @@ function toSheetData(game: FeaturedGame): StorySheetData {
 function openSheet(game: FeaturedGame) {
     sheetStory.value = toSheetData(game);
 }
-
-function ctaLabel(game: FeaturedGame): string {
-    return game.playable ? 'Play' : 'Coming soon';
-}
-
-function storyUrl(game: FeaturedGame): string | undefined {
-    return game.playable && game.slug ? storyShow(game.slug).url : undefined;
-}
-
 </script>
 
 <template>
@@ -152,7 +143,7 @@ function storyUrl(game: FeaturedGame): string | undefined {
 
                     <button
                         type="button"
-                        class="slider-arrow absolute top-1/2 left-0 z-10 hidden -translate-x-1/2 -translate-y-1/2 items-center justify-center md:flex"
+                        class="story-slider-arrow story-slider-arrow--edge-left"
                         aria-label="Scroll left"
                         @click="scrollSlider(-1)"
                     >
@@ -164,64 +155,33 @@ function storyUrl(game: FeaturedGame): string | undefined {
                     <div ref="sliderEl" class="story-slider overflow-x-auto">
                         <div class="story-slider-track">
                             <StoryExpandableCard
-                            v-for="game in games"
-                            :key="game.id"
-                            :expanded="isExpanded(game.id)"
-                            :dimmed="isDimmed(game.id)"
-                            :desktop-expand="isDesktopHover"
-                            @mouseenter="isDesktopHover && onCardEnter(game.id)"
-                            @mouseleave="isDesktopHover && onCardLeave()"
-                        >
-                            <!-- On desktop: div that links to story when expanded; button otherwise -->
-                            <component
-                                :is="isDesktopHover ? (storyUrl(game) ? Link : 'div') : 'button'"
-                                :href="isDesktopHover ? storyUrl(game) : undefined"
-                                type="button"
-                                class="fg-card block border-0 bg-transparent p-0 text-left outline-none"
-                                :class="[
-                                    isDesktopHover && isExpanded(game.id) && 'fg-card--focused',
-                                    !isDesktopHover ? 'cursor-pointer' : storyUrl(game) ? 'cursor-pointer no-underline' : 'cursor-default',
-                                ]"
-                                :aria-label="isDesktopHover && storyUrl(game) ? `Open ${game.title}` : `Preview ${game.title}`"
-                                @click="!isDesktopHover && openSheet(game)"
+                                v-for="game in games"
+                                :key="game.id"
+                                :expanded="isExpanded(game.id)"
+                                :dimmed="isDimmed(game.id)"
+                                :desktop-expand="isDesktopHover"
+                                @mouseenter="isDesktopHover && onCardEnter(game.id)"
+                                @mouseleave="isDesktopHover && onCardLeave()"
                             >
-                                <div class="fg-card__inner">
-                                    <div class="fg-card__content">
-                                        <!-- Cover: fixed Figma size (192 × 287) -->
-                                        <div class="fg-card__cover">
-                                            <img
-                                                :src="game.cover"
-                                                :alt="game.title"
-                                                class="fg-card__cover-img"
-                                            />
-                                        </div>
-
-                                        <!-- Title: always visible -->
-                                        <p class="fg-card__title">
-                                            {{ game.title }}
-                                        </p>
-
-                                        <!-- CTA: always at bottom -->
-                                        <div
-                                            class="fg-card__cta"
-                                            :class="
-                                                game.playable
-                                                    ? 'fg-card__cta--active'
-                                                    : 'fg-card__cta--disabled'
-                                            "
-                                        >
-                                            {{ ctaLabel(game) }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </component>
+                                <HomePortraitStoryCard
+                                    :title="game.title"
+                                    :cover="game.cover"
+                                    :themes="game.themes"
+                                    :teaser="game.teaser"
+                                    :branches="game.branches"
+                                    :playable="game.playable"
+                                    :slug="game.slug"
+                                    :focused="isDesktopHover && isExpanded(game.id)"
+                                    :is-desktop-hover="isDesktopHover"
+                                    @preview="openSheet(game)"
+                                />
                             </StoryExpandableCard>
                         </div>
                     </div>
 
                     <button
                         type="button"
-                        class="slider-arrow absolute top-1/2 right-0 z-10 hidden translate-x-1/2 -translate-y-1/2 items-center justify-center md:flex"
+                        class="story-slider-arrow story-slider-arrow--edge-right"
                         aria-label="Scroll right"
                         @click="scrollSlider(1)"
                     >
@@ -236,151 +196,3 @@ function storyUrl(game: FeaturedGame): string | undefined {
 
     <StoryDetailsSheet v-if="!isDesktopHover" :story="sheetStory" @close="sheetStory = null" />
 </template>
-
-<style scoped>
-/* ── Slider ──────────────────────────────────────────────────────────────── */
-.story-slider-viewport {
-    /* Pull adjacent sections in so hover padding does not add page rhythm */
-    margin-block: -0.75rem;
-}
-
-@media (min-width: 1024px) {
-    .story-slider-viewport {
-        margin-block: -2rem;
-    }
-}
-
-.story-slider {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-.story-slider::-webkit-scrollbar {
-    display: none;
-}
-
-.story-slider-track {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.625rem;
-    padding: 0.75rem 0.25rem 1rem;
-}
-
-@media (min-width: 1024px) {
-    .story-slider-track {
-        /* Room for scale(1.06) + cyan glow / shadow without clipping */
-        padding: 2.5rem 1rem 3rem;
-    }
-}
-
-/* ── Arrow buttons ───────────────────────────────────────────────────────── */
-.slider-arrow {
-    width: 2.125rem;
-    height: 2.125rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    transition: background 0.2s;
-}
-.slider-arrow:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-/* ── Card ────────────────────────────────────────────────────────────────── */
-.fg-card {
-    /* reset button/link */
-    text-decoration: none;
-}
-
-.fg-card__inner {
-    border-radius: 0.5rem;
-    border: 1px solid #373737;
-    background: #262626;
-    padding: 0.375rem;
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.fg-card__content {
-    display: flex;
-    width: min(12rem, 78vw);
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-@media (min-width: 768px) {
-    .fg-card__content {
-        width: 12rem;
-    }
-}
-
-/* Cover: Figma 192 × 287 */
-.fg-card__cover {
-    position: relative;
-    height: 17.9375rem;
-    width: 100%;
-    overflow: hidden;
-    border-radius: 0.3125rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    flex-shrink: 0;
-}
-
-.fg-card__cover-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Title */
-.fg-card__title {
-    padding: 0 1px;
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1.4;
-    color: #fff;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-/* CTA: always at bottom */
-.fg-card__cta {
-    display: flex;
-    height: 2.25rem;
-    width: 100%;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.375rem;
-    font-size: 1.125rem;
-    font-weight: 500;
-}
-
-.fg-card__cta--active {
-    background: var(--color-cta-fill, #6fafba);
-    color: var(--color-cta-text, #000);
-    transition: background 0.18s ease;
-}
-
-.fg-card__cta--disabled {
-    border: 1px solid #4d4d4d;
-    background: #3f3f3f;
-    color: #8e8e8e;
-}
-
-/* ── Desktop focused hover ───────────────────────────────────────────────── */
-@media (min-width: 1024px) {
-    .fg-card--focused .fg-card__inner {
-        border-color: rgba(111, 175, 186, 0.55);
-        box-shadow:
-            0 20px 44px rgba(0, 0, 0, 0.58),
-            0 0 36px rgba(111, 175, 186, 0.32),
-            0 0 12px rgba(111, 175, 186, 0.22);
-    }
-}
-</style>

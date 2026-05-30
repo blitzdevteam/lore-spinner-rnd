@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import './story-slider.css';
 /** Ensures Vue templates are scanned so arbitrary utilities (e.g. hero CTA) exist in prod CSS. */
 @source '../js/**/*.vue';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
