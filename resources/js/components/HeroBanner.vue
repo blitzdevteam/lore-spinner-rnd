@@ -413,18 +413,18 @@ function goNext() {
     background:
         linear-gradient(
             135deg,
-            color-mix(in srgb, var(--color-secondary-300) 22%, transparent) 0%,
-            color-mix(in srgb, var(--color-primary-700) 28%, rgba(0, 0, 0, 0.45)) 100%
+            color-mix(in srgb, var(--color-secondary-300) 10%, transparent) 0%,
+            color-mix(in srgb, var(--color-primary-700) 14%, rgba(0, 0, 0, 0.55)) 100%
         ) !important;
-    border: 1px solid color-mix(in srgb, var(--color-secondary-300) 72%, rgba(255, 255, 255, 0.4)) !important;
+    border: 1px solid color-mix(in srgb, var(--color-secondary-300) 38%, rgba(255, 255, 255, 0.18)) !important;
     box-shadow:
-        0 0 32px color-mix(in srgb, var(--color-secondary-300) 28%, transparent),
-        inset 0 1px 0 color-mix(in srgb, var(--color-secondary-300) 35%, rgba(255, 255, 255, 0.2)) !important;
-    color: #fff !important;
-    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
+        0 0 14px color-mix(in srgb, var(--color-secondary-300) 10%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--color-secondary-300) 14%, rgba(255, 255, 255, 0.08)) !important;
+    color: rgba(255, 255, 255, 0.88) !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
     cursor: default;
     pointer-events: none;
-    opacity: 1;
+    opacity: 0.88;
 }
 
 .begin-btn--coming-soon:hover,
@@ -432,13 +432,13 @@ function goNext() {
     background:
         linear-gradient(
             135deg,
-            color-mix(in srgb, var(--color-secondary-300) 22%, transparent) 0%,
-            color-mix(in srgb, var(--color-primary-700) 28%, rgba(0, 0, 0, 0.45)) 100%
+            color-mix(in srgb, var(--color-secondary-300) 10%, transparent) 0%,
+            color-mix(in srgb, var(--color-primary-700) 14%, rgba(0, 0, 0, 0.55)) 100%
         ) !important;
-    border-color: color-mix(in srgb, var(--color-secondary-300) 72%, rgba(255, 255, 255, 0.4)) !important;
+    border-color: color-mix(in srgb, var(--color-secondary-300) 38%, rgba(255, 255, 255, 0.18)) !important;
     box-shadow:
-        0 0 32px color-mix(in srgb, var(--color-secondary-300) 28%, transparent),
-        inset 0 1px 0 color-mix(in srgb, var(--color-secondary-300) 35%, rgba(255, 255, 255, 0.2)) !important;
+        0 0 14px color-mix(in srgb, var(--color-secondary-300) 10%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--color-secondary-300) 14%, rgba(255, 255, 255, 0.08)) !important;
 }
 
 .hero-arrow {
