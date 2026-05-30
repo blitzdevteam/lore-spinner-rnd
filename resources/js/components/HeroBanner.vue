@@ -195,12 +195,15 @@ function goNext() {
                 @slide-change="onSlideChange"
             >
                 <SwiperSlide v-for="slide in slides" :key="slide.slug" class="hero-slide">
-                    <img
-                        :src="slide.image"
-                        alt=""
-                        class="hero-slide-image h-full w-full object-cover"
-                        :class="slide.imagePosition"
-                    />
+                    <div class="hero-slide-media">
+                        <img
+                            :src="slide.image"
+                            alt=""
+                            class="hero-slide-image h-full w-full object-cover"
+                            :class="slide.imagePosition"
+                        />
+                        <div class="hero-slide-gradient" aria-hidden="true" />
+                    </div>
                 </SwiperSlide>
             </Swiper>
 
@@ -299,8 +302,29 @@ function goNext() {
     position: relative;
 }
 
+.hero-slide-media {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
 .hero-slide-image {
     display: block;
+}
+
+.hero-slide-gradient {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    /* LoreSpinner Desktop Hero Readability Gradient — left-to-right cinematic fade */
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.86) 0%,
+        rgba(0, 0, 0, 0.7) 16%,
+        rgba(0, 0, 0, 0.42) 30%,
+        rgba(0, 0, 0, 0.16) 40%,
+        rgba(0, 0, 0, 0) 46%
+    );
 }
 
 .hero-copy-wrap {
@@ -327,6 +351,7 @@ function goNext() {
     max-width: 18ch;
     font-size: clamp(1.625rem, 7vw, 2.25rem);
     line-height: 1.12;
+    text-shadow: 0 0 21.2px rgba(0, 0, 0, 0.85);
 }
 
 .hero-meta {
@@ -339,11 +364,13 @@ function goNext() {
     max-width: 38rem;
     font-size: 0.9375rem;
     line-height: 1.55;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.75);
 }
 
 .hero-stat-line {
     font-size: 0.8125rem;
     line-height: 1.5;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.75);
 }
 
 .begin-btn {
