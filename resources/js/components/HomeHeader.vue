@@ -8,16 +8,25 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <header class="home-header-bar relative z-20 border-b border-gray-900 bg-black">
-        <div class="container grid min-h-[72px] grid-cols-[auto_1fr_auto] items-center gap-3 py-2 md:min-h-[80px] md:gap-6 md:py-0">
+    <header class="home-header-bar relative z-20">
+        <div
+            class="relative container grid min-h-[7.5rem] grid-cols-[auto_1fr_auto] items-center gap-x-6 gap-y-3 py-3 md:min-h-[7.75rem] md:gap-x-12 md:gap-y-0 md:py-4 lg:gap-x-16"
+        >
             <Link
                 :href="index().url"
-                class="shrink-0 justify-self-start outline-none ring-offset-2 ring-offset-black focus-visible:ring-2 focus-visible:ring-[#00C6DE]"
+                class="logo-link shrink-0 justify-self-start pr-1 ring-offset-2 ring-offset-black outline-none focus-visible:ring-2 focus-visible:ring-[#00C6DE] md:pr-2"
             >
-                <img :src="mainLogo" alt="LoreSpinner" class="h-12 w-auto md:h-36" width="300" height="72" />
+                <img
+                    :src="mainLogo"
+                    alt="LoreSpinner"
+                    class="brand-logo select-none"
+                    width="530"
+                    height="300"
+                    decoding="async"
+                />
             </Link>
 
-            <div class="hidden min-w-0 items-center justify-center gap-6 justify-self-center md:flex lg:gap-8">
+            <div class="hidden min-w-0 items-center justify-center gap-6 justify-self-center md:flex lg:gap-7">
                 <HomeHeaderMenu />
                 <Link
                     :href="storiesIndex().url"
@@ -35,6 +44,40 @@ import { Link } from '@inertiajs/vue3';
 </template>
 
 <style scoped>
+.home-header-bar {
+    background:rgba(0, 0, 0);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* 6rem lockup on md+; drop max-width caps so the asset isn’t letterboxed smaller than the box */
+.brand-logo {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: clamp(3.75rem, 10vw, 6rem);
+    object-fit: contain;
+    object-position: left center;
+}
+
+@media (min-width: 768px) {
+    .brand-logo {
+        height: 6rem;
+    }
+}
+
+.logo-link {
+    display: inline-flex;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    .logo-link {
+        min-height: 6rem;
+    }
+}
+
 .featured-worlds-btn {
     background: linear-gradient(180deg, #3a4d52 0%, #2c3b3f 100%);
     color: #c8ced1;

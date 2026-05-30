@@ -143,7 +143,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideCl
             <img
                 :src="auth.avatar"
                 alt=""
-                class="size-12 cursor-pointer rounded-full border-2 border-[#00C6DE] outline-2 outline-transparent transition hover:brightness-110"
+                class="size-[45px] cursor-pointer rounded-full border-2 border-[#00C6DE] outline-2 outline-transparent transition hover:brightness-110"
             />
         </button>
     </template>
