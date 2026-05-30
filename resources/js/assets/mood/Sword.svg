@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Sword" clip-path="url(#clip0_0_4)">
+<g id="Vector">
+</g>
+<path id="Vector_2" d="M6.87915 14.2926L4.79319 16.3786C4.40218 16.7696 4.40218 17.4036 4.79319 17.7946L14.2039 27.2053C14.5949 27.5963 15.2289 27.5963 15.6199 27.2053L17.7058 25.1193C18.0969 24.7283 18.0969 24.0943 17.7058 23.7033L8.29514 14.2926C7.90412 13.9016 7.27017 13.9016 6.87915 14.2926Z" stroke="var(--stroke-0, #58D9A1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M20 12L13 19" stroke="var(--stroke-0, #58D9A1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M10.055 16.0537L19 5H27V13L15.9462 21.945" stroke="var(--stroke-0, #58D9A1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_5" d="M7.7497 20.7499L4.0422 24.4561C3.94922 24.549 3.87546 24.6593 3.82514 24.7807C3.77481 24.9021 3.74891 25.0322 3.74891 25.1636C3.74891 25.295 3.77481 25.4251 3.82514 25.5465C3.87546 25.6679 3.94922 25.7782 4.0422 25.8711L6.1247 27.9574C6.21757 28.0503 6.32786 28.1241 6.44926 28.1744C6.57065 28.2247 6.70078 28.2506 6.8322 28.2506C6.96361 28.2506 7.09374 28.2247 7.21514 28.1744C7.33653 28.1241 7.44682 28.0503 7.5397 27.9574L11.2497 24.2499" stroke="var(--stroke-0, #58D9A1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_0_4">
+<rect width="32" height="32" fill="white"/>
+</clipPath>
+</defs>
+</svg>

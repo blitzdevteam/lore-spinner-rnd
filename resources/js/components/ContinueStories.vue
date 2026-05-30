@@ -42,7 +42,7 @@ const eventTitle = computed(() => {
 </script>
 
 <template>
-    <div class="py-10 md:py-18">
+    <div class="py-14 md:py-[60px]">
         <div class="container">
             <div class="flex flex-col gap-8 md:gap-10">
                 <BaseContentTitle title="Continue Your Story">
