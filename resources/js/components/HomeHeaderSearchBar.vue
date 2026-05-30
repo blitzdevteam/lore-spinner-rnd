@@ -15,6 +15,6 @@ import { Search } from 'lucide-vue-next';
 <style scoped>
 :deep(.header-search.p-inputtext:enabled:hover),
 :deep(.header-search.p-inputtext:enabled:focus) {
-    border-color: #00c6de;
+    border-color: var(--color-primary);
 }
 </style>

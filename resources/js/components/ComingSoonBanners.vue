@@ -229,7 +229,7 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
                     <Transition name="coming-soon-popup">
                         <div
                             v-if="hoveredId && hoveredCard && popupPos"
-                            class="absolute z-30 flex h-[444px] w-[282px] flex-col rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(0,198,222,0.4)]"
+                            class="absolute z-30 flex h-[444px] w-[282px] flex-col rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
                             :style="popupStyle"
                             @mouseenter="onPopupEnter"
                             @mouseleave="onPopupLeave"

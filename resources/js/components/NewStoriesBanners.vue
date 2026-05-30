@@ -248,7 +248,7 @@ function coverForPopup(story: NewStory): string {
                     <Transition name="story-popup">
                         <div
                             v-if="hoveredId && hoveredStory && popupPos"
-                            class="absolute z-30 flex w-[502px] flex-row rounded-[8px] border border-primary bg-[#262626] px-[12px] py-[6px] shadow-[0_0_18.3px_rgba(0,198,222,0.4)]"
+                            class="absolute z-30 flex w-[502px] flex-row rounded-[8px] border border-primary bg-[#262626] px-[12px] py-[6px] shadow-[0_0_18.3px_rgba(111,175,186,0.4)]"
                             :style="popupStyle"
                             @mouseenter="onPopupEnter"
                             @mouseleave="onPopupLeave"
@@ -287,14 +287,12 @@ function coverForPopup(story: NewStory): string {
                                 <!-- CTA button pushed to bottom -->
                                 <div class="mt-auto">
                                     <template v-if="hoveredStory.playable && hoveredStory.slug">
-                                        <div class="flex h-9 items-center justify-center rounded-md border border-[#7e7e7e]">
-                                            <Link
-                                                :href="storyShow(hoveredStory.slug).url"
-                                                class="flex h-full w-full items-center justify-center rounded-[6px] border border-primary bg-primary text-[18px] font-medium text-black no-underline"
-                                            >
-                                                Play
-                                            </Link>
-                                        </div>
+                                        <Link
+                                            :href="storyShow(hoveredStory.slug).url"
+                                            class="flex h-9 w-full items-center justify-center rounded-[6px] bg-cta-fill text-[18px] font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                                        >
+                                            Play
+                                        </Link>
                                     </template>
                                     <template v-else>
                                         <div class="flex h-9 items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-[18px] font-medium text-[#8e8e8e]">

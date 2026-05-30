@@ -14,7 +14,7 @@ import { Link } from '@inertiajs/vue3';
             >
                 <Link
                     :href="index().url"
-                    class="logo-link shrink-0 justify-self-start pr-1 ring-offset-2 ring-offset-black outline-none focus-visible:ring-2 focus-visible:ring-[#00C6DE] md:pr-2"
+                    class="logo-link shrink-0 justify-self-start pr-1 ring-offset-2 ring-offset-black outline-none focus-visible:ring-2 focus-visible:ring-primary md:pr-0"
                 >
                     <img
                         :src="mainLogo"

@@ -209,7 +209,7 @@ function branchesForStory(story: StoryInterface): string | null {
                             <Transition name="card-popup">
                                 <div
                                     v-if="hoveredStoryId && hoveredStory && popupPos"
-                                    class="absolute z-50 flex w-[282px] flex-col gap-[10px] rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(0,198,222,0.4)]"
+                                    class="absolute z-50 flex w-[282px] flex-col gap-[10px] rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
                                     :style="popupStyle"
                                     @mouseenter="onPopupEnter"
                                     @mouseleave="onPopupLeave"
@@ -257,14 +257,12 @@ function branchesForStory(story: StoryInterface): string | null {
                             </div>
 
                             <template v-if="hoveredPublished">
-                                <div class="flex h-9 w-full items-center justify-center rounded-md border border-[#7e7e7e]">
-                                    <Link
-                                        :href="storyShow(hoveredStory.slug).url"
-                                        class="flex h-full w-full items-center justify-center rounded-[6px] border border-primary bg-primary text-lg font-medium text-black no-underline"
-                                    >
-                                        Play
-                                    </Link>
-                                </div>
+                                <Link
+                                    :href="storyShow(hoveredStory.slug).url"
+                                    class="flex h-9 w-full items-center justify-center rounded-[6px] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                                >
+                                    Play
+                                </Link>
                             </template>
                             <template v-else>
                                 <div

@@ -231,14 +231,12 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
 
                                 <!-- Button -->
                                 <template v-if="game.playable && game.slug">
-                                    <div class="flex h-9 w-[192px] items-center justify-center rounded-md border border-[#7e7e7e]">
-                                        <Link
-                                            :href="storyShow(game.slug).url"
-                                            class="flex h-full w-full items-center justify-center rounded-[6px] border border-primary bg-primary text-lg font-medium text-black no-underline"
-                                        >
-                                            Play
-                                        </Link>
-                                    </div>
+                                    <Link
+                                        :href="storyShow(game.slug).url"
+                                        class="flex h-9 w-[192px] items-center justify-center rounded-[6px] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                                    >
+                                        Play
+                                    </Link>
                                 </template>
                                 <template v-else>
                                     <div class="flex h-9 w-[192px] items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">
@@ -263,7 +261,7 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                     <Transition name="card-popup">
                         <div
                             v-if="hoveredId && hoveredGame && popupPos"
-                            class="absolute z-30 flex w-[282px] flex-col gap-[10px] rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(0,198,222,0.4)]"
+                            class="absolute z-30 flex w-[282px] flex-col gap-[10px] rounded-[8px] border border-primary bg-[#262626] p-[10px] shadow-[0_0_36.6px_rgba(111,175,186,0.4)]"
                             :style="popupStyle"
                             @mouseenter="onPopupEnter"
                             @mouseleave="onPopupLeave"
@@ -302,14 +300,12 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
 
                             <!-- CTA button -->
                             <template v-if="hoveredGame.playable && hoveredGame.slug">
-                                <div class="flex h-9 w-full items-center justify-center rounded-md border border-[#7e7e7e]">
-                                    <Link
-                                        :href="storyShow(hoveredGame.slug).url"
-                                        class="flex h-full w-full items-center justify-center rounded-[6px] border border-primary bg-primary text-lg font-medium text-black no-underline"
-                                    >
-                                        Play
-                                    </Link>
-                                </div>
+                                <Link
+                                    :href="storyShow(hoveredGame.slug).url"
+                                    class="flex h-9 w-full items-center justify-center rounded-[6px] bg-cta-fill text-lg font-medium text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                                >
+                                    Play
+                                </Link>
                             </template>
                             <template v-else>
                                 <div class="flex h-9 w-full items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-lg font-medium text-[#8e8e8e]">

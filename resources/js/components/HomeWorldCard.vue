@@ -25,7 +25,7 @@ const storyUrl = computed(() => show(props.story.slug).url);
 </script>
 
 <template>
-    <!-- Library card — Figma node 6625:737+: outer w-195 / inner w-182, cover h-271, Play rail #7e7e7e + primary fill -->
+    <!-- Library card — Figma node 6625:737+: outer w-195 / inner w-182, cover h-271 -->
     <div
         class="world-card box-border flex w-[195px] shrink-0 items-center justify-center rounded-[8px] border border-[#373737] bg-[#1c1c1c] p-[6px] transition-opacity duration-200"
         :class="dimmed ? 'opacity-[0.3]' : 'opacity-100'"
@@ -61,26 +61,18 @@ const storyUrl = computed(() => show(props.story.slug).url);
             </div>
 
             <div v-if="showButton" class="w-full shrink-0">
-                <div
+                <Link
                     v-if="isPublished"
-                    class="flex h-[36px] w-full items-stretch justify-center rounded-[6px] bg-[#7e7e7e] p-0"
+                    :href="storyUrl"
+                    class="play-btn flex h-[36px] w-full items-center justify-center rounded-[6px] bg-cta-fill px-1 text-center text-[18px] font-medium text-cta-text transition-colors hover:bg-cta-hover active:bg-cta-active"
                 >
-                    <Link
-                        :href="storyUrl"
-                        class="play-btn flex min-h-0 min-w-0 flex-1 items-center justify-center rounded-[6px] border border-primary bg-primary px-1 text-center text-[18px] font-medium text-black hover:opacity-90"
-                    >
-                        Play
-                    </Link>
-                </div>
+                    Play
+                </Link>
                 <div
                     v-else
-                    class="flex h-[36px] w-full items-stretch justify-center rounded-[6px] bg-[#7e7e7e] p-0"
+                    class="flex h-[36px] w-full cursor-default items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-center text-[18px] font-medium text-[#8e8e8e]"
                 >
-                    <div
-                        class="flex min-h-0 min-w-0 flex-1 cursor-default items-center justify-center rounded-[6px] border border-[#4d4d4d] bg-[#3f3f3f] text-center text-[18px] font-medium text-[#8e8e8e]"
-                    >
-                        Coming soon
-                    </div>
+                    Coming soon
                 </div>
             </div>
         </div>

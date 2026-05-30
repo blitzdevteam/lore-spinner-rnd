@@ -1,10 +1,10 @@
 <svg width="38" height="28" viewBox="0 0 38 28" fill="none" xmlns="http://www.w3.org/2000/svg">
 <line x1="5.51254" y1="13.0472" x2="15.2157" y2="4.60974" stroke="#FFBE58" stroke-width="1.2"/>
 <line y1="-0.6" x2="12.5857" y2="-0.6" transform="matrix(0.770962 -0.636881 0.675189 0.737644 21.5156 24.0469)" stroke="white" stroke-width="1.2"/>
-<line x1="30.9758" y1="12.9812" x2="21.0185" y2="4.84535" stroke="#00C6DE" stroke-width="1.2"/>
+<line x1="30.9758" y1="12.9812" x2="21.0185" y2="4.84535" stroke="#6FAFBA" stroke-width="1.2"/>
 <line y1="-0.6" x2="10.9414" y2="-0.6" transform="matrix(-0.813132 -0.58208 0.621434 -0.783467 15.6094 22.4434)" stroke="#C93434" stroke-width="1.2"/>
 <circle cx="18.3516" cy="3.58594" r="3.05859" stroke="#FFBE58" stroke-width="1.05469"/>
 <circle cx="33.5391" cy="14.5547" r="3.05859" stroke="white" stroke-width="1.05469"/>
-<circle cx="18.3516" cy="24.2578" r="3.05859" stroke="#00C6DE" stroke-width="1.05469"/>
+<circle cx="18.3516" cy="24.2578" r="3.05859" stroke="#6FAFBA" stroke-width="1.05469"/>
 <circle cx="3.58594" cy="14.9766" r="3.16406" stroke="#C93434" stroke-width="0.84375"/>
 </svg>

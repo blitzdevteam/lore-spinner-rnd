@@ -20,7 +20,7 @@ import xenBannerBg from '@/assets/story/xen.png';
                         class="xen-banner__text relative z-[1] text-center font-[Inter] text-[18px] font-normal leading-[26px] tracking-[2.52px] text-white"
                     >
                         Written by humans. Powered by your imagination. Brought to life by
-                        <span class="text-[#00c6de]">Xen</span>
+                        <span class="text-primary">Xen</span>
                     </p>
                 </div>
             </div>

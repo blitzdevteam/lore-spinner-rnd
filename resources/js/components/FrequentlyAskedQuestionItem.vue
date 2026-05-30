@@ -17,7 +17,7 @@ const emit = defineEmits<{
         class="w-full cursor-pointer rounded-[14px] border border-solid transition-[box-shadow,border-color] duration-200"
         :class="
             expanded
-                ? 'flex flex-col items-center bg-[#292929] px-[14px] py-6 shadow-[0_0_18.3px_rgba(106,218,203,0.1)]'
+                ? 'flex flex-col items-center bg-[#292929] px-[14px] py-6 shadow-[0_0_18.3px_rgba(111,175,186,0.1)]'
                 : 'flex min-h-[70px] flex-col items-center justify-center bg-[#292929] px-[14px] py-[22px]'
         "
         :style="

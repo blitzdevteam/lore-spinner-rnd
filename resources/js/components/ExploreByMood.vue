@@ -564,7 +564,7 @@ onUnmounted(() => {
                                                 <template v-if="game.playable && game.slug">
                                                     <Link
                                                         :href="storyShow(game.slug).url"
-                                                        class="mt-1 inline-flex h-9 w-full items-center justify-center rounded-lg border border-primary bg-primary text-sm font-semibold text-black no-underline transition hover:brightness-110"
+                                                        class="mt-1 inline-flex h-9 w-full items-center justify-center rounded-lg bg-cta-fill text-sm font-semibold text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
                                                         @click="closeMood"
                                                     >
                                                         Play

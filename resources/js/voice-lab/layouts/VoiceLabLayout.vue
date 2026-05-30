@@ -61,9 +61,9 @@ const emit = defineEmits<{
 .xen-title {
     background: linear-gradient(
         135deg,
-        var(--color-primary-200, #8beee8) 0%,
-        var(--color-primary-400, #2bd9d0) 40%,
-        var(--color-primary-600, #089490) 100%
+        var(--color-primary-200, #d1e4e8) 0%,
+        var(--color-primary-400, #8fcbd3) 40%,
+        var(--color-primary-600, #5a96a1) 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -72,12 +72,12 @@ const emit = defineEmits<{
 
 /* Back button — tiffany ring on hover */
 .xen-back-btn {
-    color: var(--color-primary-300, #5fdbf0) !important;
-    border-color: color-mix(in srgb, var(--color-primary-500, #00c6de) 25%, transparent) !important;
+    color: var(--color-primary-300, #8fcbd3) !important;
+    border-color: color-mix(in srgb, var(--color-primary-500, #6fafba) 25%, transparent) !important;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 .xen-back-btn:hover {
-    border-color: color-mix(in srgb, var(--color-primary-400, #2bd9d0) 55%, transparent) !important;
+    border-color: color-mix(in srgb, var(--color-primary-400, #8fcbd3) 55%, transparent) !important;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 12px rgba(0, 0, 0, 0.45);
 }
 </style>

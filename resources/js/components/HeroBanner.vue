@@ -254,10 +254,10 @@ function goNext() {
                                     <div class="hero-stats flex flex-col gap-0">
                                         <p v-if="activeSlide.author" class="hero-stat-line text-white">
                                             Written by:
-                                            <span class="text-[#00c6de]">{{ activeSlide.author }}</span>
+                                            <span class="text-primary">{{ activeSlide.author }}</span>
                                         </p>
                                         <p class="hero-stat-line text-white">
-                                            <span class="text-[#00c6de]">{{ activeSlide.branchingCount }}</span>
+                                            <span class="text-primary">{{ activeSlide.branchingCount }}</span>
                                             <span> Branching paths explored</span>
                                         </p>
                                     </div>
@@ -268,7 +268,7 @@ function goNext() {
                                 severity="primary"
                                 type="internal-link"
                                 :href="activeSlide.storyUrl"
-                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[48px] w-full items-center justify-center overflow-visible whitespace-nowrap px-6 py-3 text-[15px] font-medium !leading-none text-black sm:min-h-[53px] sm:max-w-[284px] sm:px-8 sm:text-[16px]"
+                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[48px] w-full items-center justify-center overflow-visible whitespace-nowrap px-6 py-3 text-[15px] font-medium !leading-none sm:min-h-[53px] sm:max-w-[284px] sm:px-8 sm:text-[16px]"
                             >
                                 Begin Your Journey
                             </BaseButton>
@@ -616,7 +616,7 @@ function goNext() {
 
 .hero-swiper .swiper-pagination-bullet-active {
     width: 40px;
-    background: #00c6de;
+    background: var(--color-primary);
 }
 
 @media (min-width: 768px) {

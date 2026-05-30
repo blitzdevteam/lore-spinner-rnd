@@ -50,10 +50,10 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
                                 </p>
                                 <div class="flex flex-col gap-0">
                                     <p class="text-[14px] leading-[26px] text-white">
-                                        Written by: <span class="font-normal leading-[26px] text-[#00c6de]">Lewis Carroll</span>
+                                        Written by: <span class="font-normal leading-[26px] text-primary">Lewis Carroll</span>
                                     </p>
                                     <p class="text-[14px] leading-[26px] text-white">
-                                        <span class="leading-[26px] text-[#00c6de]">1.267</span>
+                                        <span class="leading-[26px] text-primary">1.267</span>
                                         <span class="leading-[26px] text-white"> Branching paths explored</span>
                                     </p>
                                 </div>
@@ -65,7 +65,7 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
                                 severity="primary"
                                 type="internal-link"
                                 :href="storiesIndex().url"
-                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[53px] w-full max-w-[284px] items-center justify-center overflow-visible whitespace-nowrap px-8 py-3 text-[16px] font-medium !leading-none text-black"
+                                class="begin-btn font-[Inter] !box-border !flex !h-auto !min-h-[53px] w-full max-w-[284px] items-center justify-center overflow-visible whitespace-nowrap px-8 py-3 text-[16px] font-medium !leading-none"
                             >
                                 Begin Your Journey
                             </BaseButton>

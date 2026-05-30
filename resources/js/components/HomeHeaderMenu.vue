@@ -48,24 +48,24 @@ const moodLinks: { title: string; slug: string; href: string }[] = [
 const underlineSlotClass = (active: boolean): string =>
     [
         'pointer-events-none mt-2 h-[3px] w-16 shrink-0 rounded-bl-[7px] rounded-br-[7px]',
-        active ? 'bg-[#00C6DE]' : 'invisible',
+        active ? 'bg-primary' : 'invisible',
     ].join(' ');
 const navItemShell =
-    'relative flex h-[75px] w-[100px] items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-[#00C6DE] focus-visible:ring-offset-2 focus-visible:ring-offset-black';
+    'relative flex h-[75px] w-[100px] items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black';
 const navStack = 'relative flex flex-col items-center';
 const navLabelRow =
     'relative z-[1] flex items-center justify-center p-[10px] font-[Inter] text-[16px] font-medium leading-[33px] transition-colors';
 
-const inactiveText = 'text-[#7E7E7E] hover:text-[#00C6DE]';
-const activeText = 'text-[#00C6DE]';
+const inactiveText = 'text-[#7E7E7E] hover:text-primary';
+const activeText = 'text-primary';
 
 const navClass = (active: boolean): string => `${navLabelRow} ${active ? activeText : inactiveText}`;
 const moodItemClass = (slug: string): string =>
     [
         'flex h-[30px] w-full items-center rounded-[8px] px-[15px] font-[Inter] text-[14px] font-normal leading-[33px] text-white outline-none transition-colors first:text-[16px]',
         activeMood.value === slug
-            ? 'border border-[#00C6DE] bg-[#2B4548]'
-            : 'border border-transparent hover:border-[#00C6DE] hover:bg-[#2B4548] focus-visible:border-[#00C6DE] focus-visible:bg-[#2B4548]',
+            ? 'border border-primary bg-cta-fill'
+            : 'border border-transparent hover:border-primary hover:bg-cta-fill focus-visible:border-primary focus-visible:bg-cta-fill',
     ].join(' ');
 </script>
 
@@ -151,7 +151,7 @@ const moodItemClass = (slug: string): string =>
 <style scoped>
 .moods-dropdown {
     background:
-        linear-gradient(180deg, rgba(0, 198, 222, 0.2) 1.34%, rgba(102, 102, 102, 0) 12.75%),
+        linear-gradient(180deg, rgba(111, 175, 186, 0.2) 1.34%, rgba(102, 102, 102, 0) 12.75%),
         linear-gradient(0deg, rgba(2, 3, 3, 0.58), rgba(2, 3, 3, 0.58)), rgba(23, 26, 27, 0.86);
     box-shadow:
         0 4px 80px rgba(0, 0, 0, 0.2),

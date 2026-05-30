@@ -14,19 +14,26 @@
     --container-gap: max(0px, calc((100vw - var(--container)) / 2));
     --color-background: #000000;
 
-    /* Tiffany Blue — design primary (#00C6DE) as 500 anchor */
-    --color-primary-50:  #ecfbfd;
-    --color-primary-100: #cff6fb;
-    --color-primary-200: #9fecf7;
-    --color-primary-300: #5fdbf0;
-    --color-primary-400: #23cae8;
-    --color-primary-500: #00c6de;
-    --color-primary-600: #009eb5;
-    --color-primary-700: #008096;
-    --color-primary-800: #086979;
-    --color-primary-900: #0c5765;
-    --color-primary-950: #083947;
-    --color-primary: #00c6de;
+    /* Teal slate — accent #6FAFBA at 500; CTA fills on 700–950 */
+    --color-primary-50:  #f3f7f8;
+    --color-primary-100: #e8f0f2;
+    --color-primary-200: #d1e4e8;
+    --color-primary-300: #8fcbd3;
+    --color-primary-400: #7eb8c4;
+    --color-primary-500: #6fafba;
+    --color-primary-600: #5a96a1;
+    --color-primary-700: #1e5058;
+    --color-primary-800: #163f46;
+    --color-primary-900: #133840;
+    --color-primary-950: #102c32;
+    --color-primary: #6fafba;
+
+    --color-cta-fill: #163f46;
+    --color-cta-hover: #1e5058;
+    --color-cta-active: #102c32;
+    --color-cta-border: #6fafba;
+    --color-cta-border-hover: #8fcbd3;
+    --color-cta-text: #f3f4ee;
 
     --color-secondary-50: #fff8eb;
     --color-secondary-100: #ffebc6;

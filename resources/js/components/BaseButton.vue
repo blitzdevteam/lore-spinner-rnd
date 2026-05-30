@@ -58,8 +58,8 @@ const componentTagMap: Record<ButtonType, string | typeof Link> = {
 };
 
 const severityClasses: Record<Severity, string> = {
-    primary: 'bg-primary-400 text-black outline-primary-200/20 border-transparent',
-    'primary-muted-outline': 'bg-primary-300/20 text-black border-primary-300/75 text-primary-300 outline-primary-200/20',
+    primary: 'bg-cta-fill text-cta-text !border-0 outline-primary-500/20',
+    'primary-muted-outline': 'bg-primary-800/20 text-cta-text border-cta-border/75 text-primary-300 outline-primary-500/20',
     secondary: 'bg-secondary-400 text-black outline-secondary-400/30 border-transparent',
     'secondary-muted-outline': 'bg-secondary-300/20 text-black border-secondary-300/75 text-secondary-300 outline-secondary-200/20',
     muted: 'bg-gray-900 text-gray-300 font-normal outline-gray-500/15 border-transparent',
@@ -71,6 +71,7 @@ const severityClasses: Record<Severity, string> = {
 };
 
 const hoverClasses: Partial<Record<Severity, string>> = {
+    primary: 'hover:bg-cta-hover active:bg-cta-active focus:outline-4 hover:outline-4',
     glass: 'hover:scale-110 hover:bg-white/20',
     'muted-glass': 'hover:scale-110 hover:bg-white/20',
     'primary-glass': 'hover:scale-110 hover:bg-white/20',
