@@ -61,7 +61,7 @@ const heroTeaserLines = computed((): [string, string] | null => {
             "
         />
 
-        <HeroBranchChain />
+        <!-- <HeroBranchChain /> -->
 
         <!-- Copy block: vertically offset to match design; horizontal position from .container + .container-content -->
         <div
