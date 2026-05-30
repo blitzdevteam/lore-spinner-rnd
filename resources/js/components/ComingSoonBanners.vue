@@ -164,6 +164,15 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
                     class="relative transition-[padding-bottom] duration-200 ease-out"
                     :class="hoveredId ? 'pb-[140px] md:pb-[148px]' : 'pb-2'"
                 >
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-black to-transparent md:w-16"
+                        aria-hidden="true"
+                    />
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent md:w-16"
+                        aria-hidden="true"
+                    />
+
                     <!-- Dim rest of row while hovering (Figma 5412:1519) -->
                     <div
                         v-show="hoveredId"

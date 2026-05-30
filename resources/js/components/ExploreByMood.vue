@@ -187,9 +187,10 @@ onUnmounted(() => {
                 </div>
 
                 <!-- Figma 5412:908: flex row, gap exactly 10px (not stretched 1fr columns) -->
-                <div
-                    class="mood-scroll flex w-full max-w-full flex-nowrap items-center gap-[10px] overflow-x-auto pb-1 md:w-max md:overflow-visible"
-                >
+                <div class="relative">
+                    <div
+                        class="mood-scroll flex w-full max-w-full flex-nowrap items-center gap-[10px] overflow-x-auto pb-1 md:w-max md:overflow-visible"
+                    >
                     <!-- Heartfelt -->
                     <button
                         type="button"
@@ -412,6 +413,17 @@ onUnmounted(() => {
                             class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
                         />
                     </button>
+                    </div>
+
+                    <!-- Edge fades — only needed when chips row scrolls (narrow viewports); hidden on md+ -->
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-black to-transparent md:hidden"
+                        aria-hidden="true"
+                    />
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent md:hidden"
+                        aria-hidden="true"
+                    />
                 </div>
             </div>
         </div>
@@ -483,6 +495,14 @@ onUnmounted(() => {
 
                             <div class="relative flex flex-1 flex-col gap-4 overflow-hidden px-3 pb-5 pt-2 sm:px-8 sm:pb-8 sm:pt-4">
                                 <div class="relative">
+                                    <div
+                                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-[#0c0c0c] to-transparent sm:left-[-0.125rem] sm:w-14"
+                                        aria-hidden="true"
+                                    />
+                                    <div
+                                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-[#0c0c0c] to-transparent sm:right-[-0.125rem] sm:w-14"
+                                        aria-hidden="true"
+                                    />
                                     <button
                                         type="button"
                                         class="slider-arrow absolute -left-1 top-[140px] z-10 hidden -translate-y-1/2 sm:flex"

@@ -162,6 +162,14 @@ function coverForPopup(story: NewStory): string {
 
                 <!-- Slider wrapper (popup is absolute inside here) -->
                 <div ref="sliderWrapperEl" class="relative">
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-black to-transparent md:w-16"
+                        aria-hidden="true"
+                    />
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent md:w-16"
+                        aria-hidden="true"
+                    />
 
                     <!-- Left arrow -->
                     <button

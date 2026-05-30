@@ -170,21 +170,30 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
 
                 <!-- Slider wrapper — popup is absolute inside here, safe from overflow-clip -->
                 <div ref="sliderWrapperEl" class="relative">
+                    <!-- Edge fades over the rails (below nav arrows); pointer-events-none so scroll/drag still works -->
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-black to-transparent md:w-16"
+                        aria-hidden="true"
+                    />
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent md:w-16"
+                        aria-hidden="true"
+                    />
 
-                    <!-- Left arrow -->
+                    <!-- Left arrow — half on the card row, half past the content edge -->
                     <button
                         type="button"
-                        class="slider-arrow absolute -left-4 top-1/2 z-10 hidden -translate-y-1/2 md:flex"
+                        class="slider-arrow absolute top-1/2 left-0 z-10 hidden -translate-x-1/2 -translate-y-1/2 md:flex"
                         aria-label="Scroll left"
                         @click="scrollSlider(-214)"
                     >
                         <span class="slider-arrow-icon rotate-180">&#8250;</span>
                     </button>
 
-                    <!-- Scrollable card row -->
+                    <!-- Scrollable card row (flush with section copy / explainer above — no extra indent) -->
                     <div
                         ref="sliderEl"
-                        class="story-slider flex gap-[10px] overflow-x-auto pb-2 md:ml-[17px]"
+                        class="story-slider flex gap-[10px] overflow-x-auto pb-2"
                     >
                         <div
                             v-for="game in games"
@@ -240,10 +249,10 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                         </div>
                     </div>
 
-                    <!-- Right arrow -->
+                    <!-- Right arrow — half on the card row, half past the content edge -->
                     <button
                         type="button"
-                        class="slider-arrow absolute -right-4 top-1/2 z-10 hidden -translate-y-1/2 md:flex"
+                        class="slider-arrow absolute top-1/2 right-0 z-10 hidden translate-x-1/2 -translate-y-1/2 md:flex"
                         aria-label="Scroll right"
                         @click="scrollSlider(214)"
                     >
