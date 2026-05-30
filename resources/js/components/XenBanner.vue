@@ -1,13 +1,23 @@
+<script setup lang="ts">
+import xenBannerBg from '@/assets/story/xen.png';
+</script>
+
 <template>
     <!-- Narrow vertical band between carousels; keeps section rhythm without doubling 60px gaps. -->
     <section class="py-9 md:py-10">
         <div class="container">
             <div class="container-content">
                 <div
-                    class="xen-banner flex w-full items-center justify-center overflow-hidden rounded-[14px] p-[20px]"
+                    class="xen-banner relative flex w-full items-center justify-center overflow-hidden rounded-[14px] border border-solid border-white/15 p-[20px]"
                 >
+                    <img
+                        :src="xenBannerBg"
+                        alt=""
+                        class="pointer-events-none absolute inset-0 size-full object-cover object-center"
+                        aria-hidden="true"
+                    />
                     <p
-                        class="xen-banner__text text-center font-[Inter] text-[18px] font-normal leading-[26px] tracking-[2.52px] text-white"
+                        class="xen-banner__text relative z-[1] text-center font-[Inter] text-[18px] font-normal leading-[26px] tracking-[2.52px] text-white"
                     >
                         Written by humans. Powered by your imagination. Brought to life by
                         <span class="text-[#00c6de]">Xen</span>
@@ -19,13 +29,6 @@
 </template>
 
 <style scoped>
-/* Gold on left, Tiffany cyan on right — CSS angles = Figma export − 180° */
-.xen-banner {
-    background-image:
-        linear-gradient(13.83665037926775deg, rgba(0, 0, 0, 0.2) 65.149%, rgba(0, 198, 222, 0.2) 99.392%),
-        linear-gradient(207.07668522969923deg, rgb(22, 22, 22) 73.393%, rgb(255, 149, 0) 170.11%);
-}
-
 .xen-banner__text {
     text-shadow: 0 4px 24.8px rgba(0, 0, 0, 0.25);
 }

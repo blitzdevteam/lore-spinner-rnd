@@ -2,6 +2,7 @@
 import iconYouChoose from '@/assets/story/left.svg';
 import iconStoryResponds from '@/assets/story/center.svg';
 import iconXen from '@/assets/story/right .svg';
+import storyChangesBg from '@/assets/story/story-changes.png';
 </script>
 
 <template>
@@ -16,15 +17,17 @@ import iconXen from '@/assets/story/right .svg';
                 </div>
 
                 <div
-                    class="story-changes-card relative flex min-h-[220px] flex-col overflow-hidden rounded-[24px] border-0 p-5 outline-none md:h-[220px] md:p-5"
+                    class="story-changes-card relative flex min-h-[220px] flex-col overflow-hidden rounded-[24px] border border-solid border-white/15 p-5 outline-none md:h-[220px] md:p-5"
                 >
-                    <!-- Borderless plate: subtle warm glow (left) + teal (right); center stays deep neutral -->
                     <div
                         class="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]"
                         aria-hidden="true"
                     >
-                        <div class="story-changes-glow story-changes-glow--warm" />
-                        <div class="story-changes-glow story-changes-glow--cyan" />
+                        <img
+                            :src="storyChangesBg"
+                            alt=""
+                            class="absolute inset-0 size-full object-cover object-center"
+                        />
                     </div>
 
                     <div class="relative z-[1] flex w-full flex-col items-center md:flex-row md:justify-center md:gap-[35px]">
@@ -122,33 +125,6 @@ import iconXen from '@/assets/story/right .svg';
 .story-changes-card {
     background-color: #0d0d0d;
     box-shadow: none;
-}
-
-/* Soft edge washes (screenshot-style): no stroke — shape reads from gradients only */
-.story-changes-glow {
-    position: absolute;
-    top: -12%;
-    bottom: -12%;
-    width: min(72%, 32rem);
-    pointer-events: none;
-}
-.story-changes-glow--warm {
-    left: -18%;
-    background: radial-gradient(
-        ellipse 85% 75% at 28% 50%,
-        rgba(190, 120, 75, 0.28),
-        rgba(130, 75, 45, 0.1) 42%,
-        transparent 72%
-    );
-}
-.story-changes-glow--cyan {
-    right: -18%;
-    background: radial-gradient(
-        ellipse 85% 75% at 72% 50%,
-        rgba(0, 198, 222, 0.22),
-        rgba(0, 130, 150, 0.08) 42%,
-        transparent 72%
-    );
 }
 
 .story-changes-rule {
