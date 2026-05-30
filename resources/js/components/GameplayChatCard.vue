@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
+import GameplayContinueIcon from '@/components/icons/GameplayContinueIcon.vue';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { useTypewriter } from '@/composables/useTypewriter';
 import { PromptInterface } from '@/types';
-import { LucideCheck, LucideLoader, LucidePause, LucidePlay, LucideSparkles } from 'lucide-vue-next';
+import { LucideCheck, LucideLoader, LucidePause, LucidePlay } from 'lucide-vue-next';
 import { computed, onMounted, watch } from 'vue';
 
 const CONTINUE_MARKER = '__continue__';
@@ -147,20 +148,36 @@ watch(
             <p class="text-base text-primary italic">"{{ effectiveSelection }}"</p>
         </div>
 
-        <!-- ── Listen Again button ── -->
-        <div v-if="prompt.response && showChoicesAndActions" class="flex">
+        <!-- ── Listen Again + Continue ── -->
+        <div v-if="prompt.response && showChoicesAndActions" class="flex flex-wrap items-center gap-2">
             <button
-                class="bg-glass-effect flex h-[50px] items-center gap-2 overflow-hidden rounded-full p-1.5 pe-5 transition-transform hover:scale-[1.02] active:scale-95"
+                type="button"
+                class="narration-action-pill bg-glass-effect flex h-[50px] items-center gap-2 overflow-hidden rounded-full p-1.5 pe-5"
                 @click="handleListenAgain"
             >
-                <span class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-[#00c6de]">
+                <span class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-primary-400">
                     <LucideLoader v-if="isThisLoading" class="size-4 animate-spin" />
                     <LucidePause v-else-if="isThisPlaying" class="size-4" fill="currentColor" />
                     <LucidePlay v-else class="size-4" fill="currentColor" />
                 </span>
                 <span class="flex flex-col items-start leading-tight">
-                    <span class="text-sm text-[#00c6de]">Listen Again</span>
+                    <span class="text-sm text-primary-400">Listen Again</span>
                     <span class="text-xs font-light text-[#7e7e7e]">Replay Narration</span>
+                </span>
+            </button>
+
+            <button
+                v-if="showContinueButton"
+                type="button"
+                class="narration-action-pill bg-glass-effect flex h-[50px] items-center gap-2 overflow-hidden rounded-full p-1.5 pe-5"
+                @click="handleContinue"
+            >
+                <span class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-white">
+                    <GameplayContinueIcon />
+                </span>
+                <span class="flex flex-col items-start leading-tight">
+                    <span class="text-sm text-primary-400">Continue: Hear What Happens Next</span>
+                    <span class="text-xs font-light text-[#7e7e7e]">No Choice Right Now</span>
                 </span>
             </button>
         </div>
@@ -201,22 +218,24 @@ watch(
             </div>
         </div>
 
-        <!-- ── Continue (fallback when a beat offers no choices) ── -->
-        <div v-if="showContinueButton" class="flex">
-            <button
-                class="bg-glass-effect flex items-center gap-2 overflow-hidden rounded-full p-1.5 pe-5 transition-transform hover:scale-[1.02] active:scale-95"
-                @click="handleContinue"
-            >
-                <span class="bg-primary-glass-effect grid size-9 shrink-0 place-items-center rounded-full">
-                    <LucideSparkles class="size-4 text-white" fill="currentColor" />
-                </span>
-                <span class="text-sm text-primary">Continue</span>
-            </button>
-        </div>
     </div>
 </template>
 
 <style scoped>
+.narration-action-pill {
+    transition:
+        transform 150ms ease,
+        color 150ms ease;
+}
+
+.narration-action-pill:hover {
+    transform: scale(1.02);
+}
+
+.narration-action-pill:active {
+    transform: scale(0.98);
+}
+
 .narration-card :deep(p) {
     margin-bottom: 1rem;
 }
