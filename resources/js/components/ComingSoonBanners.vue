@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import cover1 from '@/assets/commingSoon/Coming soon 1- 2x.png';
+import cover1 from '@/assets/commingSoon/Coming soon 1- 2x.jpg';
 import cover2 from '@/assets/commingSoon/Coming soon 2 - 2x.png';
 import cover3 from '@/assets/commingSoon/Coming soon 3 - 2x.png';
 import cover4 from '@/assets/commingSoon/Coming soon 4 - 2x.png';
@@ -21,8 +21,8 @@ interface ComingSoonCard {
 
 const cards: ComingSoonCard[] = [
     {
-        id: 'pjs',
-        title: "PJ'S",
+        id: 'Romeo&Juliet',
+        title: "Romeo & Juliet",
         cover: cover1,
         themes: ['Destiny', 'Courage', 'Control'],
     },

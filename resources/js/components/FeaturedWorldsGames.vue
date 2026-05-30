@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import aliceCover from '@/assets/featured/alice.png';
-import animaCover from '@/assets/featured/anima.png';
+import animaCover from '@/assets/featured/anima.jpg';
 import jekyllCover from '@/assets/featured/jekyll.png';
 import nocturneCover from '@/assets/featured/nocturne.png';
-import wizardOzCover from '@/assets/featured/wizardoz.png';
+import wizardOzCover from '@/assets/featured/wizardoz.jpg';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';

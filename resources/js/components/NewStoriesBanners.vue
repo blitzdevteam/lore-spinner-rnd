@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import banner1 from '@/assets/newStories/New stories 1- 2x.png';
-import banner2 from '@/assets/newStories/New stories 2 - 2x .png';
-import banner3 from '@/assets/newStories/New stories 3 - 2x.png';
+import banner1 from '@/assets/newStories/New stories 1- 2x.jpg';
+import banner2 from '@/assets/newStories/New stories 2 - 2x .jpg';
+import banner3 from '@/assets/newStories/New stories 3 - 2x.jpg';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -36,19 +36,19 @@ const stories: NewStory[] = [
         branches: null,
     },
     {
-        id: 'nineteen84',
-        title: '1984',
+        id: 'Alice’s Adventures In Wonderland',
+        title: 'Alice’s Adventures In Wonderland',
         cover: banner2,
         category: 'Science Fiction',
         rating: 'Mature',
         playable: false,
-        themes: ['Control', 'Rebellion', 'Identity'],
+        themes: ['Distiny', 'Courage', 'Control'],
         teaser: 'In a city where every thought is monitored, one man discovers a truth the state will kill to suppress.',
         branches: null,
     },
     {
-        id: 'sensibility',
-        title: 'Sense And Sensibility',
+        id: 'Pride & Prejudice',
+        title: 'Pride & Prejudice',
         cover: banner3,
         category: 'Historical Drama',
         rating: 'Teen',
