@@ -145,7 +145,6 @@ const handleClearHistory = async () => {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    filter: drop-shadow(0 0 18px color-mix(in srgb, var(--xen-mid) 35%, transparent));
 }
 
 /* ─── RESET BUTTON ──────────────────────────────────────────────────────── */
@@ -203,7 +202,7 @@ const handleClearHistory = async () => {
     height: 0.5rem;
     border-radius: 9999px;
     background: var(--color-primary-400);
-    box-shadow: 0 0 6px 2px color-mix(in srgb, var(--color-primary-400) 60%, transparent);
+    box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.25);
     animation: xen-pulse 1.1s ease-in-out infinite;
 }
 
@@ -248,9 +247,7 @@ const handleClearHistory = async () => {
     border-color: color-mix(in srgb, var(--color-primary-400) 55%, transparent);
     background: color-mix(in srgb, var(--color-primary-900) 45%, #030712);
     color: #fff;
-    box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--xen-mid) 18%, transparent),
-        0 4px 16px color-mix(in srgb, var(--xen-mid) 14%, transparent);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.55);
 }
 .xen-choice-btn:hover:not(:disabled)::before {
     opacity: 1;

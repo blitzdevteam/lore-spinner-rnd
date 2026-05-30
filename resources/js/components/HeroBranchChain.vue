@@ -65,7 +65,6 @@ import branchChainImg from '@/assets/brach-chain.png';
     background:
         radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1.6%, rgba(0, 198, 222, 0.75) 2.1%, transparent 4%),
         radial-gradient(circle, transparent 23%, rgba(0, 198, 222, 0.08) 29%, rgba(0, 198, 222, 0.32) 38%, rgba(245, 255, 255, 1) 42%, rgba(0, 198, 222, 0.7) 45%, transparent 52%);
-    filter: drop-shadow(0 0 7px rgba(0, 198, 222, 0.9));
     animation: hero-flow-out 1.05s cubic-bezier(0.15, 0.78, 0.18, 1) infinite;
 }
 

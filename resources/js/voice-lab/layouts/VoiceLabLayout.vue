@@ -9,8 +9,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="xen-layout relative h-svh overflow-hidden bg-gray-950">
-        <!-- Background inherits xen primary-400 tiffany tint via CSS var override -->
+    <div class="xen-layout relative h-svh overflow-hidden bg-black">
+        <!-- Full-screen black backdrop (see BaseBackgroundGradient) -->
         <BaseBackgroundGradient />
 
         <div class="relative flex h-full flex-col">
@@ -68,7 +68,6 @@ const emit = defineEmits<{
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    filter: drop-shadow(0 0 18px color-mix(in srgb, var(--color-primary-500, #00c6de) 35%, transparent));
 }
 
 /* Back button — tiffany ring on hover */
@@ -79,7 +78,6 @@ const emit = defineEmits<{
 }
 .xen-back-btn:hover {
     border-color: color-mix(in srgb, var(--color-primary-400, #2bd9d0) 55%, transparent) !important;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary-500, #00c6de) 20%, transparent),
-                0 0 12px color-mix(in srgb, var(--color-primary-500, #00c6de) 15%, transparent);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 12px rgba(0, 0, 0, 0.45);
 }
 </style>

@@ -178,8 +178,7 @@ const orbTransformStyle = computed(() => ({
     filter: `
         brightness(${1 + glowOpacity.value * 0.18})
         saturate(${1.08 + glowOpacity.value * 0.28})
-        drop-shadow(0 0 ${18 + glowOpacity.value * 16}px hsla(${currentState.value.hue}, ${0.24 + glowOpacity.value * 0.22}))
-        drop-shadow(0 0 ${48 + glowOpacity.value * 24}px hsla(${currentState.value.hue}, ${0.10 + glowOpacity.value * 0.16}))
+        drop-shadow(0 ${12 + glowOpacity.value * 8}px ${28 + glowOpacity.value * 14}px rgba(0, 0, 0, ${0.45 + glowOpacity.value * 0.25}))
     `
         .replace(/\s+/g, ' ')
         .trim(),
@@ -366,11 +365,10 @@ onBeforeUnmount(() => {
     border-radius: 999px;
     background: radial-gradient(
         circle at 50% 50%,
-        rgba(95, 219, 240, 0.34) 0%,
-        rgba(95, 219, 240, 0.22) 22%,
-        rgba(0, 198, 222, 0.1) 44%,
-        rgba(0, 198, 222, 0.03) 60%,
-        rgba(0, 198, 222, 0) 75%
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 255, 255, 0.02) 35%,
+        rgba(0, 0, 0, 0.35) 55%,
+        transparent 72%
     );
     filter: blur(20px);
     pointer-events: none;
@@ -381,7 +379,7 @@ onBeforeUnmount(() => {
     inset: 16%;
     border-radius: 999px;
     background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 28%),
-        radial-gradient(circle at 62% 40%, rgba(95, 219, 240, 0.14), rgba(95, 219, 240, 0) 34%),
+        radial-gradient(circle at 62% 40%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 34%),
         radial-gradient(circle at 44% 68%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 30%);
     filter: blur(18px);
     mix-blend-mode: screen;

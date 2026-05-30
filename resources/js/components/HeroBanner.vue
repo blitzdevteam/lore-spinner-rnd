@@ -150,6 +150,5 @@ const heroTeaserLines = computed((): [string, string] | null => {
         0 4px 80px rgba(0, 0, 0, 0.2),
         inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.22),
         inset -0.2px -0.5px 0.15px 0.5px rgba(255, 255, 255, 0.05);
-    filter: drop-shadow(0 0 5.65px rgba(0, 198, 222, 0.03)) drop-shadow(0 0 8.4px rgba(0, 198, 222, 0.7));
 }
 </style>

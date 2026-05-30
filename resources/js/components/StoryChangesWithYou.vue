@@ -17,14 +17,14 @@ import iconXen from '@/assets/story/right .svg';
                 </div>
 
                 <div
-                    class="story-changes-card relative flex min-h-[220px] flex-col overflow-hidden rounded-[15px] border border-primary p-5 md:h-[220px] md:p-5"
+                    class="story-changes-card relative flex min-h-[220px] flex-col overflow-hidden rounded-[15px] border border-white/12 p-5 md:h-[220px] md:p-5"
                     :style="{ backgroundImage: `url(${bannerStoryChange})` }"
                 >
-                    <!-- Decorative horizontal glowing lines (background) -->
-                    <div class="pointer-events-none absolute inset-0 overflow-hidden opacity-20">
+                    <!-- Neutral accent lines (no primary/teal spill onto page background) -->
+                    <div class="pointer-events-none absolute inset-0 overflow-hidden opacity-[0.12]">
                         <div class="absolute inset-0 flex flex-col justify-center gap-6">
-                            <div class="h-px w-full rotate-[-6.5deg] transform bg-gradient-to-r from-transparent via-primary/60 to-transparent blur-sm" />
-                            <div class="h-px w-full rotate-[-6.5deg] transform bg-gradient-to-r from-transparent via-primary/40 to-transparent blur-sm" />
+                            <div class="h-px w-full rotate-[-6.5deg] transform bg-gradient-to-r from-transparent via-white/50 to-transparent blur-sm" />
+                            <div class="h-px w-full rotate-[-6.5deg] transform bg-gradient-to-r from-transparent via-white/35 to-transparent blur-sm" />
                         </div>
                     </div>
 
@@ -150,11 +150,10 @@ import iconXen from '@/assets/story/right .svg';
 }
 .you-choose-icon:hover,
 .story-responds-icon:hover {
-    border-color: rgba(0, 198, 222, 0.45);
+    border-color: rgba(255, 255, 255, 0.35);
     box-shadow:
-        0px 3px 60px 0px rgba(0, 0, 0, 0.2),
-        0 0 22px 4px rgba(0, 198, 222, 0.5),
-        0 0 48px 10px rgba(0, 198, 222, 0.15);
+        0px 3px 60px 0px rgba(0, 0, 0, 0.35),
+        0 0 20px 2px rgba(255, 255, 255, 0.08);
 }
 
 /* Xen circle -- amber border */
@@ -174,7 +173,7 @@ import iconXen from '@/assets/story/right .svg';
 .you-choose-glow,
 .story-responds-glow {
     box-shadow:
-        inset 0px 0px 13.9px 0px rgba(0, 198, 222, 0.25),
+        inset 0px 0px 13.9px 0px rgba(255, 255, 255, 0.06),
         inset 0.188px 0.375px 0.375px 0.188px rgba(255, 255, 255, 0.22),
         inset -0.15px -0.375px 0.113px 0.375px rgba(255, 255, 255, 0.05);
 }
