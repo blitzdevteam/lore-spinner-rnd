@@ -10,10 +10,25 @@ import {
     LucideVolumeX,
     LucideX,
 } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 const props = withDefaults(defineProps<{ collapsed?: boolean }>(), { collapsed: false });
 
 const tts = useTextToSpeech();
+
+const volumeSliderValue = computed(() => {
+    if (tts.isMuted.value) {
+        return 0;
+    }
+
+    return Math.round(tts.volume.value * 100);
+});
+
+const volumeSliderStyle = computed(() => ({
+    '--volume-percent': `${volumeSliderValue.value}%`,
+}));
+
+const isVolumeMuted = computed(() => tts.isMuted.value || tts.volume.value === 0);
 
 const onVolumeInput = (event: Event) => {
     tts.setVolume(Number((event.target as HTMLInputElement).value) / 100);
@@ -28,7 +43,7 @@ const onVolumeInput = (event: Event) => {
         >
             <!-- Play / Pause -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-[#00c6de] transition-transform hover:scale-105 active:scale-95"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-primary-400 transition-transform hover:scale-105 active:scale-95"
                 @click="tts.togglePause"
             >
                 <LucidePause v-if="tts.isPlaying.value" class="size-4" fill="currentColor" />
@@ -36,25 +51,33 @@ const onVolumeInput = (event: Event) => {
             </button>
 
             <!-- Time -->
-            <span class="min-w-12 text-base font-medium tabular-nums text-[#00c6de]">
+            <span class="min-w-12 text-base font-medium tabular-nums text-primary-400">
                 {{ tts.formattedCurrentTime.value }}
             </span>
 
             <!-- Mute + volume slider -->
             <div class="hidden items-center gap-2 sm:flex">
                 <button
-                    class="grid size-7 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-white"
+                    class="grid size-7 shrink-0 place-items-center rounded-full transition-colors hover:text-white"
+                    :class="isVolumeMuted ? 'text-primary-400' : 'text-gray-300'"
+                    :aria-pressed="isVolumeMuted"
+                    aria-label="Mute audio"
                     @click="tts.toggleMute"
                 >
-                    <LucideVolumeX v-if="tts.isMuted.value || tts.volume.value === 0" class="size-4" />
+                    <LucideVolumeX v-if="isVolumeMuted" class="size-4" />
                     <LucideVolume2 v-else class="size-4" />
                 </button>
                 <input
                     type="range"
                     min="0"
                     max="100"
-                    :value="tts.isMuted.value ? 0 : Math.round(tts.volume.value * 100)"
+                    :value="volumeSliderValue"
+                    :style="volumeSliderStyle"
                     class="media-range w-20"
+                    aria-label="Volume"
+                    :aria-valuenow="volumeSliderValue"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
                     @input="onVolumeInput"
                 />
             </div>
@@ -64,7 +87,7 @@ const onVolumeInput = (event: Event) => {
             <!-- Loop -->
             <button
                 class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
-                :class="tts.isLooping.value ? 'text-[#00c6de]' : 'text-gray-300'"
+                :class="tts.isLooping.value ? 'text-primary-400' : 'text-gray-300'"
                 @click="tts.toggleLoop"
             >
                 <LucideRepeat class="size-4" />
@@ -123,20 +146,63 @@ const onVolumeInput = (event: Event) => {
 }
 
 .media-range {
+    --media-range-fill: var(--color-primary-400);
+    --media-range-track: rgba(255, 255, 255, 0.18);
+    --volume-percent: 0%;
+
     appearance: none;
+    -webkit-appearance: none;
+    height: 12px;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+}
+
+.media-range:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-400) 45%, transparent);
+}
+
+.media-range:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-400) 45%, transparent);
+}
+
+.media-range::-webkit-slider-runnable-track {
     height: 4px;
     border-radius: 4px;
-    background: #373737;
-    outline: none;
+    background: linear-gradient(
+        to right,
+        var(--media-range-fill) 0%,
+        var(--media-range-fill) var(--volume-percent),
+        var(--media-range-track) var(--volume-percent),
+        var(--media-range-track) 100%
+    );
+    transition: background 150ms ease;
+}
+
+.media-range::-moz-range-track {
+    height: 4px;
+    border-radius: 4px;
+    background: var(--media-range-track);
+}
+
+.media-range::-moz-range-progress {
+    height: 4px;
+    border-radius: 4px;
+    background: var(--media-range-fill);
+    transition: background 150ms ease;
 }
 
 .media-range::-webkit-slider-thumb {
     appearance: none;
     width: 12px;
     height: 12px;
+    margin-top: -4px;
     border-radius: 50%;
-    background: #00c6de;
+    background: var(--media-range-fill);
     cursor: pointer;
+    transition:
+        transform 150ms ease,
+        box-shadow 150ms ease;
 }
 
 .media-range::-moz-range-thumb {
@@ -144,7 +210,10 @@ const onVolumeInput = (event: Event) => {
     height: 12px;
     border: none;
     border-radius: 50%;
-    background: #00c6de;
+    background: var(--media-range-fill);
     cursor: pointer;
+    transition:
+        transform 150ms ease,
+        box-shadow 150ms ease;
 }
 </style>
