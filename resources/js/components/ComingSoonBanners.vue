@@ -6,7 +6,7 @@ import cover4 from '@/assets/commingSoon/Coming soon 4 - 2x.png';
 import cover5 from '@/assets/commingSoon/Coming soon 5 - 2x.png';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 
 defineProps<{
     storyCount: number;
@@ -80,12 +80,8 @@ function scheduleHide() {
     }, 120);
 }
 
-function onCardEnter(card: ComingSoonCard) {
-    _onCard = true;
-    if (_hideTimer) clearTimeout(_hideTimer);
-    hoveredId.value = card.id;
-
-    const cardEl = cardEls[card.id];
+function updatePopupPosition(cardId: string) {
+    const cardEl = cardEls[cardId];
     const wrapper = sliderWrapperEl.value;
     if (!cardEl || !wrapper) return;
 
@@ -104,6 +100,17 @@ function onCardEnter(card: ComingSoonCard) {
     if (top < 0) top = 0;
 
     popupPos.value = { left, top };
+}
+
+function onCardEnter(card: ComingSoonCard) {
+    _onCard = true;
+    if (_hideTimer) clearTimeout(_hideTimer);
+    hoveredId.value = card.id;
+
+    updatePopupPosition(card.id);
+    void nextTick(() => {
+        updatePopupPosition(card.id);
+    });
 }
 
 function onCardLeave() {
@@ -130,7 +137,8 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
 </script>
 
 <template>
-    <section class="home-section-y">
+    <!-- Tighter bottom than .home-section-y so spacing to FAQ matches Figma; hover reserves extra space via wrapper padding. -->
+    <section class="pt-14 pb-0 md:pt-[60px]">
         <div class="container">
             <div class="container-content home-section-gap">
                 <div class="flex flex-wrap items-end justify-between gap-4">
@@ -150,7 +158,12 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
                     </Link>
                 </div>
 
-                <div ref="sliderWrapperEl" class="relative">
+                <!-- Popup is 444px tall; reserve bottom space only while hovered so the default gap to FAQ stays tight like Figma. -->
+                <div
+                    ref="sliderWrapperEl"
+                    class="relative transition-[padding-bottom] duration-200 ease-out"
+                    :class="hoveredId ? 'pb-[140px] md:pb-[148px]' : 'pb-2'"
+                >
                     <!-- Dim rest of row while hovering (Figma 5412:1519) -->
                     <div
                         v-show="hoveredId"

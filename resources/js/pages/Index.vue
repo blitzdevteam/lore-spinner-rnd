@@ -56,8 +56,8 @@ const props = withDefaults(
 
         <ComingSoonBanners :story-count="stories.length" />
 
-        <!-- FAQ -->
-        <div class="home-section-y">
+        <!-- FAQ: slightly tighter top padding after Coming Soon so spacing matches Figma (hover glow → heading). -->
+        <div class="pt-10 pb-14 md:pt-12 md:pb-[60px]">
             <div class="container">
                 <div class="container-content">
                     <FrequentlyAskedQuestion />
