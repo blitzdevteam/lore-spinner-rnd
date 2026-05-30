@@ -3,6 +3,7 @@ import ExploreByMood from '@/components/ExploreByMood.vue';
 import FrequentlyAskedQuestion from '@/components/FrequentlyAskedQuestion.vue';
 import HeroBanner from '@/components/HeroBanner.vue';
 import HeroFallback from '@/components/HeroFallback.vue';
+import FeaturedWorldsGames from '@/components/FeaturedWorldsGames.vue';
 import HomeWorldCard from '@/components/HomeWorldCard.vue';
 import StoryChangesWithYou from '@/components/StoryChangesWithYou.vue';
 import XenBanner from '@/components/XenBanner.vue';
@@ -31,14 +32,12 @@ const props = withDefaults(
     },
 );
 
-const featuredStories = computed(() => props.stories.slice(0, 5));
 const newStories = computed(() => props.stories.slice(0, 3));
 const comingSoonStories = computed(() =>
     props.stories.filter((s) => s.status?.value !== StoryStatusEnum.PUBLISHED).slice(0, 5),
 );
 
 // Slider scroll helpers
-const featuredSliderEl = ref<HTMLElement | null>(null);
 const comingSoonSliderEl = ref<HTMLElement | null>(null);
 const newStoriesSliderEl = ref<HTMLElement | null>(null);
 
@@ -61,57 +60,7 @@ const scrollSlider = (el: HTMLElement | null, delta: number) => {
         <StoryChangesWithYou />
 
         <!-- Featured Worlds -->
-        <section class="py-14 md:py-[60px]">
-            <div class="container">
-                <div class="mx-auto flex w-full max-w-[1018px] flex-col gap-[14px]">
-                    <div class="flex flex-wrap items-end justify-between gap-4">
-                        <div class="max-w-[550px] min-w-0">
-                            <h2 class="flex h-10 items-center text-[26px] font-bold uppercase leading-[33px] text-white">
-                                Featured Worlds
-                            </h2>
-                            <p class="font-normal leading-[26px] text-[#b6b6b6] text-[16px]">
-                                Curated story worlds built for choice, consequence, and return.
-                            </p>
-                        </div>
-                        <Link
-                            :href="storiesIndex().url"
-                            class="inline-block w-[98px] shrink-0 whitespace-nowrap text-right text-[14px] leading-[33px] text-primary hover:underline font-normal"
-                        >
-                            View All ({{ stories.length }})
-                        </Link>
-                    </div>
-
-                    <div v-if="featuredStories.length" class="relative">
-                        <!-- Left arrow -->
-                        <button
-                            class="slider-arrow absolute -left-4 top-1/2 z-10 hidden -translate-y-1/2 md:flex"
-                            @click="scrollSlider(featuredSliderEl, -214)"
-                            aria-label="Scroll left"
-                        >
-                            <span class="slider-arrow-icon rotate-180">&#8250;</span>
-                        </button>
-
-                        <div ref="featuredSliderEl" class="story-slider flex gap-[10px] overflow-x-auto pb-2 md:ml-[17px]">
-                            <HomeWorldCard
-                                v-for="story in featuredStories"
-                                :key="story.id"
-                                :story="story"
-                                class="shrink-0"
-                            />
-                        </div>
-
-                        <!-- Right arrow -->
-                        <button
-                            class="slider-arrow absolute -right-4 top-1/2 z-10 hidden -translate-y-1/2 md:flex"
-                            @click="scrollSlider(featuredSliderEl, 214)"
-                            aria-label="Scroll right"
-                        >
-                            <span class="slider-arrow-icon">&#8250;</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <FeaturedWorldsGames :story-count="stories.length" />
 
         <!-- Xen Banner -->
         <XenBanner />
