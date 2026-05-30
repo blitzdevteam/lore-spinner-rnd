@@ -152,24 +152,24 @@ function branchesForStory(story: StoryInterface): string | null {
     <Head title="Library" />
 
     <HomeLayout>
-        <!-- Rail widened to 1035px so five 195px cards fit per row (+ 4×15px gaps). Banner spans full rail. -->
+        <section class="library-hero relative z-10 w-full shrink-0 overflow-hidden" aria-hidden="true">
+            <img
+                :src="libraryBannerImage"
+                alt=""
+                class="library-hero__image pointer-events-none absolute inset-0 size-full object-cover object-center select-none"
+                width="1920"
+                height="640"
+                decoding="async"
+                fetchpriority="high"
+            />
+            <div class="library-hero__gradient" aria-hidden="true" />
+        </section>
+
+        <!-- Rail widened to 1035px so five 195px cards fit per row (+ 4×15px gaps). -->
         <!-- z-10: stack above footer (later sibling); hover root must not clip overflow-x (see inner scroll div). -->
-        <div class="relative z-10 pb-14 pt-8 md:pb-[3.75rem] md:pt-[5.125rem]">
+        <div class="relative z-10 pb-14 pt-10 md:pb-[3.75rem] md:pt-[3.75rem]">
             <div class="container">
                 <div class="mx-auto flex w-full max-w-[64.6875rem] min-w-0 flex-col">
-                    <div class="mb-10 w-full shrink-0 overflow-hidden rounded-[0.5rem] md:mb-[3.75rem]">
-                        <div class="relative aspect-[1035/370] w-full md:aspect-auto md:h-[23.125rem] md:max-h-none">
-                            <img
-                                :src="libraryBannerImage"
-                                alt=""
-                                class="pointer-events-none absolute inset-0 size-full object-cover object-center select-none"
-                                width="1035"
-                                height="370"
-                                decoding="async"
-                            />
-                        </div>
-                    </div>
-
                     <div class="flex w-full min-w-0 flex-col gap-[1.125rem]">
                         <div class="flex h-auto min-h-10 shrink-0 items-center justify-between gap-4 sm:h-10 sm:justify-between">
                             <h1
@@ -282,6 +282,26 @@ function branchesForStory(story: StoryInterface): string | null {
 </template>
 
 <style scoped>
+.library-hero {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    min-height: 11.25rem;
+    max-height: min(42vh, 28rem);
+    background: #000;
+}
+
+.library-hero__image {
+    display: block;
+}
+
+.library-hero__gradient {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 55%, rgba(0, 0, 0, 0.65) 100%);
+}
+
 /* Exactly 5 columns × 12.1875rem + 0.9375rem gutters = 64.6875rem per row */
 .library-story-grid {
     display: grid;
