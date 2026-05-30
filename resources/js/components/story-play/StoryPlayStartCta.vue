@@ -11,7 +11,7 @@ defineEmits<{
 <template>
     <button
         type="button"
-        class="block h-14 w-full rounded-xl bg-[#00c6de] px-6 font-['Inter',sans-serif] text-xl font-medium not-italic text-black transition-colors hover:bg-[#00b3c9] active:bg-[#009fb3]"
+        class="block h-14 w-full rounded-xl bg-cta-fill px-6 font-['Inter',sans-serif] text-xl font-medium not-italic text-cta-text transition-colors hover:bg-cta-hover active:bg-cta-active"
         @click="$emit('click')"
     >
         {{ label }}
