@@ -2,91 +2,41 @@
 import BaseButton from '@/components/BaseButton.vue';
 import { logout } from '@/wayfinder/routes/user/authentication';
 import login from '@/wayfinder/routes/user/authentication/login';
-import register from '@/wayfinder/routes/user/authentication/register';
 import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronRight, LucideUpload, PenLine, X } from 'lucide-vue-next';
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { ChevronRight, LucideUpload, X } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+
+// inheritAttrs must be false so we can manually forward $attrs (class / style)
+// to the correct root element. Without this, Vue silently drops attrs on
+// fragment-root components (Teleport + button), causing responsive classes
+// like "hidden md:block" to have no effect and both avatar instances to show.
+defineOptions({ inheritAttrs: false });
+
+withDefaults(
+    defineProps<{
+        compact?: boolean;
+    }>(),
+    {
+        compact: false,
+    },
+);
 
 const page = usePage();
 
 const auth = computed(() => page.props.auth);
 
 const profileDrawerVisibility = ref(false);
-
-// Account dropdown (shown when not logged in)
-const accountMenuOpen = ref(false);
-const accountMenuRef  = ref<HTMLDivElement | null>(null);
-
-const closeOnOutsideClick = (e: MouseEvent) => {
-    if (accountMenuRef.value && !accountMenuRef.value.contains(e.target as Node)) {
-        accountMenuOpen.value = false;
-    }
-};
-
-onMounted(() => document.addEventListener('mousedown', closeOnOutsideClick));
-onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideClick));
 </script>
 
 <template>
     <template v-if="auth === null">
-        <div ref="accountMenuRef" class="relative">
-            <BaseButton class="!h-10" @click="accountMenuOpen = !accountMenuOpen">
-                Account
-            </BaseButton>
-
-            <!-- Dropdown -->
-            <Transition
-                enter-active-class="transition duration-150 ease-out"
-                enter-from-class="opacity-0 scale-95 -translate-y-1"
-                enter-to-class="opacity-100 scale-100 translate-y-0"
-                leave-active-class="transition duration-100 ease-in"
-                leave-from-class="opacity-100 scale-100 translate-y-0"
-                leave-to-class="opacity-0 scale-95 -translate-y-1"
-            >
-                <div
-                    v-if="accountMenuOpen"
-                    class="absolute right-0 top-[calc(100%+8px)] z-50 w-56 origin-top-right rounded-2xl border border-gray-800 bg-gray-950 py-2 shadow-2xl"
-                >
-                    <!-- Player section -->
-                    <p class="px-4 pb-1 pt-2 text-[10px] uppercase tracking-widest text-gray-600">Player</p>
-                    <Link
-                        :href="login.create().url"
-                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-200 transition-colors hover:bg-gray-900 hover:text-white"
-                        @click="accountMenuOpen = false"
-                    >
-                        Log In
-                    </Link>
-                    <Link
-                        :href="register.create().url"
-                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-200 transition-colors hover:bg-gray-900 hover:text-white"
-                        @click="accountMenuOpen = false"
-                    >
-                        Sign Up
-                    </Link>
-
-                    <div class="my-2 border-t border-gray-800/80"></div>
-
-                    <!-- Writer Lab section -->
-                    <p class="px-4 pb-1 text-[10px] uppercase tracking-widest text-gray-600">Writer Lab</p>
-                    <Link
-                        href="/writer/authentication/login"
-                        class="flex items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-gray-900"
-                        @click="accountMenuOpen = false"
-                    >
-                        <span class="text-primary-400">Log In as Writer</span>
-                        <PenLine class="size-3.5 text-primary-500/60" />
-                    </Link>
-                    <Link
-                        href="/writer/authentication/register"
-                        class="flex items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-gray-900"
-                        @click="accountMenuOpen = false"
-                    >
-                        <span class="text-primary-400">Apply as Writer</span>
-                        <PenLine class="size-3.5 text-primary-500/60" />
-                    </Link>
-                </div>
-            </Transition>
-        </div>
+        <Link
+            v-bind="$attrs"
+            :href="login.create().url"
+            class="flex h-10 items-center justify-center rounded-full border border-primary/70 bg-transparent px-4 text-sm font-medium leading-none whitespace-nowrap text-[#c8ced1] transition-colors hover:border-primary hover:text-white"
+        >
+            Login/Sign Up
+        </Link>
     </template>
     <template v-else>
         <Teleport to="body">
@@ -163,15 +113,6 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideCl
                                             </Link>
                                         </li>
                                         <li>
-                                            <Link
-                                                href="/writer/authentication/login"
-                                                class="flex items-center justify-between p-4 transition-all hover:px-6"
-                                            >
-                                                <p class="text-sm font-normal text-primary-400">Writer Lab</p>
-                                                <PenLine class="size-4 text-primary-500/70" :stroke-width="2" />
-                                            </Link>
-                                        </li>
-                                        <li>
                                             <Link href="#" class="flex items-center justify-between p-4 text-white transition-all hover:px-6">
                                                 <p class="text-sm font-normal">Version 1.1.1</p>
                                                 <ChevronRight class="size-5" :stroke-width="2" />
@@ -191,11 +132,14 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', closeOnOutsideCl
             </PrimeDrawer>
         </Teleport>
 
-        <button @click="() => (profileDrawerVisibility = !profileDrawerVisibility)">
+        <button v-bind="$attrs" @click="() => (profileDrawerVisibility = !profileDrawerVisibility)">
             <img
                 :src="auth.avatar"
                 alt=""
-                class="size-12 cursor-pointer rounded-full border border-primary-600 outline-3 outline-transparent transition hover:outline-primary-400/30"
+                :class="[
+                    'cursor-pointer rounded-full border-2 border-primary outline-2 outline-transparent transition hover:brightness-110',
+                    compact ? 'size-11' : 'size-[2.8125rem]',
+                ]"
             />
         </button>
     </template>

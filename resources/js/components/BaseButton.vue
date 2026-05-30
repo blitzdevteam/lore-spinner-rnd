@@ -1,7 +1,16 @@
+<script lang="ts">
+/** Required so consumer `class` merges onto `<Link>` / native roots (Vue + dynamic `<component>` fallthrough is unreliable). */
+export default {
+    inheritAttrs: false,
+};
+</script>
+
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, useAttrs } from 'vue';
+
+const attrs = useAttrs();
 
 type Severity =
     | 'primary'
@@ -49,8 +58,8 @@ const componentTagMap: Record<ButtonType, string | typeof Link> = {
 };
 
 const severityClasses: Record<Severity, string> = {
-    primary: 'bg-primary-400 text-black outline-primary-200/20 border-transparent',
-    'primary-muted-outline': 'bg-primary-300/20 text-black border-primary-300/75 text-primary-300 outline-primary-200/20',
+    primary: 'bg-cta-fill text-cta-text !border-0 outline-primary-500/20',
+    'primary-muted-outline': 'bg-primary-800/20 text-cta-text border-cta-border/75 text-primary-300 outline-primary-500/20',
     secondary: 'bg-secondary-400 text-black outline-secondary-400/30 border-transparent',
     'secondary-muted-outline': 'bg-secondary-300/20 text-black border-secondary-300/75 text-secondary-300 outline-secondary-200/20',
     muted: 'bg-gray-900 text-gray-300 font-normal outline-gray-500/15 border-transparent',
@@ -62,6 +71,7 @@ const severityClasses: Record<Severity, string> = {
 };
 
 const hoverClasses: Partial<Record<Severity, string>> = {
+    primary: 'hover:bg-cta-hover active:bg-cta-active focus:outline-4 hover:outline-4',
     glass: 'hover:scale-110 hover:bg-white/20',
     'muted-glass': 'hover:scale-110 hover:bg-white/20',
     'primary-glass': 'hover:scale-110 hover:bg-white/20',
@@ -94,6 +104,27 @@ const glassSpanClass = computed(() => {
     return props.iconOnly ? `${base} rounded-full w-8/10 h-8/10` : `${base} rounded-[calc(0.75rem-2px)] w-[calc(100%-1px)] h-[calc(100%-1px)]`;
 });
 
+/** Merge internal styles with caller `class` (fixes SSR/hydration + Inertia `<Link>` styling). */
+const mergedClass = computed(() => [componentClass.value, attrs.class]);
+
+const mergedRootBindings = computed(() => {
+    const raw = attrs as Record<string, unknown>;
+    const rest: Record<string, unknown> = {};
+    for (const key of Object.keys(raw)) {
+        if (key === 'class') {
+            continue;
+        }
+        rest[key] = raw[key];
+    }
+
+    return {
+        ...rest,
+        href: isLink.value ? props.href : undefined,
+        disabled: isButtonType.value && isDisabled.value,
+        class: mergedClass.value,
+    };
+});
+
 const handleClick = (event: MouseEvent) => {
     if (!isDisabled.value) emits('click', event);
 };
@@ -106,9 +137,7 @@ const handleSubmit = (event: SubmitEvent) => {
 <template>
     <component
         :is="componentTag"
-        :href="isLink ? href : undefined"
-        :class="componentClass"
-        :disabled="isButtonType && isDisabled"
+        v-bind="mergedRootBindings"
         @click="handleClick"
         @submit="handleSubmit"
     >

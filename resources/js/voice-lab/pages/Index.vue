@@ -120,18 +120,18 @@ const handleClearHistory = async () => {
  * XEN experience — Tiffany Blue identity.
  *
  * The full primary-* spectrum is defined globally in resources/css/app.css
- * (Pantone 1837 #0ABAB5 as 500 anchor), so every primary-* Tailwind class
+ * (design Tiffany #00C6DE as 500 anchor), so every primary-* Tailwind class
  * already resolves to tiffany across the whole app.
  *
  * This class pins convenience aliases used by the gradient effects below.
  * Shervin: fine-tune only these tokens to shift the XEN-specific look.
  */
 .xen-tint {
-    --xen-bright: var(--color-primary-300);   /* #5dede0 — highlight */
-    --xen-mid:    var(--color-primary-500);   /* #0abab5 — Pantone 1837 */
-    --xen-deep:   var(--color-primary-600);   /* #089490 — depth */
-    --xen-text:   var(--color-primary-200);   /* #8beee8 — light text */
-    --xen-dark:   var(--color-primary-950);   /* #042e2c — deep bg */
+    --xen-bright: var(--color-primary-300);   /* #5fdbf0 — highlight */
+    --xen-mid:    var(--color-primary-500);   /* #00c6de — Tiffany main */
+    --xen-deep:   var(--color-primary-600);   /* #009eb5 — depth */
+    --xen-text:   var(--color-primary-200);   /* #9fecf7 — light text */
+    --xen-dark:   var(--color-primary-950);   /* #083947 — deep bg */
 }
 
 /* ─── BRAND TITLE ───────────────────────────────────────────────────────── */
@@ -145,7 +145,6 @@ const handleClearHistory = async () => {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    filter: drop-shadow(0 0 18px color-mix(in srgb, var(--xen-mid) 35%, transparent));
 }
 
 /* ─── RESET BUTTON ──────────────────────────────────────────────────────── */
@@ -203,7 +202,7 @@ const handleClearHistory = async () => {
     height: 0.5rem;
     border-radius: 9999px;
     background: var(--color-primary-400);
-    box-shadow: 0 0 6px 2px color-mix(in srgb, var(--color-primary-400) 60%, transparent);
+    box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.25);
     animation: xen-pulse 1.1s ease-in-out infinite;
 }
 
@@ -248,9 +247,7 @@ const handleClearHistory = async () => {
     border-color: color-mix(in srgb, var(--color-primary-400) 55%, transparent);
     background: color-mix(in srgb, var(--color-primary-900) 45%, #030712);
     color: #fff;
-    box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--xen-mid) 18%, transparent),
-        0 4px 16px color-mix(in srgb, var(--xen-mid) 14%, transparent);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.55);
 }
 .xen-choice-btn:hover:not(:disabled)::before {
     opacity: 1;

@@ -138,7 +138,7 @@ onUnmounted(() => {
 .line-reveal-enter-from {
     opacity: 0;
     filter: blur(4px);
-    transform: translateY(8px);
+    transform: translateY(0.5rem);
 }
 
 .line-reveal-enter-to {
@@ -153,7 +153,7 @@ onUnmounted(() => {
 
 .begin-fade-enter-from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(1.25rem);
 }
 
 .begin-fade-enter-to {

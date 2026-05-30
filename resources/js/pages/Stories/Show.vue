@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import BaseButton from '@/components/BaseButton.vue';
-import { useBookmark } from '@/composables/useBookmark';
-import { StoryInterface } from '@/types';
-import {
-    LucideBookmark,
-    LucideShare2,
-    LucideChevronLeft,
-    LucideMessageCircleMore,
-    LucideLayers2, LucidePlay
-} from 'lucide-vue-next';
-import Tab from 'primevue/tab';
-import TabList from 'primevue/tablist';
-import TabPanel from 'primevue/tabpanel';
-import TabPanels from 'primevue/tabpanels';
-import Tabs from 'primevue/tabs';
-import StoryGallery from '@/components/StoryGallery.vue';
 import StoryChapterCard from '@/components/StoryChapterCard.vue';
 import StoryCommentCard from '@/components/StoryCommentCard.vue';
-import { computed } from 'vue';
+import StoryPlayAmbientGlows from '@/components/story-play/StoryPlayAmbientGlows.vue';
+import StoryPlayAuthorDescription from '@/components/story-play/StoryPlayAuthorDescription.vue';
+import StoryPlayCoverColumn from '@/components/story-play/StoryPlayCoverColumn.vue';
+import StoryPlayGlassRoundButton from '@/components/story-play/StoryPlayGlassRoundButton.vue';
+import StoryPlayMetaRow from '@/components/story-play/StoryPlayMetaRow.vue';
+import StoryPlayStartCta from '@/components/story-play/StoryPlayStartCta.vue';
+import StoryPlayStatStrip from '@/components/story-play/StoryPlayStatStrip.vue';
+import StoryPlayTitleProgress from '@/components/story-play/StoryPlayTitleProgress.vue';
+import StoryPlayTopBar from '@/components/story-play/StoryPlayTopBar.vue';
+import { useBookmark } from '@/composables/useBookmark';
+import { StoryInterface } from '@/types';
 import { store, show as showGame } from '@/wayfinder/actions/App/Http/Controllers/User/GameController';
 import { router } from '@inertiajs/vue3';
+import { LucideChevronLeft } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
     story: StoryInterface;
@@ -27,6 +23,9 @@ const props = defineProps<{
     isPlayable?: boolean;
 }>();
 
+type Panel = 'details' | 'chapters';
+
+const panel = ref<Panel>('details');
 const hasExistingGame = computed(() => !!props.existingGameId);
 const { isBookmarked, toggleBookmark } = useBookmark(props.story.id, props.story.is_bookmarked ?? false);
 
@@ -44,185 +43,238 @@ const handleStartStory = (): void => {
 const handleBack = (): void => {
     window.history.back();
 };
+
+const teaserText = computed(() => props.story.teaser?.trim() || '');
+
+const creatorName = computed(
+    () => props.story.creator?.full_name?.trim()
+        || [props.story.creator?.first_name, props.story.creator?.last_name].filter(Boolean).join(' ')
+        || props.story.creator?.username
+        || 'Author',
+);
+
+const coverHeadline = computed(() => props.story.title.toUpperCase());
+
+const coverFooterCredit = computed(() => creatorName.value.toUpperCase());
+
+const coverImageUrl = computed(() => props.story.cover?.trim() || null);
+
+const progressBadge = computed(() => (hasExistingGame.value ? '—' : '00%'));
+
+const durationLabel = computed(() => {
+    const n = props.story.chapters_count ?? props.story.chapters?.length ?? 0;
+    if (n <= 0) {
+        return null;
+    }
+    const mins = Math.max(25, Math.round(n * 10));
+    return `${mins}min`;
+});
+
+const genreLabel = computed(() => props.story.category?.title ?? null);
+
+function formatRelativeUpdated(dateIso: string | null | undefined): string {
+    if (!dateIso) {
+        return '—';
+    }
+    const ts = Date.parse(dateIso);
+    if (Number.isNaN(ts)) {
+        return '—';
+    }
+    const days = Math.floor((Date.now() - ts) / 86400000);
+    if (days < 1) {
+        return 'Today';
+    }
+    if (days < 7) {
+        return `${days} day${days === 1 ? '' : 's'} ago`;
+    }
+    if (days < 30) {
+        const w = Math.floor(days / 7);
+        return `${w} week${w === 1 ? '' : 's'} ago`;
+    }
+    const months = Math.floor(days / 30);
+    if (months < 12) {
+        return months === 1 ? '1 Month Ago' : `${months} Months Ago`;
+    }
+    const y = Math.floor(months / 12);
+    return y === 1 ? '1 Year Ago' : `${y} Years Ago`;
+}
+
+const statItems = computed(() => [
+    {
+        label: 'CHAPTERS',
+        value: `${props.story.chapters_count ?? props.story.chapters?.length ?? 0}`,
+    },
+    {
+        label: 'RATING',
+        value: props.story.rating?.label ?? '—',
+    },
+    {
+        label: 'UPDATED',
+        value: formatRelativeUpdated(props.story.updated_at ?? props.story.published_at),
+    },
+    {
+        label: 'STATUS',
+        value: props.story.status?.label ?? '—',
+    },
+]);
+
+const primaryCtaLabel = computed(() => (hasExistingGame.value ? 'Continue game' : 'Start game'));
+
+const creatorAvatar = computed(() => {
+    const a = props.story.creator?.avatar?.trim();
+    return a || null;
+});
+
+const leftColumnChapters = computed(() =>
+    props.story.chapters?.filter((_, index) => index % 2 === 0) ?? [],
+);
+
+const rightColumnChapters = computed(() =>
+    props.story.chapters?.filter((_, index) => index % 2 === 1) ?? [],
+);
 </script>
 
 <template>
-    <div class="flex min-h-svh flex-col md:flex-row">
-        <div class="relative flex-1 overflow-x-clip">
-            <div v-if="story.cover" class="absolute top-0 right-0 bottom-0 -start-7.5 z-0 h-full w-[115%] blur-xl">
-                <img :src="story.cover" alt="" class="object-cover object-center opacity-75" />
-            </div>
-            <div class="px-4 pt-6 md:px-12 md:pt-12">
-                <div class="flex flex-col gap-6 md:gap-8">
-                    <div class="relative overflow-hidden rounded-2xl aspect-video md:rounded-3xl">
-                        <div class="z-10 absolute top-0 right-0 left-0 p-4 md:p-8 w-full">
-                            <div class="flex items-center justify-between">
-                                <BaseButton :icon-only="true" type="button" severity="glass" class="size-10! md:size-12!" @click="handleBack">
-                                    <LucideChevronLeft class="size-6 md:size-8" :stroke-width="1.5" />
-                                </BaseButton>
-                                <div class="flex items-center gap-2 md:gap-3">
-                                    <BaseButton severity="glass" :icon-only="true" class="size-10! md:size-12!" @click="toggleBookmark">
-                                        <LucideBookmark
-                                            class="size-5 md:size-6 transition-colors"
-                                            :class="isBookmarked ? 'fill-secondary-300 text-secondary-300' : 'text-secondary-300'"
-                                            :stroke-width="1.5"
-                                        />
-                                    </BaseButton>
-                                    <BaseButton severity="glass" :icon-only="true" class="size-10! md:size-12!">
-                                        <LucideShare2 class="size-5 md:size-6 text-secondary-300" :stroke-width="1.5" />
-                                    </BaseButton>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid relative">
-                            <div class="absolute bg-linear-to-b from-black/35 to-transparent top-0 right-0 bottom-0 left-0 w-full h-full z-5"></div>
-                            <StoryGallery
-                                :gallery="[story.cover]"
-                            />
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-3 md:gap-4 relative">
-                        <h3 class="text-2xl md:text-3xl font-semibold text-white">{{ story.title }}</h3>
-                        <div class="flex flex-wrap items-center gap-4 md:gap-12">
-                            <div class="flex items-center gap-1.5 text-gray-400">
-                                <LucidePlay class="size-5 md:size-6" />
-                                <span class="text-sm md:text-base font-semibold">110K</span>
-                            </div>
-                            <div class="flex items-center gap-1.5 text-gray-400">
-                                <LucideMessageCircleMore class="size-5 md:size-6" />
-                                <span class="text-sm md:text-base font-semibold">{{ story.comments_count }}</span>
-                            </div>
-                            <div class="flex items-center gap-1.5 text-gray-400">
-                                <LucideLayers2 class="size-5 md:size-6" />
-                                <span class="text-sm md:text-base font-semibold">{{ story.category?.title }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="relative flex flex-col gap-3 md:gap-4">
-                        <div class="flex items-center gap-3 md:gap-4">
-                            <img v-if="story.creator?.avatar" :src="story.creator?.avatar" alt="" class="size-12 md:size-16 rounded-full">
-                            <div v-else class="size-12 md:size-16 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 grid place-items-center text-lg md:text-xl font-bold text-primary/60">
-                                {{ story.creator?.full_name?.charAt(0)?.toUpperCase() }}
-                            </div>
-                            <div class="text-gray-400 text-lg md:text-xl font-semibold">
-                                {{ story.creator?.full_name }}
-                            </div>
-                        </div>
-                        <p class="leading-relaxed text-base md:text-xl font-light text-gray-100">{{ story.teaser }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="sticky bottom-0 hidden w-full md:block">
-                <div class="p-12">
-                    <div class="relative z-5">
-                        <BaseButton
-                            v-if="isPlayable"
-                            severity="primary"
-                            class="w-full py-4 text-lg font-semibold shadow-primary shadow-[0_0px_50px_-12px]"
-                            type="button"
-                            @click="handleStartStory"
+    <div class="relative min-h-svh overflow-x-hidden bg-black pb-28 text-white selection:bg-primary-500/30 lg:pb-[min(136px,max(112px,calc(env(safe-area-inset-bottom,0px)+104px)))] lg:selection:bg-primary-500/35">
+        <StoryPlayAmbientGlows />
+
+        <div
+            class="relative z-[1] mx-auto flex max-w-[72rem] flex-col px-5 pt-10 pb-8 md:px-[3.25rem] md:pb-12 md:pt-[3.75rem] lg:flex-row lg:items-stretch lg:justify-between xl:max-w-[75rem]"
+        >
+            <!-- Cover -->
+            <div class="relative mb-10 shrink-0 lg:mb-0 lg:mr-6 xl:mr-10">
+                <StoryPlayCoverColumn
+                    :src="coverImageUrl"
+                    :title="story.title"
+                    :headline="coverHeadline"
+                    :footer-credit="coverFooterCredit"
+                >
+                    <template #overlay>
+                        <StoryPlayGlassRoundButton
+                            class="pointer-events-auto absolute left-4 top-4 z-[5]"
+                            aria-label="Go back"
+                            @click="handleBack"
                         >
-                            {{ hasExistingGame ? 'Continue' : 'Start' }}
-                        </BaseButton>
+                            <LucideChevronLeft class="!size-5 text-white" :stroke-width="1.85" aria-hidden="true" />
+                        </StoryPlayGlassRoundButton>
                         <div
-                            v-else
-                            class="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800/60 py-4 text-lg font-semibold text-gray-500 cursor-not-allowed select-none"
+                            v-if="!coverImageUrl"
+                            class="pointer-events-none absolute inset-0 z-[2] grid place-items-center"
+                            aria-hidden="true"
                         >
-                            <span class="text-sm font-medium uppercase tracking-widest">Coming Soon</span>
+                            <span class="font-['Marcellus_SC','Marcellus SC',serif] text-4xl uppercase tracking-wider text-white/55">
+                                {{ story.title.charAt(0)?.toUpperCase() }}
+                            </span>
                         </div>
-                    </div>
-                    <div class="absolute bottom-0 left-0 right-0 w-full h-full bg-linear-to-t from-black/75 from-50% to-transparent pointer-events-none"></div>
-                </div>
+                    </template>
+                </StoryPlayCoverColumn>
             </div>
-        </div>
-        <div class="border-t border-gray-700 bg-gray-900 pb-20 md:sticky md:top-0 md:h-svh md:w-120 md:border-t-0 md:border-s md:pb-0">
-            <Tabs value="details_chapters" class="flex w-full flex-col gap-6 px-4 py-6 md:h-full md:gap-8 md:overflow-y-scroll md:px-8 md:py-8" :show-navigators="false" unstyled>
-                <TabList pt:tab-list="flex items-center gap-4" pt:content="" pt:active-bar="hidden">
-                    <Tab class="flex-1" value="details_chapters" v-slot="slotProps" as-child>
-                        <BaseButton
-                            @click="slotProps.onClick"
-                            class="w-full"
-                            :severity="slotProps.active ? 'primary-muted-outline' : 'gray-muted'"
-                        >
-                            Details / Chapters
-                        </BaseButton>
-                    </Tab>
-                    <Tab class="flex-1" value="comments" v-slot="slotProps" as-child>
-                        <BaseButton
-                            @click="slotProps.onClick"
-                            class="w-full"
-                            :severity="slotProps.active ? 'primary-muted-outline' : 'gray-muted'"
-                        >
-                            Comments
-                        </BaseButton>
-                    </Tab>
-                </TabList>
-                <TabPanels>
-                    <TabPanel value="details_chapters">
-                        <div class="flex flex-col gap-6 md:gap-8">
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-700 px-4 py-3 bg-gray-800/50">
-                                    <p class="text-sm md:text-base text-gray-300 uppercase font-semibold">Chapters</p>
-                                    <span class="text-base md:text-lg text-center text-white">{{ story.chapters_count }}</span>
-                                </div>
-                                <div class="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-700 px-4 py-3 bg-gray-800/50">
-                                    <p class="text-sm md:text-base text-gray-300 uppercase font-semibold">Rating</p>
-                                    <span class="text-base md:text-lg text-center text-white">{{ story.rating.label }}</span>
-                                </div>
-                                <div class="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-700 px-4 py-3 bg-gray-800/50">
-                                    <p class="text-sm md:text-base text-gray-300 uppercase font-semibold">Status</p>
-                                    <span class="text-base md:text-lg text-center text-white">{{ story.status.label }}</span>
-                                </div>
-                                <div class="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-700 px-4 py-3 bg-gray-800/50">
-                                    <p class="text-sm md:text-base text-gray-300 uppercase font-semibold">Updated</p>
-                                    <span class="text-base md:text-lg text-center text-white">2 Months Ago</span>
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-4">
-                                <StoryChapterCard
-                                    v-for="(chapter, index) in story.chapters"
-                                    :key="chapter.id"
-                                    :chapter
-                                    :is-open="index === 0"
-                                />
-                            </div>
+
+            <!-- Main column -->
+            <div
+                class="relative flex min-h-0 min-w-0 flex-1 flex-col gap-[1.3125rem] lg:max-w-[41.25rem] lg:min-h-[calc(100svh-120px)]"
+            >
+                <StoryPlayTopBar
+                    :tab="panel"
+                    :bookmark-filled="isBookmarked"
+                    @update:tab="panel = $event"
+                    @bookmark="toggleBookmark"
+                />
+
+                <div v-if="panel === 'details'" class="flex flex-col gap-[1.3125rem] pb-4">
+                    <div class="flex flex-col gap-[0.625rem]">
+                        <StoryPlayTitleProgress :title="story.title" :progress-label="progressBadge" />
+                        <StoryPlayMetaRow
+                            :duration-label="durationLabel"
+                            :genre-label="genreLabel"
+                        />
+                        <StoryPlayStatStrip :items="statItems" />
+                    </div>
+
+                    <StoryPlayAuthorDescription
+                        :author-name="creatorName"
+                        :avatar-url="creatorAvatar"
+                        :description="teaserText || 'Explore this playable story.'"
+                        :collapse-at="360"
+                    />
+
+                    <section
+                        v-if="story.comments?.length"
+                        aria-label="Community comments"
+                        class="rounded-xl border border-white/12 bg-black/35 p-4 backdrop-blur-sm"
+                    >
+                        <div class="mb-4 font-['Inter',sans-serif] text-[0.8125rem] font-semibold uppercase tracking-wide text-gray-400">
+                            Comments · {{ story.comments_count ?? story.comments.length }}
                         </div>
-                    </TabPanel>
-                    <TabPanel value="comments">
                         <div class="flex flex-col gap-4">
                             <StoryCommentCard
                                 v-for="comment in story.comments"
                                 :key="comment.id"
                                 :comment
                             />
-                            <p v-if="!story.comments?.length" class="text-center text-gray-500 py-8">
-                                No comments yet. Be the first to share your thoughts!
-                            </p>
                         </div>
-                    </TabPanel>
-                </TabPanels>
-            </Tabs>
-        </div>
-        <div class="fixed inset-x-0 bottom-0 z-20 md:hidden">
-            <div class="px-4 pb-4 pt-8">
-                <div class="relative z-5">
-                    <BaseButton
-                        v-if="isPlayable"
-                        severity="primary"
-                        class="w-full py-3.5 text-lg font-semibold shadow-primary shadow-[0_0px_50px_-12px]"
-                        type="button"
-                        @click="handleStartStory"
-                    >
-                        {{ hasExistingGame ? 'Continue' : 'Start' }}
-                    </BaseButton>
+                    </section>
+                </div>
+
+                <div v-else class="lg:pb-8">
                     <div
-                        v-else
-                        class="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800/60 py-3.5 text-lg font-semibold text-gray-500 cursor-not-allowed select-none"
+                        v-if="story.chapters?.length"
+                        class="flex flex-col gap-2.5 sm:flex-row sm:items-start"
                     >
-                        <span class="text-sm font-medium uppercase tracking-widest">Coming Soon</span>
+                        <div class="flex min-w-0 flex-1 flex-col gap-2.5">
+                            <StoryChapterCard
+                                v-for="(chapter, index) in leftColumnChapters"
+                                :key="chapter.id"
+                                :chapter
+                                :episode-number="index * 2 + 1"
+                            />
+                        </div>
+                        <div class="flex min-w-0 flex-1 flex-col gap-2.5">
+                            <StoryChapterCard
+                                v-for="(chapter, index) in rightColumnChapters"
+                                :key="chapter.id"
+                                :chapter
+                                :episode-number="index * 2 + 2"
+                            />
+                        </div>
+                    </div>
+                    <p
+                        v-else
+                        class="rounded-xl border border-white/15 bg-black/45 py-14 text-center font-['Inter',sans-serif] text-sm font-medium text-gray-500 backdrop-blur-sm"
+                    >
+                        No chapters listed yet.
+                    </p>
+                </div>
+
+                <!-- Fade + CTA (desktop: in column, matches Figma) -->
+                <div class="relative z-[6] mx-auto mt-10 hidden max-w-[41.25rem] lg:mt-auto lg:block">
+                    <div
+                        class="pointer-events-none absolute -inset-x-6 -top-[7.5rem] bottom-0 mx-auto mb-[-20px] h-[clamp(148px,18vw,200px)] bg-linear-to-t from-black from-[32%] via-black/92 to-transparent lg:-inset-x-10"
+                    />
+                    <div class="relative pt-14">
+                        <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
+                        <div
+                            v-else
+                            class="flex h-[3.5rem] w-full cursor-not-allowed select-none items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium uppercase tracking-widest text-gray-500"
+                        >
+                            Coming Soon
+                        </div>
                     </div>
                 </div>
-                <div class="absolute bottom-0 left-0 right-0 w-full h-full bg-linear-to-t from-black/90 from-50% to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+
+        <!-- Mobile CTA strip -->
+        <div class="fixed inset-x-0 bottom-0 z-30 lg:hidden">
+            <div class="pointer-events-none absolute inset-x-0 bottom-[4.5rem] h-[8.25rem] bg-linear-to-t from-black via-black/88 to-transparent" />
+            <div class="relative border-t border-white/10 bg-black/85 px-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] pt-5 backdrop-blur-md">
+                <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
+                <div
+                    v-else
+                    class="flex h-[3.5rem] w-full cursor-not-allowed select-none items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium uppercase tracking-widest text-gray-500"
+                >
+                    Coming Soon
+                </div>
             </div>
         </div>
     </div>

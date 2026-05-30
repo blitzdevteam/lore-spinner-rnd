@@ -1,32 +1,53 @@
 <script setup lang="ts">
-import { LucideChevronDown } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { LucideCirclePlus, LucideMinus } from 'lucide-vue-next';
 
-const isOpen = ref<boolean>(false);
+defineProps<{
+    question: string;
+    answer: string;
+    expanded: boolean;
+}>();
 
-const componentClass = computed(() => {
-    const activeClass = isOpen.value
-        ? 'outline-4 outline-primary-200/20 border-primary-500'
-        : 'outline-2 outline-transparent hover:outline-primary-200/20 border-gray-700 hover:border-primary-600';
-
-    return `w-full flex flex-col rounded-xl bg-gray-800 border transition-all ${activeClass}`;
-});
+const emit = defineEmits<{
+    toggle: [];
+}>();
 </script>
 
 <template>
-    <div :class="componentClass">
-        <div class="flex min-h-18 items-center justify-between px-8 py-4">
-            <h3 class="text-xl">
-                <slot name="question"></slot>
-            </h3>
-            <button class="grid size-10 cursor-pointer place-items-center rounded-full hover:bg-gray-700" @click="isOpen = !isOpen">
-                <LucideChevronDown :class="`size-6 text-primary-400 transition ${isOpen ? 'rotate-180' : ''}`" />
-            </button>
+    <div
+        class="w-full cursor-pointer rounded-[0.875rem] border border-solid transition-[box-shadow,border-color] duration-200"
+        :class="
+            expanded
+                ? 'flex flex-col items-center bg-[#292929] px-[0.875rem] py-6 shadow-[0_0_18.3px_rgba(111,175,186,0.1)]'
+                : 'flex min-h-[4.375rem] flex-col items-center justify-center bg-[#292929] px-[0.875rem] py-[1.375rem]'
+        "
+        :style="
+            expanded
+                ? { borderColor: 'rgba(0, 198, 222, 0.6)' }
+                : { borderColor: '#373737' }
+        "
+        role="button"
+        tabindex="0"
+        :aria-expanded="expanded"
+        @click="emit('toggle')"
+        @keydown.enter.prevent="emit('toggle')"
+        @keydown.space.prevent="emit('toggle')"
+    >
+        <div class="flex w-full items-center gap-4 md:gap-[7.8125rem]">
+            <p class="min-w-0 flex-1 text-left text-[1.125rem] font-bold leading-[1.75rem] text-white">
+                {{ question }}
+            </p>
+            <div
+                class="flex shrink-0 items-center justify-center text-primary"
+                :class="expanded ? 'h-7 w-[2.125rem]' : 'size-[1.6875rem]'"
+            >
+                <LucideMinus v-if="expanded" class="size-7 stroke-[2]" aria-hidden="true" />
+                <LucideCirclePlus v-else class="size-[1.6875rem] stroke-[1.75]" aria-hidden="true" />
+            </div>
         </div>
-        <div class="px-8 pb-4" v-if="isOpen">
-            <p class="text-xl font-light text-gray-200"><slot name="answer"></slot></p>
+        <div v-if="expanded" class="mt-5 flex w-full flex-col">
+            <p class="w-full text-[0.875rem] font-normal leading-[1.875rem] text-[#b6b6b6]">
+                {{ answer }}
+            </p>
         </div>
     </div>
 </template>
-
-<style scoped></style>

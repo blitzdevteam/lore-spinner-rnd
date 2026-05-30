@@ -1,26 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Marcellus+SC&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import './story-slider.css';
+/** Ensures Vue templates are scanned so arbitrary utilities (e.g. hero CTA) exist in prod CSS. */
+@source '../js/**/*.vue';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
     --container: 1152px;
+    /** Homepage / landing inner column — matches Figma content frame (~1018px). */
+    --content-width: 1018px;
     --container-gap: max(0px, calc((100vw - var(--container)) / 2));
-    --color-background: #1a1a1a;
+    --color-background: #000000;
 
-    /* Tiffany Blue — Pantone 1837 (#0ABAB5) as 500 anchor */
-    --color-primary-50:  #edfcfb;
-    --color-primary-100: #c4f5f2;
-    --color-primary-200: #8beee8;
-    --color-primary-300: #5dede0;
-    --color-primary-400: #2bd9d0;
-    --color-primary-500: #0abab5;
-    --color-primary-600: #089490;
-    --color-primary-700: #0c7270;
-    --color-primary-800: #0c5c59;
-    --color-primary-900: #0b4846;
-    --color-primary-950: #042e2c;
-    --color-primary: #0abab5;
+    /* Teal slate — accent #6FAFBA at 500; CTA fills on 700–950 */
+    --color-primary-50:  #f3f7f8;
+    --color-primary-100: #e8f0f2;
+    --color-primary-200: #d1e4e8;
+    --color-primary-300: #8fcbd3;
+    --color-primary-400: #7eb8c4;
+    --color-primary-500: #6fafba;
+    --color-primary-600: #5a96a1;
+    --color-primary-700: #1e5058;
+    --color-primary-800: #163f46;
+    --color-primary-900: #133840;
+    --color-primary-950: #102c32;
+    --color-primary: #6fafba;
+
+    --color-cta-fill: #163f46;
+    --color-cta-hover: #1e5058;
+    --color-cta-active: #102c32;
+    --color-cta-border: #6fafba;
+    --color-cta-border-hover: #8fcbd3;
+    --color-cta-text: #f3f4ee;
 
     --color-secondary-50: #fff8eb;
     --color-secondary-100: #ffebc6;
@@ -74,6 +88,37 @@ body {
 .container {
     @apply mx-auto w-full px-4;
     max-width: calc(var(--container) + 2rem);
+}
+
+/**
+ * Inner content band shared by hero copy and stacked homepage sections.
+ * Keeps left edges aligned under `.container` horizontal padding on all breakpoints.
+ */
+.container-content {
+    @apply mx-auto w-full max-w-[var(--content-width)];
+}
+
+/**
+ * Vertical rhythm between major homepage blocks (matches Figma section padding).
+ */
+.home-section-y {
+    @apply py-10 md:py-[60px];
+}
+
+/**
+ * Standard gap from section header to the block below.
+ * Mobile: 20px (compact, streaming-app rhythm); desktop matches Figma (18px).
+ */
+.home-section-gap {
+    @apply flex flex-col gap-5 md:gap-[18px];
+}
+
+.home-section-title {
+    @apply min-w-0 text-[1.375rem] font-bold uppercase leading-[1.1] tracking-[0.02em] text-white [overflow-wrap:anywhere] md:text-[1.625rem] md:leading-[1.1] md:tracking-normal;
+}
+
+.home-section-description {
+    @apply max-w-[49.3125rem] text-[0.9375rem] font-normal leading-[1.5] text-[#b6b6b6] md:text-[1rem] md:leading-[1.625rem];
 }
 
 .bg-glass-effect {

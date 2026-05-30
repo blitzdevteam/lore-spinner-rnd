@@ -14,14 +14,18 @@ final class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Test user with verified email and completed profile (username set)
-        User::factory()->markEmailAsVerified()->create([
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-            'password' => 'password',
-        ]);
+        // Test user with verified email and completed profile (username set). Idempotent so re-seeding updates credentials.
+        User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'username' => 'testuser',
+                'password' => 'password',
+                'email_verified_at' => now(),
+                'is_active' => true,
+            ],
+        );
 
         User::factory()->markEmailAsVerified()->count(9)->create();
     }

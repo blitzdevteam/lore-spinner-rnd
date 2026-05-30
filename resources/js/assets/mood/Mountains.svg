@@ -1,0 +1,14 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Mountains" clip-path="url(#clip0_0_10)">
+<g id="Vector">
+</g>
+<path id="Vector_2" d="M1.5 25.0005L10.6375 9.49297C10.7257 9.34259 10.8517 9.2179 11.003 9.13125C11.1543 9.04461 11.3257 8.99902 11.5 8.99902C11.6743 8.99902 11.8457 9.04461 11.997 9.13125C12.1483 9.2179 12.2743 9.34259 12.3625 9.49297L21.5 25.0005H1.5Z" stroke="var(--stroke-0, #ECC863)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M18.3271 19.6175L21.9521 13.4925C22.0407 13.3433 22.1665 13.2197 22.3173 13.1338C22.4681 13.048 22.6386 13.0028 22.8121 13.0028C22.9857 13.0028 23.1562 13.048 23.307 13.1338C23.4578 13.2197 23.5836 13.3433 23.6721 13.4925L30.4996 25H21.4996" stroke="var(--stroke-0, #ECC863)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M6.80375 16H16.1963" stroke="var(--stroke-0, #ECC863)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_0_10">
+<rect width="32" height="32" fill="white"/>
+</clipPath>
+</defs>
+</svg>

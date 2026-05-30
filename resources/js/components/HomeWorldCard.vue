@@ -1,0 +1,32 @@
+<script setup lang="ts">
+import StoryCard from '@/components/StoryCard.vue';
+import { StoryInterface } from '@/types';
+import { StoryStatusEnum } from '@/types/enum';
+
+const props = withDefaults(
+    defineProps<{
+        story: StoryInterface;
+        showTitle?: boolean;
+        showButton?: boolean;
+        dimmed?: boolean;
+    }>(),
+    {
+        showTitle: true,
+        showButton: true,
+        dimmed: false,
+    },
+);
+
+const isComingSoon = props.story.status?.value !== StoryStatusEnum.PUBLISHED;
+</script>
+
+<template>
+    <StoryCard
+        :title="story.title"
+        :cover-image="story.cover"
+        :slug="story.slug"
+        :status="story.status?.value"
+        :is-coming-soon="isComingSoon"
+        :dimmed="dimmed"
+    />
+</template>

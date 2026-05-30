@@ -183,19 +183,19 @@ const timeAgo = computed(() => {
             <!-- Detail boxes: CHAPTERS | RATING | STATUS | UPDATED (4-col single row) -->
             <div class="grid grid-cols-4 gap-2">
                 <div class="flex flex-col items-center justify-center gap-1 rounded-md border border-gray-600 px-2 py-2">
-                    <p class="text-[10px] tracking-wider text-gray-400 uppercase">Chapters</p>
+                    <p class="text-[0.625rem] tracking-wider text-gray-400 uppercase">Chapters</p>
                     <span class="text-sm font-semibold text-white">{{ story.chapters_count }}</span>
                 </div>
                 <div class="flex flex-col items-center justify-center gap-1 rounded-md border border-gray-600 px-2 py-2">
-                    <p class="text-[10px] tracking-wider text-gray-400 uppercase">Rating</p>
+                    <p class="text-[0.625rem] tracking-wider text-gray-400 uppercase">Rating</p>
                     <span class="text-sm font-semibold text-white">{{ story.rating.label }}</span>
                 </div>
                 <div class="flex flex-col items-center justify-center gap-1 rounded-md border border-gray-600 px-2 py-2">
-                    <p class="text-[10px] tracking-wider text-gray-400 uppercase">Status</p>
+                    <p class="text-[0.625rem] tracking-wider text-gray-400 uppercase">Status</p>
                     <span class="text-sm font-semibold text-white">{{ story.status.label }}</span>
                 </div>
                 <div class="flex flex-col items-center justify-center gap-1 rounded-md border border-gray-600 px-2 py-2">
-                    <p class="text-[10px] tracking-wider text-gray-400 uppercase">Updated</p>
+                    <p class="text-[0.625rem] tracking-wider text-gray-400 uppercase">Updated</p>
                     <span class="text-sm font-semibold text-white">{{ timeAgo }}</span>
                 </div>
             </div>

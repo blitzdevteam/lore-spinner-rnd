@@ -29,7 +29,7 @@ defineProps<{
             </p>
             <BaseButton
                 severity="muted-glass"
-                class="text-primary hover:scale-100! hover:bg-primary-400! hover:text-black"
+                class="text-primary hover:scale-100! hover:bg-cta-hover! hover:text-cta-text!"
                 type="internal-link"
                 :href="show(creator.username as string).url"
             >
