@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BannerImage from '@/assets/banner.png';
+import BannerImage from '@/assets/banner.jpg';
 // import HeroBranchChain from '@/components/HeroBranchChain.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
