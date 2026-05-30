@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SectionHeader from '@/components/SectionHeader.vue';
+import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import banner1 from '@/assets/newStories/New stories 1- 2x.jpg';
 import banner2 from '@/assets/newStories/New stories 2 - 2x .jpg';
 import banner3 from '@/assets/newStories/New stories 3 - 2x.jpg';
@@ -139,6 +140,31 @@ const hoveredStory = computed(() => stories.find((s) => s.id === hoveredId.value
 function coverForPopup(story: NewStory): string {
     return story.coverHover ?? story.cover;
 }
+
+// ── Mobile bottom sheet ───────────────────────────────────────────────────────
+const sheetStory = ref<StorySheetData | null>(null);
+
+function toSheetData(story: NewStory): StorySheetData {
+    return {
+        id: story.id,
+        title: story.title,
+        cover: story.coverHover ?? story.cover,
+        themes: story.themes,
+        category: story.category,
+        rating: story.rating,
+        isComingSoon: !story.playable,
+        teaser: story.teaser,
+        branches: story.branches,
+        slug: story.slug,
+    };
+}
+
+function onCardClick(e: MouseEvent, story: NewStory) {
+    if (!window.matchMedia('(hover: hover)').matches) {
+        e.stopPropagation();
+        sheetStory.value = toSheetData(story);
+    }
+}
 </script>
 
 <template>
@@ -190,6 +216,7 @@ function coverForPopup(story: NewStory): string {
                             class="new-banner-card shrink-0"
                             @mouseenter="onCardEnter(story)"
                             @mouseleave="onCardLeave"
+                            @click.capture="onCardClick($event, story)"
                         >
                             <div class="new-banner-card__inner flex w-[min(28.125rem,78vw)] flex-col gap-[0.625rem] md:w-[28.125rem]">
                                 <!-- Banner image -->
@@ -307,6 +334,8 @@ function coverForPopup(story: NewStory): string {
             </div>
         </div>
     </section>
+
+    <StoryDetailsSheet :story="sheetStory" @close="sheetStory = null" />
 </template>
 
 <style scoped>

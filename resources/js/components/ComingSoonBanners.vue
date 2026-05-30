@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import SectionHeader from '@/components/SectionHeader.vue';
+import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import cover1 from '@/assets/commingSoon/Coming soon 1- 2x.jpg';
 import cover2 from '@/assets/commingSoon/Coming soon 2 - 2x.png';
 import cover3 from '@/assets/commingSoon/Coming soon 3 - 2x.jpg';
 import cover4 from '@/assets/commingSoon/Coming soon 4 - 2x.jpg';
 import cover5 from '@/assets/commingSoon/Coming soon 5 - 2x.png';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
-import { Link } from '@inertiajs/vue3';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { computed, nextTick, ref } from 'vue';
 
@@ -138,6 +138,26 @@ const popupStyle = computed(() => {
 });
 
 const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?? null);
+
+// ── Mobile bottom sheet ───────────────────────────────────────────────────────
+const sheetStory = ref<StorySheetData | null>(null);
+
+function toSheetData(card: ComingSoonCard): StorySheetData {
+    return {
+        id: card.id,
+        title: card.title,
+        cover: card.cover,
+        themes: card.themes,
+        isComingSoon: true,
+    };
+}
+
+function onCardClick(e: MouseEvent, card: ComingSoonCard) {
+    if (!window.matchMedia('(hover: hover)').matches) {
+        e.stopPropagation();
+        sheetStory.value = toSheetData(card);
+    }
+}
 </script>
 
 <template>
@@ -198,6 +218,7 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
                             class="shrink-0"
                             @mouseenter="onCardEnter(card)"
                             @mouseleave="onCardLeave"
+                            @click.capture="onCardClick($event, card)"
                         >
                             <div
                                 class="flex flex-col rounded-[0.5rem] border border-solid border-[#373737] bg-[#262626] p-[0.375rem]"
@@ -257,6 +278,8 @@ const hoveredCard = computed(() => cards.find((c) => c.id === hoveredId.value) ?
             </div>
         </div>
     </section>
+
+    <StoryDetailsSheet :story="sheetStory" @close="sheetStory = null" />
 </template>
 
 <style scoped>

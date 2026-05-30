@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SectionHeader from '@/components/SectionHeader.vue';
+import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import aliceCover from '@/assets/featured/alice.png';
 import animaCover from '@/assets/featured/anima.jpg';
 import jekyllCover from '@/assets/featured/jekyll.png';
@@ -147,6 +148,29 @@ const popupStyle = computed(() => {
 });
 
 const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?? null);
+
+// ── Mobile bottom sheet ───────────────────────────────────────────────────────
+const sheetStory = ref<StorySheetData | null>(null);
+
+function toSheetData(game: FeaturedGame): StorySheetData {
+    return {
+        id: game.id,
+        title: game.title,
+        cover: game.cover,
+        themes: game.themes,
+        isComingSoon: !game.playable,
+        teaser: game.teaser,
+        branches: game.branches,
+        slug: game.slug,
+    };
+}
+
+function onCardClick(e: MouseEvent, game: FeaturedGame) {
+    if (!window.matchMedia('(hover: hover)').matches) {
+        e.stopPropagation();
+        sheetStory.value = toSheetData(game);
+    }
+}
 </script>
 
 <template>
@@ -199,6 +223,7 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
                             class="shrink-0"
                             @mouseenter="onCardEnter(game)"
                             @mouseleave="onCardLeave"
+                            @click.capture="onCardClick($event, game)"
                         >
                             <div
                                 class="featured-game-card relative flex flex-col gap-2 rounded-[0.5rem] border border-[#373737] bg-[#262626] p-[0.375rem] transition-opacity duration-200"
@@ -318,6 +343,8 @@ const hoveredGame = computed(() => games.find((g) => g.id === hoveredId.value) ?
             </div>
         </div>
     </section>
+
+    <StoryDetailsSheet :story="sheetStory" @close="sheetStory = null" />
 </template>
 
 <style scoped>

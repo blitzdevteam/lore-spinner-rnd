@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import StoryCard, { type StoryCardCta } from '@/components/StoryCard.vue';
+import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
@@ -109,6 +110,33 @@ function ctaForStory(story: StoryInterface): StoryCardCta | undefined {
 function isComingSoon(story: StoryInterface): boolean {
     return story.status?.value !== StoryStatusEnum.PUBLISHED;
 }
+
+// ── Mobile bottom sheet ───────────────────────────────────────────────────────
+const sheetStory = ref<StorySheetData | null>(null);
+
+function toSheetData(story: StoryInterface): StorySheetData {
+    const meta = STORY_HOVER_META_BY_SLUG[story.slug];
+    return {
+        id: story.id,
+        title: story.title,
+        cover: story.cover,
+        themes: meta?.themes.length ? meta.themes : story.category ? [story.category.title] : undefined,
+        category: story.category?.title,
+        rating: story.rating?.label,
+        isComingSoon: isComingSoon(story),
+        teaser: story.teaser,
+        branches: meta?.branches ?? null,
+        slug: story.slug,
+        cta: (ctaForStory(story) === 'read-again' ? 'play' : ctaForStory(story)) as StorySheetData['cta'],
+    };
+}
+
+function onCardClick(e: MouseEvent, story: StoryInterface) {
+    if (!window.matchMedia('(hover: hover)').matches) {
+        e.stopPropagation();
+        sheetStory.value = toSheetData(story);
+    }
+}
 </script>
 
 <template>
@@ -121,6 +149,7 @@ function isComingSoon(story: StoryInterface): boolean {
                 class="min-w-0"
                 @mouseenter="onCardEnter(story)"
                 @mouseleave="onCardLeave"
+                @click.capture="onCardClick($event, story)"
             >
                 <StoryCard
                     :title="story.title"
@@ -202,6 +231,7 @@ function isComingSoon(story: StoryInterface): boolean {
                 </div>
             </div>
         </Transition>
+    <StoryDetailsSheet :story="sheetStory" @close="sheetStory = null" />
     </div>
 </template>
 
