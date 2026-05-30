@@ -2,6 +2,8 @@
 import banner1 from '@/assets/newStories/New stories 1- 2x.jpg';
 import banner2 from '@/assets/newStories/New stories 2 - 2x .jpg';
 import banner3 from '@/assets/newStories/New stories 3 - 2x.jpg';
+import banner1Hover from '@/assets/newStories/s1-hover.jpg';
+import banner2Hover from '@/assets/newStories/s2-hover.jpg';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -14,6 +16,8 @@ interface NewStory {
     id: string;
     title: string;
     cover: string;
+    /** Optional alternate cover shown while the row card (or popup) is hovered */
+    coverHover?: string;
     category: string;
     rating: string;
     playable: boolean;
@@ -28,6 +32,7 @@ const stories: NewStory[] = [
         id: 'sherlock',
         title: 'Sherlock Holmes',
         cover: banner1,
+        coverHover: banner1Hover,
         category: 'Mystery',
         rating: 'Teen',
         playable: false,
@@ -39,6 +44,7 @@ const stories: NewStory[] = [
         id: 'Alice’s Adventures In Wonderland',
         title: 'Alice’s Adventures In Wonderland',
         cover: banner2,
+        coverHover: banner2Hover,
         category: 'Science Fiction',
         rating: 'Mature',
         playable: false,
@@ -125,6 +131,10 @@ const popupStyle = computed(() => {
 });
 
 const hoveredStory = computed(() => stories.find((s) => s.id === hoveredId.value) ?? null);
+
+function coverForPopup(story: NewStory): string {
+    return story.coverHover ?? story.cover;
+}
 </script>
 
 <template>
@@ -186,11 +196,25 @@ const hoveredStory = computed(() => stories.find((s) => s.id === hoveredId.value
                                         <img
                                             :src="story.cover"
                                             :alt="story.title"
-                                            class="h-full w-full object-cover transition-transform duration-300 ease-out"
-                                            :class="hoveredId === story.id ? 'scale-[1.03]' : 'scale-100'"
+                                            class="absolute inset-0 h-full w-full object-cover transition-all duration-300 ease-out"
+                                            :class="[
+                                                hoveredId === story.id ? 'scale-[1.03]' : 'scale-100',
+                                                story.coverHover && hoveredId === story.id ? 'opacity-0' : 'opacity-100',
+                                            ]"
+                                        />
+                                        <img
+                                            v-if="story.coverHover"
+                                            :src="story.coverHover"
+                                            :alt="`${story.title} (alternate)`"
+                                            class="absolute inset-0 h-full w-full object-cover transition-all duration-300 ease-out"
+                                            :class="[
+                                                hoveredId === story.id ? 'scale-[1.03]' : 'scale-100',
+                                                hoveredId === story.id ? 'opacity-100' : 'opacity-0',
+                                            ]"
+                                            aria-hidden="true"
                                         />
                                         <!-- Left-edge gradient fade (matches existing style) -->
-                                        <div class="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[#262626] to-transparent" />
+                                        <div class="absolute inset-y-0 left-0 z-[1] w-20 bg-gradient-to-r from-[#262626] to-transparent" />
                                     </div>
                                 </div>
 
@@ -234,7 +258,7 @@ const hoveredStory = computed(() => stories.find((s) => s.id === hoveredId.value
                             <!-- Left: portrait cover (248×298) -->
                             <div class="h-[298px] w-[248px] shrink-0 overflow-hidden rounded-[5px]">
                                 <img
-                                    :src="hoveredStory.cover"
+                                    :src="coverForPopup(hoveredStory)"
                                     :alt="hoveredStory.title"
                                     class="h-full w-full object-cover"
                                 />
