@@ -118,6 +118,7 @@ function scrollSlider(direction: -1 | 1): void {
                                     :cover="story.cover"
                                     :category="categoryForStory(story)"
                                     :rating="ratingForStory(story)"
+                                    :mood="moodLabel"
                                     :themes="themesForStory(story)"
                                     :teaser="story.teaser"
                                     :branches="branchesForStory(story)"

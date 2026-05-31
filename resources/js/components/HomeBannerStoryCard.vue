@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import mainLogo from '@/assets/logo/main-logo.png';
 import { show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { computed, withDefaults } from 'vue';
+import { computed, ref, watch, withDefaults } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -9,6 +10,7 @@ const props = withDefaults(
         cover: string;
         category: string;
         rating: string;
+        mood?: string;
         themes: string[];
         teaser?: string | null;
         branches?: string | null;
@@ -21,6 +23,7 @@ const props = withDefaults(
     }>(),
     {
         expandOnHover: true,
+        mood: undefined,
     },
 );
 
@@ -30,8 +33,27 @@ const storyUrl = computed(() =>
     props.playable && props.slug ? storyShow(props.slug).url : undefined,
 );
 
-const statusLabel = computed(() => (props.playable ? 'Published' : 'Coming soon'));
 const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
+
+const metadataLine = computed(() => {
+    const parts = [props.mood, props.category].filter(Boolean);
+    return parts.length ? parts.join(' • ') : props.category;
+});
+
+const imageFailed = ref(false);
+
+watch(
+    () => props.cover,
+    () => {
+        imageFailed.value = false;
+    },
+);
+
+const showImage = computed(() => Boolean(props.cover) && !imageFailed.value);
+
+function onImageError(): void {
+    imageFailed.value = true;
+}
 </script>
 
 <template>
@@ -39,7 +61,7 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
         :is="isDesktopHover ? (storyUrl ? Link : 'div') : 'button'"
         :href="isDesktopHover ? storyUrl : undefined"
         type="button"
-        class="hb-card block w-full border-0 bg-transparent p-0 text-left outline-none"
+        class="hb-card group block w-full border-0 bg-transparent p-0 text-left outline-none"
         :class="[
             expandOnHover && focused && 'hb-card--focused',
             !expandOnHover && 'hb-card--static',
@@ -48,39 +70,52 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
         :aria-label="isDesktopHover && storyUrl ? `Open ${title}` : `Preview ${title}`"
         @click="!isDesktopHover && emit('preview')"
     >
-        <div class="hb-card__inner">
+        <div class="hb-card__frame">
             <div class="hb-card__cover">
-                <img :src="cover" :alt="title" class="hb-card__cover-img" />
+                <img
+                    v-if="showImage"
+                    :src="cover"
+                    :alt="title"
+                    class="hb-card__cover-img hb-card__cover-img--zoom"
+                    decoding="async"
+                    @error="onImageError"
+                />
+                <div v-else class="hb-card__cover-fallback" aria-hidden="true">
+                    <p class="hb-card__cover-fallback-title">{{ title }}</p>
+                    <img :src="mainLogo" alt="" class="hb-card__cover-logo" />
+                </div>
             </div>
 
-            <p class="hb-card__title">{{ title }}</p>
+            <div class="hb-card__body">
+                <div class="hb-card__info">
+                    <p class="hb-card__title">{{ title }}</p>
+                    <p class="hb-card__meta">{{ metadataLine }}</p>
+                </div>
 
-            <p class="hb-card__subtitle">
-                {{ category }} | {{ rating }} | {{ statusLabel }}
-            </p>
+                <div
+                    v-if="expandOnHover"
+                    class="hb-card__reveal"
+                    :class="focused && 'hb-card__reveal--open'"
+                >
+                    <div class="hb-card__reveal-inner">
+                        <div v-if="themes.length" class="hb-card__themes">
+                            <template v-for="(theme, i) in themes" :key="theme">
+                                <span v-if="i > 0" class="hb-card__theme-dot" aria-hidden="true">•</span>
+                                <span class="hb-card__theme">{{ theme }}</span>
+                            </template>
+                        </div>
+                        <p v-if="teaser" class="hb-card__teaser">{{ teaser }}</p>
+                        <p v-if="branches" class="hb-card__branches">
+                            {{ branches }} Branches explored
+                        </p>
+                    </div>
+                </div>
 
-            <div
-                v-if="expandOnHover"
-                class="hb-card__reveal"
-                :class="focused && 'hb-card__reveal--open'"
-            >
-                <div class="hb-card__reveal-inner">
-                    <div v-if="themes.length" class="hb-card__themes">
-                        <template v-for="(theme, i) in themes" :key="theme">
-                            <span v-if="i > 0" class="hb-card__theme-dot" aria-hidden="true">●</span>
-                            <span class="hb-card__theme">{{ theme }}</span>
-                        </template>
-                    </div>
-                    <p v-if="teaser" class="hb-card__teaser">{{ teaser }}</p>
-                    <p v-if="branches" class="hb-card__branches">
-                        {{ branches }} Branches explored
-                    </p>
-                    <div
-                        class="hb-card__cta"
-                        :class="playable ? 'hb-card__cta--active' : 'hb-card__cta--disabled'"
-                    >
-                        {{ ctaLabel }}
-                    </div>
+                <div
+                    class="hb-card__cta"
+                    :class="playable ? 'hb-card__cta--active' : 'hb-card__cta--disabled'"
+                >
+                    {{ ctaLabel }}
                 </div>
             </div>
         </div>
@@ -92,34 +127,28 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
     text-decoration: none;
 }
 
-.hb-card__inner {
+.hb-card__frame {
     display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
+    height: 100%;
     width: 100%;
-    border-radius: 0.5rem;
-    border: 1px solid #373737;
-    background: #262626;
-    padding: 0.25rem;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--story-card-radius);
+    border: var(--story-card-border);
+    background: var(--story-card-bg);
+    box-shadow: var(--story-card-shadow);
     transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+        transform 200ms ease,
+        box-shadow 200ms ease;
 }
 
 .hb-card__cover {
     position: relative;
     width: 100%;
-    aspect-ratio: 450 / 262;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
-    border-radius: 0.4375rem;
     flex-shrink: 0;
-}
-
-@media (min-width: 768px) {
-    .hb-card__cover {
-        aspect-ratio: unset;
-        height: 16.375rem;
-    }
+    background: #0c0c0c;
 }
 
 .hb-card__cover-img {
@@ -128,36 +157,89 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.22s ease;
+    transition: transform 200ms ease;
+}
+
+.hb-card__cover-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    padding: 1rem;
+    background: linear-gradient(165deg, #1a1a1f 0%, #0d0d10 45%, #141418 100%);
+}
+
+.hb-card__cover-fallback-title {
+    margin: 0;
+    max-width: 100%;
+    font-size: clamp(0.875rem, 2.2vw, 1.0625rem);
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.88);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.hb-card__cover-logo {
+    width: auto;
+    height: 1rem;
+    opacity: 0.55;
+    object-fit: contain;
+}
+
+.hb-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--story-card-body-gap);
+    padding: var(--story-card-body-pad-y) var(--story-card-body-pad-x)
+        calc(var(--story-card-body-pad-y) + 0.125rem);
+    min-height: 0;
+}
+
+.hb-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    min-width: 0;
 }
 
 .hb-card__title {
-    padding: 0 1px;
-    font-size: 1.125rem;
-    font-weight: 600;
-    line-height: 1.4;
+    margin: 0;
+    font-size: var(--story-card-title-size);
+    font-weight: 700;
+    line-height: 1.3;
     color: #fff;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.hb-card__subtitle {
-    padding: 0 1px;
-    font-size: 0.9375rem;
-    line-height: 1.4;
-    color: #8f8f8f;
+.hb-card__meta {
+    margin: 0;
+    font-size: var(--story-card-meta-size);
+    line-height: 1.35;
+    color: var(--story-card-meta-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .hb-card__reveal {
     display: grid;
     grid-template-rows: 0fr;
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(4px);
     transition:
-        grid-template-rows 0.22s ease,
-        opacity 0.2s ease,
-        transform 0.2s ease;
+        grid-template-rows 200ms ease,
+        opacity 200ms ease,
+        transform 200ms ease;
 }
 
 .hb-card__reveal--open {
@@ -170,9 +252,8 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.375rem;
     min-height: 0;
-    padding: 0 1px 2px;
 }
 
 .hb-card__themes {
@@ -183,9 +264,9 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
 }
 
 .hb-card__theme-dot {
-    font-size: 0.5rem;
+    font-size: 0.625rem;
     line-height: 1;
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.28);
 }
 
 .hb-card__theme {
@@ -195,73 +276,64 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
 }
 
 .hb-card__teaser {
+    margin: 0;
     font-size: 0.8125rem;
-    line-height: 1.55;
-    color: #9a9a9a;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.52);
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     overflow: hidden;
 }
 
 .hb-card__branches {
-    font-size: 0.875rem;
+    margin: 0;
+    font-size: 0.8125rem;
     font-weight: 500;
     color: #ffbe58;
 }
 
 .hb-card__cta {
     display: flex;
-    height: 2.25rem;
+    height: var(--story-card-btn-height);
     width: 100%;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    border-radius: 0.375rem;
-    font-size: 1.0625rem;
+    border-radius: var(--story-card-btn-radius);
+    font-size: 0.9375rem;
     font-weight: 600;
+    line-height: 1;
+    margin-top: auto;
 }
 
 .hb-card__cta--active {
-    background: var(--color-cta-fill, #6fafba);
-    color: var(--color-cta-text, #000);
+    background: var(--color-primary, #6fafba);
+    color: #0a1214;
 }
 
 .hb-card__cta--disabled {
-    border: 1px solid #4d4d4d;
-    background: #3f3f3f;
-    color: #8e8e8e;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.42);
 }
 
 @media (min-width: 1024px) {
-    .hb-card--focused .hb-card__inner {
-        border-color: rgba(111, 175, 186, 0.55);
-        box-shadow:
-            0 20px 44px rgba(0, 0, 0, 0.58),
-            0 0 36px rgba(111, 175, 186, 0.32),
-            0 0 12px rgba(111, 175, 186, 0.22);
+    .hb-card--focused .hb-card__frame {
+        box-shadow: var(--story-card-shadow-hover);
     }
 
     .hb-card--focused .hb-card__cover-img {
         transform: scale(1.05);
     }
 
-    .hb-card--static:hover .hb-card__inner {
-        border-color: rgba(111, 175, 186, 0.45);
-        box-shadow:
-            0 10px 28px rgba(0, 0, 0, 0.45),
-            0 0 18px rgba(111, 175, 186, 0.18);
-        transform: scale(1.02);
+    .hb-card--static:hover .hb-card__frame {
+        transform: scale(1.03);
+        box-shadow: var(--story-card-shadow-hover);
     }
 
-    .hb-card--static:hover .hb-card__cover-img {
-        transform: scale(1.04);
+    .hb-card--static:hover .hb-card__cover-img--zoom {
+        transform: scale(1.05);
     }
-}
-
-.hb-card--static .hb-card__inner {
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
 }
 </style>
