@@ -1,0 +1,18 @@
+/**
+ * Shared story card tokens — Netflix / Apple TV / Steam store feel.
+ */
+:root {
+    --story-card-radius: 0.75rem;
+    --story-card-border: 1px solid rgba(255, 255, 255, 0.06);
+    --story-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+    --story-card-shadow-hover: 0 14px 36px rgba(0, 0, 0, 0.42);
+    --story-card-bg: #141414;
+    --story-card-body-gap: 0.625rem;
+    --story-card-body-pad-x: 0.625rem;
+    --story-card-body-pad-y: 0.625rem;
+    --story-card-title-size: clamp(1.0625rem, 2.4vw, 1.25rem);
+    --story-card-meta-size: 0.8125rem;
+    --story-card-meta-color: rgba(255, 255, 255, 0.48);
+    --story-card-btn-height: 2.625rem;
+    --story-card-btn-radius: 0.8125rem;
+}

@@ -1,32 +1,60 @@
 <script setup lang="ts">
+import HomeBannerStoryCard from '@/components/HomeBannerStoryCard.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
-import { MOOD_BANNER_CONFIGS, type MoodId } from '@/data/moodBanners';
+import { MOOD_TOP_PICK_SLUGS } from '@/data/moodCards';
+import type { MoodId } from '@/data/moodBanners';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
-import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
-import { show as storyShow } from '@/wayfinder/routes/stories';
-import { Link } from '@inertiajs/vue3';
+import { index as storiesIndex } from '@/wayfinder/routes/stories';
+import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
     mood: MoodId;
-    picks: StoryInterface[];
-    viewAllHref: string;
-    viewAllCount: number;
+    moodLabel: string;
+    stories: StoryInterface[];
+    totalCount: number;
 }>();
 
 const sliderEl = ref<HTMLElement | null>(null);
 const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
 
-const sectionTitle = computed(() => `Top ${MOOD_BANNER_CONFIGS[props.mood].label} Picks`);
+const sectionTitle = computed(() => `Top ${props.moodLabel} Picks`);
 
-function pickImage(story: StoryInterface): string {
-    return story.banner?.trim() ? story.banner : story.cover;
+const viewAllHref = computed(() => `${storiesIndex().url}?mood=${props.mood}#all-stories`);
+
+const topPickStories = computed((): StoryInterface[] => {
+    const bySlug = new Map(props.stories.map((story) => [story.slug, story]));
+    const curated = MOOD_TOP_PICK_SLUGS[props.mood]
+        .map((slug) => bySlug.get(slug))
+        .filter((story): story is StoryInterface => story != null);
+
+    if (curated.length >= 3) return curated;
+
+    const usedSlugs = new Set(curated.map((story) => story.slug));
+    const extras = props.stories.filter((story) => !usedSlugs.has(story.slug));
+
+    return [...curated, ...extras].slice(0, Math.max(3, curated.length));
+});
+
+function themesForStory(story: StoryInterface): string[] {
+    const meta = STORY_HOVER_META_BY_SLUG[story.slug];
+    if (meta?.themes.length) return meta.themes;
+    if (story.category?.title) return [story.category.title];
+    return [];
 }
 
-function pickThemes(slug: string): string[] {
-    return STORY_HOVER_META_BY_SLUG[slug]?.themes ?? [];
+function categoryForStory(story: StoryInterface): string {
+    return story.category?.title ?? 'Story';
+}
+
+function ratingForStory(story: StoryInterface): string {
+    return story.rating?.label ?? 'Everyone';
+}
+
+function branchesForStory(story: StoryInterface): string | null {
+    return STORY_HOVER_META_BY_SLUG[story.slug]?.branches ?? null;
 }
 
 function isPlayable(story: StoryInterface): boolean {
@@ -37,241 +65,91 @@ function scrollSlider(direction: -1 | 1): void {
     const slider = sliderEl.value;
     if (!slider) return;
 
-    const card = slider.querySelector<HTMLElement>('.mood-pick-card');
-    const gap = 15;
-    const step = card ? card.offsetWidth + gap : 465;
+    const card = slider.querySelector<HTMLElement>('.mood-top-picks__slot');
+    const gap = 10;
+    const step = card ? card.offsetWidth + gap : 460;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });
 }
 </script>
 
 <template>
-    <section class="mood-top-picks home-section-gap">
-        <SectionHeader
-            :title="sectionTitle"
-            :href="viewAllHref"
-            :count="viewAllCount"
-        />
+    <section class="mood-top-picks" :aria-label="sectionTitle">
+        <div class="container">
+            <div class="container-content mood-page-section-header-gap">
+                <SectionHeader
+                    :title="sectionTitle"
+                    :href="viewAllHref"
+                    :count="totalCount"
+                />
 
-        <div class="mood-picks-viewport relative overflow-visible">
-            <div
-                class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
-                :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
-                aria-hidden="true"
-            />
-            <div
-                class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent transition-opacity duration-300 md:w-16"
-                :class="rightShadowVisible ? 'opacity-100' : 'opacity-0'"
-                aria-hidden="true"
-            />
-
-            <button
-                type="button"
-                class="mood-picks-arrow mood-picks-arrow--left"
-                aria-label="Scroll top picks left"
-                @click="scrollSlider(-1)"
-            >
-                <svg
-                    viewBox="0 0 8 14"
-                    width="8"
-                    height="14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                    class="rotate-180"
-                >
-                    <path
-                        d="M1 1L7 7L1 13"
-                        stroke="white"
-                        stroke-width="1.75"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                <div class="story-slider-viewport relative overflow-visible">
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
+                        :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
+                        aria-hidden="true"
                     />
-                </svg>
-            </button>
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent transition-opacity duration-300 md:w-16"
+                        :class="rightShadowVisible ? 'opacity-100' : 'opacity-0'"
+                        aria-hidden="true"
+                    />
 
-            <div ref="sliderEl" class="mood-picks-slider overflow-x-auto">
-                <div class="mood-picks-track">
-                    <article
-                        v-for="story in picks"
-                        :key="story.slug"
-                        class="mood-pick-card shrink-0"
+                    <button
+                        type="button"
+                        class="story-slider-arrow absolute -left-4"
+                        aria-label="Scroll top picks left"
+                        @click="scrollSlider(-1)"
                     >
-                        <component
-                            :is="isPlayable(story) ? Link : 'div'"
-                            :href="isPlayable(story) ? storyShow(story.slug).url : undefined"
-                            class="mood-pick-card__link block no-underline outline-none"
-                            :class="isPlayable(story) ? 'cursor-pointer' : 'cursor-default'"
-                        >
-                            <div class="mood-pick-card__frame">
-                                <img
-                                    :src="pickImage(story)"
-                                    :alt="story.title"
-                                    class="mood-pick-card__image"
-                                    loading="lazy"
+                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
+                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+
+                    <div ref="sliderEl" class="story-slider overflow-x-auto">
+                        <div class="story-slider-track">
+                            <div
+                                v-for="story in topPickStories"
+                                :key="story.id"
+                                class="mood-top-picks__slot w-[min(28.125rem,78vw)] shrink-0 md:w-[28.125rem]"
+                            >
+                                <HomeBannerStoryCard
+                                    :title="story.title"
+                                    :cover="story.cover"
+                                    :category="categoryForStory(story)"
+                                    :rating="ratingForStory(story)"
+                                    :mood="moodLabel"
+                                    :themes="themesForStory(story)"
+                                    :teaser="story.teaser"
+                                    :branches="branchesForStory(story)"
+                                    :playable="isPlayable(story)"
+                                    :slug="story.slug"
+                                    :focused="false"
+                                    :expand-on-hover="false"
+                                    :is-desktop-hover="true"
                                 />
                             </div>
-                            <div class="mood-pick-card__meta">
-                                <p class="mood-pick-card__title">{{ story.title }}</p>
-                                <p
-                                    v-if="pickThemes(story.slug).length"
-                                    class="mood-pick-card__themes"
-                                >
-                                    <template
-                                        v-for="(theme, index) in pickThemes(story.slug)"
-                                        :key="theme"
-                                    >
-                                        <span v-if="index > 0" class="mood-pick-card__theme-gap" />
-                                        <span>{{ theme }}</span>
-                                    </template>
-                                </p>
-                            </div>
-                        </component>
-                    </article>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="story-slider-arrow absolute -right-4"
+                        aria-label="Scroll top picks right"
+                        @click="scrollSlider(1)"
+                    >
+                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
-
-            <button
-                type="button"
-                class="mood-picks-arrow mood-picks-arrow--right"
-                aria-label="Scroll top picks right"
-                @click="scrollSlider(1)"
-            >
-                <svg
-                    viewBox="0 0 8 14"
-                    width="8"
-                    height="14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                >
-                    <path
-                        d="M1 1L7 7L1 13"
-                        stroke="white"
-                        stroke-width="1.75"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-                </svg>
-            </button>
         </div>
     </section>
 </template>
 
 <style scoped>
-/*
- * Arrow center = vertical midpoint of landscape card art only (not title/meta).
- * Card width drives image height via aspect-ratio so the math stays responsive.
- */
-.mood-picks-viewport {
-    --mood-pick-card-width: min(28.125rem, 78vw);
-    --mood-pick-frame-pad: 0.25rem;
-    --mood-pick-image-ratio: 254 / 450;
-    --mood-pick-image-height: calc(
-        (var(--mood-pick-card-width) - (2 * var(--mood-pick-frame-pad))) * var(--mood-pick-image-ratio) +
-            (2 * var(--mood-pick-frame-pad))
-    );
-    --mood-picks-track-pad-top: 0.25rem;
-}
-
-.mood-picks-slider {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.mood-picks-slider::-webkit-scrollbar {
-    display: none;
-}
-
-.mood-picks-track {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.9375rem;
-    padding: var(--mood-picks-track-pad-top) 0.25rem 0;
-}
-
-.mood-picks-arrow {
-    position: absolute;
-    z-index: 10;
-    display: none;
-    width: 2.125rem;
-    height: 2.125rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.08);
-    transition: background 0.2s;
-    top: calc(var(--mood-picks-track-pad-top) + var(--mood-pick-image-height) / 2);
-}
-
-@media (min-width: 768px) {
-    .mood-picks-arrow {
-        display: flex;
-    }
-}
-
-.mood-picks-arrow:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.mood-picks-arrow--left {
-    left: 0;
-    transform: translate(-50%, -50%);
-}
-
-.mood-picks-arrow--right {
-    right: 0;
-    transform: translate(50%, -50%);
-}
-
-.mood-pick-card {
-    width: var(--mood-pick-card-width);
-}
-
-.mood-pick-card__frame {
-    overflow: hidden;
-    border-radius: 0.5rem;
-    border: 1px solid #373737;
-    background: #1c1c1c;
-    padding: var(--mood-pick-frame-pad);
-}
-
-.mood-pick-card__image {
-    display: block;
-    aspect-ratio: 450 / 254;
-    width: 100%;
-    border-radius: 0.5rem;
-    object-fit: cover;
-}
-
-.mood-pick-card__meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1875rem;
-    padding-top: 0.625rem;
-}
-
-.mood-pick-card__title {
-    margin: 0;
-    font-size: 1.125rem;
-    font-weight: 600;
-    line-height: normal;
-    color: #fff;
-}
-
-.mood-pick-card__themes {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    margin: 0;
-    font-size: 0.9375rem;
-    line-height: normal;
-    color: #7e7e7e;
-}
-
-.mood-pick-card__theme-gap {
-    display: inline-block;
-    width: 0.25rem;
+.mood-top-picks__slot {
+    position: relative;
 }
 </style>

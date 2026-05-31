@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MoodHeroBanner from '@/components/MoodHeroBanner.vue';
-import MoodSelectorBar from '@/components/MoodSelectorBar.vue';
+import MoodSelector from '@/components/MoodSelector.vue';
 import MoodTopPicks from '@/components/MoodTopPicks.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
 import StoryGrid from '@/components/StoryGrid.vue';
@@ -48,6 +48,8 @@ const libraryStories = computed((): StoryInterface[] => {
     return allLibraryStories.value.filter((story) => storyMatchesMood(story.slug, mood));
 });
 
+const isMoodPage = computed(() => normalizedMood.value !== null);
+
 const listHeading = computed(() => {
     if (normalizedMood.value) {
         return `${libraryStories.value.length} Stories`;
@@ -61,20 +63,6 @@ const headerTitle = computed(() => {
     }
     return `${listHeading.value} (${libraryStories.value.length})`;
 });
-
-const topPicks = computed((): StoryInterface[] => {
-    const mood = normalizedMood.value;
-    if (!mood) return [];
-
-    const bySlug = new Map(allLibraryStories.value.map((story) => [story.slug, story]));
-    return getMoodTopPickSlugs(mood)
-        .map((slug) => bySlug.get(slug))
-        .filter((story): story is StoryInterface => story !== undefined);
-});
-
-const moodStoriesAnchor = computed(() =>
-    normalizedMood.value ? `${storiesIndex().url}?mood=${normalizedMood.value}#mood-stories` : '',
-);
 
 const sortMode = ref<SortMode>('recent');
 
@@ -118,9 +106,53 @@ function cycleSort(): void {
     <HomeLayout>
         <MoodHeroBanner :mood="activeMood" />
 
+        <template v-if="isMoodPage && normalizedMood">
+            <div class="mood-page-flow">
+                <MoodSelector :active-mood="normalizedMood" />
+                <MoodTopPicks
+                    :mood="normalizedMood"
+                    :mood-label="moodHero.label"
+                    :stories="libraryStories"
+                    :total-count="libraryStories.length"
+                />
+
+                <div id="all-stories" class="mood-page-stories-section pb-12 md:pb-[3.75rem]">
+                    <div class="container">
+                        <div class="container-content mood-page-section-header-gap">
+                            <SectionHeader :title="headerTitle">
+                                <template #action>
+                                    <button
+                                        type="button"
+                                        class="library-sort-btn group"
+                                        :title="`Sorting: ${sortLabel}. Click to change.`"
+                                        :aria-label="`Sort stories. Current: ${sortLabel}.`"
+                                        @click="cycleSort"
+                                    >
+                                        <ArrowDownUp
+                                            class="library-sort-btn__icon"
+                                            :stroke-width="2.25"
+                                            aria-hidden="true"
+                                        />
+                                        <span class="library-sort-btn__label">Sort</span>
+                                        <span class="sr-only"> ({{ sortLabel }})</span>
+                                    </button>
+                                </template>
+                            </SectionHeader>
+
+                            <StoryGrid
+                                :stories="sortedStories"
+                                :mood-label="moodHero.label"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
         <div
-            class="relative z-10 pb-12 md:pb-[3.75rem]"
-            :class="normalizedMood ? 'mood-page-body pt-8 md:pt-12' : 'pt-6 md:pt-[3.75rem]'"
+            v-else
+            id="all-stories"
+            class="relative z-10 pb-12 pt-6 md:pb-[3.75rem] md:pt-[3.75rem]"
         >
             <div class="container">
                 <div
