@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { LucidePause, LucidePlay, LucideRepeat, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideX } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 const props = withDefaults(defineProps<{ collapsed?: boolean }>(), { collapsed: false });
 
 const tts = useTextToSpeech();
+
+const volumePercent = computed(() => {
+    if (tts.isMuted.value || tts.volume.value === 0) {
+        return 0;
+    }
+
+    return Math.round(tts.volume.value * 100);
+});
+
+const isVolumeMuted = computed(() => tts.isMuted.value || tts.volume.value === 0);
 
 const onVolumeInput = (event: Event) => {
     tts.setVolume(Number((event.target as HTMLInputElement).value) / 100);
@@ -19,7 +30,7 @@ const onVolumeInput = (event: Event) => {
         >
             <!-- Play / Pause -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-[#00c6de] transition-transform hover:scale-105 active:scale-95"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-[#00c6de] transition-[transform,color] hover:scale-105 hover:text-white active:scale-95"
                 @click="tts.togglePause"
             >
                 <LucidePause v-if="tts.isPlaying.value" class="size-4" fill="currentColor" />
@@ -32,20 +43,29 @@ const onVolumeInput = (event: Event) => {
             </span>
 
             <!-- Mute + volume slider -->
-            <div class="hidden items-center gap-2 sm:flex">
+            <div class="volume-control hidden items-center gap-2 sm:flex">
                 <button
-                    class="grid size-7 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-white"
+                    class="grid size-7 shrink-0 place-items-center rounded-full text-[#00c6de] transition-[color,opacity] hover:text-white"
+                    :class="{ 'opacity-60 hover:opacity-100': isVolumeMuted }"
+                    :aria-pressed="isVolumeMuted"
+                    aria-label="Toggle mute"
                     @click="tts.toggleMute"
                 >
-                    <LucideVolumeX v-if="tts.isMuted.value || tts.volume.value === 0" class="size-4" />
+                    <LucideVolumeX v-if="isVolumeMuted" class="size-4" />
                     <LucideVolume2 v-else class="size-4" />
                 </button>
                 <input
                     type="range"
                     min="0"
                     max="100"
-                    :value="tts.isMuted.value ? 0 : Math.round(tts.volume.value * 100)"
+                    :value="volumePercent"
                     class="media-range w-20"
+                    :style="{ '--range-fill': `${volumePercent}%` }"
+                    aria-label="Volume"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    :aria-valuenow="volumePercent"
+                    :aria-valuetext="isVolumeMuted ? 'Muted' : `${volumePercent}%`"
                     @input="onVolumeInput"
                 />
             </div>
@@ -54,8 +74,8 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Loop -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
-                :class="tts.isLooping.value ? 'text-[#00c6de]' : 'text-gray-300'"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full transition-[transform,color] hover:scale-105 hover:text-[#00c6de] active:scale-95"
+                :class="tts.isLooping.value ? 'text-[#00c6de] hover:text-white' : 'text-gray-300'"
                 @click="tts.toggleLoop"
             >
                 <LucideRepeat class="size-4" />
@@ -63,7 +83,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip back 15s -->
             <button
-                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-transform hover:scale-105 active:scale-95"
+                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-[#00c6de] active:scale-95"
                 @click="tts.seekBy(-15)"
             >
                 <LucideRotateCcw class="size-5" :stroke-width="1.5" />
@@ -72,7 +92,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip forward 15s -->
             <button
-                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-transform hover:scale-105 active:scale-95"
+                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-[#00c6de] active:scale-95"
                 @click="tts.seekBy(15)"
             >
                 <LucideRotateCw class="size-5" :stroke-width="1.5" />
@@ -81,7 +101,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Close -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-white"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-[#00c6de]"
                 @click="tts.dismiss"
             >
                 <LucideX class="size-4" />
@@ -97,14 +117,14 @@ const onVolumeInput = (event: Event) => {
 }
 
 .player-bar {
-    background-color: #373737;
+    background-color: #1e1e1e;
     box-shadow:
-        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
-        inset -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.55),
-        inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.4),
-        inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.4),
-        inset 0 0 1px 1px rgba(153, 153, 153, 0.2),
-        0 8px 30px rgba(0, 0, 0, 0.4);
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.12),
+        inset -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.1),
+        inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.08),
+        inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.08),
+        inset 0 0 1px 1px rgba(0, 0, 0, 0.4),
+        0 8px 30px rgba(0, 0, 0, 0.55);
 }
 
 .player-slide-enter-from,
@@ -113,21 +133,79 @@ const onVolumeInput = (event: Event) => {
     transform: translateY(-12px) scale(0.95);
 }
 
+.volume-control {
+    padding: 0.125rem 0.25rem;
+}
+
+@property --range-fill {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 0%;
+}
+
 .media-range {
+    --range-fill: 0%;
     appearance: none;
+    height: 12px;
+    border-radius: 4px;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    transition: --range-fill 150ms ease;
+}
+
+.media-range:focus-visible {
+    outline: 2px solid rgba(0, 198, 222, 0.55);
+    outline-offset: 2px;
+    border-radius: 9999px;
+}
+
+.media-range::-webkit-slider-runnable-track {
     height: 4px;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    outline: none;
+    background: linear-gradient(
+        to right,
+        #00c6de 0%,
+        #00c6de var(--range-fill),
+        rgba(0, 198, 222, 0.28) var(--range-fill),
+        rgba(0, 198, 222, 0.28) 100%
+    );
+    transition: background 150ms ease;
 }
 
 .media-range::-webkit-slider-thumb {
     appearance: none;
     width: 12px;
     height: 12px;
+    margin-top: -4px;
     border-radius: 50%;
     background: #00c6de;
     cursor: pointer;
+    transition:
+        transform 150ms ease,
+        background-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.media-range:active::-webkit-slider-thumb {
+    transform: scale(1.1);
+}
+
+.media-range:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(0, 198, 222, 0.35);
+}
+
+.media-range::-moz-range-track {
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(0, 198, 222, 0.28);
+}
+
+.media-range::-moz-range-progress {
+    height: 4px;
+    border-radius: 4px;
+    background: #00c6de;
+    transition: width 150ms ease;
 }
 
 .media-range::-moz-range-thumb {
@@ -137,5 +215,17 @@ const onVolumeInput = (event: Event) => {
     border-radius: 50%;
     background: #00c6de;
     cursor: pointer;
+    transition:
+        transform 150ms ease,
+        background-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.media-range:active::-moz-range-thumb {
+    transform: scale(1.1);
+}
+
+.media-range:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(0, 198, 222, 0.35);
 }
 </style>
