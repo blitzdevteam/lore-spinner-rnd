@@ -146,7 +146,7 @@ watch(
         <div v-if="prompt.response && showChoicesAndActions" class="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <button
                 type="button"
-                class="narration-action-pill listen-again-pill relative flex h-[45px] w-auto items-center gap-[5px] overflow-hidden rounded-[60px] p-1.5 pe-3.5"
+                class="narration-action-pill listen-again-pill relative flex h-[50px] w-auto items-center gap-[5px] overflow-hidden rounded-[60px] p-[6px] pe-3.5"
                 @click="handleListenAgain"
             >
                 <!-- Background layers -->
@@ -163,7 +163,7 @@ watch(
                 <!-- Inner shine overlay -->
                 <span aria-hidden class="listen-again-shine pointer-events-none absolute inset-0 rounded-[60px]" />
                 <!-- Icon -->
-                <span class="bg-muted-glass-effect relative grid size-[34px] shrink-0 place-items-center rounded-full text-primary-400">
+                <span class="relative grid size-[37px] shrink-0 place-items-center overflow-hidden rounded-full bg-[#00c6de] text-white">
                     <LucideLoader v-if="isThisLoading" class="size-4 animate-spin" />
                     <LucidePause v-else-if="isThisPlaying" class="size-4" fill="currentColor" />
                     <LucidePlay v-else class="size-4" fill="currentColor" />
