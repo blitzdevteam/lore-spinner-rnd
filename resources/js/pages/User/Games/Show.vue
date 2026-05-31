@@ -284,7 +284,7 @@ onMounted(() => {
         </div>
 
         <!-- ── Gameplay phase ── -->
-        <GameplayLayout v-else :input-disabled="!canSubmitInput" :game-id="game.id" @submit="handleSubmit" @back="handleBack">
+        <GameplayLayout v-else :input-disabled="!canSubmitInput" :game-id="game.id" :cover-url="game.story?.cover ?? null" @submit="handleSubmit" @back="handleBack">
         <template #header>
             <div class="flex flex-col items-center gap-2 px-1 pb-3 pt-1 sm:gap-3 sm:pb-4 sm:pt-2">
                 <h1 class="text-center text-xl font-semibold leading-tight text-white sm:text-2xl lg:text-[28px]">

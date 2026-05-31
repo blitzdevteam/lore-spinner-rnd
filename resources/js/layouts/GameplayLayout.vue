@@ -17,8 +17,9 @@ const props = withDefaults(
     defineProps<{
         inputDisabled?: boolean;
         gameId?: string;
+        coverUrl?: string | null;
     }>(),
-    { inputDisabled: false, gameId: undefined },
+    { inputDisabled: false, gameId: undefined, coverUrl: undefined },
 );
 
 type RightPanel = 'journal' | 'settings' | null;
@@ -58,6 +59,7 @@ const handleInputSubmit = (prompt: string) => {
 
 <template>
     <div class="relative h-svh">
+        <BaseBackgroundGradient class="z-0" :cover-url="props.coverUrl" />
         <div class="relative flex min-h-svh">
             <div class="flex min-w-0 flex-1 flex-col">
                 <!-- ── Top header bar ── -->
@@ -76,22 +78,14 @@ const handleInputSubmit = (prompt: string) => {
                             </BaseButton>
                         </div>
 
-                        <!-- Center: media player -->
-                        <div class="hidden min-w-0 flex-1 justify-center md:flex">
+                        <!-- Center: media player (desktop only) -->
+                        <div class="hidden min-w-0 flex-1 items-center justify-center md:flex">
                             <GameplayMediaPlayer :collapsed="mediaCollapsed" />
                         </div>
 
                         <!-- Right: settings (mobile only) + audio / journal / characters -->
-                        <div class="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
-                            <BaseButton
-                                severity="glass"
-                                :icon-only="true"
-                                class="size-11! md:hidden"
-                                @click="toggleSettings"
-                            >
-                                <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
-                                <LucideSettings v-else class="size-5 text-secondary-300" />
-                            </BaseButton>
+                        <!-- Desktop: individual glass buttons -->
+                        <div class="hidden shrink-0 items-center gap-2 sm:gap-3 md:flex">
                             <BaseButton
                                 severity="glass"
                                 :icon-only="true"
@@ -121,6 +115,28 @@ const handleInputSubmit = (prompt: string) => {
                                 <LucideX v-if="activePanel === 'journal' && journalTab === 'characters'" class="size-5 text-secondary-300" />
                                 <LucideBookOpen v-else class="size-5 text-secondary-300" />
                             </BaseButton>
+                        </div>
+
+                        <!-- Mobile: all action buttons in a single pill -->
+                        <div class="mobile-pill flex md:hidden">
+                            <button class="mobile-pill__btn" @click="toggleSettings">
+                                <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
+                                <LucideSettings v-else class="size-5 text-gray-300" />
+                            </button>
+                            <button class="mobile-pill__btn" @click="toggleMedia">
+                                <LucideAudioLines
+                                    class="size-5"
+                                    :class="tts.isActive.value && !mediaCollapsed ? 'text-primary' : 'text-gray-300'"
+                                />
+                            </button>
+                            <button class="mobile-pill__btn" @click="openJournal('journals')">
+                                <LucideX v-if="activePanel === 'journal' && journalTab === 'journals'" class="size-5 text-secondary-300" />
+                                <LucideScrollText v-else class="size-5 text-gray-300" />
+                            </button>
+                            <button class="mobile-pill__btn" @click="openJournal('characters')">
+                                <LucideX v-if="activePanel === 'journal' && journalTab === 'characters'" class="size-5 text-secondary-300" />
+                                <LucideBookOpen v-else class="size-5 text-gray-300" />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -245,5 +261,39 @@ const handleInputSubmit = (prompt: string) => {
 .backdrop-fade-enter-from,
 .backdrop-fade-leave-to {
     opacity: 0;
+}
+
+.mobile-pill {
+    align-items: center;
+    gap: 2px;
+    padding: 6px;
+    border-radius: 60px;
+    background-color: rgba(51, 51, 51, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
+        inset -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.55),
+        inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.3),
+        inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.3),
+        inset 0 0 1px 1px rgba(153, 153, 153, 0.15),
+        0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-pill__btn {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    flex-shrink: 0;
+}
+
+.mobile-pill__btn:active {
+    background: rgba(255, 255, 255, 0.08);
 }
 </style>
