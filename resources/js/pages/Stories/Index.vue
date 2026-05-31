@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import MoodHeroBanner from '@/components/MoodHeroBanner.vue';
+import MoodSelectorBar from '@/components/MoodSelectorBar.vue';
+import MoodTopPicks from '@/components/MoodTopPicks.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
 import StoryGrid from '@/components/StoryGrid.vue';
 import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
+import { getMoodTopPickSlugs } from '@/data/moodContent';
 import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moodBanners';
 import HomeLayout from '@/layouts/HomeLayout.vue';
 import { StoryInterface } from '@/types';
+import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { Head } from '@inertiajs/vue3';
 import { ArrowDownUp } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -46,12 +50,31 @@ const libraryStories = computed((): StoryInterface[] => {
 
 const listHeading = computed(() => {
     if (normalizedMood.value) {
-        return `${moodHero.value.label} Stories`;
+        return `${libraryStories.value.length} Stories`;
     }
     return 'My Stories';
 });
 
-const headerTitle = computed(() => `${listHeading.value} (${libraryStories.value.length})`);
+const headerTitle = computed(() => {
+    if (normalizedMood.value) {
+        return listHeading.value;
+    }
+    return `${listHeading.value} (${libraryStories.value.length})`;
+});
+
+const topPicks = computed((): StoryInterface[] => {
+    const mood = normalizedMood.value;
+    if (!mood) return [];
+
+    const bySlug = new Map(allLibraryStories.value.map((story) => [story.slug, story]));
+    return getMoodTopPickSlugs(mood)
+        .map((slug) => bySlug.get(slug))
+        .filter((story): story is StoryInterface => story !== undefined);
+});
+
+const moodStoriesAnchor = computed(() =>
+    normalizedMood.value ? `${storiesIndex().url}?mood=${normalizedMood.value}#mood-stories` : '',
+);
 
 const sortMode = ref<SortMode>('recent');
 
@@ -95,10 +118,33 @@ function cycleSort(): void {
     <HomeLayout>
         <MoodHeroBanner :mood="activeMood" />
 
-        <div class="relative z-10 pb-12 pt-6 md:pb-[3.75rem] md:pt-[3.75rem]">
+        <div
+            class="relative z-10 pb-12 md:pb-[3.75rem]"
+            :class="normalizedMood ? 'mood-page-body pt-8 md:pt-12' : 'pt-6 md:pt-[3.75rem]'"
+        >
             <div class="container">
-                <div class="container-content flex min-w-0 flex-col gap-5 md:gap-[1.125rem]">
-                    <SectionHeader :title="headerTitle">
+                <div
+                    class="container-content flex min-w-0 flex-col"
+                    :class="normalizedMood ? 'mood-page-sections' : 'gap-5 md:gap-[1.125rem]'"
+                >
+                    <template v-if="normalizedMood">
+                        <MoodSelectorBar :active-mood="normalizedMood" />
+
+                        <MoodTopPicks
+                            v-if="topPicks.length"
+                            :mood="normalizedMood"
+                            :picks="topPicks"
+                            :view-all-href="moodStoriesAnchor"
+                            :view-all-count="libraryStories.length"
+                        />
+                    </template>
+
+                    <div
+                        :id="normalizedMood ? 'mood-stories' : undefined"
+                        class="flex min-w-0 flex-col"
+                        :class="normalizedMood ? 'mood-page-stories home-section-gap' : 'gap-5 md:gap-[1.125rem]'"
+                    >
+                        <SectionHeader :title="headerTitle">
                         <template #action>
                             <button
                                 type="button"
@@ -119,6 +165,7 @@ function cycleSort(): void {
                     </SectionHeader>
 
                     <StoryGrid :stories="sortedStories" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,6 +173,22 @@ function cycleSort(): void {
 </template>
 
 <style scoped>
+.mood-page-sections {
+    gap: 3rem;
+}
+
+@media (min-width: 768px) {
+    .mood-page-sections {
+        gap: 4rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .mood-page-sections {
+        gap: 4.5rem;
+    }
+}
+
 .library-sort-btn {
     position: relative;
     display: inline-flex;
