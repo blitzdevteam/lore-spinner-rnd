@@ -568,9 +568,8 @@ function goNext() {
     .hero-banner {
         position: relative;
         display: block;
-        height: 33rem;
-        min-height: 33rem;
-        max-height: 33rem;
+        /* Scale with viewport height on large displays; floor matches original design. */
+        height: clamp(33rem, 50vh, 48rem);
     }
 
     .hero-media {
@@ -646,6 +645,17 @@ function goNext() {
     .hero-title {
         font-size: 3rem;
         line-height: 5rem;
+    }
+}
+
+/* iMac / large desktop — taller hero without dominating the page */
+@media (min-width: 80rem) {
+    .hero-banner {
+        height: clamp(38rem, 55vh, 56rem);
+    }
+
+    .hero-copy-wrap {
+        padding-top: clamp(5.5625rem, 10vh, 7.5rem);
     }
 }
 
