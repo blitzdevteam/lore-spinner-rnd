@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import MoodHeroBanner from '@/components/MoodHeroBanner.vue';
+import MoodSelector from '@/components/MoodSelector.vue';
+import MoodTopPicks from '@/components/MoodTopPicks.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
 import StoryGrid from '@/components/StoryGrid.vue';
 import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
@@ -44,14 +46,21 @@ const libraryStories = computed((): StoryInterface[] => {
     return allLibraryStories.value.filter((story) => storyMatchesMood(story.slug, mood));
 });
 
+const isMoodPage = computed(() => normalizedMood.value !== null);
+
 const listHeading = computed(() => {
     if (normalizedMood.value) {
-        return `${moodHero.value.label} Stories`;
+        return `${libraryStories.value.length} Stories`;
     }
     return 'My Stories';
 });
 
-const headerTitle = computed(() => `${listHeading.value} (${libraryStories.value.length})`);
+const headerTitle = computed(() => {
+    if (normalizedMood.value) {
+        return listHeading.value;
+    }
+    return `${listHeading.value} (${libraryStories.value.length})`;
+});
 
 const sortMode = ref<SortMode>('recent');
 
@@ -95,7 +104,51 @@ function cycleSort(): void {
     <HomeLayout>
         <MoodHeroBanner :mood="activeMood" />
 
-        <div class="relative z-10 pb-12 pt-6 md:pb-[3.75rem] md:pt-[3.75rem]">
+        <template v-if="isMoodPage && normalizedMood">
+            <div class="mood-page-flow">
+                <MoodSelector :active-mood="normalizedMood" />
+                <MoodTopPicks
+                    :mood="normalizedMood"
+                    :mood-label="moodHero.label"
+                    :stories="libraryStories"
+                    :total-count="libraryStories.length"
+                />
+
+                <div id="all-stories" class="mood-page-stories-section pb-12 md:pb-[3.75rem]">
+                    <div class="container">
+                        <div class="container-content mood-page-section-header-gap">
+                            <SectionHeader :title="headerTitle">
+                                <template #action>
+                                    <button
+                                        type="button"
+                                        class="library-sort-btn group"
+                                        :title="`Sorting: ${sortLabel}. Click to change.`"
+                                        :aria-label="`Sort stories. Current: ${sortLabel}.`"
+                                        @click="cycleSort"
+                                    >
+                                        <ArrowDownUp
+                                            class="library-sort-btn__icon"
+                                            :stroke-width="2.25"
+                                            aria-hidden="true"
+                                        />
+                                        <span class="library-sort-btn__label">Sort</span>
+                                        <span class="sr-only"> ({{ sortLabel }})</span>
+                                    </button>
+                                </template>
+                            </SectionHeader>
+
+                            <StoryGrid :stories="sortedStories" portrait />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <div
+            v-else
+            id="all-stories"
+            class="relative z-10 pb-12 pt-6 md:pb-[3.75rem] md:pt-[3.75rem]"
+        >
             <div class="container">
                 <div class="container-content flex min-w-0 flex-col gap-5 md:gap-[1.125rem]">
                     <SectionHeader :title="headerTitle">
