@@ -9,6 +9,9 @@ const isLoading = ref(false);
 const currentTime = ref(0);
 const duration = ref(0);
 const playbackRate = ref(1);
+const volume = ref(1);
+const isMuted = ref(false);
+const isLooping = ref(false);
 const activeKey = ref<string | null>(null);
 
 let currentAudio: HTMLAudioElement | null = null;
@@ -49,6 +52,13 @@ function attachListeners(audio: HTMLAudioElement, key: string) {
         updateTime();
     });
     audio.addEventListener('ended', () => {
+        if (isLooping.value && currentAudio) {
+            currentAudio.currentTime = 0;
+            currentAudio.play().catch(() => {
+                isPlaying.value = false;
+            });
+            return;
+        }
         isPlaying.value = false;
         stopTimeUpdates();
         console.debug('[TTS] ended', key);
@@ -76,6 +86,13 @@ function attachListeners(audio: HTMLAudioElement, key: string) {
     });
 }
 
+function applyAudioSettings(audio: HTMLAudioElement) {
+    audio.playbackRate = playbackRate.value;
+    audio.volume = volume.value;
+    audio.muted = isMuted.value;
+    audio.loop = false; // looping handled manually in the `ended` listener
+}
+
 function play(gameId: string, promptId: string) {
     const key = `${gameId}:${promptId}`;
 
@@ -96,7 +113,7 @@ function play(gameId: string, promptId: string) {
         currentAudio = audioCache.get(key)!;
         activeKey.value = key;
         currentAudio.currentTime = 0;
-        currentAudio.playbackRate = playbackRate.value;
+        applyAudioSettings(currentAudio);
         currentAudio.play().catch((err) => {
             console.warn('[TTS] play() rejected (cache replay)', key, err);
             isPlaying.value = false;
@@ -109,7 +126,7 @@ function play(gameId: string, promptId: string) {
     console.debug('[TTS] fetching', key);
     const audio = new Audio(`/user/games/${gameId}/tts/${promptId}`);
     audio.preload = 'auto';
-    audio.playbackRate = playbackRate.value;
+    applyAudioSettings(audio);
     attachListeners(audio, key);
     audioCache.set(key, audio);
     currentAudio = audio;
@@ -180,6 +197,42 @@ function cycleSpeed() {
     }
 }
 
+function setVolume(value: number) {
+    const clamped = Math.min(1, Math.max(0, value));
+    volume.value = clamped;
+    if (clamped > 0) {
+        isMuted.value = false;
+    }
+    if (currentAudio) {
+        currentAudio.volume = clamped;
+        currentAudio.muted = isMuted.value;
+    }
+}
+
+function toggleMute() {
+    isMuted.value = !isMuted.value;
+    if (currentAudio) {
+        currentAudio.muted = isMuted.value;
+    }
+}
+
+function toggleLoop() {
+    isLooping.value = !isLooping.value;
+}
+
+function seekTo(seconds: number) {
+    if (!currentAudio) return;
+    const max = currentAudio.duration || duration.value || 0;
+    const clamped = Math.min(max, Math.max(0, seconds));
+    currentAudio.currentTime = clamped;
+    currentTime.value = clamped;
+}
+
+function seekBy(delta: number) {
+    if (!currentAudio) return;
+    seekTo(currentAudio.currentTime + delta);
+}
+
 function setSpeed(rate: number) {
     playbackRate.value = rate;
     if (currentAudio) {
@@ -211,6 +264,9 @@ export function useTextToSpeech() {
         currentTime,
         duration,
         playbackRate,
+        volume,
+        isMuted,
+        isLooping,
         formattedCurrentTime,
         formattedDuration,
         activeKey,
@@ -223,5 +279,10 @@ export function useTextToSpeech() {
         togglePause,
         cycleSpeed,
         setSpeed,
+        setVolume,
+        toggleMute,
+        toggleLoop,
+        seekTo,
+        seekBy,
     };
 }
