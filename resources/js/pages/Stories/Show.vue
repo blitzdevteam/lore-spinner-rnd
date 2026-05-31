@@ -20,6 +20,7 @@ import { computed, ref } from 'vue';
 const props = defineProps<{
     story: StoryInterface;
     existingGameId?: string | null;
+    isPlayable?: boolean;
 }>();
 
 type Panel = 'details' | 'chapters';
@@ -29,6 +30,7 @@ const hasExistingGame = computed(() => !!props.existingGameId);
 const { isBookmarked, toggleBookmark } = useBookmark(props.story.id, props.story.is_bookmarked ?? false);
 
 const handleStartStory = (): void => {
+    if (!props.isPlayable) return;
     if (props.existingGameId) {
         router.visit(showGame.url(props.existingGameId));
     } else {
@@ -137,10 +139,10 @@ const rightColumnChapters = computed(() =>
         <StoryPlayAmbientGlows />
 
         <div
-            class="relative z-[1] mx-auto flex max-w-[72rem] flex-col px-5 pt-10 pb-8 md:px-[3.25rem] md:pb-12 md:pt-[3.75rem] lg:flex-row lg:items-stretch lg:justify-between xl:max-w-[75rem]"
+            class="relative z-[1] mx-auto flex max-w-[72rem] flex-col px-5 pt-10 pb-8 md:px-[3.25rem] md:pb-12 md:pt-[3.75rem] lg:flex-row lg:items-start lg:justify-between xl:max-w-[75rem]"
         >
             <!-- Cover -->
-            <div class="relative mb-10 shrink-0 lg:mb-0 lg:mr-6 xl:mr-10">
+            <div class="relative mb-10 w-[20.875rem] max-w-full shrink-0 self-center lg:mb-0 lg:mr-6 lg:self-start xl:mr-10">
                 <StoryPlayCoverColumn
                     :src="coverImageUrl"
                     :title="story.title"
@@ -148,13 +150,14 @@ const rightColumnChapters = computed(() =>
                     :footer-credit="coverFooterCredit"
                 >
                     <template #overlay>
-                        <StoryPlayGlassRoundButton
-                            class="pointer-events-auto absolute left-4 top-4 z-[5]"
-                            aria-label="Go back"
-                            @click="handleBack"
-                        >
-                            <LucideChevronLeft class="!size-5 text-white" :stroke-width="1.85" aria-hidden="true" />
-                        </StoryPlayGlassRoundButton>
+                        <div class="pointer-events-auto absolute left-4 top-4">
+                            <StoryPlayGlassRoundButton
+                                aria-label="Go back"
+                                @click="handleBack"
+                            >
+                                <LucideChevronLeft class="!size-5 text-white" :stroke-width="1.85" aria-hidden="true" />
+                            </StoryPlayGlassRoundButton>
+                        </div>
                         <div
                             v-if="!coverImageUrl"
                             class="pointer-events-none absolute inset-0 z-[2] grid place-items-center"
@@ -245,12 +248,18 @@ const rightColumnChapters = computed(() =>
                 </div>
 
                 <!-- Fade + CTA (desktop: in column, matches Figma) -->
-                <div class="relative z-[6] mx-auto mt-10 hidden max-w-[41.25rem] lg:mt-auto lg:block">
+                <div class="relative z-[6] mt-10 hidden w-full lg:mt-auto lg:block">
                     <div
-                        class="pointer-events-none absolute -inset-x-6 -top-[7.5rem] bottom-0 mx-auto mb-[-20px] h-[clamp(148px,18vw,200px)] bg-linear-to-t from-black from-[32%] via-black/92 to-transparent lg:-inset-x-10"
+                        class="pointer-events-none absolute -inset-x-6 -top-[7.5rem] bottom-0 mb-[-20px] h-[clamp(148px,18vw,200px)] bg-linear-to-t from-black from-[32%] via-black/92 to-transparent lg:-inset-x-10"
                     />
-                    <div class="relative pt-14">
-                        <StoryPlayStartCta :label="primaryCtaLabel" @click="handleStartStory" />
+                    <div class="relative w-full pt-14">
+                        <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
+                        <div
+                            v-else
+                            class="flex h-[3.5rem] w-full cursor-not-allowed select-none items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium uppercase tracking-widest text-gray-500"
+                        >
+                            Coming Soon
+                        </div>
                     </div>
                 </div>
             </div>
@@ -260,7 +269,13 @@ const rightColumnChapters = computed(() =>
         <div class="fixed inset-x-0 bottom-0 z-30 lg:hidden">
             <div class="pointer-events-none absolute inset-x-0 bottom-[4.5rem] h-[8.25rem] bg-linear-to-t from-black via-black/88 to-transparent" />
             <div class="relative border-t border-white/10 bg-black/85 px-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] pt-5 backdrop-blur-md">
-                <StoryPlayStartCta :label="primaryCtaLabel" @click="handleStartStory" />
+                <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
+                <div
+                    v-else
+                    class="flex h-[3.5rem] w-full cursor-not-allowed select-none items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium uppercase tracking-widest text-gray-500"
+                >
+                    Coming Soon
+                </div>
             </div>
         </div>
     </div>

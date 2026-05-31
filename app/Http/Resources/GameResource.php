@@ -21,17 +21,18 @@ class GameResource extends BaseResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'user_id' => $this->user_id,
-            'story_id' => $this->story_id,
-            'current_event_id' => $this->current_event_id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'id'                       => $this->id,
+            'user_id'                  => $this->user_id,
+            'story_id'                 => $this->story_id,
+            'current_session_number'   => $this->current_session_number,
+            'current_session_complete' => (bool) $this->current_session_complete,
+            'model'                    => $this->model,
+            'created_at'               => $this->created_at,
+            'updated_at'               => $this->updated_at,
 
             // Relations
-            'story' => StoryResource::make($this->whenLoaded('story')),
-            'user' => UserResource::make($this->whenLoaded('user')),
-            'currentEvent' => EventResource::make($this->whenLoaded('currentEvent')),
+            'story'   => StoryResource::make($this->whenLoaded('story')),
+            'user'    => UserResource::make($this->whenLoaded('user')),
             'prompts' => PromptResource::collection($this->whenLoaded('prompts')),
 
             // Counts

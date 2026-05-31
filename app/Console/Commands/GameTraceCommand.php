@@ -14,16 +14,13 @@ use Throwable;
  * Pretty-prints the structured 'narration.turn' log entries for a single game.
  *
  * Reads from storage/logs/narration*.log (the daily-rotated 'narration' channel),
- * filters rows by game id, sorts chronologically, and asserts four hard rules
+ * filters rows by game id, sorts chronologically, and asserts two hard rules
  * per row so the next playtest produces deterministic pass/fail evidence
  * instead of vibe.
  *
- * Hard rules:
- *   1. event_id_after >= event_id_before (no rewind unless session-cut adjusts).
- *   2. If advance_event_returned === true, event_id_after !== event_id_before.
- *   3. session_number_after did NOT regress vs session_number_before when both
- *      are non-null (nullable session_number is legitimate for unadapted events).
- *   4. Generated choices differ from the immediately previous turn's choices
+ * Hard rules (Chaos Engine):
+ *   1. session_number does NOT regress across turns.
+ *   2. Generated choices differ from the immediately previous turn's choices
  *      (no exact-string repeats).
  *
  * Usage:
@@ -53,10 +50,12 @@ final class GameTraceCommand extends Command
             $this->warn("Game id {$gameId} not found in DB. Showing log rows anyway (DB may be unavailable).");
         } else {
             $this->info('=== GAME ===');
-            $this->line('id:                    ' . $game->id);
-            $this->line('story_id:              ' . $game->story_id);
-            $this->line('current_event_id:      ' . $game->current_event_id);
-            $this->line('current_session_number: ' . ($game->current_session_number ?? 'null'));
+            $this->line('id:                      ' . $game->id);
+            $this->line('story_id:                ' . $game->story_id);
+            $this->line('model:                   ' . ($game->model ?? 'null'));
+            $this->line('current_session_number:  ' . ($game->current_session_number ?? 'null'));
+            $this->line('current_session_complete:' . ($game->current_session_complete ? 'true' : 'false'));
+            $this->line('is_climactic_choice:     ' . ($game->is_climactic_choice ? 'true' : 'false'));
             $this->newLine();
         }
 
@@ -86,41 +85,25 @@ final class GameTraceCommand extends Command
             $turnNumber = $i + 1;
             $this->line(sprintf('--- TURN %d (logged %s) ---', $turnNumber, $row['logged_at'] ?? 'unknown'));
 
-            $eventBefore = $row['event_id_before'] ?? null;
-            $eventAfter = $row['event_id_after'] ?? null;
-            $sessionBefore = $row['session_number_before'] ?? null;
-            $sessionAfter = $row['session_number_after'] ?? null;
-            $advanceReturned = $row['advance_event_returned'] ?? null;
-            $forceAdvanced = $row['force_advanced'] ?? null;
-            $isContinue = $row['is_continue'] ?? null;
-            $turnCount = $row['turn_count'] ?? null;
-            $isFirstTurn = $row['is_first_turn_in_event'] ?? null;
-            $playerInput = $row['player_input_first_120'] ?? '';
-            $narratorOutput = $row['narrator_response_first_120'] ?? '';
-            $choices = $row['choices_returned'] ?? [];
-            $promptHash = substr((string) ($row['system_prompt_hash'] ?? ''), 0, 12);
+            $sessionNumber   = $row['session_number'] ?? null;
+            $isContinue      = $row['is_continue'] ?? null;
+            $isClimatic      = $row['is_climactic'] ?? null;
+            $sessionComplete = $row['session_complete'] ?? null;
+            $model           = $row['model'] ?? null;
+            $playerInput     = $row['player_input'] ?? '';
+            $responseBytes   = $row['response_bytes'] ?? null;
+            $choices         = $row['choices'] ?? [];
 
-            $gameSessionAfter = $row['game_current_session_number_after'] ?? null;
-            $driftNote = '';
-            if (array_key_exists('game_current_session_number_after', $row)
-                && $gameSessionAfter !== $sessionAfter) {
-                $driftNote = sprintf(
-                    ' (drift: games.current_session_number=%s)',
-                    $gameSessionAfter ?? 'null'
-                );
-            }
-
-            $this->line('  event_id:            ' . $eventBefore . ' -> ' . $eventAfter);
-            $this->line('  session_number:      ' . ($sessionBefore ?? 'null') . ' -> ' . ($sessionAfter ?? 'null') . $driftNote);
-            $this->line('  turn_count_in_event: ' . ($turnCount ?? 'null') . (($isFirstTurn === true) ? ' (FIRST TURN)' : ''));
-            $this->line('  advance_returned:    ' . $this->bool($advanceReturned) . (($forceAdvanced === true) ? ' (force-advanced via 5-turn cap)' : ''));
+            $this->line('  session_number:      ' . ($sessionNumber ?? 'null'));
+            $this->line('  model:               ' . ($model ?? 'null'));
             $this->line('  is_continue:         ' . $this->bool($isContinue));
-            $this->line('  prompt_hash:         ' . $promptHash);
-            $this->line('  player_input:        ' . ($playerInput !== '' ? '"' . $playerInput . '"' : '(empty)'));
-            $this->line('  narrator_response:   ' . ($narratorOutput !== '' ? '"' . $narratorOutput . '"' : '(empty)'));
+            $this->line('  is_climactic:        ' . $this->bool($isClimatic));
+            $this->line('  session_complete:    ' . $this->bool($sessionComplete));
+            $this->line('  response_bytes:      ' . ($responseBytes ?? 'null'));
+            $this->line('  player_input:        ' . ($playerInput !== '' ? '"' . mb_substr($playerInput, 0, 120) . '"' : '(empty)'));
 
             if (! empty($choices)) {
-                $this->line('  choices_returned:');
+                $this->line('  choices:');
                 foreach ($choices as $idx => $choice) {
                     $letter = chr(ord('A') + $idx);
                     $this->line("    {$letter}) {$choice}");
@@ -128,20 +111,16 @@ final class GameTraceCommand extends Command
             }
 
             $violations = $this->assertHardRules(
-                eventBefore: $eventBefore,
-                eventAfter: $eventAfter,
-                sessionBefore: $sessionBefore,
-                sessionAfter: $sessionAfter,
-                advanceReturned: (bool) $advanceReturned,
-                choices: $choices,
+                sessionNumber:   is_int($sessionNumber) ? $sessionNumber : null,
+                choices:         $choices,
                 previousChoices: $previousChoices,
             );
 
             if ($violations === []) {
-                $this->line('  rules:               <fg=green>ALL GREEN (4/4)</>');
+                $this->line('  rules:               <fg=green>ALL GREEN (2/2)</>');
             } else {
                 $totalViolations += count($violations);
-                $this->line('  rules:               <fg=red>' . (4 - count($violations)) . '/4 PASS</>');
+                $this->line('  rules:               <fg=red>' . (2 - count($violations)) . '/2 PASS</>');
                 foreach ($violations as $v) {
                     $this->line('    <fg=red>! ' . $v . '</>');
                 }
@@ -200,7 +179,7 @@ final class GameTraceCommand extends Command
                         continue;
                     }
 
-                    if (! str_contains($line, 'narration.turn')) {
+                    if (! str_contains($line, 'game.turn')) {
                         continue;
                     }
 
@@ -289,43 +268,31 @@ final class GameTraceCommand extends Command
     }
 
     /**
-     * @param  int|string|null  $eventBefore
-     * @param  int|string|null  $eventAfter
      * @param  array<int, string>  $choices
      * @param  array<int, string>|null  $previousChoices
      * @return list<string>
      */
     private function assertHardRules(
-        int|string|null $eventBefore,
-        int|string|null $eventAfter,
-        ?int $sessionBefore,
-        ?int $sessionAfter,
-        bool $advanceReturned,
+        ?int $sessionNumber,
         array $choices,
         ?array $previousChoices,
     ): array {
         $violations = [];
 
-        if ($eventBefore !== null && $eventAfter !== null && $eventAfter < $eventBefore && $sessionBefore === $sessionAfter) {
-            $violations[] = 'rule 1: event_id rewind detected (event_id_after < event_id_before with no session change)';
+        // Rule 1: session_number must not regress between turns.
+        static $lastSessionNumber = null;
+        if ($sessionNumber !== null && $lastSessionNumber !== null && $sessionNumber < $lastSessionNumber) {
+            $violations[] = "rule 1: session_number regressed ({$lastSessionNumber} -> {$sessionNumber})";
+        }
+        if ($sessionNumber !== null) {
+            $lastSessionNumber = $sessionNumber;
         }
 
-        if ($advanceReturned === true && $eventBefore !== null && $eventAfter !== null && $eventAfter === $eventBefore) {
-            $violations[] = 'rule 2: advance_event=true but event_id did not change';
-        }
-
-        // Rule 3 fires only on a true regression: both session numbers are known and
-        // after < before. A null after is legitimate when the next event is unadapted
-        // (events.session_number is nullable by design and only backfilled by
-        // StorySessionMapJob once the adaptation pipeline completes).
-        if (is_int($sessionBefore) && is_int($sessionAfter) && $sessionAfter < $sessionBefore) {
-            $violations[] = "rule 3: session_number regressed ({$sessionBefore} -> {$sessionAfter})";
-        }
-
+        // Rule 2: choices must not be an exact repeat of the previous turn.
         if ($previousChoices !== null && $previousChoices !== [] && $choices !== []) {
             $normalize = static fn (array $list): array => array_map(static fn ($c) => Str::squish((string) $c), $list);
             if ($normalize($choices) === $normalize($previousChoices)) {
-                $violations[] = 'rule 4: choices_returned exactly match the previous turn (no scene movement)';
+                $violations[] = 'rule 2: choices exactly match the previous turn (no scene movement)';
             }
         }
 

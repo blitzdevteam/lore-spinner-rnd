@@ -18,7 +18,7 @@ final class ChoiceDesignJob implements ShouldQueue
     use Batchable, Queueable;
 
     public int $tries = 3;
-    public int $timeout = 540;
+    public int $timeout = 720;
     public int $backoff = 60;
 
     public function __construct(

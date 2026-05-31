@@ -21,16 +21,15 @@ class PromptResource extends BaseResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'game_id' => $this->game_id,
-            'event_id' => $this->event_id,
-            'prompt' => $this->prompt ?? '',
-            'response' => $this->response,
-            'choices' => $this->choices ?? [],
+            'id'             => $this->id,
+            'game_id'        => $this->game_id,
+            'session_number' => $this->session_number,
+            'prompt'         => $this->prompt ?? '',
+            'response'       => $this->response,
+            'choices'        => $this->choices ?? [],
 
             // Relations
             'game' => GameResource::make($this->whenLoaded('game')),
-            'event' => EventResource::make($this->whenLoaded('event')),
         ];
     }
 }

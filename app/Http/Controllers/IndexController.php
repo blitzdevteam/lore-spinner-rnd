@@ -14,7 +14,15 @@ final class IndexController extends Controller
 {
     public function __invoke(): Response
     {
-        return inertia('Index', [
+        return inertia('Index', self::homepageProps());
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function homepageProps(): array
+    {
+        return [
             'featuredStory' => fn () => Story::query()
                 ->with([
                     'category:id,title',
@@ -30,8 +38,6 @@ final class IndexController extends Controller
                     ->where('user_id', Auth::id())
                     ->with([
                         'story' => fn ($q) => $q->with(['media', 'category:id,title', 'creator:id,first_name,last_name']),
-                        'currentEvent:id,title,position',
-                        'currentEvent.chapter:id,position,title',
                     ])
                     ->withCount('prompts')
                     ->latest('updated_at')
@@ -67,6 +73,6 @@ final class IndexController extends Controller
                 ->latest('published_at')
                 ->get()
                 ->toResourceCollection(),
-        ]);
+        ];
     }
 }
