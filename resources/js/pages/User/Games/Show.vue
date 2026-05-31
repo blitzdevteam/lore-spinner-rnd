@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import GameCinematicOpening from '@/components/GameCinematicOpening.vue';
-import GameOpeningNarration from '@/components/GameOpeningNarration.vue';
 import GameplayChatCard from '@/components/GameplayChatCard.vue';
 import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
 import GameplaySidebarJournalEventCard from '@/components/GameplaySidebarJournalEventCard.vue';
-import StoryAtmosphereProvider from '@/components/StoryAtmosphereProvider.vue';
-import GameplayLayout from '@/layouts/GameplayLayout.vue';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
+import GameplayLayout from '@/layouts/GameplayLayout.vue';
 import { EventInterface, GameInterface } from '@/types';
-import { router } from '@inertiajs/vue3';
 import { store as storePrompt } from '@/wayfinder/actions/App/Http/Controllers/User/Game/PromptController';
+import { router } from '@inertiajs/vue3';
 import { LucideUser } from 'lucide-vue-next';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
@@ -103,9 +101,7 @@ const characters = computed(() => {
         for (const name of charNames) {
             const nameLower = name.toLowerCase();
             const isSolo = charNames.length === 1;
-            const relevantFacts = eventFacts.filter(
-                (f) => isSolo || f.toLowerCase().includes(nameLower),
-            );
+            const relevantFacts = eventFacts.filter((f) => isSolo || f.toLowerCase().includes(nameLower));
 
             if (!relevantFacts.length) continue;
 
@@ -267,27 +263,29 @@ onMounted(() => {
 </script>
 
 <template>
-    <StoryAtmosphereProvider :story-id="game.story_id" :cover-url="game.story?.cover">
-        <!-- ── Cinematic opening sequence (new games only) ── -->
-        <GameCinematicOpening
-            v-if="showCinematic"
-            @prepare="handleCinemaPrepare"
-            @done="handleCinematicDone"
-        />
+    <!-- ── Cinematic opening sequence (new games only) ── -->
+    <GameCinematicOpening v-if="showCinematic" @prepare="handleCinemaPrepare" @done="handleCinematicDone" />
 
-        <!-- Loading state while begin POST is in-flight -->
-        <div v-else-if="isAutoBeginning" class="relative grid h-svh place-items-center">
-            <div class="flex flex-col items-center gap-4">
-                <div class="size-8 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
-                <p class="text-sm text-gray-400">Preparing your adventure…</p>
-            </div>
+    <!-- Loading state while begin POST is in-flight -->
+    <div v-else-if="isAutoBeginning" class="grid h-svh place-items-center bg-gray-950">
+        <div class="flex flex-col items-center gap-4">
+            <div class="size-8 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
+            <p class="text-sm text-gray-400">Preparing your adventure…</p>
         </div>
+    </div>
 
-        <!-- ── Gameplay phase ── -->
-        <GameplayLayout v-else :input-disabled="!canSubmitInput" :game-id="game.id" :cover-url="game.story?.cover ?? null" @submit="handleSubmit" @back="handleBack">
+    <!-- ── Gameplay phase ── -->
+    <GameplayLayout
+        v-else
+        :input-disabled="!canSubmitInput"
+        :game-id="game.id"
+        :cover-url="game.story?.cover ?? null"
+        @submit="handleSubmit"
+        @back="handleBack"
+    >
         <template #header>
-            <div class="flex flex-col items-center gap-2 px-1 pb-3 pt-1 sm:gap-3 sm:pb-4 sm:pt-2">
-                <h1 class="text-center text-xl font-semibold leading-tight text-white sm:text-2xl lg:text-[28px]">
+            <div class="flex flex-col items-center gap-3 pt-2 pb-4">
+                <h1 class="text-center text-2xl font-semibold text-white md:text-[28px]">
                     {{ game.story?.title ?? 'Adventure' }}
                 </h1>
                 <GameplayOrnamentDivider
@@ -314,7 +312,7 @@ onMounted(() => {
 
             <!-- Loading skeleton while AI generates the next response -->
             <div v-if="isSubmitting" class="py-8">
-                <div class="flex flex-col gap-4 animate-pulse">
+                <div class="flex animate-pulse flex-col gap-4">
                     <div class="h-4 w-full rounded bg-gray-700/50"></div>
                     <div class="h-4 w-5/6 rounded bg-gray-700/50"></div>
                     <div class="h-4 w-3/4 rounded bg-gray-700/50"></div>
@@ -336,7 +334,11 @@ onMounted(() => {
 
         <template #characters>
             <p v-if="!characters.length" class="text-sm text-gray-500">No characters introduced yet.</p>
-            <div v-for="char in characters" :key="char.name" class="rounded-xl border border-gray-700/50 bg-gray-800/40 p-4 transition-all hover:border-gray-600">
+            <div
+                v-for="char in characters"
+                :key="char.name"
+                class="rounded-xl border border-gray-700/50 bg-gray-800/40 p-4 transition-all hover:border-gray-600"
+            >
                 <div class="flex items-center gap-3">
                     <div class="grid size-10 shrink-0 place-items-center rounded-full bg-secondary-400/10 text-secondary-400">
                         <LucideUser class="size-5" :stroke-width="1.5" />
@@ -351,18 +353,15 @@ onMounted(() => {
                 </div>
                 <div v-if="char.log.length" class="mt-3 flex flex-col gap-2.5 border-t border-gray-700/40 pt-3">
                     <div v-for="(entry, i) in char.log" :key="i" class="flex flex-col gap-1">
-                        <p v-if="char.log.length > 1" class="text-[10px] font-semibold uppercase tracking-wide text-gray-600">{{ entry.event }}</p>
+                        <p v-if="char.log.length > 1" class="text-[10px] font-semibold tracking-wide text-gray-600 uppercase">{{ entry.event }}</p>
                         <ul class="flex flex-col gap-0.5">
-                            <li v-for="(fact, j) in entry.facts" :key="j" class="text-xs leading-relaxed text-gray-400">
-                                · {{ fact }}
-                            </li>
+                            <li v-for="(fact, j) in entry.facts" :key="j" class="text-xs leading-relaxed text-gray-400">· {{ fact }}</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </template>
     </GameplayLayout>
-    </StoryAtmosphereProvider>
 </template>
 
 <style scoped></style>
