@@ -250,15 +250,11 @@ function goNext() {
                                 </h1>
 
                                 <div class="hero-meta font-[Inter] text-white">
-                                    <p class="hero-teaser text-white">
-                                        <span class="md:hidden">{{ activeSlide.teaser }}</span>
-                                        <span class="hidden md:inline">
-                                            <template v-if="activeSlide.teaserLines">
-                                                {{ activeSlide.teaserLines[0] }}<br />
-                                                {{ activeSlide.teaserLines[1] }}
-                                            </template>
-                                            <template v-else>{{ activeSlide.teaser }}</template>
-                                        </span>
+                                    <p
+                                        class="hero-teaser text-white"
+                                        :title="activeSlide.teaser"
+                                    >
+                                        {{ activeSlide.teaser }}
                                     </p>
                                     <div class="hero-stats flex flex-col gap-0">
                                         <p v-if="activeSlide.author" class="hero-stat-line text-white">
@@ -375,6 +371,10 @@ function goNext() {
     font-size: 0.9375rem;
     line-height: 1.55;
     text-shadow: 0 1px 10px rgba(0, 0, 0, 0.75);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
 }
 
 .hero-stat-line {
@@ -620,6 +620,7 @@ function goNext() {
         font-size: 1.125rem;
         line-height: 1.444;
         text-shadow: 0 1px 12px rgba(0, 0, 0, 0.75);
+        -webkit-line-clamp: 2;
     }
 
     .hero-stat-line {
