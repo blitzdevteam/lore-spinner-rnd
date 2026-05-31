@@ -3,6 +3,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import './story-slider.css';
+@import './story-cards.css';
 @import './mood-cards.css';
 @import './mood-page.css';
 /** Ensures Vue templates are scanned so arbitrary utilities (e.g. hero CTA) exist in prod CSS. */

@@ -137,7 +137,10 @@ function cycleSort(): void {
                                 </template>
                             </SectionHeader>
 
-                            <StoryGrid :stories="sortedStories" portrait />
+                            <StoryGrid
+                                :stories="sortedStories"
+                                :mood-label="moodHero.label"
+                            />
                         </div>
                     </div>
                 </div>

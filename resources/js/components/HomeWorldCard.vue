@@ -26,6 +26,7 @@ const isComingSoon = props.story.status?.value !== StoryStatusEnum.PUBLISHED;
         :cover-image="story.cover"
         :slug="story.slug"
         :status="story.status?.value"
+        :genre="story.category?.title"
         :is-coming-soon="isComingSoon"
         :dimmed="dimmed"
     />
