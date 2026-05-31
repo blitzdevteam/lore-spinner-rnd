@@ -83,7 +83,7 @@ const headingClass =
                         <p
                             class="mt-3 max-w-[34ch] text-[0.8125rem] font-light leading-[1.45] tracking-[-0.52px] text-white/90 sm:mt-2.5 sm:max-w-none sm:leading-[100%] lg:mt-[0.6875rem]"
                         >
-                            For dreamers, creators, and wanderers ; Lorespinner brings your stories to life.
+                        You’re not just listening to a story. You’re inside one.
                         </p>
                     </div>
 
