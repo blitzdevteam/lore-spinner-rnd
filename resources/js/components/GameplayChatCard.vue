@@ -70,11 +70,11 @@ const getChoiceClass = (choice: string) => {
     const base = 'flex min-h-[52px] items-center gap-2 rounded-lg border px-2 py-2 transition-all duration-300 sm:min-h-[60px] sm:gap-2.5 sm:py-1';
 
     if (!effectiveSelection.value) {
-        return `${base} border-[#373737] text-white cursor-pointer hover:border-[#00c6de] hover:bg-[#00c6de]/5`;
+        return `${base} border-[#373737] text-white cursor-pointer hover:border-primary-600 hover:bg-primary-600/5`;
     }
 
     if (effectiveSelection.value === choice) {
-        return `${base} border-[#00c6de] bg-[#00c6de]/10 text-white pointer-events-none`;
+        return `${base} border-primary-600 bg-primary-600/10 text-white pointer-events-none`;
     }
 
     return `${base} border-[#373737]/40 text-gray-400 opacity-50 pointer-events-none`;
@@ -163,14 +163,14 @@ watch(
                 <!-- Inner shine overlay -->
                 <span aria-hidden class="listen-again-shine pointer-events-none absolute inset-0 rounded-[60px]" />
                 <!-- Icon -->
-                <span class="relative grid size-[37px] shrink-0 place-items-center overflow-hidden rounded-full bg-[#00c6de] text-white">
+                <span class="relative grid size-[37px] shrink-0 place-items-center overflow-hidden rounded-full bg-primary-600 text-white">
                     <LucideLoader v-if="isThisLoading" class="size-4 animate-spin" />
                     <LucidePause v-else-if="isThisPlaying" class="size-4" fill="currentColor" />
                     <LucidePlay v-else class="size-4" fill="currentColor" />
                 </span>
                 <!-- Label -->
                 <span class="relative flex min-w-0 flex-col items-start leading-tight tracking-[0.5px]">
-                    <span class="text-sm text-[#00c6de]">Listen Again</span>
+                    <span class="text-sm text-primary-600">Listen Again</span>
                     <span class="text-xs font-light text-[#7e7e7e]">Replay Narration</span>
                 </span>
             </button>
@@ -200,7 +200,7 @@ watch(
                 <div v-for="choice in prompt.choices" :key="choice" :class="getChoiceClass(choice)" @click="handleChoiceClick(choice)">
                     <span
                         v-if="effectiveSelection === choice"
-                        class="grid size-7 shrink-0 place-items-center rounded-full border-2 border-[#00c6de] bg-[#00c6de]/20 text-[#00c6de]"
+                        class="grid size-7 shrink-0 place-items-center rounded-full border-2 border-primary-600 bg-primary-600/20 text-primary-600"
                     >
                         <LucideCheck class="size-4" />
                     </span>

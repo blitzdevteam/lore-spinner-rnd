@@ -30,7 +30,7 @@ const onVolumeInput = (event: Event) => {
         >
             <!-- Play / Pause -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-[#00c6de] transition-[transform,color] hover:scale-105 hover:text-white active:scale-95"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-primary-600 transition-[transform,color] hover:scale-105 hover:text-white active:scale-95"
                 @click="tts.togglePause"
             >
                 <LucidePause v-if="tts.isPlaying.value" class="size-4" fill="currentColor" />
@@ -38,14 +38,14 @@ const onVolumeInput = (event: Event) => {
             </button>
 
             <!-- Time -->
-            <span class="min-w-12 text-base font-medium text-[#00c6de] tabular-nums">
+            <span class="min-w-12 text-base font-medium text-primary-600 tabular-nums">
                 {{ tts.formattedCurrentTime.value }}
             </span>
 
             <!-- Mute + volume slider -->
             <div class="volume-control hidden items-center gap-2 sm:flex">
                 <button
-                    class="grid size-7 shrink-0 place-items-center rounded-full text-[#00c6de] transition-[color,opacity] hover:text-white"
+                    class="grid size-7 shrink-0 place-items-center rounded-full text-primary-600 transition-[color,opacity] hover:text-white"
                     :class="{ 'opacity-60 hover:opacity-100': isVolumeMuted }"
                     :aria-pressed="isVolumeMuted"
                     aria-label="Toggle mute"
@@ -74,8 +74,8 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Loop -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full transition-[transform,color] hover:scale-105 hover:text-[#00c6de] active:scale-95"
-                :class="tts.isLooping.value ? 'text-[#00c6de] hover:text-white' : 'text-gray-300'"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
+                :class="tts.isLooping.value ? 'text-primary-600 hover:text-white' : 'text-gray-300'"
                 @click="tts.toggleLoop"
             >
                 <LucideRepeat class="size-4" />
@@ -83,7 +83,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip back 15s -->
             <button
-                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-[#00c6de] active:scale-95"
+                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
                 @click="tts.seekBy(-15)"
             >
                 <LucideRotateCcw class="size-5" :stroke-width="1.5" />
@@ -92,7 +92,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip forward 15s -->
             <button
-                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-[#00c6de] active:scale-95"
+                class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
                 @click="tts.seekBy(15)"
             >
                 <LucideRotateCw class="size-5" :stroke-width="1.5" />
@@ -101,7 +101,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Close -->
             <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-[#00c6de]"
+                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-primary-600"
                 @click="tts.dismiss"
             >
                 <LucideX class="size-4" />
@@ -155,7 +155,7 @@ const onVolumeInput = (event: Event) => {
 }
 
 .media-range:focus-visible {
-    outline: 2px solid rgba(0, 198, 222, 0.55);
+    outline: 2px solid rgba(22, 63, 70, 0.55);
     outline-offset: 2px;
     border-radius: 9999px;
 }
@@ -165,10 +165,10 @@ const onVolumeInput = (event: Event) => {
     border-radius: 4px;
     background: linear-gradient(
         to right,
-        #00c6de 0%,
-        #00c6de var(--range-fill),
-        rgba(0, 198, 222, 0.28) var(--range-fill),
-        rgba(0, 198, 222, 0.28) 100%
+        #163f46 0%,
+        #163f46 var(--range-fill),
+        rgba(22, 63, 70, 0.28) var(--range-fill),
+        rgba(22, 63, 70, 0.28) 100%
     );
     transition: background 150ms ease;
 }
@@ -179,7 +179,7 @@ const onVolumeInput = (event: Event) => {
     height: 12px;
     margin-top: -4px;
     border-radius: 50%;
-    background: #00c6de;
+    background: #163f46;
     cursor: pointer;
     transition:
         transform 150ms ease,
@@ -192,19 +192,19 @@ const onVolumeInput = (event: Event) => {
 }
 
 .media-range:focus-visible::-webkit-slider-thumb {
-    box-shadow: 0 0 0 3px rgba(0, 198, 222, 0.35);
+    box-shadow: 0 0 0 3px rgba(22, 63, 70, 0.35);
 }
 
 .media-range::-moz-range-track {
     height: 4px;
     border-radius: 4px;
-    background: rgba(0, 198, 222, 0.28);
+    background: rgba(22, 63, 70, 0.28);
 }
 
 .media-range::-moz-range-progress {
     height: 4px;
     border-radius: 4px;
-    background: #00c6de;
+    background: #163f46;
     transition: width 150ms ease;
 }
 
@@ -213,7 +213,7 @@ const onVolumeInput = (event: Event) => {
     height: 12px;
     border: none;
     border-radius: 50%;
-    background: #00c6de;
+    background: #163f46;
     cursor: pointer;
     transition:
         transform 150ms ease,
@@ -226,6 +226,6 @@ const onVolumeInput = (event: Event) => {
 }
 
 .media-range:focus-visible::-moz-range-thumb {
-    box-shadow: 0 0 0 3px rgba(0, 198, 222, 0.35);
+    box-shadow: 0 0 0 3px rgba(22, 63, 70, 0.35);
 }
 </style>
