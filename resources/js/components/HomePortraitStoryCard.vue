@@ -257,12 +257,13 @@ const metadataLine = computed(() => {
 
 @media (min-width: 1024px) {
     .hp-card--focused .hp-card__frame {
-        box-shadow: var(--story-card-shadow-hover);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: var(--story-card-shadow-hover), var(--story-card-shadow-glow);
     }
 
     .hp-card--static:hover .hp-card__frame {
-        transform: scale(1.03);
-        box-shadow: var(--story-card-shadow-hover);
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: var(--story-card-shadow-hover), var(--story-card-shadow-glow);
     }
 }
 </style>

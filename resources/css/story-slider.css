@@ -26,10 +26,19 @@
 }
 
 .story-slider-track {
+    position: relative;
     display: flex;
     align-items: flex-start;
     gap: 0.625rem;
     padding: var(--story-track-pad-top) 0.25rem var(--story-track-pad-bottom);
+}
+
+/* Subtle carousel-region vignette when a card is hovered — not a page overlay */
+.story-slider-viewport--cinema {
+    box-shadow:
+        inset 0 0 80px rgba(0, 0, 0, 0.2),
+        inset 0 0 160px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 220ms ease;
 }
 
 @media (min-width: 1024px) {

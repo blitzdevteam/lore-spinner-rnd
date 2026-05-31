@@ -38,15 +38,17 @@
 
 /* ---- Top picks carousel: flush with section headers ---- */
 .mood-page-flow .story-slider-viewport {
-    --story-track-pad-top: 0.25rem;
-    --story-track-pad-bottom: 0.5rem;
+    /* Room for lift + shadow without clipping inside overflow-x scrollport */
+    --story-track-pad-top: 0.625rem;
+    --story-track-pad-bottom: 0.875rem;
     margin-block: 0;
 }
 
 @media (min-width: 1024px) {
     .mood-page-flow .story-slider-viewport {
-        --story-track-pad-top: 0.375rem;
-        --story-track-pad-bottom: 0.75rem;
+        --story-track-pad-top: 1rem;
+        /* Reserve space for in-card hover reveal without clipping */
+        --story-track-pad-bottom: 2.75rem;
     }
 }
 

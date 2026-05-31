@@ -21,23 +21,23 @@ defineProps<{
 <style scoped>
 .story-card-slot {
     position: relative;
+    z-index: 1;
     flex-shrink: 0;
-    transform-origin: center top;
     transition:
-        transform 0.22s ease,
-        opacity 0.2s ease,
-        filter 0.2s ease;
+        transform 220ms cubic-bezier(0.25, 0.1, 0.25, 1),
+        opacity 220ms ease,
+        filter 220ms ease;
 }
 
 .story-card-slot--dimmed {
-    opacity: 0.62;
-    filter: brightness(0.78);
+    opacity: 0.72;
+    filter: brightness(0.82);
 }
 
 @media (min-width: 1024px) {
     .story-card-slot--focused {
-        z-index: 25;
-        transform: scale(1.05);
+        z-index: 20;
+        transform: translateY(-8px);
     }
 }
 </style>
