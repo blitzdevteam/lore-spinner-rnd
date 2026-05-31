@@ -4,6 +4,7 @@ import GameOpeningNarration from '@/components/GameOpeningNarration.vue';
 import GameplayChatCard from '@/components/GameplayChatCard.vue';
 import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
 import GameplaySidebarJournalEventCard from '@/components/GameplaySidebarJournalEventCard.vue';
+import StoryAtmosphereProvider from '@/components/StoryAtmosphereProvider.vue';
 import GameplayLayout from '@/layouts/GameplayLayout.vue';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { EventInterface, GameInterface } from '@/types';
@@ -266,23 +267,24 @@ onMounted(() => {
 </script>
 
 <template>
-    <!-- ── Cinematic opening sequence (new games only) ── -->
-    <GameCinematicOpening
-        v-if="showCinematic"
-        @prepare="handleCinemaPrepare"
-        @done="handleCinematicDone"
-    />
+    <StoryAtmosphereProvider :story-id="game.story_id" :cover-url="game.story?.cover">
+        <!-- ── Cinematic opening sequence (new games only) ── -->
+        <GameCinematicOpening
+            v-if="showCinematic"
+            @prepare="handleCinemaPrepare"
+            @done="handleCinematicDone"
+        />
 
-    <!-- Loading state while begin POST is in-flight -->
-    <div v-else-if="isAutoBeginning" class="grid h-svh place-items-center bg-gray-950">
-        <div class="flex flex-col items-center gap-4">
-            <div class="size-8 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
-            <p class="text-sm text-gray-400">Preparing your adventure…</p>
+        <!-- Loading state while begin POST is in-flight -->
+        <div v-else-if="isAutoBeginning" class="relative grid h-svh place-items-center">
+            <div class="flex flex-col items-center gap-4">
+                <div class="size-8 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
+                <p class="text-sm text-gray-400">Preparing your adventure…</p>
+            </div>
         </div>
-    </div>
 
-    <!-- ── Gameplay phase ── -->
-    <GameplayLayout v-else :input-disabled="!canSubmitInput" :game-id="game.id" @submit="handleSubmit" @back="handleBack">
+        <!-- ── Gameplay phase ── -->
+        <GameplayLayout v-else :input-disabled="!canSubmitInput" :game-id="game.id" @submit="handleSubmit" @back="handleBack">
         <template #header>
             <div class="flex flex-col items-center gap-2 px-1 pb-3 pt-1 sm:gap-3 sm:pb-4 sm:pt-2">
                 <h1 class="text-center text-xl font-semibold leading-tight text-white sm:text-2xl lg:text-[28px]">
@@ -360,6 +362,7 @@ onMounted(() => {
             </div>
         </template>
     </GameplayLayout>
+    </StoryAtmosphereProvider>
 </template>
 
 <style scoped></style>

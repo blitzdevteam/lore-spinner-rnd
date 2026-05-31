@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BaseBackgroundGradient from '@/components/BaseBackgroundGradient.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import GameplayInput from '@/components/GameplayInput.vue';
 import GameplayMediaPlayer from '@/components/GameplayMediaPlayer.vue';
@@ -59,7 +58,6 @@ const handleInputSubmit = (prompt: string) => {
 
 <template>
     <div class="relative h-svh">
-        <BaseBackgroundGradient />
         <div class="relative flex min-h-svh">
             <div class="flex min-w-0 flex-1 flex-col">
                 <!-- ── Top header bar ── -->
