@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import HomeBannerStoryCard from '@/components/HomeBannerStoryCard.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
+import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
 import { MOOD_TOP_PICK_SLUGS } from '@/data/moodCards';
 import type { MoodId } from '@/data/moodBanners';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
+import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
+import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { computed, ref } from 'vue';
 
@@ -19,6 +22,9 @@ const props = defineProps<{
 
 const sliderEl = ref<HTMLElement | null>(null);
 const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
+
+const isDesktopHover = useDesktopStoryPreview();
+const { onCardEnter, onCardLeave, isExpanded, isDimmed, hoveredId } = useStoryCardExpand(isDesktopHover);
 
 const sectionTitle = computed(() => `Top ${props.moodLabel} Picks`);
 
@@ -65,7 +71,7 @@ function scrollSlider(direction: -1 | 1): void {
     const slider = sliderEl.value;
     if (!slider) return;
 
-    const card = slider.querySelector<HTMLElement>('.mood-top-picks__slot');
+    const card = slider.querySelector<HTMLElement>('.story-card-slot');
     const gap = 10;
     const step = card ? card.offsetWidth + gap : 460;
 
@@ -83,7 +89,10 @@ function scrollSlider(direction: -1 | 1): void {
                     :count="totalCount"
                 />
 
-                <div class="story-slider-viewport relative overflow-visible">
+                <div
+                    class="story-slider-viewport relative overflow-visible"
+                    :class="isDesktopHover && hoveredId !== null && 'story-slider-viewport--cinema'"
+                >
                     <div
                         class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
                         :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
@@ -108,10 +117,15 @@ function scrollSlider(direction: -1 | 1): void {
 
                     <div ref="sliderEl" class="story-slider overflow-x-auto">
                         <div class="story-slider-track">
-                            <div
+                            <StoryExpandableCard
                                 v-for="story in topPickStories"
                                 :key="story.id"
-                                class="mood-top-picks__slot w-[min(28.125rem,78vw)] shrink-0 md:w-[28.125rem]"
+                                class="w-[min(28.125rem,78vw)] md:w-[28.125rem]"
+                                :expanded="isExpanded(String(story.id))"
+                                :dimmed="isDimmed(String(story.id))"
+                                :desktop-expand="isDesktopHover"
+                                @mouseenter="isDesktopHover && onCardEnter(String(story.id))"
+                                @mouseleave="isDesktopHover && onCardLeave()"
                             >
                                 <HomeBannerStoryCard
                                     :title="story.title"
@@ -124,11 +138,10 @@ function scrollSlider(direction: -1 | 1): void {
                                     :branches="branchesForStory(story)"
                                     :playable="isPlayable(story)"
                                     :slug="story.slug"
-                                    :focused="false"
-                                    :expand-on-hover="false"
-                                    :is-desktop-hover="true"
+                                    :focused="isDesktopHover && isExpanded(String(story.id))"
+                                    :is-desktop-hover="isDesktopHover"
                                 />
-                            </div>
+                            </StoryExpandableCard>
                         </div>
                     </div>
 
@@ -148,8 +161,3 @@ function scrollSlider(direction: -1 | 1): void {
     </section>
 </template>
 
-<style scoped>
-.mood-top-picks__slot {
-    position: relative;
-}
-</style>

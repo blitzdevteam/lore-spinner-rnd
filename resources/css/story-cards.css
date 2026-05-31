@@ -5,7 +5,14 @@
     --story-card-radius: 0.75rem;
     --story-card-border: 1px solid rgba(255, 255, 255, 0.06);
     --story-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
-    --story-card-shadow-hover: 0 14px 36px rgba(0, 0, 0, 0.42);
+    --story-card-shadow-hover:
+        0 16px 40px rgba(0, 0, 0, 0.55),
+        0 8px 16px rgba(0, 0, 0, 0.35);
+    --story-card-shadow-glow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 0 32px rgba(111, 175, 186, 0.14);
+    --story-card-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --story-card-hover-duration: 220ms;
     --story-card-bg: #141414;
     --story-card-body-gap: 0.625rem;
     --story-card-body-pad-x: 0.625rem;
