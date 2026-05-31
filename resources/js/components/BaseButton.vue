@@ -65,14 +65,14 @@ const severityClasses: Record<Severity, string> = {
     muted: 'bg-gray-900 text-gray-300 font-normal outline-gray-500/15 border-transparent',
     'gray-muted': 'bg-gray-700 text-gray-300 font-normal outline-gray-500/15 border-transparent',
     'muted-glass': 'bg-muted-glass-effect overflow-hidden',
-    glass: 'bg-glass-effect overflow-hidden',
+    glass: 'overflow-hidden border-transparent shadow-[0px_4px_80px_0px_rgba(0,0,0,0.2)]',
     'primary-glass': 'bg-glass-effect overflow-hidden',
     transparent: 'bg-transparent text-primary outline-transparent border-transparent',
 };
 
 const hoverClasses: Partial<Record<Severity, string>> = {
     primary: 'hover:bg-cta-hover active:bg-cta-active focus:outline-4 hover:outline-4',
-    glass: 'hover:scale-110 hover:bg-white/20',
+    glass: 'hover:scale-110 active:scale-95',
     'muted-glass': 'hover:scale-110 hover:bg-white/20',
     'primary-glass': 'hover:scale-110 hover:bg-white/20',
     transparent: 'hover:bg-primary-50/10 hover:outline-primary-200/30',
@@ -82,6 +82,7 @@ const isDisabled = computed(() => props.disabled || props.processing);
 const isLink = computed(() => props.type === 'internal-link' || props.type === 'external-link');
 const isButtonType = computed(() => props.type === 'submit' || props.type === 'button');
 const isPrimaryGlass = computed(() => props.severity === 'primary-glass');
+const isGlass = computed(() => props.severity === 'glass');
 
 const componentTag = computed(() => componentTagMap[props.type]);
 
@@ -142,6 +143,19 @@ const handleSubmit = (event: SubmitEvent) => {
         @submit="handleSubmit"
     >
         <LoaderCircle v-if="processing" class="animate-spin opacity-50" />
+        <template v-else-if="isGlass">
+            <!-- Figma-accurate layered glass background -->
+            <span aria-hidden class="pointer-events-none absolute inset-0 rounded-[inherit]">
+                <span class="absolute inset-0 rounded-[inherit] bg-[rgba(255,255,255,0.04)]" />
+                <span class="absolute inset-0 rounded-[inherit] bg-[rgba(30,30,30,0.25)] backdrop-blur-[3px] mix-blend-plus-lighter" />
+            </span>
+            <!-- Inset highlight border -->
+            <span aria-hidden class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]" />
+            <!-- Content -->
+            <div class="relative z-10">
+                <slot />
+            </div>
+        </template>
         <template v-else-if="isPrimaryGlass">
             <span :class="glassSpanClass" />
             <div class="z-5">

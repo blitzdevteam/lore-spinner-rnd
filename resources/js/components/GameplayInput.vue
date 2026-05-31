@@ -2,7 +2,7 @@
 import BaseButton from '@/components/BaseButton.vue';
 import { useSpeechToText } from '@/composables/useSpeechToText';
 import { LucideArrowUp, LucideLoader, LucideMic, LucideSquare } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -17,6 +17,8 @@ const emit = defineEmits<{
 
 const inputText = ref('');
 const stt = useSpeechToText();
+
+const hasText = computed(() => inputText.value.trim().length > 0);
 
 const handleSubmit = () => {
     if (props.disabled) return;
@@ -46,49 +48,52 @@ const handleMicToggle = async () => {
 </script>
 
 <template>
-    <div :class="['bg-glass-effect relative flex h-16 w-full max-w-3xl items-center overflow-hidden rounded-full border border-gray-700 px-2 transition-opacity duration-300', props.disabled && 'pointer-events-none opacity-40']">
+    <div
+        :class="['relative w-full max-w-3xl transition-opacity duration-300', props.disabled && 'pointer-events-none opacity-40']"
+    >
+        <!-- Gradient border pill -->
         <div
-            class="absolute top-0 right-0 bottom-0 left-0 h-full w-full bg-[linear-gradient(90deg,var(--color-primary-300)_0%,rgba(0,0,0,1)_25%)]"
-        ></div>
-
-        <!-- Mic button -->
-        <BaseButton
-            severity="primary-glass"
-            :icon-only="true"
-            class="relative z-10 ms-1 me-2 size-10! shrink-0"
-            type="button"
-            @click="handleMicToggle"
+            class="flex h-14 items-center rounded-[32px] border border-[#373737] p-2 sm:h-[70px] sm:rounded-[39px] sm:p-2.5"
+            style="background: linear-gradient(90deg, rgba(0, 198, 222, 0.45) 0%, rgba(13, 112, 124, 0.45) 10.577%, rgba(26, 26, 26, 0.2) 21.154%)"
         >
-            <LucideLoader v-if="stt.isTranscribing.value" class="size-5 animate-spin text-white" />
-            <LucideSquare v-else-if="stt.isRecording.value" fill="white" class="size-3.5 text-white" />
-            <LucideMic v-else class="size-5 text-white" />
-        </BaseButton>
+            <!-- Inner dark field -->
+            <div class="flex h-full flex-1 items-center gap-2 rounded-[28px] border border-[#373737] bg-[#1c1c1c] px-3 sm:gap-3 sm:rounded-[35px] sm:px-4">
+                <!-- Recording pulse indicator -->
+                <span v-if="stt.isRecording.value" class="inline-block size-2 shrink-0 animate-pulse rounded-full bg-red-500" />
 
-        <PrimeInputText
-            v-model="inputText"
-            class="relative w-full rounded-full! border-gray-700! bg-gray-800! p-2.5! shadow-none! outline-none! focus:border-primary-600!"
-            :placeholder="stt.isRecording.value ? 'Listening...' : stt.isTranscribing.value ? 'Transcribing...' : 'What do you do?'"
-            :disabled="props.disabled || stt.isRecording.value || stt.isTranscribing.value"
-            @keydown="handleKeydown"
-        />
+                <PrimeInputText
+                    v-model="inputText"
+                    class="flex-1 border-none! bg-transparent! p-0! text-sm! text-white! shadow-none! outline-none! ring-0! placeholder:text-gray-500! sm:text-base!"
+                    :placeholder="stt.isRecording.value ? 'Listening...' : stt.isTranscribing.value ? 'Transcribing...' : 'What Do You Do?'"
+                    :disabled="props.disabled || stt.isRecording.value || stt.isTranscribing.value"
+                    @keydown="handleKeydown"
+                />
 
-        <!-- Recording pulse indicator -->
-        <div
-            v-if="stt.isRecording.value"
-            class="absolute top-1/2 left-14 z-10 flex -translate-y-1/2 items-center gap-1.5"
-        >
-            <span class="inline-block size-2 animate-pulse rounded-full bg-red-500"></span>
+                <!-- Right action: send arrow when text present, mic otherwise -->
+                <BaseButton
+                    v-if="hasText"
+                    severity="primary"
+                    :icon-only="true"
+                    class="size-9! shrink-0 sm:size-10!"
+                    type="button"
+                    @click="handleSubmit"
+                >
+                    <LucideArrowUp class="size-4 text-gray-900 sm:size-5" />
+                </BaseButton>
+                <BaseButton
+                    v-else
+                    severity="glass"
+                    :icon-only="true"
+                    class="size-9! shrink-0 sm:size-10!"
+                    type="button"
+                    @click="handleMicToggle"
+                >
+                    <LucideLoader v-if="stt.isTranscribing.value" class="size-5 animate-spin text-white" />
+                    <LucideSquare v-else-if="stt.isRecording.value" fill="white" class="size-3.5 text-white" />
+                    <LucideMic v-else class="size-5 text-gray-300" />
+                </BaseButton>
+            </div>
         </div>
-
-        <BaseButton
-            severity="primary"
-            :icon-only="true"
-            class="absolute! end-3.75 size-8!"
-            type="button"
-            @click="handleSubmit"
-        >
-            <LucideArrowUp class="size-6 text-gray-900" />
-        </BaseButton>
     </div>
 </template>
 
