@@ -80,7 +80,7 @@ const imageAlt = computed(() => {
             class="mood-hero__content relative z-[1] flex h-full w-full items-end"
         >
             <div class="container w-full pb-6 pt-10 md:pb-8 md:pt-12">
-                <div class="mx-auto w-full max-w-[64.6875rem]">
+                <div class="container-content">
                     <div class="flex max-w-[40rem] flex-col gap-2 md:gap-3">
                         <h2
                             class="mood-hero__title font-marcellus-sc uppercase text-white"

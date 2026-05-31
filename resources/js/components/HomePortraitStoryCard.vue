@@ -1,19 +1,26 @@
 <script setup lang="ts">
 import { show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, withDefaults } from 'vue';
 
-const props = defineProps<{
-    title: string;
-    cover: string;
-    themes: string[];
-    teaser?: string | null;
-    branches?: string | null;
-    playable: boolean;
-    slug?: string;
-    focused: boolean;
-    isDesktopHover: boolean;
-}>();
+const props = withDefaults(
+    defineProps<{
+        title: string;
+        cover: string;
+        themes: string[];
+        teaser?: string | null;
+        branches?: string | null;
+        playable: boolean;
+        slug?: string;
+        focused: boolean;
+        isDesktopHover: boolean;
+        /** Carousel hover reveal — disable in grid layouts. */
+        expandOnHover?: boolean;
+    }>(),
+    {
+        expandOnHover: true,
+    },
+);
 
 const emit = defineEmits<{ preview: [] }>();
 
@@ -31,7 +38,8 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming soon'));
         type="button"
         class="hp-card block border-0 bg-transparent p-0 text-left outline-none"
         :class="[
-            focused && 'hp-card--focused',
+            expandOnHover && focused && 'hp-card--focused',
+            !expandOnHover && 'hp-card--static',
             !isDesktopHover ? 'cursor-pointer' : storyUrl ? 'cursor-pointer no-underline' : 'cursor-default',
         ]"
         :aria-label="isDesktopHover && storyUrl ? `Open ${title}` : `Preview ${title}`"
@@ -45,7 +53,11 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming soon'));
 
                 <p class="hp-card__title">{{ title }}</p>
 
-                <div class="hp-card__reveal" :class="focused && 'hp-card__reveal--open'">
+                <div
+                    v-if="expandOnHover"
+                    class="hp-card__reveal"
+                    :class="focused && 'hp-card__reveal--open'"
+                >
                     <div class="hp-card__reveal-inner">
                         <div v-if="themes.length" class="hp-card__themes">
                             <template v-for="(theme, i) in themes" :key="theme">
@@ -226,6 +238,17 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming soon'));
 
     .hp-card--focused .hp-card__cover-img {
         transform: scale(1.05);
+    }
+
+    .hp-card--static:hover .hp-card__inner {
+        border-color: rgba(111, 175, 186, 0.45);
+        box-shadow:
+            0 10px 28px rgba(0, 0, 0, 0.45),
+            0 0 18px rgba(111, 175, 186, 0.18);
+    }
+
+    .hp-card--static:hover .hp-card__cover-img {
+        transform: scale(1.04);
     }
 }
 </style>
