@@ -65,24 +65,33 @@ const handleInputSubmit = (prompt: string) => {
                     <div
                         class="z-50 flex h-16 items-center justify-between gap-2 bg-linear-to-b from-gray-950 via-gray-950/60 to-transparent px-3 transition-all duration-300 sm:h-20 sm:gap-3 sm:px-4 lg:h-24 lg:px-8"
                     >
-                        <!-- Left: back + settings -->
+                        <!-- Left: back button (always) + settings (desktop only) -->
                         <div class="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
                             <BaseButton severity="glass" :icon-only="true" class="size-10! sm:size-11!" @click="$emit('back')">
                                 <LucideChevronLeft class="size-5 text-gray-50 sm:size-6" :stroke-width="1.75" />
                             </BaseButton>
-                            <BaseButton severity="glass" :icon-only="true" class="size-10! sm:size-11!" @click="toggleSettings">
+                            <BaseButton severity="glass" :icon-only="true" class="hidden size-10! sm:size-11! md:flex" @click="toggleSettings">
                                 <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
                                 <LucideSettings v-else class="size-5 text-secondary-300" />
                             </BaseButton>
                         </div>
 
-                        <!-- Center: media player (desktop header) -->
-                        <div class="hidden min-w-0 flex-1 justify-center lg:flex">
+                        <!-- Center: media player -->
+                        <div class="hidden min-w-0 flex-1 justify-center md:flex">
                             <GameplayMediaPlayer :collapsed="mediaCollapsed" />
                         </div>
 
-                        <!-- Right: audio / journal / characters -->
+                        <!-- Right: settings (mobile only) + audio / journal / characters -->
                         <div class="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
+                            <BaseButton
+                                severity="glass"
+                                :icon-only="true"
+                                class="size-11! md:hidden"
+                                @click="toggleSettings"
+                            >
+                                <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
+                                <LucideSettings v-else class="size-5 text-secondary-300" />
+                            </BaseButton>
                             <BaseButton
                                 severity="glass"
                                 :icon-only="true"
@@ -143,8 +152,12 @@ const handleInputSubmit = (prompt: string) => {
                 <!-- ── Bottom input ── -->
                 <div class="sticky right-0 bottom-0 left-0 z-20 w-full">
                     <div
-                        class="grid place-items-center bg-linear-to-t from-gray-950 via-gray-950/80 to-transparent px-3 pt-6 pb-4 sm:px-4 sm:pt-8 sm:pb-5 lg:px-8 lg:pt-10 lg:pb-6"
+                        class="flex flex-col items-center gap-3 bg-linear-to-t from-gray-950 via-gray-950/80 to-transparent px-3 pt-6 pb-4 sm:px-4 sm:pt-8 sm:pb-5 lg:px-8 lg:pt-10 lg:pb-6"
                     >
+                        <!-- Media player: mobile only (desktop lives in the topbar center) -->
+                        <div class="flex w-full justify-start md:hidden">
+                            <GameplayMediaPlayer :collapsed="mediaCollapsed" />
+                        </div>
                         <GameplayInput :disabled="props.inputDisabled" @submit="handleInputSubmit" />
                     </div>
                 </div>
