@@ -47,15 +47,15 @@ export const MOOD_BANNER_CONFIGS: Record<MoodId, MoodBannerConfig> = {
         banner: heartfeltBanner,
         label: 'Heartfelt',
         title: 'Heartfelt Stories',
-        subtitle: 'Stories centered on connection, loss, and hope.',
+        subtitle: 'Love. Loss. Hope.',
         objectPosition: 'center 35%',
     },
     adventurous: {
         mood: 'adventurous',
         banner: adventurousBanner,
         label: 'Adventurous',
-        title: 'Adventure Stories',
-        subtitle: 'Explore worlds filled with danger and discovery.',
+        title: 'Adventurous Stories',
+        subtitle: 'Discovery. Danger. Wonder.',
         objectPosition: 'center 40%',
     },
     mysterious: {
@@ -63,7 +63,7 @@ export const MOOD_BANNER_CONFIGS: Record<MoodId, MoodBannerConfig> = {
         banner: mysteriousBanner,
         label: 'Mysterious',
         title: 'Mysterious Stories',
-        subtitle: 'Secrets, shadows, and riddles that refuse to stay buried.',
+        subtitle: 'Secrets. Questions. Obsession.',
         objectPosition: 'center 45%',
     },
     epic: {
@@ -71,7 +71,7 @@ export const MOOD_BANNER_CONFIGS: Record<MoodId, MoodBannerConfig> = {
         banner: epicBanner,
         label: 'Epic',
         title: 'Epic Stories',
-        subtitle: 'High stakes, sweeping scale, and choices that echo forward.',
+        subtitle: 'Legends. Conflict. Destiny.',
         objectPosition: 'center 50%',
     },
     whimsical: {
@@ -79,7 +79,7 @@ export const MOOD_BANNER_CONFIGS: Record<MoodId, MoodBannerConfig> = {
         banner: whimsicalBanner,
         label: 'Whimsical',
         title: 'Whimsical Stories',
-        subtitle: 'Strange, playful worlds where logic takes a holiday.',
+        subtitle: 'Curiosity. Imagination. Delight.',
         objectPosition: 'center 40%',
     },
 };
