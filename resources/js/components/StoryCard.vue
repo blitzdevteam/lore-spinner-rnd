@@ -187,16 +187,16 @@ const metadataLine = computed(() => {
 }
 
 .story-card__btn--active {
-    background: var(--color-primary, #6fafba);
-    color: #0a1214;
+    background: var(--story-card-btn-bg);
+    color: var(--story-card-btn-text);
 }
 
 .story-card__btn--active:hover {
-    background: var(--color-primary-300, #8fcbd3);
+    background: var(--story-card-btn-bg-hover);
 }
 
 .story-card__btn--active:active {
-    background: var(--color-primary-600, #5a96a1);
+    background: var(--story-card-btn-bg-active);
 }
 
 .story-card__btn--disabled {

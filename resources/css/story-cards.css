@@ -15,4 +15,9 @@
     --story-card-meta-color: rgba(255, 255, 255, 0.48);
     --story-card-btn-height: 2.625rem;
     --story-card-btn-radius: 0.8125rem;
+    /** Teal slate primary — matches hero / BaseButton CTA fills */
+    --story-card-btn-bg: var(--color-cta-fill);
+    --story-card-btn-bg-hover: var(--color-cta-hover);
+    --story-card-btn-bg-active: var(--color-cta-active);
+    --story-card-btn-text: var(--color-cta-text);
 }
