@@ -308,8 +308,17 @@ function onImageError(): void {
 }
 
 .hb-card__cta--active {
-    background: var(--color-primary, #6fafba);
-    color: #0a1214;
+    background: var(--story-card-btn-bg);
+    color: var(--story-card-btn-text);
+    transition: background 180ms ease;
+}
+
+.hb-card__cta--active:hover {
+    background: var(--story-card-btn-bg-hover);
+}
+
+.hb-card__cta--active:active {
+    background: var(--story-card-btn-bg-active);
 }
 
 .hb-card__cta--disabled {
