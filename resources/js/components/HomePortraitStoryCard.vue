@@ -230,9 +230,17 @@ const metadataLine = computed(() => {
 }
 
 .hp-card__cta--active {
-    background: var(--color-primary, #6fafba);
-    color: #0a1214;
+    background: var(--story-card-btn-bg);
+    color: var(--story-card-btn-text);
     transition: background 180ms ease;
+}
+
+.hp-card__cta--active:hover {
+    background: var(--story-card-btn-bg-hover);
+}
+
+.hp-card__cta--active:active {
+    background: var(--story-card-btn-bg-active);
 }
 
 .hp-card__cta--disabled {
