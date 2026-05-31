@@ -61,34 +61,34 @@ const handleInputSubmit = (prompt: string) => {
     <div class="relative h-svh">
         <BaseBackgroundGradient />
         <div class="relative flex min-h-svh">
-            <div class="flex-1">
+            <div class="flex min-w-0 flex-1 flex-col">
                 <!-- ── Top header bar ── -->
                 <div class="sticky top-0 right-0 left-0 z-30 w-full">
                     <div
-                        class="z-50 flex h-20 items-center justify-between gap-3 bg-linear-to-b from-gray-950 via-gray-950/60 to-transparent px-4 transition-all duration-300 sm:px-8 md:h-24"
+                        class="z-50 flex h-16 items-center justify-between gap-2 bg-linear-to-b from-gray-950 via-gray-950/60 to-transparent px-3 transition-all duration-300 sm:h-20 sm:gap-3 sm:px-4 lg:h-24 lg:px-8"
                     >
                         <!-- Left: back + settings -->
-                        <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-                            <BaseButton severity="glass" :icon-only="true" class="size-11!" @click="$emit('back')">
-                                <LucideChevronLeft class="size-6 text-gray-50" :stroke-width="1.75" />
+                        <div class="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
+                            <BaseButton severity="glass" :icon-only="true" class="size-10! sm:size-11!" @click="$emit('back')">
+                                <LucideChevronLeft class="size-5 text-gray-50 sm:size-6" :stroke-width="1.75" />
                             </BaseButton>
-                            <BaseButton severity="glass" :icon-only="true" class="size-11!" @click="toggleSettings">
+                            <BaseButton severity="glass" :icon-only="true" class="size-10! sm:size-11!" @click="toggleSettings">
                                 <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
                                 <LucideSettings v-else class="size-5 text-secondary-300" />
                             </BaseButton>
                         </div>
 
-                        <!-- Center: media player -->
-                        <div class="flex min-w-0 flex-1 justify-center">
+                        <!-- Center: media player (desktop header) -->
+                        <div class="hidden min-w-0 flex-1 justify-center lg:flex">
                             <GameplayMediaPlayer :collapsed="mediaCollapsed" />
                         </div>
 
                         <!-- Right: audio / journal / characters -->
-                        <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+                        <div class="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
                             <BaseButton
                                 severity="glass"
                                 :icon-only="true"
-                                class="size-11!"
+                                class="size-10! sm:size-11!"
                                 @click="toggleMedia"
                             >
                                 <LucideAudioLines
@@ -99,7 +99,7 @@ const handleInputSubmit = (prompt: string) => {
                             <BaseButton
                                 severity="glass"
                                 :icon-only="true"
-                                class="size-11!"
+                                class="size-10! sm:size-11!"
                                 @click="openJournal('journals')"
                             >
                                 <LucideX v-if="activePanel === 'journal' && journalTab === 'journals'" class="size-5 text-secondary-300" />
@@ -108,7 +108,7 @@ const handleInputSubmit = (prompt: string) => {
                             <BaseButton
                                 severity="glass"
                                 :icon-only="true"
-                                class="size-11!"
+                                class="size-10! sm:size-11!"
                                 @click="openJournal('characters')"
                             >
                                 <LucideX v-if="activePanel === 'journal' && journalTab === 'characters'" class="size-5 text-secondary-300" />
@@ -118,9 +118,16 @@ const handleInputSubmit = (prompt: string) => {
                     </div>
                 </div>
 
+                <!-- ── Mobile / tablet media player (above input) ── -->
+                <div
+                    class="pointer-events-none fixed inset-x-0 bottom-[5.25rem] z-[25] flex justify-center px-3 sm:bottom-[5.75rem] sm:px-4 lg:hidden"
+                >
+                    <GameplayMediaPlayer :collapsed="mediaCollapsed" compact />
+                </div>
+
                 <!-- ── Scrolling content ── -->
                 <div
-                    class="z-5 mx-auto flex max-w-3xl flex-col px-4 pt-2 pb-40 transition-colors duration-300"
+                    class="z-5 mx-auto flex w-full max-w-3xl flex-col px-3 pt-1 pb-32 transition-colors duration-300 sm:px-4 sm:pt-2 sm:pb-36 lg:px-6 lg:pb-40"
                     :style="{ fontSize: settings.fontSize + 'px', color: settings.fontColor }"
                 >
                     <!-- Title + episode -->
@@ -129,7 +136,7 @@ const handleInputSubmit = (prompt: string) => {
                     </div>
 
                     <div :style="{ backgroundColor: settings.backgroundColor || undefined }">
-                        <div class="flex flex-col gap-8">
+                        <div class="flex flex-col gap-5 sm:gap-6 lg:gap-8">
                             <slot name="game" />
                         </div>
                     </div>
@@ -138,7 +145,7 @@ const handleInputSubmit = (prompt: string) => {
                 <!-- ── Bottom input ── -->
                 <div class="sticky right-0 bottom-0 left-0 z-20 w-full">
                     <div
-                        class="grid place-items-center bg-linear-to-t from-gray-950 via-gray-950/80 to-transparent px-4 pt-10 pb-6 md:px-0"
+                        class="grid place-items-center bg-linear-to-t from-gray-950 via-gray-950/80 to-transparent px-3 pt-6 pb-4 sm:px-4 sm:pt-8 sm:pb-5 lg:px-8 lg:pt-10 lg:pb-6"
                     >
                         <GameplayInput :disabled="props.inputDisabled" @submit="handleInputSubmit" />
                     </div>
@@ -146,18 +153,18 @@ const handleInputSubmit = (prompt: string) => {
             </div>
 
             <Transition name="backdrop-fade">
-                <div v-if="activePanel" class="fixed inset-0 z-40 bg-black/50 md:hidden" @click="activePanel = null" />
+                <div v-if="activePanel" class="fixed inset-0 z-40 bg-black/50 lg:hidden" @click="activePanel = null" />
             </Transition>
             <Transition name="sidebar-slide">
                 <!-- Journal panel -->
                 <div
                     v-if="activePanel === 'journal'"
                     key="journal"
-                    class="fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] max-w-sm flex-col overflow-hidden border-s border-gray-700 bg-gray-900 md:sticky md:right-auto md:z-0 md:w-md md:max-w-none md:shrink-0"
+                    class="fixed inset-y-0 right-0 z-50 flex h-svh w-[min(85vw,20rem)] flex-col overflow-hidden border-s border-gray-700 bg-gray-900 sm:w-[min(22rem,90vw)] lg:sticky lg:right-auto lg:z-0 lg:w-80 lg:max-w-none lg:shrink-0"
                 >
                     <div class="flex h-full w-full flex-col">
-                        <Tabs v-model:value="journalTab" class="flex h-full w-full flex-col px-4 md:px-8" :show-navigators="false" unstyled>
-                            <TabList pt:tab-list="h-20 flex items-center gap-4 md:h-24 shrink-0" pt:content="" pt:active-bar="hidden">
+                        <Tabs v-model:value="journalTab" class="flex h-full w-full flex-col px-4 lg:px-8" :show-navigators="false" unstyled>
+                            <TabList pt:tab-list="h-16 flex items-center gap-3 sm:h-20 sm:gap-4 lg:h-24 shrink-0" pt:content="" pt:active-bar="hidden">
                                 <Tab class="flex-1" value="journals" v-slot="slotProps" as-child>
                                     <BaseButton
                                         @click="slotProps.onClick"
@@ -196,9 +203,9 @@ const handleInputSubmit = (prompt: string) => {
                 <div
                     v-else-if="activePanel === 'settings'"
                     key="settings"
-                    class="fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] max-w-sm flex-col overflow-y-auto border-s border-gray-700 bg-gray-900 md:sticky md:right-auto md:z-0 md:w-sm md:max-w-none md:shrink-0"
+                    class="fixed inset-y-0 right-0 z-50 flex h-svh w-[min(85vw,20rem)] flex-col overflow-y-auto border-s border-gray-700 bg-gray-900 sm:w-[min(22rem,90vw)] lg:sticky lg:right-auto lg:z-0 lg:w-72 lg:max-w-none lg:shrink-0"
                 >
-                    <div class="flex h-full w-full flex-col px-6 pt-8">
+                    <div class="flex h-full w-full flex-col px-4 pt-6 sm:px-6 sm:pt-8">
                         <GameplaySettingsPanel :game-id="props.gameId" />
                     </div>
                 </div>

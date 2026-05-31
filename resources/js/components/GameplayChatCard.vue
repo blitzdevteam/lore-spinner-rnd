@@ -66,7 +66,8 @@ const showChoicesAndActions = computed(() => {
 });
 
 const getChoiceClass = (choice: string) => {
-    const base = 'flex h-[60px] items-center gap-2.5 rounded-lg border px-2 py-1 transition-all duration-300';
+    const base =
+        'flex min-h-[52px] items-center gap-2 rounded-lg border px-2 py-2 transition-all duration-300 sm:min-h-[60px] sm:gap-2.5 sm:py-1';
 
     if (!effectiveSelection.value) {
         return `${base} border-[#373737] text-white cursor-pointer hover:border-[#00c6de] hover:bg-[#00c6de]/5`;
@@ -125,11 +126,11 @@ watch(
 </script>
 
 <template>
-    <div class="flex flex-col gap-5">
+    <div class="flex flex-col gap-4 sm:gap-5">
         <!-- ── Narration card ── -->
         <div
             v-if="prompt.response"
-            class="narration-card rounded-[14px] border-[0.5px] border-[#999] bg-gray-950 p-5"
+            class="narration-card rounded-xl border-[0.5px] border-[#999] bg-gray-950 p-4 sm:rounded-[14px] sm:p-5"
             @click="handleNarrationClick"
         >
             <div
@@ -149,10 +150,13 @@ watch(
         </div>
 
         <!-- ── Listen Again + Continue ── -->
-        <div v-if="prompt.response && showChoicesAndActions" class="flex flex-wrap items-center gap-2">
+        <div
+            v-if="prompt.response && showChoicesAndActions"
+            class="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center"
+        >
             <button
                 type="button"
-                class="narration-action-pill bg-glass-effect flex h-[50px] items-center gap-2 overflow-hidden rounded-full p-1.5 pe-5"
+                class="narration-action-pill bg-glass-effect flex h-[50px] w-full min-w-0 items-center gap-2 overflow-hidden rounded-full p-1.5 pe-4 sm:w-auto sm:pe-5"
                 @click="handleListenAgain"
             >
                 <span class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-primary-400">
@@ -160,7 +164,7 @@ watch(
                     <LucidePause v-else-if="isThisPlaying" class="size-4" fill="currentColor" />
                     <LucidePlay v-else class="size-4" fill="currentColor" />
                 </span>
-                <span class="flex flex-col items-start leading-tight">
+                <span class="flex min-w-0 flex-col items-start leading-tight">
                     <span class="text-sm text-primary-400">Listen Again</span>
                     <span class="text-xs font-light text-[#7e7e7e]">Replay Narration</span>
                 </span>
@@ -169,14 +173,15 @@ watch(
             <button
                 v-if="showContinueButton"
                 type="button"
-                class="narration-action-pill bg-glass-effect flex h-[50px] items-center gap-2 overflow-hidden rounded-full p-1.5 pe-5"
+                class="narration-action-pill bg-glass-effect flex h-[50px] w-full min-w-0 items-center gap-2 overflow-hidden rounded-full p-1.5 pe-4 sm:w-auto sm:pe-5"
                 @click="handleContinue"
             >
                 <span class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-white">
                     <GameplayContinueIcon />
                 </span>
-                <span class="flex flex-col items-start leading-tight">
-                    <span class="text-sm text-primary-400">Continue: Hear What Happens Next</span>
+                <span class="flex min-w-0 flex-col items-start leading-tight">
+                    <span class="text-sm text-primary-400 sm:hidden">Continue</span>
+                    <span class="hidden text-sm text-primary-400 sm:inline">Continue: Hear What Happens Next</span>
                     <span class="text-xs font-light text-[#7e7e7e]">No Choice Right Now</span>
                 </span>
             </button>
@@ -207,7 +212,7 @@ watch(
                         v-else
                         class="size-7 shrink-0 rounded-full border border-gray-500"
                     />
-                    <p class="text-[15px] font-normal">{{ choice }}</p>
+                    <p class="text-sm font-normal sm:text-[15px]">{{ choice }}</p>
                 </div>
             </div>
 

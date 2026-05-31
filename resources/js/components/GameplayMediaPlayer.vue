@@ -12,7 +12,10 @@ import {
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 
-const props = withDefaults(defineProps<{ collapsed?: boolean }>(), { collapsed: false });
+const props = withDefaults(defineProps<{ collapsed?: boolean; compact?: boolean }>(), {
+    collapsed: false,
+    compact: false,
+});
 
 const tts = useTextToSpeech();
 
@@ -39,24 +42,29 @@ const onVolumeInput = (event: Event) => {
     <Transition name="player-slide">
         <div
             v-if="tts.isActive.value && !props.collapsed"
-            class="player-bar pointer-events-auto relative flex items-center gap-2 overflow-hidden rounded-full px-2 py-2 backdrop-blur-md sm:gap-2.5 sm:px-2.5"
+            class="player-bar pointer-events-auto relative flex max-w-full items-center gap-1.5 overflow-hidden rounded-full px-1.5 py-1.5 backdrop-blur-md sm:gap-2 sm:px-2 sm:py-2 lg:gap-2.5 lg:px-2.5"
+            :class="props.compact ? 'w-full justify-center' : ''"
         >
             <!-- Play / Pause -->
             <button
-                class="player-icon-btn bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-primary-400"
+                class="player-icon-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-primary-400"
+                :class="props.compact ? 'size-8' : 'size-9'"
                 @click="tts.togglePause"
             >
-                <LucidePause v-if="tts.isPlaying.value" class="size-4" fill="currentColor" />
-                <LucidePlay v-else class="size-4" fill="currentColor" />
+                <LucidePause v-if="tts.isPlaying.value" class="size-3.5 sm:size-4" fill="currentColor" />
+                <LucidePlay v-else class="size-3.5 sm:size-4" fill="currentColor" />
             </button>
 
             <!-- Time -->
-            <span class="min-w-12 text-base font-medium tabular-nums text-primary-400">
+            <span
+                class="shrink-0 font-medium tabular-nums text-primary-400"
+                :class="props.compact ? 'min-w-10 text-sm' : 'min-w-12 text-base'"
+            >
                 {{ tts.formattedCurrentTime.value }}
             </span>
 
             <!-- Mute + volume slider -->
-            <div class="hidden items-center gap-2 sm:flex">
+            <div v-if="!props.compact" class="hidden items-center gap-2 md:flex">
                 <button
                     class="player-icon-btn grid size-7 shrink-0 place-items-center rounded-full"
                     :class="isVolumeMuted ? 'text-primary-400' : 'text-gray-300'"
@@ -82,19 +90,20 @@ const onVolumeInput = (event: Event) => {
                 />
             </div>
 
-            <span class="hidden h-6 w-px bg-white/15 sm:block" />
+            <span v-if="!props.compact" class="hidden h-6 w-px bg-white/15 md:block" />
 
             <!-- Loop -->
             <button
-                class="player-icon-btn bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full"
-                :class="tts.isLooping.value ? 'text-primary-400' : 'text-gray-300'"
+                class="player-icon-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full"
+                :class="[tts.isLooping.value ? 'text-primary-400' : 'text-gray-300', props.compact ? 'size-8' : 'size-9']"
                 @click="tts.toggleLoop"
             >
-                <LucideRepeat class="size-4" />
+                <LucideRepeat class="size-3.5 sm:size-4" />
             </button>
 
             <!-- Skip back 15s -->
             <button
+                v-if="!props.compact"
                 class="player-icon-btn bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300"
                 @click="tts.seekBy(-15)"
             >
@@ -104,6 +113,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip forward 15s -->
             <button
+                v-if="!props.compact"
                 class="player-icon-btn bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300"
                 @click="tts.seekBy(15)"
             >
@@ -113,10 +123,11 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Close -->
             <button
-                class="player-icon-btn bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-gray-300"
+                class="player-icon-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-gray-300"
+                :class="props.compact ? 'size-8' : 'size-9'"
                 @click="tts.dismiss"
             >
-                <LucideX class="size-4" />
+                <LucideX class="size-3.5 sm:size-4" />
             </button>
         </div>
     </Transition>

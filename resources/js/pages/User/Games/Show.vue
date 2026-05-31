@@ -284,8 +284,8 @@ onMounted(() => {
     <!-- ── Gameplay phase ── -->
     <GameplayLayout v-else :input-disabled="!canSubmitInput" :game-id="game.id" @submit="handleSubmit" @back="handleBack">
         <template #header>
-            <div class="flex flex-col items-center gap-3 pb-4 pt-2">
-                <h1 class="text-center text-2xl font-semibold text-white md:text-[28px]">
+            <div class="flex flex-col items-center gap-2 px-1 pb-3 pt-1 sm:gap-3 sm:pb-4 sm:pt-2">
+                <h1 class="text-center text-xl font-semibold leading-tight text-white sm:text-2xl lg:text-[28px]">
                     {{ game.story?.title ?? 'Adventure' }}
                 </h1>
                 <GameplayOrnamentDivider

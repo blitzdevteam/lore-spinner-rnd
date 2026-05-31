@@ -9,11 +9,11 @@ withDefaults(
 </script>
 
 <template>
-    <div class="flex w-full items-center justify-center gap-2">
+    <div class="flex w-full items-center justify-center gap-1.5 sm:gap-2">
         <span class="ornament-line" :style="{ '--ornament-color': color }" />
         <span class="ornament-diamond" :style="{ backgroundColor: color }" />
         <span
-            class="shrink-0 whitespace-nowrap text-center text-base font-normal tracking-wide"
+            class="shrink-0 px-1 text-center text-sm font-normal tracking-wide sm:whitespace-nowrap sm:px-0 sm:text-base"
             :style="{ color }"
         >
             {{ label }}
@@ -27,7 +27,7 @@ withDefaults(
 .ornament-line {
     height: 1px;
     flex: 1 1 0;
-    max-width: 232px;
+    max-width: min(232px, 28vw);
     background: linear-gradient(to right, transparent, color-mix(in srgb, var(--ornament-color) 55%, transparent));
 }
 
