@@ -59,8 +59,8 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         slug: 'the-adventure-of-the-speckled-band',
         image: sherlockImage,
         imagePosition: 'object-[60%_top] md:object-top',
-        titleLines: ['The Adventure of', 'the Speckled Band'],
-        fallbackTitle: 'The Adventure of the Speckled Band',
+        titleLines: ['Sherlock Holmes', 'In The Speckled Band'],
+        fallbackTitle: 'Sherlock Holmes in The Speckled Band',
         teaserLines: [
             'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning.',
             'Holmes and Watson must unravel the mystery before the speckled band strikes again.',
@@ -691,7 +691,7 @@ function goNext() {
 @media (min-width: 64rem) {
     .hero-title {
         font-size: 3rem;
-        line-height: 5rem;
+        line-height: 1.08;
     }
 }
 

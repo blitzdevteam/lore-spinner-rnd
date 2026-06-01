@@ -1,10 +1,13 @@
 /**
  * Shared home story carousel — track layout + arrow alignment.
- * Arrows center on the card row (not section headers or poster-only height).
+ * Track stays flush with section headers; arrows sit on the viewport edges
+ * (half outside) and align to the vertical center of the resting card.
  */
 .story-slider-viewport {
     --story-track-pad-top: 0.75rem;
     --story-track-pad-bottom: 1rem;
+    --story-slider-arrow-gap: 0.75rem;
+    --story-slider-arrow-size: 2.125rem;
     margin-block: -0.75rem;
 }
 
@@ -16,9 +19,89 @@
     }
 }
 
+.story-slider-viewport--portrait {
+    --story-portrait-card-width: min(12rem, 78vw);
+    --story-slider-cover-height: calc(var(--story-portrait-card-width) * 3 / 2);
+    --story-slider-card-height: calc(
+        var(--story-slider-cover-height) + var(--story-card-rest-body-height)
+    );
+}
+
+@media (min-width: 768px) {
+    .story-slider-viewport--portrait {
+        --story-portrait-card-width: 12rem;
+        --story-slider-cover-height: 18rem;
+    }
+}
+
+.story-slider-viewport--banner {
+    --story-banner-card-width: min(28.125rem, 78vw);
+    --story-slider-cover-height: calc(var(--story-banner-card-width) * 9 / 16);
+    --story-slider-card-height: calc(
+        var(--story-slider-cover-height) + var(--story-card-rest-body-height)
+    );
+}
+
+@media (min-width: 768px) {
+    .story-slider-viewport--banner {
+        --story-banner-card-width: 28.125rem;
+        --story-slider-cover-height: calc(28.125rem * 9 / 16);
+    }
+}
+
+.story-slider-row {
+    position: relative;
+    width: 100%;
+}
+
+.story-slider-wrap {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    overflow: visible;
+}
+
 .story-slider {
+    position: relative;
+    z-index: 0;
     scrollbar-width: none;
     -ms-overflow-style: none;
+}
+
+/* Edge fades sit above the scrollport so card z-index does not cover them */
+.story-slider-edge-fade {
+    pointer-events: none;
+    position: absolute;
+    inset-block: 0;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+
+.story-slider-edge-fade.is-visible {
+    opacity: 1;
+}
+
+.story-slider-edge-fade--left {
+    left: 0;
+    width: 1.5rem;
+    background: linear-gradient(to right, rgb(0 0 0 / 0.7), transparent);
+}
+
+.story-slider-edge-fade--right {
+    right: 0;
+    width: 3rem;
+    background: linear-gradient(to left, rgb(0 0 0), transparent);
+}
+
+@media (min-width: 768px) {
+    .story-slider-edge-fade--left {
+        width: 2rem;
+    }
+
+    .story-slider-edge-fade--right {
+        width: 4rem;
+    }
 }
 
 .story-slider::-webkit-scrollbar {
@@ -30,7 +113,7 @@
     display: flex;
     align-items: flex-start;
     gap: 0.625rem;
-    padding: var(--story-track-pad-top) 0.25rem var(--story-track-pad-bottom);
+    padding: var(--story-track-pad-top) 0 var(--story-track-pad-bottom);
 }
 
 /* Subtle carousel-region vignette when a card is hovered — not a page overlay */
@@ -41,30 +124,33 @@
     transition: box-shadow 220ms ease;
 }
 
-@media (min-width: 1024px) {
-    .story-slider-track {
-        padding-inline: 1rem;
-    }
-}
-
 .story-slider-arrow {
     position: absolute;
+    top: 0;
     z-index: 10;
     display: none;
-    width: 2.125rem;
-    height: 2.125rem;
+    width: var(--story-slider-arrow-size);
+    height: var(--story-slider-arrow-size);
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.08);
     transition: background 0.2s;
-    /*
-     * Center on the card track: offset viewport midpoint for asymmetric
-     * track padding (extra bottom space reserved for hover expansion).
-     */
-    top: calc(50% + (var(--story-track-pad-top) - var(--story-track-pad-bottom)) / 2);
-    transform: translateY(-50%);
+    margin-top: calc(
+        var(--story-track-pad-top) + var(--story-slider-card-height) / 2 -
+            var(--story-slider-arrow-size) / 2
+    );
+}
+
+.story-slider-row > .story-slider-arrow:first-child {
+    left: 0;
+    transform: translateX(-50%);
+}
+
+.story-slider-row > .story-slider-arrow:last-child {
+    right: 0;
+    transform: translateX(50%);
 }
 
 @media (min-width: 768px) {
@@ -75,16 +161,4 @@
 
 .story-slider-arrow:hover {
     background: rgba(255, 255, 255, 0.15);
-}
-
-.story-slider-arrow--edge-left {
-    left: 0;
-    transform: translate(-50%, -50%);
-    top: calc(50% + (var(--story-track-pad-top) - var(--story-track-pad-bottom)) / 2);
-}
-
-.story-slider-arrow--edge-right {
-    right: 0;
-    transform: translate(50%, -50%);
-    top: calc(50% + (var(--story-track-pad-top) - var(--story-track-pad-bottom)) / 2);
 }

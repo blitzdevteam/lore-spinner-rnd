@@ -21,7 +21,7 @@ const props = defineProps<{
 }>();
 
 const sliderEl = ref<HTMLElement | null>(null);
-const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
+const { leftShadowVisible, rightShadowVisible, updateShadows } = useSliderEdgeShadows(sliderEl);
 
 const isDesktopHover = useDesktopStoryPreview();
 const { onCardEnter, onCardLeave, isExpanded, isDimmed, hoveredId } = useStoryCardExpand(isDesktopHover);
@@ -76,6 +76,8 @@ function scrollSlider(direction: -1 | 1): void {
     const step = card ? card.offsetWidth + gap : 460;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });
+    updateShadows();
+    requestAnimationFrame(updateShadows);
 }
 </script>
 
@@ -90,71 +92,74 @@ function scrollSlider(direction: -1 | 1): void {
                 />
 
                 <div
-                    class="story-slider-viewport relative overflow-visible"
+                    class="story-slider-viewport story-slider-viewport--banner relative overflow-visible"
                     :class="isDesktopHover && hoveredId !== null && 'story-slider-viewport--cinema'"
                 >
-                    <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
-                        :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
-                        aria-hidden="true"
-                    />
-                    <div
-                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent transition-opacity duration-300 md:w-16"
-                        :class="rightShadowVisible ? 'opacity-100' : 'opacity-0'"
-                        aria-hidden="true"
-                    />
+                    <div class="story-slider-row">
+                        <button
+                            type="button"
+                            class="story-slider-arrow"
+                            aria-label="Scroll top picks left"
+                            @click="scrollSlider(-1)"
+                        >
+                            <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
+                                <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
 
-                    <button
-                        type="button"
-                        class="story-slider-arrow absolute -left-4"
-                        aria-label="Scroll top picks left"
-                        @click="scrollSlider(-1)"
-                    >
-                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
-                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-
-                    <div ref="sliderEl" class="story-slider overflow-x-auto">
-                        <div class="story-slider-track">
-                            <StoryExpandableCard
-                                v-for="story in topPickStories"
-                                :key="story.id"
-                                class="w-[min(28.125rem,78vw)] md:w-[28.125rem]"
-                                :expanded="isExpanded(String(story.id))"
-                                :dimmed="isDimmed(String(story.id))"
-                                :desktop-expand="isDesktopHover"
-                                @mouseenter="isDesktopHover && onCardEnter(String(story.id))"
-                                @mouseleave="isDesktopHover && onCardLeave()"
-                            >
-                                <HomeBannerStoryCard
-                                    :title="story.title"
-                                    :cover="story.cover"
-                                    :category="categoryForStory(story)"
-                                    :rating="ratingForStory(story)"
-                                    :mood="moodLabel"
-                                    :themes="themesForStory(story)"
-                                    :teaser="story.teaser"
-                                    :branches="branchesForStory(story)"
-                                    :playable="isPlayable(story)"
-                                    :slug="story.slug"
-                                    :focused="isDesktopHover && isExpanded(String(story.id))"
-                                    :is-desktop-hover="isDesktopHover"
-                                />
-                            </StoryExpandableCard>
+                        <div class="story-slider-wrap">
+                            <div ref="sliderEl" class="story-slider overflow-x-auto">
+                                <div class="story-slider-track">
+                                    <StoryExpandableCard
+                                        v-for="story in topPickStories"
+                                        :key="story.id"
+                                        class="w-[min(28.125rem,78vw)] md:w-[28.125rem]"
+                                        :expanded="isExpanded(String(story.id))"
+                                        :dimmed="isDimmed(String(story.id))"
+                                        :desktop-expand="isDesktopHover"
+                                        @mouseenter="isDesktopHover && onCardEnter(String(story.id))"
+                                        @mouseleave="isDesktopHover && onCardLeave()"
+                                    >
+                                        <HomeBannerStoryCard
+                                            :title="story.title"
+                                            :cover="story.cover"
+                                            :category="categoryForStory(story)"
+                                            :rating="ratingForStory(story)"
+                                            :mood="moodLabel"
+                                            :themes="themesForStory(story)"
+                                            :teaser="story.teaser"
+                                            :branches="branchesForStory(story)"
+                                            :playable="isPlayable(story)"
+                                            :slug="story.slug"
+                                            :focused="isDesktopHover && isExpanded(String(story.id))"
+                                            :is-desktop-hover="isDesktopHover"
+                                        />
+                                    </StoryExpandableCard>
+                                </div>
+                            </div>
+                            <div
+                                class="story-slider-edge-fade story-slider-edge-fade--left"
+                                :class="{ 'is-visible': leftShadowVisible }"
+                                aria-hidden="true"
+                            />
+                            <div
+                                class="story-slider-edge-fade story-slider-edge-fade--right"
+                                :class="{ 'is-visible': rightShadowVisible }"
+                                aria-hidden="true"
+                            />
                         </div>
-                    </div>
 
-                    <button
-                        type="button"
-                        class="story-slider-arrow absolute -right-4"
-                        aria-label="Scroll top picks right"
-                        @click="scrollSlider(1)"
-                    >
-                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
+                        <button
+                            type="button"
+                            class="story-slider-arrow"
+                            aria-label="Scroll top picks right"
+                            @click="scrollSlider(1)"
+                        >
+                            <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

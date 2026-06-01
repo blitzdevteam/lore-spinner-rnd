@@ -36,7 +36,7 @@ withDefaults(
         <!-- Story Changes With You -->
         <StoryChangesWithYou />
 
-        <!-- Featured Worlds -->
+        <!-- New Stories -->
         <FeaturedWorldsGames :story-count="stories.length" />
 
         <!-- Xen Banner -->
@@ -45,7 +45,7 @@ withDefaults(
         <!-- Explore by Mood -->
         <ExploreByMood :story-count="stories.length" />
 
-        <!-- New Stories -->
+        <!-- Featured Worlds -->
         <NewStoriesBanners :story-count="stories.length" />
 
         <ComingSoonBanners :story-count="stories.length" />
