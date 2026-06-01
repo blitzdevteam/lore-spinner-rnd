@@ -196,7 +196,7 @@ const handleInputSubmit = (prompt: string) => {
                 <div
                     v-if="activePanel === 'journal'"
                     key="journal"
-                    class="fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] max-w-sm flex-col overflow-hidden border-s border-gray-700 bg-gray-900 md:sticky md:right-auto md:z-0 md:w-md md:max-w-none md:shrink-0"
+                    class="fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] max-w-sm flex-col overflow-hidden border-s border-gray-700 bg-gray-900 md:sticky md:right-auto md:z-50 md:w-md md:max-w-none md:shrink-0"
                 >
                     <div class="flex h-full w-full flex-col">
                         <Tabs v-model:value="journalTab" class="flex h-full w-full flex-col px-4 md:px-8" :show-navigators="false" unstyled>
@@ -239,7 +239,7 @@ const handleInputSubmit = (prompt: string) => {
                 <div
                     v-else-if="activePanel === 'settings'"
                     key="settings"
-                    class="fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] max-w-sm flex-col overflow-y-auto border-s border-gray-700 bg-gray-900 md:sticky md:right-auto md:z-0 md:w-sm md:max-w-none md:shrink-0"
+                    class="fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] max-w-sm flex-col overflow-y-auto border-s border-gray-700 bg-gray-900 md:sticky md:right-auto md:z-50 md:w-sm md:max-w-none md:shrink-0"
                 >
                     <div class="flex h-full w-full flex-col px-6 pt-8">
                         <GameplaySettingsPanel :game-id="props.gameId" />
