@@ -75,9 +75,11 @@ function scrollSlider(direction: -1 | 1) {
     const step = card ? card.offsetWidth + gap : 214;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });
+    updateShadows();
+    requestAnimationFrame(updateShadows);
 }
 
-const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
+const { leftShadowVisible, rightShadowVisible, updateShadows } = useSliderEdgeShadows(sliderEl);
 
 const isDesktopHover = useDesktopStoryPreview();
 const { onCardEnter, onCardLeave, isExpanded, isDimmed } = useStoryCardExpand(isDesktopHover);
@@ -101,7 +103,7 @@ function openSheet(card: ComingSoonCard) {
 </script>
 
 <template>
-    <section class="overflow-visible pt-10 pb-2 md:pt-[3.75rem]">
+    <section class="home-section-y overflow-visible !pb-2 md:!pb-2">
         <div class="container">
             <div class="container-content home-section-gap">
                 <SectionHeader
@@ -111,64 +113,67 @@ function openSheet(card: ComingSoonCard) {
                     :count="storyCount"
                 />
 
-                <div class="story-slider-viewport relative overflow-visible">
-                    <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
-                        :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
-                        aria-hidden="true"
-                    />
-                    <div
-                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent transition-opacity duration-300 md:w-16"
-                        :class="rightShadowVisible ? 'opacity-100' : 'opacity-0'"
-                        aria-hidden="true"
-                    />
+                <div class="story-slider-viewport story-slider-viewport--portrait relative overflow-visible">
+                    <div class="story-slider-row">
+                        <button
+                            type="button"
+                            class="story-slider-arrow"
+                            aria-label="Scroll left"
+                            @click="scrollSlider(-1)"
+                        >
+                            <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
+                                <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
 
-                    <button
-                        type="button"
-                        class="story-slider-arrow absolute -left-4"
-                        aria-label="Scroll left"
-                        @click="scrollSlider(-1)"
-                    >
-                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
-                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-
-                    <div ref="sliderEl" class="story-slider overflow-x-auto md:ml-[1.0625rem]">
-                        <div class="story-slider-track">
-                            <StoryExpandableCard
-                                v-for="card in cards"
-                                :key="card.id"
-                                :expanded="isExpanded(card.id)"
-                                :dimmed="isDimmed(card.id)"
-                                :desktop-expand="isDesktopHover"
-                                @mouseenter="isDesktopHover && onCardEnter(card.id)"
-                                @mouseleave="isDesktopHover && onCardLeave()"
-                            >
-                                <HomePortraitStoryCard
-                                    :title="card.title"
-                                    :cover="card.cover"
-                                    :themes="card.themes"
-                                    :teaser="card.teaser"
-                                    :playable="false"
-                                    :focused="isDesktopHover && isExpanded(card.id)"
-                                    :is-desktop-hover="isDesktopHover"
-                                    @preview="openSheet(card)"
-                                />
-                            </StoryExpandableCard>
+                        <div class="story-slider-wrap">
+                            <div ref="sliderEl" class="story-slider overflow-x-auto">
+                                <div class="story-slider-track">
+                                    <StoryExpandableCard
+                                        v-for="card in cards"
+                                        :key="card.id"
+                                        :expanded="isExpanded(card.id)"
+                                        :dimmed="isDimmed(card.id)"
+                                        :desktop-expand="isDesktopHover"
+                                        @mouseenter="isDesktopHover && onCardEnter(card.id)"
+                                        @mouseleave="isDesktopHover && onCardLeave()"
+                                    >
+                                        <HomePortraitStoryCard
+                                            :title="card.title"
+                                            :cover="card.cover"
+                                            :themes="card.themes"
+                                            :teaser="card.teaser"
+                                            :playable="false"
+                                            :focused="isDesktopHover && isExpanded(card.id)"
+                                            :is-desktop-hover="isDesktopHover"
+                                            @preview="openSheet(card)"
+                                        />
+                                    </StoryExpandableCard>
+                                </div>
+                            </div>
+                            <div
+                                class="story-slider-edge-fade story-slider-edge-fade--left"
+                                :class="{ 'is-visible': leftShadowVisible }"
+                                aria-hidden="true"
+                            />
+                            <div
+                                class="story-slider-edge-fade story-slider-edge-fade--right"
+                                :class="{ 'is-visible': rightShadowVisible }"
+                                aria-hidden="true"
+                            />
                         </div>
-                    </div>
 
-                    <button
-                        type="button"
-                        class="story-slider-arrow absolute -right-4"
-                        aria-label="Scroll right"
-                        @click="scrollSlider(1)"
-                    >
-                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
+                        <button
+                            type="button"
+                            class="story-slider-arrow"
+                            aria-label="Scroll right"
+                            @click="scrollSlider(1)"
+                        >
+                            <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

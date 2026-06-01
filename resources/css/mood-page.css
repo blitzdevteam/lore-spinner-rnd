@@ -56,14 +56,12 @@
     padding-inline: 0;
 }
 
-.mood-page-flow .story-slider-arrow {
-    top: calc(var(--story-track-pad-top) + var(--mood-banner-cover-height, 9.84375rem) / 2);
-    transform: translateY(-50%);
-}
-
 .mood-page-flow .story-slider-viewport {
     --mood-banner-card-width: min(28.125rem, 78vw);
     --mood-banner-cover-height: calc(var(--mood-banner-card-width) * 262 / 450);
+    --story-slider-card-height: calc(
+        var(--mood-banner-cover-height) + var(--story-card-rest-body-height)
+    );
 }
 
 @media (min-width: 768px) {

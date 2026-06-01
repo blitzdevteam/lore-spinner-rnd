@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import BaseButton from '@/components/BaseButton.vue';
 import { logout } from '@/wayfinder/routes/user/authentication';
 import login from '@/wayfinder/routes/user/authentication/login';
 import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronRight, LucideUpload, X } from 'lucide-vue-next';
+import { onClickOutside } from '@vueuse/core';
 import { computed, ref } from 'vue';
 
-// inheritAttrs must be false so we can manually forward $attrs (class / style)
-// to the correct root element. Without this, Vue silently drops attrs on
-// fragment-root components (Teleport + button), causing responsive classes
-// like "hidden md:block" to have no effect and both avatar instances to show.
 defineOptions({ inheritAttrs: false });
 
 withDefaults(
@@ -25,7 +20,12 @@ const page = usePage();
 
 const auth = computed(() => page.props.auth);
 
-const profileDrawerVisibility = ref(false);
+const profileWrap = ref<HTMLElement | null>(null);
+const dropdownOpen = ref(false);
+
+onClickOutside(profileWrap, () => {
+    dropdownOpen.value = false;
+});
 </script>
 
 <template>
@@ -39,110 +39,53 @@ const profileDrawerVisibility = ref(false);
         </Link>
     </template>
     <template v-else>
-        <Teleport to="body">
-            <PrimeDrawer v-model:visible="profileDrawerVisibility" position="right" class="!w-full max-w-108" :show-close-icon="false">
-                <template #container="{ closeCallback }">
-                    <div class="h-full overflow-y-auto">
-                        <div class="flex flex-col gap-8 py-8">
-                            <div class="flex items-center gap-4 px-8">
-                                <div class="size-10"></div>
-                                <div class="flex flex-1 items-center justify-center">
-                                    <h3 class="text-xl font-normal text-white">Profile</h3>
-                                </div>
-                                <button
-                                    @click="closeCallback"
-                                    class="grid size-10 cursor-pointer place-items-center rounded-full transition hover:bg-gray-950"
-                                >
-                                    <X class="size-6 text-white" />
-                                </button>
-                            </div>
-                            <div class="flex flex-1 flex-col gap-6 px-8">
-                                <div class="flex flex-col gap-4 rounded-xl border border-gray-700/75 bg-white/5 p-4">
-                                    <div class="flex items-center gap-4">
-                                        <div class="flex flex-1 items-center gap-3">
-                                            <img :src="auth.avatar" alt="" class="size-13 rounded-full" />
-                                            <div class="flex flex-col">
-                                                <p class="text-lg font-medium">{{ auth.full_name }}</p>
-                                                <span class="text-sm text-gray-300">@{{ auth.username }}</span>
-                                            </div>
-                                        </div>
-                                        <BaseButton severity="muted">
-                                            <div class="flex items-center gap-2 text-primary-400">
-                                                <LucideUpload :stroke-width="2" class="size-4" />
-                                                <p class="text-sm font-normal">Upload Image</p>
-                                            </div>
-                                        </BaseButton>
-                                    </div>
-                                </div>
-                                <h6 class="text-lg text-white">Settings</h6>
-                                <div class="flex flex-col rounded-xl border border-gray-700/75 bg-white/5">
-                                    <ul class="divide divide-y divide-gray-700/75">
-                                        <li>
-                                            <Link href="#" class="flex items-center justify-between p-4 text-white transition-all hover:px-6">
-                                                <p class="text-sm font-normal">Achievement</p>
-                                                <ChevronRight class="size-5" :stroke-width="2" />
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="#" class="flex items-center justify-between p-4 text-white transition-all hover:px-6">
-                                                <p class="text-sm font-normal">Activity</p>
-                                                <ChevronRight class="size-5" :stroke-width="2" />
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="#" class="flex items-center justify-between p-4 text-white transition-all hover:px-6">
-                                                <p class="text-sm font-normal">Account</p>
-                                                <ChevronRight class="size-5" :stroke-width="2" />
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <h6 class="text-lg text-white">Other</h6>
-                                <div class="flex flex-col rounded-xl border border-gray-700/75 bg-white/5">
-                                    <ul class="divide divide-y divide-gray-700/75">
-                                        <li>
-                                            <Link href="#" class="flex items-center justify-between p-4 text-white transition-all hover:px-6">
-                                                <p class="text-sm font-normal">Invite Friends</p>
-                                                <ChevronRight class="size-5" :stroke-width="2" />
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="#" class="flex items-center justify-between p-4 text-white transition-all hover:px-6">
-                                                <p class="text-sm font-normal">Help & Support</p>
-                                                <ChevronRight class="size-5" :stroke-width="2" />
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="#" class="flex items-center justify-between p-4 text-white transition-all hover:px-6">
-                                                <p class="text-sm font-normal">Version 1.1.1</p>
-                                                <ChevronRight class="size-5" :stroke-width="2" />
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <Link :method="logout().method" :href="logout().url">
-                                    <BaseButton severity="muted" class="w-full font-normal text-red-500 outline-none hover:bg-red-700/10">
-                                        Logout
-                                    </BaseButton>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-            </PrimeDrawer>
-        </Teleport>
+        <div ref="profileWrap" v-bind="$attrs" class="relative">
+            <button
+                type="button"
+                :aria-expanded="dropdownOpen"
+                aria-haspopup="true"
+                @click="dropdownOpen = !dropdownOpen"
+            >
+                <img
+                    :src="auth.avatar"
+                    alt=""
+                    :class="[
+                        'cursor-pointer rounded-full border-2 border-primary outline-2 outline-transparent transition hover:brightness-110',
+                        compact ? 'size-11' : 'size-[2.8125rem]',
+                    ]"
+                />
+            </button>
 
-        <button v-bind="$attrs" @click="() => (profileDrawerVisibility = !profileDrawerVisibility)">
-            <img
-                :src="auth.avatar"
-                alt=""
-                :class="[
-                    'cursor-pointer rounded-full border-2 border-primary outline-2 outline-transparent transition hover:brightness-110',
-                    compact ? 'size-11' : 'size-[2.8125rem]',
-                ]"
-            />
-        </button>
+            <div
+                v-show="dropdownOpen"
+                class="profile-dropdown absolute top-full right-0 z-50 mt-3 min-w-[10.5rem] overflow-hidden rounded-[0.9375rem] px-4 py-3"
+                role="menu"
+            >
+                <p class="px-1 py-2 text-sm text-gray-300">@{{ auth.username }}</p>
+                <Link
+                    :method="logout().method"
+                    :href="logout().url"
+                    class="block w-full rounded-[0.5rem] px-1 py-2 text-left text-sm font-normal text-red-500 transition-colors hover:bg-red-700/10"
+                    role="menuitem"
+                    @click="dropdownOpen = false"
+                >
+                    Logout
+                </Link>
+            </div>
+        </div>
     </template>
 </template>
 
-<style scoped></style>
+<style scoped>
+.profile-dropdown {
+    background:
+        linear-gradient(180deg, rgba(111, 175, 186, 0.2) 1.34%, rgba(102, 102, 102, 0) 12.75%),
+        linear-gradient(0deg, rgba(2, 3, 3, 0.58), rgba(2, 3, 3, 0.58)), rgba(23, 26, 27, 0.86);
+    box-shadow:
+        0 4px 5rem rgba(0, 0, 0, 0.2),
+        inset 0.25px 0.5px 0.5px 0.25px rgba(255, 255, 255, 0.22),
+        inset -0.2px -0.5px 0.15px 0.5px rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+</style>
