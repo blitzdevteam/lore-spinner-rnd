@@ -11,51 +11,21 @@ const screenshotStatus = ref<'idle' | 'capturing' | 'ready' | 'failed'>('idle');
 const screenshotPreview = ref<string | null>(null);
 const screenshotFile = ref<File | null>(null);
 
-const open = () => {
-    isOpen.value = true;
-    screenshotStatus.value = 'capturing';
-    screenshotPreview.value = null;
-    screenshotFile.value = null;
-    capturePageScreenshot().then((file) => {
-        if (file) {
-            screenshotFile.value = file;
-            screenshotPreview.value = URL.createObjectURL(file);
-            screenshotStatus.value = 'ready';
-        } else {
-            screenshotStatus.value = 'failed';
-        }
-    });
-};
-
-const close = () => {
-    isOpen.value = false;
-    content.value = '';
-    screenshotStatus.value = 'idle';
-    if (screenshotPreview.value) {
-        URL.revokeObjectURL(screenshotPreview.value);
-        screenshotPreview.value = null;
-    }
-    screenshotFile.value = null;
-};
-
 const capturePageScreenshot = async (): Promise<File | null> => {
     try {
         const html2canvas = (await import('html2canvas')).default;
 
-        const canvas = await html2canvas(document.body, {
-            // allowTaint:true lets html2canvas render cross-origin images by
-            // tainting the canvas — safe here since we only use it for feedback.
+        const canvas = await html2canvas(document.documentElement, {
             useCORS: true,
             allowTaint: true,
             logging: false,
-            scale: Math.min(window.devicePixelRatio, 2),
+            scale: 1,
             width: window.innerWidth,
             height: window.innerHeight,
             windowWidth: window.innerWidth,
             windowHeight: window.innerHeight,
             x: window.scrollX,
             y: window.scrollY,
-            ignoreElements: (element: Element) => Boolean(element.closest('.feedback-widget-root')),
         });
 
         const blob = await new Promise<Blob | null>((resolve) =>
@@ -72,6 +42,36 @@ const capturePageScreenshot = async (): Promise<File | null> => {
         console.error('[FeedbackWidget] Screenshot capture failed:', error);
         return null;
     }
+};
+
+const open = async () => {
+    // Capture BEFORE the modal renders so the widget UI doesn't appear in the shot
+    screenshotStatus.value = 'capturing';
+    screenshotPreview.value = null;
+    screenshotFile.value = null;
+
+    const file = await capturePageScreenshot();
+
+    if (file) {
+        screenshotFile.value = file;
+        screenshotPreview.value = URL.createObjectURL(file);
+        screenshotStatus.value = 'ready';
+    } else {
+        screenshotStatus.value = 'failed';
+    }
+
+    isOpen.value = true;
+};
+
+const close = () => {
+    isOpen.value = false;
+    content.value = '';
+    screenshotStatus.value = 'idle';
+    if (screenshotPreview.value) {
+        URL.revokeObjectURL(screenshotPreview.value);
+        screenshotPreview.value = null;
+    }
+    screenshotFile.value = null;
 };
 
 const submit = async () => {
@@ -150,7 +150,13 @@ const submit = async () => {
             </Transition>
 
             <div data-feedback-btn class="fixed right-4 bottom-28 z-[998] transition-[left,right] duration-200 md:right-6 md:bottom-6">
-                <BaseButton severity="glass" :icon-only="true" class="size-12! shadow-lg shadow-black/30 md:size-14!" @click="open">
+                <BaseButton
+                    severity="glass"
+                    :icon-only="true"
+                    :processing="screenshotStatus === 'capturing'"
+                    class="size-12! shadow-lg shadow-black/30 md:size-14!"
+                    @click="open"
+                >
                     <LucideMessageSquare class="size-6 text-primary-300" />
                 </BaseButton>
             </div>
