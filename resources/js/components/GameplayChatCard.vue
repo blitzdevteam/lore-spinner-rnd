@@ -50,9 +50,9 @@ const showCustomAction = computed(() => {
     return !props.prompt.choices?.includes(effectiveSelection.value);
 });
 
-// Continue is only a functional fallback for beats that offer no choices
+// Continue is always available when the player can interact and a response exists
 const showContinueButton = computed(() => {
-    return canInteract.value && !!props.prompt.response && !hasChoices.value;
+    return canInteract.value && !!props.prompt.response;
 });
 
 const renderedResponse = computed(() => {
@@ -194,7 +194,7 @@ watch(
                 <span class="flex min-w-0 flex-col items-start leading-tight">
                     <span class="text-sm text-primary-400 sm:hidden">Continue</span>
                     <span class="hidden text-sm text-primary-400 sm:inline">Continue: Hear What Happens Next</span>
-                    <span class="text-xs font-light text-[#7e7e7e]">No Choice Right Now</span>
+                    <span class="text-xs font-light text-[#7e7e7e]">Let the story progress</span>
                 </span>
             </button>
         </div>
