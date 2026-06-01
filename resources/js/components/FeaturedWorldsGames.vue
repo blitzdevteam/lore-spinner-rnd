@@ -89,9 +89,11 @@ function scrollSlider(direction: -1 | 1) {
     const step = card ? card.offsetWidth + gap : 214;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });
+    updateShadows();
+    requestAnimationFrame(updateShadows);
 }
 
-const { leftShadowVisible, rightShadowVisible } = useSliderEdgeShadows(sliderEl);
+const { leftShadowVisible, rightShadowVisible, updateShadows } = useSliderEdgeShadows(sliderEl);
 
 const isDesktopHover = useDesktopStoryPreview();
 const { onCardEnter, onCardLeave, isExpanded, isDimmed } = useStoryCardExpand(isDesktopHover);
@@ -123,72 +125,75 @@ function openSheet(game: FeaturedGame) {
             <div class="container-content home-section-gap">
 
                 <SectionHeader
-                    title="Featured Worlds"
+                    title="New Stories"
                     subtitle="Curated story worlds built for choice, consequence, and return."
                     :href="storiesIndex().url"
                     :count="storyCount"
                 />
 
-                <div class="story-slider-viewport relative overflow-visible">
-                    <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[5] w-6 bg-gradient-to-r from-black/70 to-transparent transition-opacity duration-300 md:w-8"
-                        :class="leftShadowVisible ? 'opacity-100' : 'opacity-0'"
-                        aria-hidden="true"
-                    />
-                    <div
-                        class="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-black to-transparent transition-opacity duration-300 md:w-16"
-                        :class="rightShadowVisible ? 'opacity-100' : 'opacity-0'"
-                        aria-hidden="true"
-                    />
+                <div class="story-slider-viewport story-slider-viewport--portrait relative overflow-visible">
+                    <div class="story-slider-row">
+                        <button
+                            type="button"
+                            class="story-slider-arrow"
+                            aria-label="Scroll left"
+                            @click="scrollSlider(-1)"
+                        >
+                            <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
+                                <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
 
-                    <button
-                        type="button"
-                        class="story-slider-arrow story-slider-arrow--edge-left"
-                        aria-label="Scroll left"
-                        @click="scrollSlider(-1)"
-                    >
-                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
-                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-
-                    <div ref="sliderEl" class="story-slider overflow-x-auto">
-                        <div class="story-slider-track">
-                            <StoryExpandableCard
-                                v-for="game in games"
-                                :key="game.id"
-                                :expanded="isExpanded(game.id)"
-                                :dimmed="isDimmed(game.id)"
-                                :desktop-expand="isDesktopHover"
-                                @mouseenter="isDesktopHover && onCardEnter(game.id)"
-                                @mouseleave="isDesktopHover && onCardLeave()"
-                            >
-                                <HomePortraitStoryCard
-                                    :title="game.title"
-                                    :cover="game.cover"
-                                    :themes="game.themes"
-                                    :teaser="game.teaser"
-                                    :branches="game.branches"
-                                    :playable="game.playable"
-                                    :slug="game.slug"
-                                    :focused="isDesktopHover && isExpanded(game.id)"
-                                    :is-desktop-hover="isDesktopHover"
-                                    @preview="openSheet(game)"
-                                />
-                            </StoryExpandableCard>
+                        <div class="story-slider-wrap">
+                            <div ref="sliderEl" class="story-slider overflow-x-auto">
+                                <div class="story-slider-track">
+                                    <StoryExpandableCard
+                                        v-for="game in games"
+                                        :key="game.id"
+                                        :expanded="isExpanded(game.id)"
+                                        :dimmed="isDimmed(game.id)"
+                                        :desktop-expand="isDesktopHover"
+                                        @mouseenter="isDesktopHover && onCardEnter(game.id)"
+                                        @mouseleave="isDesktopHover && onCardLeave()"
+                                    >
+                                        <HomePortraitStoryCard
+                                            :title="game.title"
+                                            :cover="game.cover"
+                                            :themes="game.themes"
+                                            :teaser="game.teaser"
+                                            :branches="game.branches"
+                                            :playable="game.playable"
+                                            :slug="game.slug"
+                                            :focused="isDesktopHover && isExpanded(game.id)"
+                                            :is-desktop-hover="isDesktopHover"
+                                            @preview="openSheet(game)"
+                                        />
+                                    </StoryExpandableCard>
+                                </div>
+                            </div>
+                            <div
+                                class="story-slider-edge-fade story-slider-edge-fade--left"
+                                :class="{ 'is-visible': leftShadowVisible }"
+                                aria-hidden="true"
+                            />
+                            <div
+                                class="story-slider-edge-fade story-slider-edge-fade--right"
+                                :class="{ 'is-visible': rightShadowVisible }"
+                                aria-hidden="true"
+                            />
                         </div>
-                    </div>
 
-                    <button
-                        type="button"
-                        class="story-slider-arrow story-slider-arrow--edge-right"
-                        aria-label="Scroll right"
-                        @click="scrollSlider(1)"
-                    >
-                        <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
+                        <button
+                            type="button"
+                            class="story-slider-arrow"
+                            aria-label="Scroll right"
+                            @click="scrollSlider(1)"
+                        >
+                            <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
