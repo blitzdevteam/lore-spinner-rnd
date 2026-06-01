@@ -71,7 +71,7 @@ function scrollSlider(direction: -1 | 1) {
     if (!slider) return;
 
     const card = slider.querySelector<HTMLElement>('.story-card-slot');
-    const gap = 10;
+    const gap = 16;
     const step = card ? card.offsetWidth + gap : 214;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });

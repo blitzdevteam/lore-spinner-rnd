@@ -14,7 +14,6 @@ export interface StorySheetData {
     rating?: string;
     isComingSoon: boolean;
     teaser?: string | null;
-    branches?: string | null;
     slug?: string;
     cta?: 'play' | 'continue' | 'coming-soon';
 }
@@ -238,14 +237,6 @@ function onCoverTouchEnd(e: TouchEvent) {
                                 class="text-[0.9375rem] leading-[1.7] text-[#9a9a9a]"
                             >
                                 {{ story.teaser }}
-                            </p>
-
-                            <!-- Branches explored -->
-                            <p
-                                v-if="story.branches"
-                                class="text-[0.875rem] font-medium text-[#ffbe58]"
-                            >
-                                {{ story.branches }} Branches explored
                             </p>
 
                             <!-- Primary CTA -->

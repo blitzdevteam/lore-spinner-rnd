@@ -60,10 +60,6 @@ function ratingForStory(story: StoryInterface): string {
     return story.rating?.label ?? 'Everyone';
 }
 
-function branchesForStory(story: StoryInterface): string | null {
-    return STORY_HOVER_META_BY_SLUG[story.slug]?.branches ?? null;
-}
-
 function isPlayable(story: StoryInterface): boolean {
     return story.status?.value === StoryStatusEnum.PUBLISHED && isStoryPlayable(story.slug);
 }
@@ -73,7 +69,7 @@ function scrollSlider(direction: -1 | 1): void {
     if (!slider) return;
 
     const card = slider.querySelector<HTMLElement>('.story-card-slot');
-    const gap = 10;
+    const gap = 16;
     const step = card ? card.offsetWidth + gap : 460;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });
@@ -129,7 +125,6 @@ function scrollSlider(direction: -1 | 1): void {
                                             :mood="moodLabel"
                                             :themes="themesForStory(story)"
                                             :teaser="story.teaser"
-                                            :branches="branchesForStory(story)"
                                             :playable="isPlayable(story)"
                                             :slug="story.slug"
                                             :focused="isDesktopHover && isExpanded(String(story.id))"

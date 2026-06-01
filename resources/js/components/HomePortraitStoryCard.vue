@@ -12,7 +12,6 @@ const props = withDefaults(
         mood?: string;
         genre?: string;
         teaser?: string | null;
-        branches?: string | null;
         playable: boolean;
         slug?: string;
         focused: boolean;
@@ -78,9 +77,6 @@ const metadataLine = computed(() => {
                             </template>
                         </div>
                         <p v-if="teaser" class="hp-card__teaser">{{ teaser }}</p>
-                        <p v-if="branches" class="hp-card__branches">
-                            {{ branches }} Branches explored
-                        </p>
                     </div>
                 </div>
 
@@ -103,7 +99,7 @@ const metadataLine = computed(() => {
 .hp-card__frame {
     display: flex;
     height: 100%;
-    width: min(12rem, 78vw);
+    width: var(--story-portrait-card-width, min(13.5rem, 75vw));
     flex-direction: column;
     overflow: hidden;
     border-radius: var(--story-card-radius);
@@ -208,13 +204,6 @@ const metadataLine = computed(() => {
     overflow: hidden;
 }
 
-.hp-card__branches {
-    margin: 0;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: #ffbe58;
-}
-
 .hp-card__cta {
     display: flex;
     height: var(--story-card-btn-height);
@@ -251,7 +240,7 @@ const metadataLine = computed(() => {
 
 @media (min-width: 768px) {
     .hp-card__frame {
-        width: 12rem;
+        width: var(--story-portrait-card-width, 13.5rem);
     }
 }
 

@@ -27,7 +27,6 @@ interface FeaturedGame {
     slug?: string;
     themes: string[];
     teaser: string;
-    branches: string | null;
 }
 
 const games: FeaturedGame[] = [
@@ -40,7 +39,6 @@ const games: FeaturedGame[] = [
         themes: ['Madness', 'Guilt', 'Obsession'],
         teaser:
             'Convinced of his own sanity, a man slowly loses his grip on reality as guilt transforms the world around him.',
-        branches: '123,456',
     },
     {
         id: 'speckled-band',
@@ -51,7 +49,6 @@ const games: FeaturedGame[] = [
         themes: ['Mystery', 'Deduction', 'Betrayal'],
         teaser:
             'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
-        branches: '142,857',
     },
     {
         id: 'red-death',
@@ -62,7 +59,6 @@ const games: FeaturedGame[] = [
         themes: ['Mortality', 'Isolation', 'Decay'],
         teaser:
             'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
-        branches: '98,765',
     },
     {
         id: 'oz',
@@ -73,7 +69,6 @@ const games: FeaturedGame[] = [
         themes: ['Courage', 'Home', 'Illusion'],
         teaser:
             'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
-        branches: '156,789',
     },
     {
         id: 'anima',
@@ -84,7 +79,6 @@ const games: FeaturedGame[] = [
         themes: ['Destiny', 'Courage', 'Control'],
         teaser:
             'A haunted memory diver must stop a sentient AI from overwriting human grief with synthetic perfection.',
-        branches: null,
     },
     {
         id: 'jane-eyre',
@@ -95,7 +89,6 @@ const games: FeaturedGame[] = [
         themes: ['Love', 'Duty', 'Secrets'],
         teaser:
             'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
-        branches: null,
     },
 ];
 
@@ -106,8 +99,8 @@ function scrollSlider(direction: -1 | 1) {
     if (!slider) return;
 
     const card = slider.querySelector<HTMLElement>('.story-card-slot');
-    const gap = 10;
-    const step = card ? card.offsetWidth + gap : 214;
+    const gap = 16;
+    const step = card ? card.offsetWidth + gap : 232;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });
     updateShadows();
@@ -129,7 +122,6 @@ function toSheetData(game: FeaturedGame): StorySheetData {
         themes: game.themes,
         isComingSoon: !game.playable,
         teaser: game.teaser,
-        branches: game.branches,
         slug: game.slug,
         cta: game.playable ? 'play' : 'coming-soon',
     };
@@ -182,7 +174,6 @@ function openSheet(game: FeaturedGame) {
                                             :cover="game.cover"
                                             :themes="game.themes"
                                             :teaser="game.teaser"
-                                            :branches="game.branches"
                                             :playable="game.playable"
                                             :slug="game.slug"
                                             :focused="isDesktopHover && isExpanded(game.id)"
