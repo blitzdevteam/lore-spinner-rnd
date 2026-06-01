@@ -14,6 +14,15 @@ const isMuted = ref(false);
 const isLooping = ref(false);
 const activeKey = ref<string | null>(null);
 const playedKeys = new Set<string>();
+const mediaCollapsed = ref(false);
+
+function revealMediaPlayer() {
+    mediaCollapsed.value = false;
+}
+
+function collapseMediaPlayer() {
+    mediaCollapsed.value = true;
+}
 
 let currentAudio: HTMLAudioElement | null = null;
 let rafId: number | null = null;
@@ -100,6 +109,7 @@ function play(gameId: string, promptId: string) {
 
     if (currentAudio && activeKey.value === key && !currentAudio.ended) {
         if (currentAudio.paused) {
+            revealMediaPlayer();
             currentAudio.play().catch((err) => {
                 console.warn('[TTS] play() rejected (resume)', key, err);
                 isPlaying.value = false;
@@ -109,6 +119,7 @@ function play(gameId: string, promptId: string) {
         return;
     }
 
+    revealMediaPlayer();
     stop();
 
     if (audioCache.has(key)) {
@@ -184,6 +195,7 @@ function toggle(gameId: string, promptId: string) {
     if (isPlaying.value && activeKey.value === key) {
         pause();
     } else if (activeKey.value === key && currentAudio && !currentAudio.ended) {
+        revealMediaPlayer();
         resume();
     } else {
         play(gameId, promptId);
@@ -272,6 +284,9 @@ export function useTextToSpeech() {
         formattedCurrentTime,
         formattedDuration,
         activeKey,
+        mediaCollapsed,
+        revealMediaPlayer,
+        collapseMediaPlayer,
         play,
         stop,
         dismiss,

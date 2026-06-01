@@ -51,23 +51,22 @@ const onVolumeInput = (event: Event) => {
             <!-- Mute + volume slider -->
             <div class="volume-control flex items-center gap-1.5">
                 <button
-                    v-if="isVolumeMuted"
-                    class="player-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-primary-600 transition-[transform,color] hover:scale-105 hover:text-white active:scale-95"
-                    title="Unmute"
-                    aria-label="Unmute"
+                    class="player-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-primary-600 transition-[transform,color,opacity] hover:scale-105 hover:text-white active:scale-95"
+                    :class="isVolumeMuted ? 'text-white' : 'opacity-80 hover:opacity-100'"
+                    :aria-pressed="isVolumeMuted"
+                    :title="isVolumeMuted ? 'Unmute' : 'Mute'"
+                    aria-label="Toggle mute"
                     @click="tts.toggleMute"
                 >
                     <LucideVolumeX class="player-btn-icon" :stroke-width="1.75" />
                 </button>
-                <button
-                    class="player-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-primary-600 transition-[transform,color] hover:scale-105 hover:text-white active:scale-95"
+                <span
+                    class="player-btn grid shrink-0 place-items-center text-primary-600"
                     :class="{ 'opacity-40': isVolumeMuted }"
-                    :title="isVolumeMuted ? 'Unmute' : 'Mute'"
-                    aria-label="Volume"
-                    @click="tts.toggleMute"
+                    aria-hidden="true"
                 >
                     <LucideVolume2 class="player-btn-icon" :stroke-width="1.75" />
-                </button>
+                </span>
                 <input
                     type="range"
                     min="0"
@@ -108,13 +107,13 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Speed -->
             <button
-                class="player-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
+                class="player-btn player-speed-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
                 :class="{ 'text-primary-600': tts.playbackRate.value !== 1 }"
                 title="Playback speed"
                 aria-label="Playback speed"
                 @click="tts.cycleSpeed"
             >
-                <span class="text-sm font-semibold tabular-nums leading-none">{{ speedLabel }}</span>
+                <span class="player-speed-label tabular-nums leading-none">{{ speedLabel }}</span>
             </button>
 
             <!-- Close -->
@@ -165,6 +164,16 @@ const onVolumeInput = (event: Event) => {
     width: 1.25rem;
     height: 1.25rem;
     flex-shrink: 0;
+}
+
+.player-speed-btn {
+    min-width: 2.75rem;
+    padding-inline: 0.375rem;
+}
+
+.player-speed-label {
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 .media-range {

@@ -32,7 +32,6 @@ type Panel = 'journal' | 'settings' | 'audio' | null;
 const activePanel = ref<Panel>(null);
 const journalTab = ref<'journals' | 'characters'>('journals');
 const journalSheetTab = ref<'timeline' | 'characters'>('timeline');
-const mediaCollapsed = ref(false);
 const isMobile = ref(false);
 
 const MOBILE_MQ = '(max-width: 767px)';
@@ -57,9 +56,18 @@ onUnmounted(() => {
 watch(isMobile, (mobile) => {
     if (!mobile && activePanel.value === 'audio') {
         activePanel.value = null;
-        mediaCollapsed.value = false;
+        tts.revealMediaPlayer();
     }
 });
+
+watch(
+    () => tts.mediaCollapsed.value,
+    (collapsed) => {
+        if (!collapsed && isMobile.value && activePanel.value === 'audio') {
+            activePanel.value = null;
+        }
+    },
+);
 
 const toggleJournal = () => {
     activePanel.value = activePanel.value === 'journal' ? null : 'journal';
@@ -73,19 +81,19 @@ const toggleMedia = () => {
     if (isMobile.value) {
         if (activePanel.value === 'audio') {
             activePanel.value = null;
-            mediaCollapsed.value = false;
+            tts.revealMediaPlayer();
             return;
         }
-        mediaCollapsed.value = true;
+        tts.collapseMediaPlayer();
         activePanel.value = 'audio';
         return;
     }
-    mediaCollapsed.value = !mediaCollapsed.value;
+    tts.mediaCollapsed.value = !tts.mediaCollapsed.value;
 };
 
 const closeMobilePanel = () => {
     if (activePanel.value === 'audio') {
-        mediaCollapsed.value = false;
+        tts.revealMediaPlayer();
     }
     activePanel.value = null;
 };
@@ -131,7 +139,7 @@ const handleInputSubmit = (prompt: string) => {
 
                         <!-- Center: media player (desktop) -->
                         <div class="hidden min-w-0 flex-1 items-center justify-center md:flex">
-                            <GameplayMediaPlayer :collapsed="mediaCollapsed" />
+                            <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" />
                         </div>
 
                         <!-- Right: desktop action buttons -->
@@ -152,12 +160,12 @@ const handleInputSubmit = (prompt: string) => {
                                 severity="glass"
                                 :icon-only="true"
                                 class="size-11!"
-                                :title="mediaCollapsed ? 'Show audio player' : 'Hide audio player'"
+                                :title="tts.mediaCollapsed.value ? 'Show audio player' : 'Hide audio player'"
                                 @click="toggleMedia"
                             >
                                 <LucideAudioLines
                                     class="size-5"
-                                    :class="tts.isActive.value && !mediaCollapsed ? 'text-primary' : 'text-gray-300'"
+                                    :class="tts.isActive.value && !tts.mediaCollapsed.value ? 'text-primary' : 'text-gray-300'"
                                 />
                             </BaseButton>
                             <BaseButton
@@ -236,7 +244,7 @@ const handleInputSubmit = (prompt: string) => {
                 <div class="sticky right-0 bottom-0 left-0 z-20 w-full">
                     <div class="flex flex-col items-center gap-3 bg-linear-to-t from-gray-950 via-gray-950/80 to-transparent px-4 pt-10 pb-6 md:px-0">
                         <div class="flex w-full justify-start md:hidden">
-                            <GameplayMediaPlayer :collapsed="mediaCollapsed" />
+                            <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" />
                         </div>
                         <GameplayInput :disabled="props.inputDisabled" @submit="handleInputSubmit" />
                     </div>
