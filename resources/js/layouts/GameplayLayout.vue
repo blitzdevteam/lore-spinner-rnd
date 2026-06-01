@@ -159,7 +159,7 @@ const handleInputSubmit = (prompt: string) => {
 
                 <!-- ── Scrolling content ── -->
                 <div
-                    class="z-5 mx-auto flex max-w-3xl flex-col px-4 pt-2 pb-40 transition-colors duration-300"
+                    class="z-5 mx-auto flex max-w-3xl flex-col p-4 transition-colors duration-300"
                     :style="{ fontSize: settings.fontSize + 'px', color: settings.fontColor }"
                 >
                     <!-- Title + episode -->
