@@ -188,7 +188,7 @@ watch(
                 title="Continue the story"
                 @click="handleContinue"
             >
-                <span class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-white">
+                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-primary-600 text-white">
                     <GameplayContinueIcon />
                 </span>
                 <span class="flex min-w-0 flex-col items-start leading-tight">
