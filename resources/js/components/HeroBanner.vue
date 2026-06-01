@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import nocturneImage from '@/assets/carosel/Ultrawide nocturne.png';
+import masqueImage from '@/assets/carosel/Ultrawide 21_9 The Masque of the Red Death.png';
 import ozImage from '@/assets/carosel/Ultrawide Oz.png';
+import sherlockImage from '@/assets/carosel/Sherlock Ultrawide hero banner.png';
 import tellTaleImage from '@/assets/carosel/Ultrawide the tell tale heart.png';
 import BaseButton from '@/components/BaseButton.vue';
 import { StoryInterface } from '@/types';
@@ -53,20 +54,34 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackBranching: 123456,
     },
     {
-        slug: 'nocturne',
-        image: nocturneImage,
-        imagePosition: 'object-[70%_top] md:object-top',
-        titleLines: null,
-        fallbackTitle: 'Nocturne',
+        slug: 'the-adventure-of-the-speckled-band',
+        image: sherlockImage,
+        imagePosition: 'object-[60%_top] md:object-top',
+        titleLines: ['The Adventure of', 'the Speckled Band'],
+        fallbackTitle: 'The Adventure of the Speckled Band',
         teaserLines: [
-            'After a public scandal shatters her life, a disgraced Japanese heiress discovers',
-            'the organization helping her disappear is part of an ancient cult.',
+            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning.',
+            'Holmes and Watson must unravel the mystery before the speckled band strikes again.',
         ],
         fallbackTeaser:
-            'After a public scandal shatters her life, a disgraced Japanese heiress discovers the organization helping her disappear is part of an ancient cult that erases and rewrites identity.',
-        fallbackAuthor: 'Hilton Williams',
+            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
+        fallbackAuthor: 'Arthur Conan Doyle',
+        fallbackBranching: 142857,
+    },
+    {
+        slug: 'the-masque-of-the-red-death',
+        image: masqueImage,
+        imagePosition: 'object-[68%_top] md:object-top',
+        titleLines: ['The Masque of', 'the Red Death'],
+        fallbackTitle: 'The Masque of the Red Death',
+        teaserLines: [
+            'A prince seals his revellers inside a great abbey to escape a plague.',
+            'But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
+        ],
+        fallbackTeaser:
+            'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
+        fallbackAuthor: 'Edgar Allan Poe',
         fallbackBranching: 98765,
-        comingSoon: true,
     },
     {
         slug: 'the-wonderful-wizard-of-oz',
@@ -82,7 +97,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
             'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
         fallbackAuthor: 'L. Frank Baum',
         fallbackBranching: 156789,
-        comingSoon: true,
     },
 ];
 
