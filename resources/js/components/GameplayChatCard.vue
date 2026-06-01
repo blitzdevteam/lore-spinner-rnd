@@ -194,7 +194,7 @@ watch(
 
         <!-- ── Choices ── -->
         <div v-if="hasChoices && showChoicesAndActions" class="flex flex-col gap-4">
-            <GameplayOrnamentDivider v-if="canInteract" label="Your Turn. What Do You Do?" color="#ffbe58" />
+            <GameplayOrnamentDivider v-if="canInteract" label="Make a choice" color="#ffbe58" />
 
             <div class="flex flex-col gap-2.5">
                 <div v-for="choice in prompt.choices" :key="choice" :class="getChoiceClass(choice)" @click="handleChoiceClick(choice)">

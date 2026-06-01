@@ -29,6 +29,7 @@ final class GameController extends Controller
         'the-wonderful-wizard-of-oz',
         'the-adventure-of-the-speckled-band',
         'the-tell-tale-heart',
+        'the-masque-of-the-red-death',
     ];
 
     public function __construct(private readonly ChaosEngineService $engine) {}
