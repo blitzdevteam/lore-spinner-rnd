@@ -4,6 +4,7 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
 import { MOOD_TOP_PICK_SLUGS } from '@/data/moodCards';
 import type { MoodId } from '@/data/moodBanners';
+import { isStoryPlayable } from '@/data/playableStorySlugs';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
@@ -64,7 +65,7 @@ function branchesForStory(story: StoryInterface): string | null {
 }
 
 function isPlayable(story: StoryInterface): boolean {
-    return story.status?.value === StoryStatusEnum.PUBLISHED;
+    return story.status?.value === StoryStatusEnum.PUBLISHED && isStoryPlayable(story.slug);
 }
 
 function scrollSlider(direction: -1 | 1): void {
