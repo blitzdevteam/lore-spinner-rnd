@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import BaseBackgroundGradient from '@/components/BaseBackgroundGradient.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import BaseInputFormat from '@/components/BaseInputFormat.vue';
+import BaseLogo from '@/components/BaseLogo.vue';
 import StickyFooterLayout from '@/layouts/StickyFooterLayout.vue';
 import { GenderEnum } from '@/types/enum';
 import { update } from '@/wayfinder/routes/user/authentication/complete-profile';
@@ -21,13 +23,15 @@ const genderEnumOptions = Object.values(GenderEnum).map((value) => ({
 </script>
 
 <template>
+    <BaseBackgroundGradient />
     <StickyFooterLayout class="mx-auto max-w-102">
         <template #body>
-            <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-col items-center gap-6">
+                <BaseLogo class="w-68" />
                 <UserRoundPen class="text-primary-400" :size="48" :strokeWidth="1.5" />
-                <div class="flex flex-col gap-4 text-center">
+                <div class="flex flex-col gap-2 text-center">
                     <p class="text-lg text-white">Complete your profile to get started</p>
-                    <p class="text-sm text-gray-500">Please provide the necessary information to complete your profile and access all features.</p>
+                    <p class="text-sm text-gray-400">Please provide the necessary information to complete your profile and access all features.</p>
                 </div>
             </div>
         </template>
@@ -58,7 +62,7 @@ const genderEnumOptions = Object.values(GenderEnum).map((value) => ({
                             </BaseInputFormat>
                         </div>
                     </div>
-                    <BaseButton :processing>Submit</BaseButton>
+                    <BaseButton :processing severity="primary">Submit</BaseButton>
                 </div>
             </Form>
         </template>

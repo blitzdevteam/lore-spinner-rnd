@@ -6,12 +6,8 @@ import StickyFooterLayout from '@/layouts/StickyFooterLayout.vue';
 import login from '@/wayfinder/routes/user/authentication/login';
 import register from '@/wayfinder/routes/user/authentication/register';
 
-const currentRouteClass = (routeUrl: string): string => {
-    return routeUrl === window.location.pathname ? 'hover:text-secondary-300' : '';
-};
-
-const currentRouteSeverity = (routeUrl: string): 'secondary-muted-outline' | 'muted' => {
-    return routeUrl === window.location.pathname ? 'secondary-muted-outline' : 'muted';
+const currentRouteSeverity = (routeUrl: string): 'primary-muted-outline' | 'muted' => {
+    return routeUrl === window.location.pathname ? 'primary-muted-outline' : 'muted';
 };
 </script>
 
@@ -34,7 +30,7 @@ const currentRouteSeverity = (routeUrl: string): 'secondary-muted-outline' | 'mu
                         type="internal-link"
                         :href="register.create.url()"
                         :severity="currentRouteSeverity(register.create.url())"
-                        :class="['h-12 flex-1', currentRouteClass(register.create.url())]"
+                        class="h-12 flex-1"
                     >
                         Sign Up
                     </BaseButton>

@@ -11,11 +11,14 @@ import StoryPlayStatStrip from '@/components/story-play/StoryPlayStatStrip.vue';
 import StoryPlayTitleProgress from '@/components/story-play/StoryPlayTitleProgress.vue';
 import StoryPlayTopBar from '@/components/story-play/StoryPlayTopBar.vue';
 import { useBookmark } from '@/composables/useBookmark';
+import { useShare } from '@/composables/useShare';
 import { StoryInterface } from '@/types';
 import { store, show as showGame } from '@/wayfinder/actions/App/Http/Controllers/User/GameController';
+import { show as storyShowRoute } from '@/wayfinder/routes/stories';
 import { router } from '@inertiajs/vue3';
 import { LucideChevronLeft } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     story: StoryInterface;
@@ -28,6 +31,28 @@ type Panel = 'details' | 'chapters';
 const panel = ref<Panel>('details');
 const hasExistingGame = computed(() => !!props.existingGameId);
 const { isBookmarked, toggleBookmark } = useBookmark(props.story.id, props.story.is_bookmarked ?? false);
+const { share } = useShare();
+
+const storyShareUrl = computed(() => {
+    if (typeof window !== 'undefined') {
+        return `${window.location.origin}${storyShowRoute.url(props.story.slug)}`;
+    }
+    return storyShowRoute.url(props.story.slug);
+});
+
+const handleShare = async (): Promise<void> => {
+    const result = await share({
+        title: props.story.title,
+        text: teaserText.value || props.story.title,
+        url: storyShareUrl.value,
+    });
+
+    if (result === 'copied') {
+        toast.success('Link copied to clipboard');
+    } else if (result === 'failed') {
+        toast.error('Could not share this story');
+    }
+};
 
 const handleStartStory = (): void => {
     if (!props.isPlayable) return;
@@ -135,14 +160,18 @@ const rightColumnChapters = computed(() =>
 </script>
 
 <template>
-    <div class="relative min-h-svh overflow-x-hidden bg-black pb-28 text-white selection:bg-primary-500/30 lg:pb-[min(136px,max(112px,calc(env(safe-area-inset-bottom,0px)+104px)))] lg:selection:bg-primary-500/35">
+    <div
+        class="story-show-page relative min-h-svh overflow-x-hidden bg-black text-white selection:bg-primary-500/30 lg:h-svh lg:overflow-hidden lg:pb-0 lg:selection:bg-primary-500/35"
+    >
         <StoryPlayAmbientGlows />
 
         <div
-            class="relative z-[1] mx-auto flex max-w-[72rem] flex-col px-5 pt-10 pb-8 md:px-[3.25rem] md:pb-12 md:pt-[3.75rem] lg:flex-row lg:items-start lg:justify-between xl:max-w-[75rem]"
+            class="story-show-shell relative z-[1] mx-auto flex h-full max-w-[72rem] flex-col px-5 pt-8 pb-28 md:px-[3.25rem] md:pt-10 lg:max-h-svh lg:flex-row lg:items-stretch lg:gap-6 lg:overflow-hidden lg:px-[3.25rem] lg:py-6 xl:max-w-[75rem] xl:gap-10"
         >
-            <!-- Cover -->
-            <div class="relative mb-10 w-[20.875rem] max-w-full shrink-0 self-center lg:mb-0 lg:mr-6 lg:self-start xl:mr-10">
+            <!-- Cover — fixed in viewport on desktop -->
+            <div
+                class="relative mb-8 w-[20.875rem] max-w-full shrink-0 self-center lg:mb-0 lg:flex lg:w-[20.875rem] lg:shrink-0 lg:self-center xl:mr-2"
+            >
                 <StoryPlayCoverColumn
                     :src="coverImageUrl"
                     :title="story.title"
@@ -171,104 +200,124 @@ const rightColumnChapters = computed(() =>
                 </StoryPlayCoverColumn>
             </div>
 
-            <!-- Main column -->
+            <!-- Main column — app panel -->
             <div
-                class="relative flex min-h-0 min-w-0 flex-1 flex-col gap-[1.3125rem] lg:max-w-[41.25rem] lg:min-h-[calc(100svh-120px)]"
+                class="relative flex min-h-0 min-w-0 flex-1 flex-col lg:max-w-[41.25rem]"
             >
-                <StoryPlayTopBar
-                    :tab="panel"
-                    :bookmark-filled="isBookmarked"
-                    @update:tab="panel = $event"
-                    @bookmark="toggleBookmark"
-                />
+                <div class="shrink-0 overflow-visible">
+                    <StoryPlayTopBar
+                        :tab="panel"
+                        :bookmark-filled="isBookmarked"
+                        @update:tab="panel = $event"
+                        @bookmark="toggleBookmark"
+                        @share="handleShare"
+                    />
+                </div>
 
-                <div v-if="panel === 'details'" class="flex flex-col gap-[1.3125rem] pb-4">
-                    <div class="flex flex-col gap-[0.625rem]">
-                        <StoryPlayTitleProgress :title="story.title" :progress-label="progressBadge" />
-                        <StoryPlayMetaRow
-                            :duration-label="durationLabel"
-                            :genre-label="genreLabel"
+                <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+                <!-- Details — full panel scrolls -->
+                <div
+                    v-if="panel === 'details'"
+                    class="story-show-panel story-show-panel--details mt-4 min-h-0 flex-1 pb-4 lg:mt-5 lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
+                >
+                    <div class="flex flex-col gap-4 lg:gap-5">
+                        <div class="flex flex-col gap-2.5">
+                            <StoryPlayTitleProgress :title="story.title" :progress-label="progressBadge" />
+                            <StoryPlayMetaRow
+                                :duration-label="durationLabel"
+                                :genre-label="genreLabel"
+                            />
+                            <StoryPlayStatStrip :items="statItems" />
+                        </div>
+
+                        <StoryPlayAuthorDescription
+                            :author-name="creatorName"
+                            :avatar-url="creatorAvatar"
+                            :description="teaserText || 'Explore this playable story.'"
+                            :collapse-at="360"
                         />
-                        <StoryPlayStatStrip :items="statItems" />
-                    </div>
 
-                    <StoryPlayAuthorDescription
-                        :author-name="creatorName"
-                        :avatar-url="creatorAvatar"
-                        :description="teaserText || 'Explore this playable story.'"
-                        :collapse-at="360"
-                    />
-
-                    <section
-                        v-if="story.comments?.length"
-                        aria-label="Community comments"
-                        class="rounded-xl border border-white/12 bg-black/35 p-4 backdrop-blur-sm"
-                    >
-                        <div class="mb-4 font-['Inter',sans-serif] text-[0.8125rem] font-semibold uppercase tracking-wide text-gray-400">
-                            Comments · {{ story.comments_count ?? story.comments.length }}
-                        </div>
-                        <div class="flex flex-col gap-4">
-                            <StoryCommentCard
-                                v-for="comment in story.comments"
-                                :key="comment.id"
-                                :comment
-                            />
-                        </div>
-                    </section>
-                </div>
-
-                <div v-else class="lg:pb-8">
-                    <div
-                        v-if="story.chapters?.length"
-                        class="flex flex-col gap-2.5 sm:flex-row sm:items-start"
-                    >
-                        <div class="flex min-w-0 flex-1 flex-col gap-2.5">
-                            <StoryChapterCard
-                                v-for="(chapter, index) in leftColumnChapters"
-                                :key="chapter.id"
-                                :chapter
-                                :episode-number="index * 2 + 1"
-                            />
-                        </div>
-                        <div class="flex min-w-0 flex-1 flex-col gap-2.5">
-                            <StoryChapterCard
-                                v-for="(chapter, index) in rightColumnChapters"
-                                :key="chapter.id"
-                                :chapter
-                                :episode-number="index * 2 + 2"
-                            />
-                        </div>
-                    </div>
-                    <p
-                        v-else
-                        class="rounded-xl border border-white/15 bg-black/45 py-14 text-center font-['Inter',sans-serif] text-sm font-medium text-gray-500 backdrop-blur-sm"
-                    >
-                        No chapters listed yet.
-                    </p>
-                </div>
-
-                <!-- Fade + CTA (desktop: in column, matches Figma) -->
-                <div class="relative z-[6] mt-10 hidden w-full lg:mt-auto lg:block">
-                    <div
-                        class="pointer-events-none absolute -inset-x-6 -top-[7.5rem] bottom-0 mb-[-20px] h-[clamp(148px,18vw,200px)] bg-linear-to-t from-black from-[32%] via-black/92 to-transparent lg:-inset-x-10"
-                    />
-                    <div class="relative w-full pt-14">
-                        <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
-                        <div
-                            v-else
-                            class="flex h-[3.5rem] w-full cursor-not-allowed select-none items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium uppercase tracking-widest text-gray-500"
+                        <section
+                            v-if="story.comments?.length"
+                            aria-label="Community comments"
+                            class="rounded-xl border border-white/12 bg-black/35 p-4 backdrop-blur-sm"
                         >
-                            Coming Soon
-                        </div>
+                            <div class="mb-4 font-['Inter',sans-serif] text-[0.8125rem] font-semibold uppercase tracking-wide text-gray-400">
+                                Comments · {{ story.comments_count ?? story.comments.length }}
+                            </div>
+                            <div class="flex flex-col gap-4">
+                                <StoryCommentCard
+                                    v-for="comment in story.comments"
+                                    :key="comment.id"
+                                    :comment
+                                />
+                            </div>
+                        </section>
                     </div>
+                </div>
+
+                <!-- Chapters — fixed align spacer, list scrolls below -->
+                <div
+                    v-else
+                    class="story-show-chapters mt-4 flex min-h-0 flex-1 flex-col lg:mt-0"
+                >
+                    <div
+                        class="story-show-chapters__align hidden shrink-0 lg:block"
+                        aria-hidden="true"
+                    />
+                    <div
+                        class="story-show-panel story-show-panel--chapters min-h-0 flex-1 lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
+                    >
+                        <div
+                            v-if="story.chapters?.length"
+                            class="flex flex-col gap-2.5 pb-4 sm:flex-row sm:items-start"
+                        >
+                            <div class="flex min-w-0 flex-1 flex-col gap-2.5">
+                                <StoryChapterCard
+                                    v-for="(chapter, index) in leftColumnChapters"
+                                    :key="chapter.id"
+                                    :chapter
+                                    :episode-number="index * 2 + 1"
+                                />
+                            </div>
+                            <div class="flex min-w-0 flex-1 flex-col gap-2.5">
+                                <StoryChapterCard
+                                    v-for="(chapter, index) in rightColumnChapters"
+                                    :key="chapter.id"
+                                    :chapter
+                                    :episode-number="index * 2 + 2"
+                                />
+                            </div>
+                        </div>
+                        <p
+                            v-else
+                            class="rounded-xl border border-white/15 bg-black/45 py-14 text-center font-['Inter',sans-serif] text-sm font-medium text-gray-500 backdrop-blur-sm"
+                        >
+                            No chapters listed yet.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Desktop CTA — pinned to bottom of main column -->
+                <div
+                    class="story-show-cta hidden shrink-0 border-t border-white/8 bg-black/90 pt-4 backdrop-blur-sm lg:block"
+                >
+                    <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
+                    <div
+                        v-else
+                        class="flex h-[3.5rem] w-full cursor-not-allowed select-none items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium uppercase tracking-widest text-gray-500"
+                    >
+                        Coming Soon
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
 
         <!-- Mobile CTA strip -->
         <div class="fixed inset-x-0 bottom-0 z-30 lg:hidden">
-            <div class="pointer-events-none absolute inset-x-0 bottom-[4.5rem] h-[8.25rem] bg-linear-to-t from-black via-black/88 to-transparent" />
-            <div class="relative border-t border-white/10 bg-black/85 px-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] pt-5 backdrop-blur-md">
+            <div class="pointer-events-none absolute inset-x-0 bottom-[4.5rem] h-[6rem] bg-linear-to-t from-black via-black/88 to-transparent" />
+            <div class="relative border-t border-white/10 bg-black/90 px-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] pt-4 backdrop-blur-md">
                 <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
                 <div
                     v-else
@@ -281,4 +330,38 @@ const rightColumnChapters = computed(() =>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Cover: 20.875rem × 334/497; top bar: 3.0625rem (pt-1 + tab height). Shell: lg:py-6. */
+@media (min-width: 1024px) {
+    .story-show-chapters__align {
+        height: max(
+            0px,
+            calc((100svh - 3rem - 31.0625rem) / 2 - 3.0625rem)
+        );
+    }
+}
+
+.story-show-panel--chapters {
+    scrollbar-gutter: stable;
+}
+
+@supports (scrollbar-color: auto) {
+    .story-show-panel {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(111, 175, 186, 0.35) transparent;
+    }
+}
+
+.story-show-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.story-show-panel::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(111, 175, 186, 0.35);
+}
+
+.story-show-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+</style>

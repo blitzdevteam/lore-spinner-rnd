@@ -54,7 +54,7 @@ const listHeading = computed(() => {
     if (normalizedMood.value) {
         return `${libraryStories.value.length} Stories`;
     }
-    return 'My Stories';
+    return 'Stories';
 });
 
 const headerTitle = computed(() => {
