@@ -413,6 +413,18 @@ onMounted(() => {
         </template>
 
         <template #journals>
+            <!-- Desktop sidebar: classic session progress -->
+            <div class="hidden flex-col gap-3 md:flex">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Session Progress</p>
+                <div class="rounded-xl border border-gray-700/50 bg-gray-800/40 p-4">
+                    <p class="text-sm text-gray-300">
+                        Session <span class="font-medium text-primary-300">{{ game.current_session_number ?? 1 }}</span>
+                    </p>
+                    <p class="mt-1 text-xs text-gray-500">{{ prompts.length }} turn{{ prompts.length === 1 ? '' : 's' }} played this session</p>
+                    <p v-if="sessionComplete" class="mt-2 text-xs text-primary-400">✓ Session complete</p>
+                </div>
+            </div>
+
             <div class="gp-timeline flex flex-col">
                 <article
                     v-for="(prompt, index) in prompts"
