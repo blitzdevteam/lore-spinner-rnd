@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import janeEyreImage from '@/assets/carosel/Ultrawide jane eyre.png';
+import masqueImage from '@/assets/carosel/Ultrawide 21_9 The Masque of the Red Death.png';
 import nocturneImage from '@/assets/carosel/Ultrawide nocturne.png';
 import ozImage from '@/assets/carosel/Ultrawide Oz.png';
+import sherlockImage from '@/assets/carosel/Sherlock Ultrawide hero banner.png';
 import tellTaleImage from '@/assets/carosel/Ultrawide the tell tale heart.png';
 import BaseButton from '@/components/BaseButton.vue';
 import { StoryInterface } from '@/types';
@@ -53,6 +56,36 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackBranching: 123456,
     },
     {
+        slug: 'the-adventure-of-the-speckled-band',
+        image: sherlockImage,
+        imagePosition: 'object-[60%_top] md:object-top',
+        titleLines: ['The Adventure of', 'the Speckled Band'],
+        fallbackTitle: 'The Adventure of the Speckled Band',
+        teaserLines: [
+            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning.',
+            'Holmes and Watson must unravel the mystery before the speckled band strikes again.',
+        ],
+        fallbackTeaser:
+            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
+        fallbackAuthor: 'Arthur Conan Doyle',
+        fallbackBranching: 142857,
+    },
+    {
+        slug: 'the-masque-of-the-red-death',
+        image: masqueImage,
+        imagePosition: 'object-[68%_top] md:object-top',
+        titleLines: ['The Masque of', 'the Red Death'],
+        fallbackTitle: 'The Masque of the Red Death',
+        teaserLines: [
+            'A prince seals his revellers inside a great abbey to escape a plague.',
+            'But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
+        ],
+        fallbackTeaser:
+            'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
+        fallbackAuthor: 'Edgar Allan Poe',
+        fallbackBranching: 98765,
+    },
+    {
         slug: 'nocturne',
         image: nocturneImage,
         imagePosition: 'object-[70%_top] md:object-top',
@@ -82,7 +115,21 @@ const heroSlideConfigs: HeroSlideConfig[] = [
             'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
         fallbackAuthor: 'L. Frank Baum',
         fallbackBranching: 156789,
-        comingSoon: true,
+    },
+    {
+        slug: 'jane-eyre',
+        image: janeEyreImage,
+        imagePosition: 'object-[72%_top] md:object-top',
+        titleLines: null,
+        fallbackTitle: 'Jane Eyre',
+        teaserLines: [
+            'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer —',
+            'but the house holds secrets that could destroy them both.',
+        ],
+        fallbackTeaser:
+            'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
+        fallbackAuthor: 'Charlotte Brontë',
+        fallbackBranching: 134521,
     },
 ];
 
@@ -250,15 +297,11 @@ function goNext() {
                                 </h1>
 
                                 <div class="hero-meta font-[Inter] text-white">
-                                    <p class="hero-teaser text-white">
-                                        <span class="md:hidden">{{ activeSlide.teaser }}</span>
-                                        <span class="hidden md:inline">
-                                            <template v-if="activeSlide.teaserLines">
-                                                {{ activeSlide.teaserLines[0] }}<br />
-                                                {{ activeSlide.teaserLines[1] }}
-                                            </template>
-                                            <template v-else>{{ activeSlide.teaser }}</template>
-                                        </span>
+                                    <p
+                                        class="hero-teaser text-white"
+                                        :title="activeSlide.teaser"
+                                    >
+                                        {{ activeSlide.teaser }}
                                     </p>
                                     <div class="hero-stats flex flex-col gap-0">
                                         <p v-if="activeSlide.author" class="hero-stat-line text-white">
@@ -375,6 +418,10 @@ function goNext() {
     font-size: 0.9375rem;
     line-height: 1.55;
     text-shadow: 0 1px 10px rgba(0, 0, 0, 0.75);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
 }
 
 .hero-stat-line {
@@ -568,9 +615,8 @@ function goNext() {
     .hero-banner {
         position: relative;
         display: block;
-        height: 33rem;
-        min-height: 33rem;
-        max-height: 33rem;
+        /* Scale with viewport height on large displays; floor matches original design. */
+        height: clamp(33rem, 50vh, 48rem);
     }
 
     .hero-media {
@@ -620,6 +666,7 @@ function goNext() {
         font-size: 1.125rem;
         line-height: 1.444;
         text-shadow: 0 1px 12px rgba(0, 0, 0, 0.75);
+        -webkit-line-clamp: 2;
     }
 
     .hero-stat-line {
@@ -645,6 +692,17 @@ function goNext() {
     .hero-title {
         font-size: 3rem;
         line-height: 5rem;
+    }
+}
+
+/* iMac / large desktop — taller hero without dominating the page */
+@media (min-width: 80rem) {
+    .hero-banner {
+        height: clamp(38rem, 55vh, 56rem);
+    }
+
+    .hero-copy-wrap {
+        padding-top: clamp(5.5625rem, 10vh, 7.5rem);
     }
 }
 

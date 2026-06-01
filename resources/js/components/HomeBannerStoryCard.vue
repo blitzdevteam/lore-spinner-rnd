@@ -138,8 +138,8 @@ function onImageError(): void {
     background: var(--story-card-bg);
     box-shadow: var(--story-card-shadow);
     transition:
-        transform 200ms ease,
-        box-shadow 200ms ease;
+        box-shadow var(--story-card-hover-duration) var(--story-card-ease),
+        border-color var(--story-card-hover-duration) var(--story-card-ease);
 }
 
 .hb-card__cover {
@@ -157,7 +157,7 @@ function onImageError(): void {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 200ms ease;
+    transition: transform var(--story-card-hover-duration) var(--story-card-ease);
 }
 
 .hb-card__cover-fallback {
@@ -237,9 +237,9 @@ function onImageError(): void {
     opacity: 0;
     transform: translateY(4px);
     transition:
-        grid-template-rows 200ms ease,
-        opacity 200ms ease,
-        transform 200ms ease;
+        grid-template-rows var(--story-card-hover-duration) var(--story-card-ease),
+        opacity var(--story-card-hover-duration) var(--story-card-ease),
+        transform var(--story-card-hover-duration) var(--story-card-ease);
 }
 
 .hb-card__reveal--open {
@@ -329,20 +329,21 @@ function onImageError(): void {
 
 @media (min-width: 1024px) {
     .hb-card--focused .hb-card__frame {
-        box-shadow: var(--story-card-shadow-hover);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: var(--story-card-shadow-hover), var(--story-card-shadow-glow);
     }
 
     .hb-card--focused .hb-card__cover-img {
-        transform: scale(1.05);
+        transform: scale(1.04);
     }
 
     .hb-card--static:hover .hb-card__frame {
-        transform: scale(1.03);
-        box-shadow: var(--story-card-shadow-hover);
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: var(--story-card-shadow-hover), var(--story-card-shadow-glow);
     }
 
     .hb-card--static:hover .hb-card__cover-img--zoom {
-        transform: scale(1.05);
+        transform: scale(1.04);
     }
 }
 </style>

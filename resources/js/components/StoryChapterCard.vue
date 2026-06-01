@@ -35,35 +35,26 @@ const eventsLabel = computed(() => {
 
 <template>
     <article
-        class="rounded-lg border border-gray-700 bg-[#1c1c1c] p-1.5"
+        class="group rounded-lg border border-gray-700 bg-[#1c1c1c] p-1.5 transition-[border-color,background-color,transform,box-shadow] duration-200 ease-out hover:-translate-y-px hover:border-primary-500/35 hover:bg-[#222222] hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
     >
         <div class="flex items-center gap-2">
             <div class="relative h-[7.25rem] w-[4.9375rem] shrink-0 overflow-hidden rounded-md bg-gray-700">
                 <img
                     :src="coverImage"
                     alt=""
-                    class="size-full object-cover"
+                    class="size-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
                 />
             </div>
 
             <div class="flex min-h-[6.9375rem] min-w-0 flex-1 flex-col items-end">
                 <div class="flex w-full flex-col gap-1.5">
-                    <div class="flex w-full flex-col">
-                        <div class="flex h-6 items-center justify-between gap-2">
-                            <h3
-                                class="truncate font-['Inter',sans-serif] text-[0.9375rem] font-semibold leading-normal"
-                                :class="isLocked ? 'text-secondary-300/20' : isPlayable ? 'text-white' : 'text-secondary-300'"
-                            >
-                                {{ episodeLabel }}
-                            </h3>
-                            <span
-                                class="inline-flex h-6 shrink-0 items-center rounded-full bg-[rgba(255,255,255,0.04)] px-2.5 font-['Inter',sans-serif] text-xs font-medium backdrop-blur-[3px]"
-                                :class="isLocked ? 'text-secondary-300/20' : 'text-secondary-300'"
-                                style="box-shadow: 0 4px 80px rgba(0, 0, 0, 0.2)"
-                            >
-                                100 Spins
-                            </span>
-                        </div>
+                    <div class="flex w-full flex-col gap-0.5">
+                        <h3
+                            class="truncate font-['Inter',sans-serif] text-[0.9375rem] font-semibold leading-normal"
+                            :class="isLocked ? 'text-secondary-300/20' : isPlayable ? 'text-white' : 'text-secondary-300'"
+                        >
+                            {{ episodeLabel }}
+                        </h3>
                         <p
                             v-if="eventsLabel"
                             class="font-['Inter',sans-serif] text-[0.8125rem] font-normal leading-normal"

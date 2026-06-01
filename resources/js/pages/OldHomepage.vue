@@ -96,7 +96,7 @@ onBeforeUnmount(() => {
         >
             <div class="container">
                 <div class="mx-auto flex w-56 flex-col items-center gap-3 md:mx-0 md:-ms-20 md:w-86 md:gap-4">
-                    <BaseLogo class="w-full" fill="white" />
+                    <BaseLogo class="w-full" />
                     <h3 class="text-center font-gill-sans text-lg font-light text-primary md:text-2xl">Stories That Live Through You</h3>
                 </div>
             </div>

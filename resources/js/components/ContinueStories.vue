@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
-import BaseContentTitle from '@/components/BaseContentTitle.vue';
+import SectionHeader from '@/components/SectionHeader.vue';
 import { GameInterface } from '@/types';
 import { show } from '@/wayfinder/routes/user/games';
 import { LucidePlay, LucideClock } from 'lucide-vue-next';
@@ -34,14 +34,13 @@ const sessionLabel = computed(() => {
 </script>
 
 <template>
-    <div class="py-10 md:py-18">
+    <section class="home-section-y">
         <div class="container">
-            <div class="flex flex-col gap-8 md:gap-10">
-                <BaseContentTitle title="Continue Your Story">
-                    <template #description>
-                        Pick up right where you left off
-                    </template>
-                </BaseContentTitle>
+            <div class="container-content home-section-gap">
+                <SectionHeader
+                    title="Continue Your Story"
+                    subtitle="Pick up right where you left off"
+                />
 
                 <div class="group relative overflow-hidden rounded-xl border border-gray-700/60 bg-gray-800/50 transition-all hover:border-primary-500/40 sm:rounded-2xl">
                     <div class="flex flex-col sm:flex-row">
@@ -102,5 +101,5 @@ const sessionLabel = computed(() => {
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </template>
