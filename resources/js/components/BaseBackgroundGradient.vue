@@ -5,10 +5,11 @@ const props = defineProps<{
     coverUrl?: string | null;
 }>();
 
+/** LoreSpinner teal slate — matches app.css primary palette */
 const DEFAULT_COLORS = [
-    'rgb(93, 139, 167)',
-    'rgb(142, 70, 145)',
-    'rgb(174, 62, 62)',
+    'rgb(111, 175, 186)',
+    'rgb(30, 80, 88)',
+    'rgb(22, 63, 70)',
 ];
 
 const smokeColors = ref<string[]>([...DEFAULT_COLORS]);

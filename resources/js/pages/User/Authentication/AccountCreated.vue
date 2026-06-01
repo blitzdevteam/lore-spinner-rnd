@@ -30,10 +30,10 @@ const copyCredentials = async () => {
         <template #body>
             <div class="flex w-full flex-col items-center gap-8">
                 <BaseLogo class="w-68" />
-                <CircleCheck class="text-primary-400" :size="56" :stroke-width="1.5" />
+                <CircleCheck class="text-primary-500" :size="56" :stroke-width="1.5" />
                 <div class="flex flex-col gap-2 text-center">
                     <p class="text-xl font-medium text-white">Account Created!</p>
-                    <p class="text-sm text-gray-500">Your account is ready. Save your credentials below before continuing.</p>
+                    <p class="text-sm text-gray-400">Your account is ready. Save your credentials below before continuing.</p>
                 </div>
             </div>
         </template>

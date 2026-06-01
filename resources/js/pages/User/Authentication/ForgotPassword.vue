@@ -17,7 +17,7 @@ import { Form } from '@inertiajs/vue3';
                 <BaseLogo class="w-68" />
                 <div class="flex flex-col gap-2 text-center">
                     <p class="text-lg text-white">Reset your password</p>
-                    <p class="text-sm text-gray-500">Enter your email and choose a new password.</p>
+                    <p class="text-sm text-gray-400">Enter your email and choose a new password.</p>
                 </div>
             </div>
         </template>

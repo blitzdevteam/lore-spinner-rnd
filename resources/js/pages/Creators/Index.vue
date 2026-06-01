@@ -24,7 +24,7 @@ withDefaults(
         >
             <div class="container">
                 <div class="-ms-20 flex w-86 flex-col items-center gap-4">
-                    <BaseLogo class="w-full" fill="white" />
+                    <BaseLogo class="w-full" />
                     <h3 class="font-gill-sans text-2xl font-light text-primary">Stories That Live Through You</h3>
                 </div>
             </div>

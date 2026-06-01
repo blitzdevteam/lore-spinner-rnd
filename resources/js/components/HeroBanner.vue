@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import janeEyreImage from '@/assets/carosel/Ultrawide jane eyre.png';
 import masqueImage from '@/assets/carosel/Ultrawide 21_9 The Masque of the Red Death.png';
+import nocturneImage from '@/assets/carosel/Ultrawide nocturne.png';
 import ozImage from '@/assets/carosel/Ultrawide Oz.png';
 import sherlockImage from '@/assets/carosel/Sherlock Ultrawide hero banner.png';
 import tellTaleImage from '@/assets/carosel/Ultrawide the tell tale heart.png';
@@ -84,6 +86,22 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackBranching: 98765,
     },
     {
+        slug: 'nocturne',
+        image: nocturneImage,
+        imagePosition: 'object-[70%_top] md:object-top',
+        titleLines: null,
+        fallbackTitle: 'Nocturne',
+        teaserLines: [
+            'After a public scandal shatters her life, a disgraced Japanese heiress discovers',
+            'the organization helping her disappear is part of an ancient cult.',
+        ],
+        fallbackTeaser:
+            'After a public scandal shatters her life, a disgraced Japanese heiress discovers the organization helping her disappear is part of an ancient cult that erases and rewrites identity.',
+        fallbackAuthor: 'Hilton Williams',
+        fallbackBranching: 98765,
+        comingSoon: true,
+    },
+    {
         slug: 'the-wonderful-wizard-of-oz',
         image: ozImage,
         imagePosition: 'object-[58%_top] md:object-top',
@@ -97,6 +115,21 @@ const heroSlideConfigs: HeroSlideConfig[] = [
             'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
         fallbackAuthor: 'L. Frank Baum',
         fallbackBranching: 156789,
+    },
+    {
+        slug: 'jane-eyre',
+        image: janeEyreImage,
+        imagePosition: 'object-[72%_top] md:object-top',
+        titleLines: null,
+        fallbackTitle: 'Jane Eyre',
+        teaserLines: [
+            'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer —',
+            'but the house holds secrets that could destroy them both.',
+        ],
+        fallbackTeaser:
+            'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
+        fallbackAuthor: 'Charlotte Brontë',
+        fallbackBranching: 134521,
     },
 ];
 

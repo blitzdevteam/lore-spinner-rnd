@@ -4,11 +4,11 @@ import BaseButton from '@/components/BaseButton.vue';
 import BaseLogo from '@/components/BaseLogo.vue';
 import StickyFooterLayout from '@/layouts/StickyFooterLayout.vue';
 
-const loginUrl    = '/writer/authentication/login';
+const loginUrl = '/writer/authentication/login';
 const registerUrl = '/writer/authentication/register';
 
-const currentRouteSeverity = (routeUrl: string): 'secondary-muted-outline' | 'muted' => {
-    return routeUrl === window.location.pathname ? 'secondary-muted-outline' : 'muted';
+const currentRouteSeverity = (routeUrl: string): 'primary-muted-outline' | 'muted' => {
+    return routeUrl === window.location.pathname ? 'primary-muted-outline' : 'muted';
 };
 </script>
 
