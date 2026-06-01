@@ -1,6 +1,6 @@
 import { computed, onUnmounted, ref } from 'vue';
 
-const SPEED_OPTIONS = [1, 1.25, 1.5, 2] as const;
+const SPEED_OPTIONS = [1, 1.25, 1.5, 1.75, 2] as const;
 
 // iOS Safari reports Infinity for duration on chunked streaming responses
 // (no Content-Length). The file is cached server-side after the first play,

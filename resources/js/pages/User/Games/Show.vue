@@ -2,6 +2,7 @@
 import GameCinematicOpening from '@/components/GameCinematicOpening.vue';
 import GameplayChatCard from '@/components/GameplayChatCard.vue';
 import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
+import { useGameplaySettings } from '@/composables/useGameplaySettings';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import GameplayLayout from '@/layouts/GameplayLayout.vue';
 import { GameInterface } from '@/types';
@@ -141,6 +142,7 @@ const showCinematic = ref(!hasPrompts.value);
 const cameFromCinematic = ref(!hasPrompts.value);
 
 const tts = useTextToSpeech();
+const { settings: gameplaySettings } = useGameplaySettings();
 // Auto-play the first narration while the showcard is still visible
 watch(
     () => prompts.value[0]?.response,
@@ -150,6 +152,23 @@ watch(
         if (!first) return;
         cameFromCinematic.value = false;
         tts.play(String(props.game.id), String(first.id));
+    },
+);
+
+// Autoplay: when a new response arrives on the latest prompt, play it automatically
+watch(
+    () => {
+        const latest = prompts.value[prompts.value.length - 1];
+        return latest ? `${latest.id}:${latest.response ?? ''}` : null;
+    },
+    (key, prevKey) => {
+        if (!gameplaySettings.autoplay) return;
+        if (!key || key === prevKey) return;
+        const latest = prompts.value[prompts.value.length - 1];
+        if (!latest?.response) return;
+        // Skip the very first prompt that came from the cinematic (already handled above)
+        if (cameFromCinematic.value) return;
+        tts.play(String(props.game.id), String(latest.id));
     },
 );
 

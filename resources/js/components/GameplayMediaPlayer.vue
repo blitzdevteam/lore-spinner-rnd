@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
-import { LucidePause, LucidePlay, LucideRepeat, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideX } from 'lucide-vue-next';
+import { LucidePause, LucidePlay, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideX } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = withDefaults(defineProps<{ collapsed?: boolean }>(), { collapsed: false });
@@ -17,6 +17,11 @@ const volumePercent = computed(() => {
 
 const isVolumeMuted = computed(() => tts.isMuted.value || tts.volume.value === 0);
 
+const speedLabel = computed(() => {
+    const r = tts.playbackRate.value;
+    return r === 1 ? '1×' : `${r}×`;
+});
+
 const onVolumeInput = (event: Event) => {
     tts.setVolume(Number((event.target as HTMLInputElement).value) / 100);
 };
@@ -31,6 +36,7 @@ const onVolumeInput = (event: Event) => {
             <!-- Play / Pause -->
             <button
                 class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-primary-600 transition-[transform,color] hover:scale-105 hover:text-white active:scale-95"
+                :title="tts.isPlaying.value ? 'Pause' : 'Play'"
                 @click="tts.togglePause"
             >
                 <LucidePause v-if="tts.isPlaying.value" class="size-4" fill="currentColor" />
@@ -48,6 +54,7 @@ const onVolumeInput = (event: Event) => {
                     class="grid size-7 shrink-0 place-items-center rounded-full text-primary-600 transition-[color,opacity] hover:text-white"
                     :class="{ 'opacity-60 hover:opacity-100': isVolumeMuted }"
                     :aria-pressed="isVolumeMuted"
+                    :title="isVolumeMuted ? 'Unmute' : 'Mute'"
                     aria-label="Toggle mute"
                     @click="tts.toggleMute"
                 >
@@ -72,18 +79,10 @@ const onVolumeInput = (event: Event) => {
 
             <span class="hidden h-6 w-px bg-white/15 sm:block" />
 
-            <!-- Loop -->
-            <button
-                class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
-                :class="tts.isLooping.value ? 'text-primary-600 hover:text-white' : 'text-gray-300'"
-                @click="tts.toggleLoop"
-            >
-                <LucideRepeat class="size-4" />
-            </button>
-
             <!-- Skip back 15s -->
             <button
                 class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
+                title="Skip back 15s"
                 @click="tts.seekBy(-15)"
             >
                 <LucideRotateCcw class="size-5" :stroke-width="1.5" />
@@ -93,15 +92,28 @@ const onVolumeInput = (event: Event) => {
             <!-- Skip forward 15s -->
             <button
                 class="bg-muted-glass-effect relative grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
+                title="Skip forward 15s"
                 @click="tts.seekBy(15)"
             >
                 <LucideRotateCw class="size-5" :stroke-width="1.5" />
                 <span class="absolute text-[8px] font-semibold tabular-nums">15</span>
             </button>
 
+            <!-- Speed -->
+            <button
+                class="bg-muted-glass-effect speed-btn grid shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
+                :class="{ 'text-primary-600': tts.playbackRate.value !== 1 }"
+                title="Playback speed"
+                aria-label="Playback speed"
+                @click="tts.cycleSpeed"
+            >
+                <span class="text-[11px] font-semibold tabular-nums leading-none">{{ speedLabel }}</span>
+            </button>
+
             <!-- Close -->
             <button
                 class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-gray-300 transition-colors hover:text-primary-600"
+                title="Close player"
                 @click="tts.dismiss"
             >
                 <LucideX class="size-4" />
@@ -137,10 +149,9 @@ const onVolumeInput = (event: Event) => {
     padding: 0.125rem 0.25rem;
 }
 
-@property --range-fill {
-    syntax: '<percentage>';
-    inherits: true;
-    initial-value: 0%;
+.speed-btn {
+    width: 2.25rem;
+    height: 2.25rem;
 }
 
 .media-range {
@@ -151,7 +162,6 @@ const onVolumeInput = (event: Event) => {
     background: transparent;
     outline: none;
     cursor: pointer;
-    transition: --range-fill 150ms ease;
 }
 
 .media-range:focus-visible {
@@ -170,7 +180,6 @@ const onVolumeInput = (event: Event) => {
         rgba(22, 63, 70, 0.28) var(--range-fill),
         rgba(22, 63, 70, 0.28) 100%
     );
-    transition: background 150ms ease;
 }
 
 .media-range::-webkit-slider-thumb {
@@ -205,7 +214,6 @@ const onVolumeInput = (event: Event) => {
     height: 4px;
     border-radius: 4px;
     background: #163f46;
-    transition: width 150ms ease;
 }
 
 .media-range::-moz-range-thumb {

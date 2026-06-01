@@ -6,7 +6,7 @@ import GameplayMediaPlayer from '@/components/GameplayMediaPlayer.vue';
 import GameplaySettingsPanel from '@/components/GameplaySettingsPanel.vue';
 import { useGameplaySettings } from '@/composables/useGameplaySettings';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
-import { LucideAudioLines, LucideBookOpen, LucideChevronLeft, LucideScrollText, LucideSettings, LucideX } from 'lucide-vue-next';
+import { LucideAudioLines, LucideChevronLeft, LucideNotebookText, LucideSettings, LucideX, LucideZap } from 'lucide-vue-next';
 import Tab from 'primevue/tab';
 import TabList from 'primevue/tablist';
 import TabPanel from 'primevue/tabpanel';
@@ -40,6 +40,10 @@ const openJournal = (tab: 'journals' | 'characters') => {
     activePanel.value = 'journal';
 };
 
+const toggleJournal = () => {
+    activePanel.value = activePanel.value === 'journal' ? null : 'journal';
+};
+
 const toggleSettings = () => {
     activePanel.value = activePanel.value === 'settings' ? null : 'settings';
 };
@@ -70,10 +74,10 @@ const handleInputSubmit = (prompt: string) => {
                     >
                         <!-- Left: back button (always) + settings (desktop only) -->
                         <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-                            <BaseButton severity="glass" :icon-only="true" class="size-11!" @click="$emit('back')">
+                            <BaseButton severity="glass" :icon-only="true" class="size-11!" title="Go back" @click="$emit('back')">
                                 <LucideChevronLeft class="size-6 text-gray-50" :stroke-width="1.75" />
                             </BaseButton>
-                            <BaseButton severity="glass" :icon-only="true" class="hidden size-11! md:flex" @click="toggleSettings">
+                            <BaseButton severity="glass" :icon-only="true" class="hidden size-11! md:flex" :title="activePanel === 'settings' ? 'Close settings' : 'Settings'" @click="toggleSettings">
                                 <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
                                 <LucideSettings v-else class="size-5 text-secondary-300" />
                             </BaseButton>
@@ -91,6 +95,19 @@ const handleInputSubmit = (prompt: string) => {
                                 severity="glass"
                                 :icon-only="true"
                                 class="size-11!"
+                                :title="settings.autoplay ? 'Autoplay on' : 'Autoplay off'"
+                                @click="settings.autoplay = !settings.autoplay"
+                            >
+                                <LucideZap
+                                    class="size-5 transition-colors"
+                                    :class="settings.autoplay ? 'text-primary fill-primary' : 'text-gray-300'"
+                                />
+                            </BaseButton>
+                            <BaseButton
+                                severity="glass"
+                                :icon-only="true"
+                                class="size-11!"
+                                :title="mediaCollapsed ? 'Show audio player' : 'Hide audio player'"
                                 @click="toggleMedia"
                             >
                                 <LucideAudioLines
@@ -102,41 +119,39 @@ const handleInputSubmit = (prompt: string) => {
                                 severity="glass"
                                 :icon-only="true"
                                 class="size-11!"
-                                @click="openJournal('journals')"
+                                :title="activePanel === 'journal' ? 'Close notes' : 'Notes'"
+                                @click="toggleJournal"
                             >
-                                <LucideX v-if="activePanel === 'journal' && journalTab === 'journals'" class="size-5 text-secondary-300" />
-                                <LucideScrollText v-else class="size-5 text-secondary-300" />
-                            </BaseButton>
-                            <BaseButton
-                                severity="glass"
-                                :icon-only="true"
-                                class="size-11!"
-                                @click="openJournal('characters')"
-                            >
-                                <LucideX v-if="activePanel === 'journal' && journalTab === 'characters'" class="size-5 text-secondary-300" />
-                                <LucideBookOpen v-else class="size-5 text-secondary-300" />
+                                <LucideX v-if="activePanel === 'journal'" class="size-5 text-secondary-300" />
+                                <LucideNotebookText v-else class="size-5 text-secondary-300" />
                             </BaseButton>
                         </div>
 
                         <!-- Mobile: all action buttons in a single pill -->
                         <div class="mobile-pill flex md:hidden">
-                            <button class="mobile-pill__btn" @click="toggleSettings">
+                            <button class="mobile-pill__btn" :title="activePanel === 'settings' ? 'Close settings' : 'Settings'" @click="toggleSettings">
                                 <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
                                 <LucideSettings v-else class="size-5 text-gray-300" />
                             </button>
-                            <button class="mobile-pill__btn" @click="toggleMedia">
+                            <button
+                                class="mobile-pill__btn"
+                                :title="settings.autoplay ? 'Autoplay on' : 'Autoplay off'"
+                                @click="settings.autoplay = !settings.autoplay"
+                            >
+                                <LucideZap
+                                    class="size-5 transition-colors"
+                                    :class="settings.autoplay ? 'text-primary fill-primary' : 'text-gray-300'"
+                                />
+                            </button>
+                            <button class="mobile-pill__btn" :title="mediaCollapsed ? 'Show audio player' : 'Hide audio player'" @click="toggleMedia">
                                 <LucideAudioLines
                                     class="size-5"
                                     :class="tts.isActive.value && !mediaCollapsed ? 'text-primary' : 'text-gray-300'"
                                 />
                             </button>
-                            <button class="mobile-pill__btn" @click="openJournal('journals')">
-                                <LucideX v-if="activePanel === 'journal' && journalTab === 'journals'" class="size-5 text-secondary-300" />
-                                <LucideScrollText v-else class="size-5 text-gray-300" />
-                            </button>
-                            <button class="mobile-pill__btn" @click="openJournal('characters')">
-                                <LucideX v-if="activePanel === 'journal' && journalTab === 'characters'" class="size-5 text-secondary-300" />
-                                <LucideBookOpen v-else class="size-5 text-gray-300" />
+                            <button class="mobile-pill__btn" :title="activePanel === 'journal' ? 'Close notes' : 'Notes'" @click="toggleJournal">
+                                <LucideX v-if="activePanel === 'journal'" class="size-5 text-secondary-300" />
+                                <LucideNotebookText v-else class="size-5 text-gray-300" />
                             </button>
                         </div>
                     </div>
@@ -152,7 +167,7 @@ const handleInputSubmit = (prompt: string) => {
                         <slot name="header" />
                     </div>
 
-                    <div :style="{ backgroundColor: settings.backgroundColor || undefined }">
+                    <div>
                         <div class="flex flex-col gap-8">
                             <slot name="game" />
                         </div>
@@ -174,7 +189,7 @@ const handleInputSubmit = (prompt: string) => {
             </div>
 
             <Transition name="backdrop-fade">
-                <div v-if="activePanel" class="fixed inset-0 z-40 bg-black/50 md:hidden" @click="activePanel = null" />
+                <div v-if="activePanel" class="fixed inset-0 z-40 bg-black/50" @click="activePanel = null" />
             </Transition>
             <Transition name="sidebar-slide">
                 <!-- Journal panel -->

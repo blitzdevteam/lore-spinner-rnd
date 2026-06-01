@@ -1,6 +1,6 @@
 import { computed, onUnmounted, ref } from 'vue';
 
-const SPEED_OPTIONS = [1, 1.25, 1.5, 2] as const;
+const SPEED_OPTIONS = [1, 1.25, 1.5, 1.75, 2] as const;
 
 const audioCache = new Map<string, HTMLAudioElement>();
 
@@ -13,6 +13,7 @@ const volume = ref(1);
 const isMuted = ref(false);
 const isLooping = ref(false);
 const activeKey = ref<string | null>(null);
+const playedKeys = new Set<string>();
 
 let currentAudio: HTMLAudioElement | null = null;
 let rafId: number | null = null;
@@ -48,6 +49,7 @@ function attachListeners(audio: HTMLAudioElement, key: string) {
         isPlaying.value = true;
         isLoading.value = false;
         duration.value = audio.duration || 0;
+        playedKeys.add(key);
         console.debug('[TTS] playing', key);
         updateTime();
     });
@@ -284,5 +286,6 @@ export function useTextToSpeech() {
         toggleLoop,
         seekTo,
         seekBy,
+        hasPlayed: (gameId: string, promptId: string) => playedKeys.has(`${gameId}:${promptId}`),
     };
 }

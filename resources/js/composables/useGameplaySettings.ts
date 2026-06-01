@@ -4,6 +4,7 @@ export interface GameplaySettings {
     fontSize: number;
     fontColor: string;
     backgroundColor: string;
+    autoplay: boolean;
 }
 
 const STORAGE_KEY = 'gameplay-settings';
@@ -12,6 +13,7 @@ const defaults: GameplaySettings = {
     fontSize: 18,
     fontColor: '#e5e5e5',
     backgroundColor: '',
+    autoplay: false,
 };
 
 const fontColorPresets = [

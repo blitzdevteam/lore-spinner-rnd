@@ -49,7 +49,7 @@ const handleMicToggle = async () => {
 
 <template>
     <div
-        :class="['relative w-full max-w-3xl transition-opacity duration-300', props.disabled && 'pointer-events-none opacity-40']"
+        :class="['relative w-full max-w-3xl', props.disabled && 'pointer-events-none']"
     >
         <!-- Gradient border pill -->
         <div
