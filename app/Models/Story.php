@@ -90,6 +90,12 @@ final class Story extends Model implements HasMedia
             ->addMediaCollection('gallery')
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
             ->useDisk('public');
+
+        $this
+            ->addMediaCollection('outro')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->singleFile()
+            ->useDisk('public');
     }
 
     /**
@@ -146,42 +152,6 @@ final class Story extends Model implements HasMedia
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
-    }
-
-    /**
-     * @param  Builder<Story>  $query
-     */
-    #[Scope]
-    protected function draft(Builder $query): void
-    {
-        $query->where('status', StoryStatusEnum::DRAFT);
-    }
-
-    /**
-     * @param  Builder<Story>  $query
-     */
-    #[Scope]
-    protected function awaitingExtractingChaptersRequest(Builder $query): void
-    {
-        $query->where('status', StoryStatusEnum::AWAITING_EXTRACTING_CHAPTERS_REQUEST);
-    }
-
-    /**
-     * @param  Builder<Story>  $query
-     */
-    #[Scope]
-    protected function extractingChapters(Builder $query): void
-    {
-        $query->where('status', StoryStatusEnum::EXTRACTING_CHAPTERS);
-    }
-
-    /**
-     * @param  Builder<Story>  $query
-     */
-    #[Scope]
-    protected function published(Builder $query): void
-    {
-        $query->where('status', StoryStatusEnum::PUBLISHED);
     }
 
     /**
@@ -257,9 +227,6 @@ final class Story extends Model implements HasMedia
             ->implode("\n\n---\n\n");
     }
 
-    /**
-     * @return bool
-     */
     public function canMarkAsPublished(): bool
     {
         return $this->status === StoryStatusEnum::DRAFT
@@ -267,5 +234,41 @@ final class Story extends Model implements HasMedia
                 ->orderBy('position')
                 ->limit(1)
                 ->value('status') === ChapterStatusEnum::READY_TO_PLAY;
+    }
+
+    /**
+     * @param  Builder<Story>  $query
+     */
+    #[Scope]
+    protected function draft(Builder $query): void
+    {
+        $query->where('status', StoryStatusEnum::DRAFT);
+    }
+
+    /**
+     * @param  Builder<Story>  $query
+     */
+    #[Scope]
+    protected function awaitingExtractingChaptersRequest(Builder $query): void
+    {
+        $query->where('status', StoryStatusEnum::AWAITING_EXTRACTING_CHAPTERS_REQUEST);
+    }
+
+    /**
+     * @param  Builder<Story>  $query
+     */
+    #[Scope]
+    protected function extractingChapters(Builder $query): void
+    {
+        $query->where('status', StoryStatusEnum::EXTRACTING_CHAPTERS);
+    }
+
+    /**
+     * @param  Builder<Story>  $query
+     */
+    #[Scope]
+    protected function published(Builder $query): void
+    {
+        $query->where('status', StoryStatusEnum::PUBLISHED);
     }
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import GameCinematicOpening from '@/components/GameCinematicOpening.vue';
+import GameCinematicOutro from '@/components/GameCinematicOutro.vue';
 import GameplayChatCard from '@/components/GameplayChatCard.vue';
 import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
 import { useGameplaySettings } from '@/composables/useGameplaySettings';
@@ -7,7 +8,7 @@ import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import GameplayLayout from '@/layouts/GameplayLayout.vue';
 import { GameInterface } from '@/types';
 import { store as storePrompt } from '@/wayfinder/actions/App/Http/Controllers/User/Game/PromptController';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { LucideUser } from 'lucide-vue-next';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
@@ -162,8 +163,13 @@ function excerpt(text: string, max = 120): string {
     return `${plain.slice(0, max).trim()}…`;
 }
 
+// Cinematic outro: shown when the full story is completed
+const page = usePage();
+const showOutro = ref((page.props.flash as Record<string, unknown>)?.story_complete === true);
+const handleOutroDone = () => { showOutro.value = false; };
+
 // Cinematic opening: shown on first visit (no prompts yet); hidden once begin fires
-const showCinematic = ref(!hasPrompts.value);
+const showCinematic = ref(!hasPrompts.value && !showOutro.value);
 const cameFromCinematic = ref(!hasPrompts.value);
 
 const tts = useTextToSpeech();
@@ -317,8 +323,11 @@ onMounted(() => {
 </script>
 
 <template>
+    <!-- ── Cinematic outro sequence (story completed) ── -->
+    <GameCinematicOutro v-if="showOutro" :outro-poster="props.game.story?.outro_poster ?? null" @done="handleOutroDone" />
+
     <!-- ── Cinematic opening sequence (new games only) ── -->
-    <GameCinematicOpening v-if="showCinematic" @prepare="handleCinemaPrepare" @done="handleCinematicDone" />
+    <GameCinematicOpening v-else-if="showCinematic" @prepare="handleCinemaPrepare" @done="handleCinematicDone" />
 
     <!-- Loading state while begin POST is in-flight -->
     <div v-else-if="isAutoBeginning" class="grid h-svh place-items-center bg-gray-950">

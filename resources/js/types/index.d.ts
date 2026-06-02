@@ -46,6 +46,7 @@ export interface StoryInterface {
     updated_at: string | null;
     cover: string;
     banner: string;
+    outro_poster: string | null;
 
     // Relations
     category?: CategoryInterface;

@@ -94,15 +94,15 @@ final class GameController extends Controller
                 ->with('error', 'This story has not been adapted yet. Re-run the adaptation pipeline before starting.');
         }
 
-        $emptyWorldState  = $this->engine->emptyWorldState();
-        $emptyAlignment   = $this->engine->emptyAlignmentScaffold();
+        $emptyWorldState = $this->engine->emptyWorldState();
+        $emptyAlignment = $this->engine->emptyAlignmentScaffold();
 
         $systemPrompt = $this->engine->renderSystemPrompt(
-            sessionContext:      $sessionContext,
-            worldState:          $emptyWorldState,
-            alignmentScaffold:   $emptyAlignment,
-            symbolicMemory:      null,
-            currentScene:        $sessionContext['opening_scene'],
+            sessionContext: $sessionContext,
+            worldState: $emptyWorldState,
+            alignmentScaffold: $emptyAlignment,
+            symbolicMemory: null,
+            currentScene: $sessionContext['opening_scene'],
             isClimacticPrevious: false,
         );
 
@@ -110,50 +110,50 @@ final class GameController extends Controller
             $protagonist = (string) ($story->system_prompt['character_name'] ?? 'the protagonist');
 
             $result = $this->engine->callAgent(
-                model:               $game->model,
-                systemPrompt:        $systemPrompt,
+                model: $game->model,
+                systemPrompt: $systemPrompt,
                 conversationHistory: [],
-                playerAction:        null,
-                protagonist:         $protagonist,
-                temperature:         $this->engine->defaultTemperatureFor($game->model),
+                playerAction: null,
+                protagonist: $protagonist,
+                temperature: $this->engine->defaultTemperatureFor($game->model),
             );
 
-            $worldState      = $this->engine->mergeStateDelta($emptyWorldState, $result['state_delta']);
+            $worldState = $this->engine->mergeStateDelta($emptyWorldState, $result['state_delta']);
             $alignmentScaffold = $this->engine->mergeAlignmentDelta($emptyAlignment, $result['alignment_tally_delta']);
-            $symbolicMemory  = $this->engine->appendMemory(null, $result['symbolic_memory_update']);
+            $symbolicMemory = $this->engine->appendMemory(null, $result['symbolic_memory_update']);
 
             $game->update([
-                'world_state'              => $worldState,
-                'alignment_scaffold'       => $alignmentScaffold,
-                'symbolic_memory'          => $symbolicMemory,
-                'is_climactic_choice'      => (bool) $result['is_climactic_choice'],
-                'defining_choice_id'       => $result['defining_choice_id'] !== '' ? $result['defining_choice_id'] : null,
-                'defining_choice_line'     => $result['defining_choice_line'] !== '' ? $result['defining_choice_line'] : null,
+                'world_state' => $worldState,
+                'alignment_scaffold' => $alignmentScaffold,
+                'symbolic_memory' => $symbolicMemory,
+                'is_climactic_choice' => (bool) $result['is_climactic_choice'],
+                'defining_choice_id' => $result['defining_choice_id'] !== '' ? $result['defining_choice_id'] : null,
+                'defining_choice_line' => $result['defining_choice_line'] !== '' ? $result['defining_choice_line'] : null,
                 'current_session_complete' => $result['session_complete'],
             ]);
 
             $game->prompts()->create([
                 'session_number' => 1,
-                'response'       => $result['response'],
-                'choices'        => $result['choices'],
+                'response' => $result['response'],
+                'choices' => $result['choices'],
             ]);
 
             Log::channel('narration')->info('game.begin', [
-                'game_id'          => $game->id,
-                'story_id'         => $story->id,
-                'model'            => $game->model,
+                'game_id' => $game->id,
+                'story_id' => $story->id,
+                'model' => $game->model,
                 'session_complete' => $result['session_complete'],
-                'response_bytes'   => strlen($result['response']),
+                'response_bytes' => mb_strlen($result['response']),
             ]);
 
             return to_route('user.games.show', $game);
         } catch (Throwable $e) {
             Log::channel('narration')->error('game.begin_failed', [
-                'game_id'   => $game->id,
-                'story_id'  => $story->id,
-                'model'     => $game->model,
+                'game_id' => $game->id,
+                'story_id' => $story->id,
+                'model' => $game->model,
                 'exception' => $e::class,
-                'message'   => $e->getMessage(),
+                'message' => $e->getMessage(),
             ]);
 
             return to_route('user.games.show', $game)
@@ -174,14 +174,14 @@ final class GameController extends Controller
         $story = $game->story()->with(['adaptation', 'adaptation.sessionAdaptations'])->first();
 
         $nextSessionNumber = (int) $game->current_session_number + 1;
-        $totalSessions     = (int) ($story->adaptation?->sessionAdaptations?->count() ?? 0);
+        $totalSessions = (int) ($story->adaptation?->sessionAdaptations?->count() ?? 0);
 
         if ($nextSessionNumber > $totalSessions) {
             return to_route('user.games.show', $game)
-                ->with('info', 'You have completed the story!');
+                ->with('story_complete', true);
         }
 
-        $arcRow         = $this->findArcProgressionRow($story->adaptation, $nextSessionNumber);
+        $arcRow = $this->findArcProgressionRow($story->adaptation, $nextSessionNumber);
         $openingHandoff = (string) ($arcRow['opens_with'] ?? '');
 
         $sessionContext = $this->engine->loadSessionContext($story, $nextSessionNumber, $openingHandoff);
@@ -191,20 +191,20 @@ final class GameController extends Controller
                 ->with('error', 'The next session has not been adapted yet. Re-run the adaptation pipeline before continuing.');
         }
 
-        $carriedWorldState   = $game->world_state ?? $this->engine->emptyWorldState();
-        $carriedAlignment    = $game->alignment_scaffold ?? $this->engine->emptyAlignmentScaffold();
-        $carriedMemory       = $game->symbolic_memory;
+        $carriedWorldState = $game->world_state ?? $this->engine->emptyWorldState();
+        $carriedAlignment = $game->alignment_scaffold ?? $this->engine->emptyAlignmentScaffold();
+        $carriedMemory = $game->symbolic_memory;
 
-        $sceneForOpener = trim($openingHandoff) !== ''
+        $sceneForOpener = mb_trim($openingHandoff) !== ''
             ? $openingHandoff
             : ($sessionContext['opening_scene'] ?? '');
 
         $systemPrompt = $this->engine->renderSystemPrompt(
-            sessionContext:      $sessionContext,
-            worldState:          $carriedWorldState,
-            alignmentScaffold:   $carriedAlignment,
-            symbolicMemory:      $carriedMemory,
-            currentScene:        $sceneForOpener,
+            sessionContext: $sessionContext,
+            worldState: $carriedWorldState,
+            alignmentScaffold: $carriedAlignment,
+            symbolicMemory: $carriedMemory,
+            currentScene: $sceneForOpener,
             isClimacticPrevious: false,
         );
 
@@ -212,51 +212,51 @@ final class GameController extends Controller
             $protagonist = (string) ($story->system_prompt['character_name'] ?? 'the protagonist');
 
             $result = $this->engine->callAgent(
-                model:               $game->model,
-                systemPrompt:        $systemPrompt,
+                model: $game->model,
+                systemPrompt: $systemPrompt,
                 conversationHistory: [],
-                playerAction:        null,
-                protagonist:         $protagonist,
-                temperature:         $this->engine->defaultTemperatureFor($game->model),
+                playerAction: null,
+                protagonist: $protagonist,
+                temperature: $this->engine->defaultTemperatureFor($game->model),
             );
 
-            $worldState      = $this->engine->mergeStateDelta($carriedWorldState, $result['state_delta']);
+            $worldState = $this->engine->mergeStateDelta($carriedWorldState, $result['state_delta']);
             $alignmentScaffold = $this->engine->mergeAlignmentDelta($carriedAlignment, $result['alignment_tally_delta']);
-            $symbolicMemory  = $this->engine->appendMemory($carriedMemory, $result['symbolic_memory_update']);
+            $symbolicMemory = $this->engine->appendMemory($carriedMemory, $result['symbolic_memory_update']);
 
             $game->update([
-                'current_session_number'   => $nextSessionNumber,
+                'current_session_number' => $nextSessionNumber,
                 'current_session_complete' => $result['session_complete'],
-                'world_state'              => $worldState,
-                'alignment_scaffold'       => $alignmentScaffold,
-                'symbolic_memory'          => $symbolicMemory,
-                'is_climactic_choice'      => (bool) $result['is_climactic_choice'],
-                'defining_choice_id'       => $result['defining_choice_id'] !== '' ? $result['defining_choice_id'] : $game->defining_choice_id,
-                'defining_choice_line'     => $result['defining_choice_line'] !== '' ? $result['defining_choice_line'] : $game->defining_choice_line,
+                'world_state' => $worldState,
+                'alignment_scaffold' => $alignmentScaffold,
+                'symbolic_memory' => $symbolicMemory,
+                'is_climactic_choice' => (bool) $result['is_climactic_choice'],
+                'defining_choice_id' => $result['defining_choice_id'] !== '' ? $result['defining_choice_id'] : $game->defining_choice_id,
+                'defining_choice_line' => $result['defining_choice_line'] !== '' ? $result['defining_choice_line'] : $game->defining_choice_line,
             ]);
 
             $game->prompts()->create([
                 'session_number' => $nextSessionNumber,
-                'response'       => $result['response'],
-                'choices'        => $result['choices'],
+                'response' => $result['response'],
+                'choices' => $result['choices'],
             ]);
 
             Log::channel('narration')->info('game.next_session', [
-                'game_id'          => $game->id,
-                'story_id'         => $story->id,
-                'session_number'   => $nextSessionNumber,
-                'model'            => $game->model,
+                'game_id' => $game->id,
+                'story_id' => $story->id,
+                'session_number' => $nextSessionNumber,
+                'model' => $game->model,
                 'session_complete' => $result['session_complete'],
             ]);
 
             return to_route('user.games.show', $game);
         } catch (Throwable $e) {
             Log::channel('narration')->error('game.next_session_failed', [
-                'game_id'        => $game->id,
+                'game_id' => $game->id,
                 'session_number' => $nextSessionNumber,
-                'model'          => $game->model,
-                'exception'      => $e::class,
-                'message'        => $e->getMessage(),
+                'model' => $game->model,
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
             ]);
 
             return to_route('user.games.show', $game)
@@ -269,14 +269,14 @@ final class GameController extends Controller
         $game->prompts()->delete();
 
         $game->update([
-            'current_session_number'   => 1,
+            'current_session_number' => 1,
             'current_session_complete' => false,
-            'world_state'              => null,
-            'symbolic_memory'          => null,
-            'alignment_scaffold'       => ['chaotic' => 0, 'lawful' => 0, 'neutral' => 0],
-            'defining_choice_id'       => null,
-            'defining_choice_line'     => null,
-            'is_climactic_choice'      => false,
+            'world_state' => null,
+            'symbolic_memory' => null,
+            'alignment_scaffold' => ['chaotic' => 0, 'lawful' => 0, 'neutral' => 0],
+            'defining_choice_id' => null,
+            'defining_choice_line' => null,
+            'is_climactic_choice' => false,
         ]);
 
         return to_route('user.games.show', $game);

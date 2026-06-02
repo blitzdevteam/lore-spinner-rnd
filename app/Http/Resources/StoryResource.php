@@ -6,19 +6,19 @@ namespace App\Http\Resources;
 
 use App\Models\Story;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Override;
 
 /**
  * @mixin Story
  */
-class StoryResource extends BaseResource
+final class StoryResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
      *
      * @return array<string, mixed>
      */
-    #[\Override]
+    #[Override]
     public function toArray(Request $request): array
     {
         return [
@@ -33,6 +33,7 @@ class StoryResource extends BaseResource
             'updated_at' => $this->updated_at,
             'cover' => $this->getFirstMediaUrl('cover'),
             'banner' => $this->getFirstMediaUrl('banner'),
+            'outro_poster' => $this->getFirstMediaUrl('outro') ?: null,
 
             // Relations
             'category' => CategoryResource::make($this->whenLoaded('category')),
