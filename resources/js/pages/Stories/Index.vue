@@ -42,7 +42,10 @@ const allLibraryStories = computed((): StoryInterface[] => {
         cover: resolveStoryCover(story.slug, story.cover),
     }));
     const realSlugs = new Set(real.map((s) => s.slug));
-    const extra = MOCK_LIBRARY_STORIES.filter((m) => !realSlugs.has(m.slug));
+    const extra = MOCK_LIBRARY_STORIES.filter((m) => !realSlugs.has(m.slug)).map((story) => ({
+        ...story,
+        cover: resolveStoryCover(story.slug, story.cover),
+    }));
     return [...real, ...extra];
 });
 
