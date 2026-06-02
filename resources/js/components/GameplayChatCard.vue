@@ -5,6 +5,7 @@ import { useGameplaySettings } from '@/composables/useGameplaySettings';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { useTypewriter } from '@/composables/useTypewriter';
 import { PromptInterface } from '@/types';
+import { glassTintVars } from '@/utils/color';
 import { LucideCheck, LucideLoader, LucidePause, LucidePlay } from 'lucide-vue-next';
 import { computed, onMounted, watch } from 'vue';
 
@@ -12,24 +13,7 @@ const CONTINUE_MARKER = '__continue__';
 
 const { settings: gameplaySettings } = useGameplaySettings();
 
-function hexToRgba(hex: string, alpha: number): string {
-    const n = hex.replace('#', '');
-    const v = n.length === 3 ? n.split('').map((c) => c + c).join('') : n;
-    const num = Number.parseInt(v, 16);
-    const r = (num >> 16) & 255;
-    const g = (num >> 8) & 255;
-    const b = num & 255;
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-const choiceGlassStyle = computed(() => ({
-    '--choice-tint': gameplaySettings.backgroundColor
-        ? hexToRgba(gameplaySettings.backgroundColor, 0.22)
-        : 'transparent',
-    '--choice-tint-selected': gameplaySettings.backgroundColor
-        ? hexToRgba(gameplaySettings.backgroundColor, 0.34)
-        : 'rgba(229, 173, 83, 0.12)',
-}));
+const panelGlassStyle = computed(() => glassTintVars(gameplaySettings.backgroundColor));
 
 const props = defineProps<{
     prompt: PromptInterface;
@@ -154,6 +138,7 @@ watch(
         <div
             v-if="prompt.response"
             class="narration-card rounded-xl border-[0.5px] p-4 sm:rounded-[14px] sm:p-5"
+            :style="panelGlassStyle"
             @click="handleNarrationClick"
         >
             <div class="text-justify leading-relaxed font-normal tracking-[0.04em]" style="font-size: inherit" v-html="renderedResponse"></div>
@@ -226,7 +211,7 @@ watch(
                     v-for="choice in prompt.choices"
                     :key="choice"
                     :class="getChoiceClass(choice)"
-                    :style="choiceGlassStyle"
+                    :style="panelGlassStyle"
                     @click="handleChoiceClick(choice)"
                 >
                     <span
@@ -281,11 +266,14 @@ watch(
 }
 
 .narration-card {
-    background-color: rgba(10, 10, 18, 0.28);
+    background:
+        linear-gradient(var(--glass-tint-solid, transparent), var(--glass-tint-solid, transparent)),
+        rgba(10, 10, 18, 0.2);
     backdrop-filter: blur(18px) saturate(140%);
     -webkit-backdrop-filter: blur(18px) saturate(140%);
     border-color: rgba(255, 255, 255, 0.11);
     box-shadow:
+        inset 0 0 56px 4px var(--glass-tint, transparent),
         inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.18),
         inset -1px -1px 0.5px -1px rgba(255, 255, 255, 0.08),
         0 4px 24px rgba(0, 0, 0, 0.32);
@@ -293,20 +281,22 @@ watch(
 
 .choice-glass {
     background:
-        linear-gradient(var(--choice-tint, transparent), var(--choice-tint, transparent)),
-        rgba(10, 10, 18, 0.24);
+        linear-gradient(var(--glass-tint-solid, transparent), var(--glass-tint-solid, transparent)),
+        rgba(10, 10, 18, 0.18);
     backdrop-filter: blur(14px) saturate(135%);
     -webkit-backdrop-filter: blur(14px) saturate(135%);
     box-shadow:
+        inset 0 0 40px 2px var(--glass-tint, transparent),
         inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.12),
         0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
 .choice-glass--idle:hover {
     background:
-        linear-gradient(var(--choice-tint, transparent), var(--choice-tint, transparent)),
-        rgba(10, 10, 18, 0.32);
+        linear-gradient(var(--glass-tint-solid, transparent), var(--glass-tint-solid, transparent)),
+        rgba(10, 10, 18, 0.24);
     box-shadow:
+        inset 0 0 48px 4px var(--glass-tint, transparent),
         inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.14),
         0 0 0 1px rgba(229, 173, 83, 0.18),
         0 4px 16px rgba(0, 0, 0, 0.24);
@@ -314,8 +304,12 @@ watch(
 
 .choice-glass--selected {
     background:
-        linear-gradient(var(--choice-tint-selected, rgba(229, 173, 83, 0.12)), var(--choice-tint-selected, rgba(229, 173, 83, 0.12))),
-        rgba(10, 10, 18, 0.3);
+        linear-gradient(var(--glass-tint-strong, rgba(229, 173, 83, 0.2)), var(--glass-tint-strong, rgba(229, 173, 83, 0.2))),
+        rgba(10, 10, 18, 0.22);
+    box-shadow:
+        inset 0 0 52px 6px var(--glass-tint-strong, rgba(229, 173, 83, 0.25)),
+        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.14),
+        0 0 0 1px rgba(229, 173, 83, 0.35);
 }
 
 .narration-card :deep(p) {

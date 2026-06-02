@@ -2,25 +2,10 @@
 import BaseButton from '@/components/BaseButton.vue';
 import { useGameplaySettings } from '@/composables/useGameplaySettings';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
+import { glassTintVars } from '@/utils/color';
 import { router } from '@inertiajs/vue3';
 import { LucideExternalLink, LucideMinus, LucidePlus, LucideRefreshCw, LucideRotateCcw, LucideZap } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-
-function hexToRgba(hex: string, alpha: number): string {
-    const n = hex.replace('#', '');
-    const v = n.length === 3 ? n.split('').map((c) => c + c).join('') : n;
-    const num = Number.parseInt(v, 16);
-    const r = (num >> 16) & 255;
-    const g = (num >> 8) & 255;
-    const b = num & 255;
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-const glassPreviewStyle = computed(() => ({
-    '--choice-tint': settings.backgroundColor
-        ? hexToRgba(settings.backgroundColor, 0.22)
-        : 'transparent',
-}));
 
 const props = withDefaults(
     defineProps<{
@@ -32,6 +17,8 @@ const props = withDefaults(
 
 const { settings, fontColorPresets, backgroundPresets, reset } = useGameplaySettings();
 const tts = useTextToSpeech();
+
+const glassPreviewStyle = computed(() => glassTintVars(settings.backgroundColor));
 
 const clampFontSize = (val: number) => Math.min(28, Math.max(12, val));
 
@@ -145,7 +132,7 @@ const onVolumeInput = (event: Event) => {
 
         <div class="flex flex-col gap-2.5">
             <label class="text-xs font-medium uppercase tracking-wider text-gray-400">Panel tint</label>
-            <p class="text-xs text-gray-500">Adds a subtle color wash to glass choice panels.</p>
+            <p class="text-xs text-gray-500">Tints narration and choice glass panels.</p>
             <div class="flex flex-wrap gap-2">
                 <button
                     v-for="preset in backgroundPresets"
@@ -278,7 +265,7 @@ const onVolumeInput = (event: Event) => {
 
             <div class="gp-settings-group">
                 <label class="gp-field-label">Panel tint</label>
-                <p class="mb-2 text-xs text-gray-500">Adds a subtle color wash to glass choice panels.</p>
+                <p class="mb-2 text-xs text-gray-500">Tints narration and choice glass panels.</p>
                 <div class="flex flex-wrap gap-2">
                     <button
                         v-for="preset in backgroundPresets"
@@ -470,11 +457,12 @@ const onVolumeInput = (event: Event) => {
 
 .settings-glass-preview {
     background:
-        linear-gradient(var(--choice-tint, transparent), var(--choice-tint, transparent)),
-        rgba(10, 10, 18, 0.28);
+        linear-gradient(var(--glass-tint-solid, transparent), var(--glass-tint-solid, transparent)),
+        rgba(10, 10, 18, 0.2);
     backdrop-filter: blur(18px) saturate(140%);
     -webkit-backdrop-filter: blur(18px) saturate(140%);
     box-shadow:
+        inset 0 0 56px 4px var(--glass-tint, transparent),
         inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.14),
         0 4px 20px rgba(0, 0, 0, 0.24);
 }
