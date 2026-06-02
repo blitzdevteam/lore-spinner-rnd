@@ -444,12 +444,29 @@ onMounted(() => {
                         />
                     </div>
                     <div class="gp-timeline__card min-w-0 flex-1 rounded-xl border border-white/8 bg-white/[0.03] p-3.5">
-                        <p v-if="prompt.prompt" class="text-xs font-medium text-primary-300/90">
-                            You · {{ prompt.prompt === '__continue__' ? 'Continued' : prompt.prompt }}
+                        <p
+                            v-if="index === 0"
+                            class="text-[10px] font-semibold uppercase tracking-wider text-gray-500"
+                        >
+                            Opening
                         </p>
-                        <p v-else class="text-[10px] font-semibold uppercase tracking-wider text-gray-500">Opening</p>
-                        <p class="mt-2 text-sm leading-relaxed text-gray-300">
-                            {{ excerpt(prompt.response) }}
+                        <p
+                            v-else-if="!prompt.prompt && index === prompts.length - 1"
+                            class="text-[10px] font-semibold uppercase tracking-wider text-gray-500"
+                        >
+                            Now
+                        </p>
+                        <p
+                            class="text-sm leading-relaxed text-gray-300"
+                            :class="{ 'mt-2': index === 0 || (!prompt.prompt && index === prompts.length - 1) }"
+                        >
+                            {{ excerpt(prompt.response ?? '') }}
+                        </p>
+                        <p
+                            v-if="prompt.prompt"
+                            class="mt-2 border-t border-white/6 pt-2 text-xs font-medium text-primary-300/90"
+                        >
+                            You · {{ prompt.prompt === '__continue__' ? 'Continued' : prompt.prompt }}
                         </p>
                     </div>
                 </article>
