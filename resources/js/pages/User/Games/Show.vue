@@ -347,6 +347,7 @@ onMounted(() => {
         :input-disabled="!canSubmitInput"
         :game-id="game.id"
         :cover-url="game.story?.cover ?? null"
+        :story-slug="game.story?.slug ?? null"
         :journal-meta="journalMeta"
         @submit="handleSubmit"
         @back="handleBack"

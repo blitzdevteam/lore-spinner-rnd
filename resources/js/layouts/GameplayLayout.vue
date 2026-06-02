@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BaseBackgroundGradient from '@/components/BaseBackgroundGradient.vue';
+import AuroraBackground from '@/components/AuroraBackground.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import GameplayAudioPanel from '@/components/GameplayAudioPanel.vue';
 import GameplayBottomSheet from '@/components/GameplayBottomSheet.vue';
@@ -15,7 +15,8 @@ import TabList from 'primevue/tablist';
 import TabPanel from 'primevue/tabpanel';
 import TabPanels from 'primevue/tabpanels';
 import Tabs from 'primevue/tabs';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { buildAuroraProps } from '@/data/storyAuroraThemes';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -23,9 +24,12 @@ const props = withDefaults(
         gameId?: string;
         coverUrl?: string | null;
         journalMeta?: JournalMeta;
+        storySlug?: string | null;
     }>(),
-    { inputDisabled: false, gameId: undefined, coverUrl: undefined, journalMeta: undefined },
+    { inputDisabled: false, gameId: undefined, coverUrl: undefined, journalMeta: undefined, storySlug: undefined },
 );
+
+const auroraProps = computed(() => buildAuroraProps(props.storySlug));
 
 type Panel = 'journal' | 'settings' | 'audio' | null;
 
@@ -112,7 +116,16 @@ const handleInputSubmit = (prompt: string) => {
 
 <template>
     <div class="relative h-svh">
-        <BaseBackgroundGradient class="z-0" :cover-url="props.coverUrl" />
+        <div class="pointer-events-none fixed inset-0 z-0" :style="{ background: auroraProps.deep }" />
+        <AuroraBackground
+            class="pointer-events-none fixed inset-0 z-0"
+            :deep="auroraProps.deep"
+            :mids="auroraProps.mids"
+            :accent="auroraProps.accent"
+            :highlight="auroraProps.highlight"
+            :seconds-per-color="auroraProps.secondsPerColor"
+            :intensity="auroraProps.intensity"
+        />
         <div class="relative flex min-h-svh">
             <div class="flex-1">
                 <!-- ── Top header bar ── -->
