@@ -7,6 +7,8 @@ import { computed, ref } from 'vue';
 const props = withDefaults(
     defineProps<{
         disabled?: boolean;
+        /** 'sweep' = idle left↔right loop, 'orbit' = clockwork ring while waiting */
+        glowVariant?: 'sweep' | 'orbit';
     }>(),
     { disabled: false },
 );
@@ -53,8 +55,12 @@ const handleMicToggle = async () => {
     >
         <!-- Gradient border pill -->
         <div
-            class="flex h-14 items-center rounded-[32px] border border-[#373737] p-2 sm:h-[70px] sm:rounded-[39px] sm:p-2.5"
-            style="background: linear-gradient(90deg, rgba(0, 198, 222, 0.45) 0%, rgba(13, 112, 124, 0.45) 10.577%, rgba(26, 26, 26, 0.2) 21.154%)"
+            :class="[
+                'flex h-14 items-center rounded-[32px] border border-[#373737] p-2 sm:h-[70px] sm:rounded-[39px] sm:p-2.5',
+                props.glowVariant === 'sweep' && 'gp-pill--sweep',
+                props.glowVariant === 'orbit' && 'gp-pill--orbit',
+            ]"
+            :style="!props.glowVariant ? { background: 'linear-gradient(90deg, rgba(0, 198, 222, 0.45) 0%, rgba(13, 112, 124, 0.45) 10.577%, rgba(26, 26, 26, 0.2) 21.154%)' } : undefined"
         >
             <!-- Inner dark field -->
             <div class="flex h-full flex-1 items-center gap-2 rounded-[28px] border border-[#373737] bg-[#1c1c1c] sm:gap-3 sm:rounded-[35px] px-1">
@@ -127,5 +133,54 @@ const handleMicToggle = async () => {
 .gp-send-btn:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+}
+
+/* ── Animated pill glow (registered custom props for GPU-smooth animation) ─── */
+@property --gp-glow-pos {
+    syntax: '<percentage>';
+    initial-value: -5%;
+    inherits: false;
+}
+
+@property --gp-glow-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+/* Idle: the teal band sweeps left → right → left smoothly */
+.gp-pill--sweep {
+    background: linear-gradient(
+        90deg,
+        transparent calc(var(--gp-glow-pos) - 12%),
+        rgba(0, 198, 222, 0.48) var(--gp-glow-pos),
+        rgba(13, 112, 124, 0.44) calc(var(--gp-glow-pos) + 10%),
+        rgba(26, 26, 26, 0.18) calc(var(--gp-glow-pos) + 22%),
+        transparent calc(var(--gp-glow-pos) + 32%)
+    );
+    animation: gp-glow-sweep 5.5s ease-in-out infinite;
+}
+
+@keyframes gp-glow-sweep {
+    0%, 100% { --gp-glow-pos: -5%; }
+    50%       { --gp-glow-pos: 82%; }
+}
+
+/* Sending: the glow travels clockwise around the pill perimeter */
+.gp-pill--orbit {
+    background: conic-gradient(
+        from var(--gp-glow-angle) at 50% 50%,
+        rgba(8, 206, 230, 0.92) 0deg,
+        rgba(8, 206, 230, 0.55) 18deg,
+        rgba(26, 26, 26, 0.14) 36deg 324deg,
+        rgba(8, 206, 230, 0.55) 342deg,
+        rgba(8, 206, 230, 0.92) 360deg
+    );
+    animation: gp-glow-orbit 4.6s linear infinite;
+}
+
+@keyframes gp-glow-orbit {
+    from { --gp-glow-angle: 0deg; }
+    to   { --gp-glow-angle: 360deg; }
 }
 </style>
