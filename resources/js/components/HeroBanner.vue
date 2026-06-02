@@ -44,11 +44,11 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         titleLines: ['The Tell-Tale', 'Heart'],
         fallbackTitle: 'The Tell-Tale Heart',
         teaserLines: [
-            'Convinced of his own sanity, a man slowly loses his grip on reality',
-            'as guilt transforms the world around him.',
+            'As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape:',
+            "the beating of a dead man's heart.",
         ],
         fallbackTeaser:
-            'Convinced of his own sanity, a man slowly loses his grip on reality as guilt transforms the world around him.',
+            "As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape: the beating of a dead man's heart.",
         fallbackAuthor: 'Edgar Allan Poe',
         comingSoon: true,
     },
@@ -59,11 +59,11 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         titleLines: ['The Wonderful', 'Wizard of Oz'],
         fallbackTitle: 'The Wonderful Wizard of Oz',
         teaserLines: [
-            'Follow the yellow brick road — but every path leads somewhere different,',
-            'and not all roads lead home.',
+            'A storm carries you into the magical land of Oz, where witches whisper, lions tremble,',
+            'and every step down the Yellow Brick Road changes who you are becoming.',
         ],
         fallbackTeaser:
-            'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
+            'A storm carries you into the magical land of Oz, where witches whisper, lions tremble, and every step down the Yellow Brick Road changes who you are becoming.',
         fallbackAuthor: 'L. Frank Baum',
     },
     {
@@ -73,11 +73,11 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         titleLines: ['Sherlock Holmes', 'In The Speckled Band'],
         fallbackTitle: 'Sherlock Holmes in The Speckled Band',
         teaserLines: [
-            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning.',
-            'Holmes and Watson must unravel the mystery before the speckled band strikes again.',
+            'A young woman fears she will suffer the same fate as her sister,',
+            'forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
         ],
         fallbackTeaser:
-            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
+            'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
         fallbackAuthor: 'Arthur Conan Doyle',
     },
     {
@@ -87,11 +87,11 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         titleLines: null,
         fallbackTitle: 'Jane Eyre',
         teaserLines: [
-            'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer —',
-            'but the house holds secrets that could destroy them both.',
+            'A young orphan enters a dark and mysterious estate where buried secrets, dangerous love,',
+            'and the search for belonging may change the course of her life forever.',
         ],
         fallbackTeaser:
-            'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
+            'A young orphan enters a dark and mysterious estate where buried secrets, dangerous love, and the search for belonging may change the course of her life forever.',
         fallbackAuthor: 'Charlotte Brontë',
         comingSoon: true,
     },
