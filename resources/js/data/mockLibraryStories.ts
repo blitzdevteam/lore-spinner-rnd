@@ -1,4 +1,4 @@
-import animaCover from '@/assets/featured/anima.jpg';
+import animaCover from '@/assets/featured/anima.png';
 import janeEyreCover from '@/assets/featured/janeEyre.png';
 import { StoryInterface } from '@/types';
 import { StoryRatingEnum, StoryStatusEnum } from '@/types/enum';

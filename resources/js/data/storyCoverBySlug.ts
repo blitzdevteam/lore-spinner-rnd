@@ -1,9 +1,9 @@
-import animaCover from '@/assets/featured/anima.jpg';
+import animaCover from '@/assets/featured/anima.png';
 import janeEyreCover from '@/assets/featured/janeEyre.png';
 import redDeathCover from '@/assets/featured/redDeath.png';
-import sherlockCover from '@/assets/featured/sherlock.png';
-import tellTaleCover from '@/assets/featured/tale-tale.png';
-import wizardOzCover from '@/assets/featured/wizardoz.jpg';
+import sherlockCover from '@/assets/newStories/sherlock-new.png';
+import tellTaleCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
+import wizardOzCover from '@/assets/newStories/Oz landscape titled.png';
 
 /** Portrait covers aligned with home Top Stories — used when API media is missing. */
 export const STORY_COVER_BY_SLUG: Record<string, string> = {
