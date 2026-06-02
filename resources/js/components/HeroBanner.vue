@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import janeEyreImage from '@/assets/carosel/Ultrawide jane eyre.png';
-import masqueImage from '@/assets/carosel/Ultrawide 21_9 The Masque of the Red Death.png';
-import nocturneImage from '@/assets/carosel/Ultrawide nocturne.png';
 import ozImage from '@/assets/carosel/Ultrawide Oz.png';
 import sherlockImage from '@/assets/carosel/Sherlock Ultrawide hero banner.png';
 import tellTaleImage from '@/assets/carosel/Ultrawide the tell tale heart.png';
@@ -54,50 +52,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackAuthor: 'Edgar Allan Poe',
     },
     {
-        slug: 'the-adventure-of-the-speckled-band',
-        image: sherlockImage,
-        imagePosition: 'object-[60%_top] md:object-top',
-        titleLines: ['Sherlock Holmes', 'In The Speckled Band'],
-        fallbackTitle: 'Sherlock Holmes in The Speckled Band',
-        teaserLines: [
-            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning.',
-            'Holmes and Watson must unravel the mystery before the speckled band strikes again.',
-        ],
-        fallbackTeaser:
-            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
-        fallbackAuthor: 'Arthur Conan Doyle',
-    },
-    {
-        slug: 'the-masque-of-the-red-death',
-        image: masqueImage,
-        imagePosition: 'object-[68%_top] md:object-top',
-        titleLines: ['The Masque of', 'the Red Death'],
-        fallbackTitle: 'The Masque of the Red Death',
-        teaserLines: [
-            'A prince seals his revellers inside a great abbey to escape a plague.',
-            'But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
-        ],
-        fallbackTeaser:
-            'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
-        fallbackAuthor: 'Edgar Allan Poe',
-    },
-    {
-        slug: 'nocturne',
-        image: nocturneImage,
-        imagePosition: 'object-[70%_top] md:object-top',
-        titleLines: null,
-        fallbackTitle: 'Nocturne',
-        teaserLines: [
-            'After a public scandal shatters her life, a disgraced Japanese heiress discovers',
-            'the organization helping her disappear is part of an ancient cult.',
-        ],
-        fallbackTeaser:
-            'After a public scandal shatters her life, a disgraced Japanese heiress discovers the organization helping her disappear is part of an ancient cult that erases and rewrites identity.',
-        fallbackAuthor: 'Hilton Williams',
-        comingSoon: true,
-    },
-    
-    {
         slug: 'the-wonderful-wizard-of-oz',
         image: ozImage,
         imagePosition: 'object-[58%_top] md:object-top',
@@ -110,6 +64,20 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
         fallbackAuthor: 'L. Frank Baum',
+    },
+    {
+        slug: 'the-adventure-of-the-speckled-band',
+        image: sherlockImage,
+        imagePosition: 'object-[60%_top] md:object-top',
+        titleLines: ['Sherlock Holmes', 'In The Speckled Band'],
+        fallbackTitle: 'Sherlock Holmes in The Speckled Band',
+        teaserLines: [
+            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning.',
+            'Holmes and Watson must unravel the mystery before the speckled band strikes again.',
+        ],
+        fallbackTeaser:
+            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
+        fallbackAuthor: 'Arthur Conan Doyle',
     },
     {
         slug: 'jane-eyre',
