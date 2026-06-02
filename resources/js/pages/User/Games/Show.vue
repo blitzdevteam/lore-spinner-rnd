@@ -9,7 +9,6 @@ import GameplayLayout from '@/layouts/GameplayLayout.vue';
 import { GameInterface } from '@/types';
 import { store as storePrompt } from '@/wayfinder/actions/App/Http/Controllers/User/Game/PromptController';
 import { router, usePage } from '@inertiajs/vue3';
-import { LucideUser } from 'lucide-vue-next';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 const CONTINUE_MARKER = '__continue__';
@@ -17,107 +16,6 @@ const CONTINUE_MARKER = '__continue__';
 const props = defineProps<{
     game: GameInterface;
 }>();
-
-
-interface CharacterEntry {
-    event: string;
-    facts: string[];
-}
-
-interface CharacterSheet {
-    name: string;
-    firstEvent: string;
-    appearanceCount: number;
-    log: CharacterEntry[];
-}
-
-const ATTR_CATEGORIES: Record<string, string> = {
-    'Persistent physical conditions:': 'Condition',
-    'Objects:': 'Objects',
-    'Environmental conditions:': 'Environment',
-    'Factual dialogue:': 'Dialogue',
-    'Location:': 'Location',
-};
-
-function parseAttrCategory(attr: string): { category: string; label: string; items: string[] } | null {
-    for (const [prefix, label] of Object.entries(ATTR_CATEGORIES)) {
-        if (attr.startsWith(prefix)) {
-            const items = attr
-                .slice(prefix.length)
-                .split('|')
-                .map((s) => s.trim())
-                .filter(Boolean);
-            return { category: prefix, label, items };
-        }
-    }
-    return null;
-}
-
-const characters = computed(() => {
-    const charMap = new Map<string, CharacterSheet>();
-    const seenFacts = new Map<string, Set<string>>();
-
-    for (const prompt of prompts.value) {
-        const attrs = prompt.event?.attributes;
-        if (!attrs) continue;
-
-        const eventTitle = prompt.event?.title ?? 'Unknown';
-        let charNames: string[] = [];
-        const eventFacts: string[] = [];
-
-        for (const attr of attrs) {
-            if (attr.startsWith('Characters physically present:')) {
-                charNames = attr
-                    .replace('Characters physically present:', '')
-                    .split('|')
-                    .map((n) => n.trim())
-                    .filter(Boolean);
-                continue;
-            }
-
-            const parsed = parseAttrCategory(attr);
-            if (parsed) {
-                for (const item of parsed.items) {
-                    eventFacts.push(item);
-                }
-            }
-        }
-
-        for (const name of charNames) {
-            const nameLower = name.toLowerCase();
-            const isSolo = charNames.length === 1;
-            const relevantFacts = eventFacts.filter((f) => isSolo || f.toLowerCase().includes(nameLower));
-
-            if (!relevantFacts.length) continue;
-
-            const existing = charMap.get(name);
-            const seen = seenFacts.get(name) ?? new Set<string>();
-
-            const newFacts = relevantFacts.filter((f) => !seen.has(f));
-            for (const f of newFacts) seen.add(f);
-            seenFacts.set(name, seen);
-
-            if (!newFacts.length && existing) {
-                existing.appearanceCount++;
-                continue;
-            }
-
-            if (existing) {
-                existing.appearanceCount++;
-                existing.log.push({ event: eventTitle, facts: newFacts });
-            } else {
-                charMap.set(name, {
-                    name,
-                    firstEvent: eventTitle,
-                    appearanceCount: 1,
-                    log: [{ event: eventTitle, facts: newFacts }],
-                });
-            }
-        }
-    }
-
-    return Array.from(charMap.values());
-});
 
 const handleBack = () => {
     if (window.history.length > 1) {
@@ -486,33 +384,7 @@ onMounted(() => {
         </template>
 
         <template #characters>
-            <p v-if="!characters.length" class="text-sm text-gray-500">No characters introduced yet.</p>
-            <div
-                v-for="char in characters"
-                :key="char.name"
-                class="rounded-xl border border-gray-700/50 bg-gray-800/40 p-4 transition-all hover:border-gray-600"
-            >
-                <div class="flex items-center gap-3">
-                    <div class="grid size-10 shrink-0 place-items-center rounded-full bg-secondary-400/10 text-secondary-400">
-                        <LucideUser class="size-5" :stroke-width="1.5" />
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <h6 class="text-base leading-snug text-gray-100">{{ char.name }}</h6>
-                        <p class="mt-0.5 text-xs text-gray-500">
-                            {{ char.firstEvent }}
-                            <span v-if="char.appearanceCount > 1"> · {{ char.appearanceCount }} appearances</span>
-                        </p>
-                    </div>
-                </div>
-                <div v-if="char.log.length" class="mt-3 flex flex-col gap-2.5 border-t border-gray-700/40 pt-3">
-                    <div v-for="(entry, i) in char.log" :key="i" class="flex flex-col gap-1">
-                        <p v-if="char.log.length > 1" class="text-[10px] font-semibold tracking-wide text-gray-600 uppercase">{{ entry.event }}</p>
-                        <ul class="flex flex-col gap-0.5">
-                            <li v-for="(fact, j) in entry.facts" :key="j" class="text-xs leading-relaxed text-gray-400">· {{ fact }}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <p class="py-6 text-center text-sm text-gray-500">Coming soon</p>
         </template>
     </GameplayLayout>
 </template>
