@@ -4,7 +4,7 @@ import aliceCover from '@/assets/featured/alice.png';
 import animaCover from '@/assets/featured/anima.png';
 import jekyllCover from '@/assets/featured/jekyll.png';
 import nocturneCover from '@/assets/featured/nocturne.png';
-import wizardOzCover from '@/assets/featured/wizardoz.jpg';
+import ozCover from '@/assets/newStories/Oz landscape titled.png';
 import heartImg from '@/assets/mood/Heart.svg';
 import mountainsImg from '@/assets/mood/Mountains.svg';
 import eyeImg from '@/assets/mood/Eye.svg';
@@ -69,7 +69,7 @@ const gamesById: Record<string, MoodGame> = {
     oz: {
         id: 'oz',
         title: 'The Wonderful Wizard of Oz',
-        cover: wizardOzCover,
+        cover: ozCover,
         playable: false,
         themes: ['Courage', 'Home', 'Illusion'],
         teaser: 'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
