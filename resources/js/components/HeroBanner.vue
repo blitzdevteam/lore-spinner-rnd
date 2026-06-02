@@ -96,6 +96,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackAuthor: 'Hilton Williams',
         comingSoon: true,
     },
+    
     {
         slug: 'the-wonderful-wizard-of-oz',
         image: ozImage,
