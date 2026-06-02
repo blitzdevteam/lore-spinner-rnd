@@ -16,7 +16,7 @@ import { StoryInterface } from '@/types';
 import { store, show as showGame } from '@/wayfinder/actions/App/Http/Controllers/User/GameController';
 import { show as storyShowRoute } from '@/wayfinder/routes/stories';
 import { router } from '@inertiajs/vue3';
-import { LucideChevronLeft } from 'lucide-vue-next';
+import { LucideChevronLeft, LucideShare2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -72,10 +72,11 @@ const handleBack = (): void => {
 const teaserText = computed(() => props.story.teaser?.trim() || '');
 
 const creatorName = computed(
-    () => props.story.creator?.full_name?.trim()
-        || [props.story.creator?.first_name, props.story.creator?.last_name].filter(Boolean).join(' ')
-        || props.story.creator?.username
-        || 'Author',
+    () =>
+        props.story.creator?.full_name?.trim() ||
+        [props.story.creator?.first_name, props.story.creator?.last_name].filter(Boolean).join(' ') ||
+        props.story.creator?.username ||
+        'Author',
 );
 
 const coverHeadline = computed(() => props.story.title.toUpperCase());
@@ -150,13 +151,9 @@ const creatorAvatar = computed(() => {
     return a || null;
 });
 
-const leftColumnChapters = computed(() =>
-    props.story.chapters?.filter((_, index) => index % 2 === 0) ?? [],
-);
+const leftColumnChapters = computed(() => props.story.chapters?.filter((_, index) => index % 2 === 0) ?? []);
 
-const rightColumnChapters = computed(() =>
-    props.story.chapters?.filter((_, index) => index % 2 === 1) ?? [],
-);
+const rightColumnChapters = computed(() => props.story.chapters?.filter((_, index) => index % 2 === 1) ?? []);
 </script>
 
 <template>
@@ -168,18 +165,19 @@ const rightColumnChapters = computed(() =>
         <div
             class="story-show-shell relative z-[1] mx-auto flex h-full max-w-[72rem] flex-col px-5 pt-8 pb-28 md:px-[3.25rem] md:pt-10 lg:max-h-svh lg:flex-row lg:items-stretch lg:gap-6 lg:overflow-hidden lg:px-[3.25rem] lg:py-6 xl:max-w-[75rem] xl:gap-10"
         >
+            <div class="pointer-events-auto absolute top-8 left-5 md:top-10 md:left-[3.25rem] lg:top-6 lg:left-[3.25rem] max-lg:hidden">
+                <StoryPlayGlassRoundButton aria-label="Go back" @click="handleBack">
+                    <LucideChevronLeft class="!size-5 text-white" :stroke-width="1.85" aria-hidden="true" />
+                </StoryPlayGlassRoundButton>
+            </div>
+
             <!-- Cover — fixed in viewport on desktop -->
             <div
                 class="relative mb-8 w-[20.875rem] max-w-full shrink-0 self-center lg:mb-0 lg:flex lg:w-[20.875rem] lg:shrink-0 lg:self-center xl:mr-2"
             >
-                <StoryPlayCoverColumn
-                    :src="coverImageUrl"
-                    :title="story.title"
-                    :headline="coverHeadline"
-                    :footer-credit="coverFooterCredit"
-                >
+                <StoryPlayCoverColumn :src="coverImageUrl" :title="story.title" :headline="coverHeadline" :footer-credit="coverFooterCredit">
                     <template #overlay>
-                        <div class="pointer-events-auto absolute left-4 top-4">
+                        <div class="pointer-events-auto absolute left-4 top-4 lg:hidden">
                             <StoryPlayGlassRoundButton
                                 aria-label="Go back"
                                 @click="handleBack"
@@ -201,9 +199,7 @@ const rightColumnChapters = computed(() =>
             </div>
 
             <!-- Main column — app panel -->
-            <div
-                class="relative flex min-h-0 min-w-0 flex-1 flex-col lg:max-w-[41.25rem]"
-            >
+            <div class="relative flex min-h-0 min-w-0 flex-1 flex-col">
                 <div class="shrink-0 overflow-visible">
                     <StoryPlayTopBar
                         :tab="panel"
@@ -215,101 +211,82 @@ const rightColumnChapters = computed(() =>
                 </div>
 
                 <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
-                <!-- Details — full panel scrolls -->
-                <div
-                    v-if="panel === 'details'"
-                    class="story-show-panel story-show-panel--details mt-4 min-h-0 flex-1 pb-4 lg:mt-5 lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
-                >
-                    <div class="flex flex-col gap-4 lg:gap-5">
-                        <div class="flex flex-col gap-2.5">
-                            <StoryPlayTitleProgress :title="story.title" :progress-label="progressBadge" />
-                            <StoryPlayMetaRow
-                                :duration-label="durationLabel"
-                                :genre-label="genreLabel"
+                    <!-- Details — full panel scrolls -->
+                    <div
+                        v-if="panel === 'details'"
+                        class="story-show-chapters story-show-panel story-show-panel--details mt-4 flex min-h-0 flex-1 flex-col pb-4 lg:mt-0 lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
+                    >
+                        <div class="story-show-chapters__align hidden shrink-0 lg:block" aria-hidden="true" />
+                        <div class="flex flex-col gap-4 lg:gap-5">
+                            <div class="flex flex-col gap-2.5">
+                                <StoryPlayTitleProgress :title="story.title" :progress-label="progressBadge" />
+                                <StoryPlayMetaRow :duration-label="durationLabel" :genre-label="genreLabel" />
+                                <StoryPlayStatStrip :items="statItems" />
+                            </div>
+
+                            <StoryPlayAuthorDescription
+                                :author-name="creatorName"
+                                :avatar-url="creatorAvatar"
+                                :description="teaserText || 'Explore this playable story.'"
+                                :collapse-at="360"
                             />
-                            <StoryPlayStatStrip :items="statItems" />
+
+                            <section
+                                v-if="story.comments?.length"
+                                aria-label="Community comments"
+                                class="rounded-xl border border-white/12 bg-black/35 p-4 backdrop-blur-sm"
+                            >
+                                <div class="mb-4 font-['Inter',sans-serif] text-[0.8125rem] font-semibold tracking-wide text-gray-400 uppercase">
+                                    Comments · {{ story.comments_count ?? story.comments.length }}
+                                </div>
+                                <div class="flex flex-col gap-4">
+                                    <StoryCommentCard v-for="comment in story.comments" :key="comment.id" :comment />
+                                </div>
+                            </section>
                         </div>
-
-                        <StoryPlayAuthorDescription
-                            :author-name="creatorName"
-                            :avatar-url="creatorAvatar"
-                            :description="teaserText || 'Explore this playable story.'"
-                            :collapse-at="360"
-                        />
-
-                        <section
-                            v-if="story.comments?.length"
-                            aria-label="Community comments"
-                            class="rounded-xl border border-white/12 bg-black/35 p-4 backdrop-blur-sm"
-                        >
-                            <div class="mb-4 font-['Inter',sans-serif] text-[0.8125rem] font-semibold uppercase tracking-wide text-gray-400">
-                                Comments · {{ story.comments_count ?? story.comments.length }}
-                            </div>
-                            <div class="flex flex-col gap-4">
-                                <StoryCommentCard
-                                    v-for="comment in story.comments"
-                                    :key="comment.id"
-                                    :comment
-                                />
-                            </div>
-                        </section>
                     </div>
-                </div>
 
-                <!-- Chapters — fixed align spacer, list scrolls below -->
-                <div
-                    v-else
-                    class="story-show-chapters mt-4 flex min-h-0 flex-1 flex-col lg:mt-0"
-                >
-                    <div
-                        class="story-show-chapters__align hidden shrink-0 lg:block"
-                        aria-hidden="true"
-                    />
-                    <div
-                        class="story-show-panel story-show-panel--chapters min-h-0 flex-1 lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
-                    >
+                    <!-- Chapters — fixed align spacer, list scrolls below -->
+                    <div v-else class="story-show-chapters mt-4 flex min-h-0 flex-1 flex-col lg:mt-0">
+                        <div class="story-show-chapters__align hidden shrink-0 lg:block" aria-hidden="true" />
+                        <div class="story-show-panel story-show-panel--chapters min-h-0 flex-1 lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
+                            <div v-if="story.chapters?.length" class="flex flex-col gap-2.5 pb-4 sm:flex-row sm:items-start">
+                                <div class="flex min-w-0 flex-1 flex-col gap-2.5">
+                                    <StoryChapterCard
+                                        v-for="(chapter, index) in leftColumnChapters"
+                                        :key="chapter.id"
+                                        :chapter
+                                        :episode-number="index * 2 + 1"
+                                    />
+                                </div>
+                                <div class="flex min-w-0 flex-1 flex-col gap-2.5">
+                                    <StoryChapterCard
+                                        v-for="(chapter, index) in rightColumnChapters"
+                                        :key="chapter.id"
+                                        :chapter
+                                        :episode-number="index * 2 + 2"
+                                    />
+                                </div>
+                            </div>
+                            <p
+                                v-else
+                                class="rounded-xl border border-white/15 bg-black/45 py-14 text-center font-['Inter',sans-serif] text-sm font-medium text-gray-500 backdrop-blur-sm"
+                            >
+                                No chapters listed yet.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Desktop CTA — pinned to bottom of main column -->
+                    <div class="story-show-cta hidden shrink-0 border-t border-white/8 bg-black/90 pt-4 backdrop-blur-sm lg:block">
+                        <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
                         <div
-                            v-if="story.chapters?.length"
-                            class="flex flex-col gap-2.5 pb-4 sm:flex-row sm:items-start"
-                        >
-                            <div class="flex min-w-0 flex-1 flex-col gap-2.5">
-                                <StoryChapterCard
-                                    v-for="(chapter, index) in leftColumnChapters"
-                                    :key="chapter.id"
-                                    :chapter
-                                    :episode-number="index * 2 + 1"
-                                />
-                            </div>
-                            <div class="flex min-w-0 flex-1 flex-col gap-2.5">
-                                <StoryChapterCard
-                                    v-for="(chapter, index) in rightColumnChapters"
-                                    :key="chapter.id"
-                                    :chapter
-                                    :episode-number="index * 2 + 2"
-                                />
-                            </div>
-                        </div>
-                        <p
                             v-else
-                            class="rounded-xl border border-white/15 bg-black/45 py-14 text-center font-['Inter',sans-serif] text-sm font-medium text-gray-500 backdrop-blur-sm"
+                            class="flex h-[3.5rem] w-full cursor-not-allowed items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium tracking-widest text-gray-500 uppercase select-none"
                         >
-                            No chapters listed yet.
-                        </p>
+                            Coming Soon
+                        </div>
                     </div>
-                </div>
-
-                <!-- Desktop CTA — pinned to bottom of main column -->
-                <div
-                    class="story-show-cta hidden shrink-0 border-t border-white/8 bg-black/90 pt-4 backdrop-blur-sm lg:block"
-                >
-                    <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
-                    <div
-                        v-else
-                        class="flex h-[3.5rem] w-full cursor-not-allowed select-none items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium uppercase tracking-widest text-gray-500"
-                    >
-                        Coming Soon
-                    </div>
-                </div>
                 </div>
             </div>
         </div>
@@ -317,11 +294,11 @@ const rightColumnChapters = computed(() =>
         <!-- Mobile CTA strip -->
         <div class="fixed inset-x-0 bottom-0 z-30 lg:hidden">
             <div class="pointer-events-none absolute inset-x-0 bottom-[4.5rem] h-[6rem] bg-linear-to-t from-black via-black/88 to-transparent" />
-            <div class="relative border-t border-white/10 bg-black/90 px-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] pt-4 backdrop-blur-md">
+            <div class="relative border-t border-white/10 bg-black/90 px-4 pt-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] backdrop-blur-md">
                 <StoryPlayStartCta v-if="isPlayable" :label="primaryCtaLabel" @click="handleStartStory" />
                 <div
                     v-else
-                    class="flex h-[3.5rem] w-full cursor-not-allowed select-none items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium uppercase tracking-widest text-gray-500"
+                    class="flex h-[3.5rem] w-full cursor-not-allowed items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 font-['Inter',sans-serif] text-sm font-medium tracking-widest text-gray-500 uppercase select-none"
                 >
                     Coming Soon
                 </div>
@@ -334,10 +311,7 @@ const rightColumnChapters = computed(() =>
 /* Cover: 20.875rem × 334/497; top bar: 3.0625rem (pt-1 + tab height). Shell: lg:py-6. */
 @media (min-width: 1024px) {
     .story-show-chapters__align {
-        height: max(
-            0px,
-            calc((100svh - 3rem - 31.0625rem) / 2 - 3.0625rem)
-        );
+        height: max(0px, calc((100svh - 3rem - 31.0625rem) / 2 - 3.0625rem));
     }
 }
 

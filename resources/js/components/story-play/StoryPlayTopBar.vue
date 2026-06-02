@@ -18,7 +18,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="flex w-full max-w-[41.25rem] flex-wrap items-center justify-between gap-x-4 gap-y-4 overflow-visible">
+    <div class="flex w-full flex-1! flex-wrap items-center justify-between gap-x-4 gap-y-4 overflow-visible">
         <StoryPlayTabPair :model-value="tab" @update:model-value="emit('update:tab', $event)" />
 
         <div class="flex items-center gap-[0.625rem]">
