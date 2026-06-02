@@ -131,7 +131,7 @@ final class User extends Authenticatable implements CanResetPassword, HasMedia
     protected function avatar(): Attribute
     {
         return Attribute::make(
-            get: fn (): string => $this->getFirstMediaUrl('avatar')
+            get: fn (): string => Storage::disk('public')->url('profile.svg')
         );
     }
 
