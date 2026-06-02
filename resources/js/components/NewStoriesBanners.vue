@@ -3,8 +3,9 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import HomeBannerStoryCard from '@/components/HomeBannerStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
-import { STORY_COVER_BY_SLUG } from '@/data/storyCoverBySlug';
 import ozNewCover from '@/assets/newStories/Oz landscape titled.png';
+import sherlockNewCover from '@/assets/newStories/sherlock-new.png';
+import tellTaleNewCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
@@ -32,7 +33,7 @@ const stories: NewStory[] = [
     {
         id: 'the-adventure-of-the-speckled-band',
         title: 'The Adventures of Sherlock Holmes: The Speckled Band',
-        cover: STORY_COVER_BY_SLUG['the-adventure-of-the-speckled-band'],
+        cover: sherlockNewCover,
         category: 'Mystery',
         rating: 'Everyone',
         playable: true,
@@ -56,7 +57,7 @@ const stories: NewStory[] = [
     {
         id: 'the-tell-tale-heart',
         title: 'The Tell-Tale Heart',
-        cover: STORY_COVER_BY_SLUG['the-tell-tale-heart'],
+        cover: tellTaleNewCover,
         category: 'Gothic Horror',
         rating: 'Everyone',
         playable: false,
