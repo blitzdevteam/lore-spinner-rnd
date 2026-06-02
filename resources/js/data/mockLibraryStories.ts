@@ -1,5 +1,3 @@
-import animaCover from '@/assets/featured/anima.png';
-import janeEyreCover from '@/assets/featured/janeEyre.png';
 import { StoryInterface } from '@/types';
 import { StoryRatingEnum, StoryStatusEnum } from '@/types/enum';
 
@@ -18,7 +16,7 @@ export const MOCK_LIBRARY_STORIES: StoryInterface[] = [
         rating: { value: StoryRatingEnum.EVERYONE, label: 'Everyone (All Ages)' },
         published_at: null,
         updated_at: '2025-04-01T00:00:00.000Z',
-        cover: animaCover,
+        cover: '',
         banner: '',
     },
     {
@@ -32,7 +30,7 @@ export const MOCK_LIBRARY_STORIES: StoryInterface[] = [
         rating: { value: StoryRatingEnum.EVERYONE, label: 'Everyone (All Ages)' },
         published_at: null,
         updated_at: '2025-03-15T00:00:00.000Z',
-        cover: janeEyreCover,
+        cover: '',
         banner: '',
     },
 ];
