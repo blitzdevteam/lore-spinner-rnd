@@ -93,6 +93,7 @@ function attachListeners(audio: HTMLAudioElement, key: string) {
         console.warn('[TTS] stalled', key);
     });
     audio.addEventListener('waiting', () => {
+        isLoading.value = true;
         console.debug('[TTS] waiting (buffering)', key);
     });
 }
@@ -109,6 +110,7 @@ function play(gameId: string, promptId: string) {
 
     if (currentAudio && activeKey.value === key && !currentAudio.ended) {
         if (currentAudio.paused) {
+            isLoading.value = true;
             revealMediaPlayer();
             currentAudio.play().catch((err) => {
                 console.warn('[TTS] play() rejected (resume)', key, err);
@@ -127,6 +129,7 @@ function play(gameId: string, promptId: string) {
         activeKey.value = key;
         currentAudio.currentTime = 0;
         applyAudioSettings(currentAudio);
+        isLoading.value = true;
         currentAudio.play().catch((err) => {
             console.warn('[TTS] play() rejected (cache replay)', key, err);
             isPlaying.value = false;
@@ -175,9 +178,11 @@ function pause() {
 
 function resume() {
     if (currentAudio && currentAudio.paused && !currentAudio.ended) {
+        isLoading.value = true;
         currentAudio.play().catch((err) => {
             console.warn('[TTS] play() rejected (togglePause resume)', activeKey.value, err);
             isPlaying.value = false;
+            isLoading.value = false;
         });
     }
 }

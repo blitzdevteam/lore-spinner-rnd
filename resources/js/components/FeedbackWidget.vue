@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
-import { useFeedbackWidget } from '@/composables/useFeedbackWidget';
+import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { router } from '@inertiajs/vue3';
 import { Camera, LucideMessageSquare, Send, X } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
-const { audioSheetOpen } = useFeedbackWidget();
+const tts = useTextToSpeech();
 
+// Lift the button above the audio player bar when it is visible on mobile
 const feedbackBtnStyle = computed(() =>
-    audioSheetOpen.value ? { bottom: 'calc(50svh + 1rem)' } : {},
+    tts.isActive.value && !tts.mediaCollapsed.value
+        ? { bottom: '165px' }
+        : {},
 );
 
 const isOpen = ref(false);
@@ -156,7 +159,7 @@ const submit = async () => {
                 </div>
             </Transition>
 
-            <div data-feedback-btn class="fixed right-4 bottom-28 z-[998] transition-[bottom,left,right] duration-300 md:right-6 md:bottom-6 md:!bottom-6" :style="feedbackBtnStyle">
+            <div data-feedback-btn class="fixed right-4 bottom-32 z-[998] transition-[bottom,left,right] duration-300 md:right-6 md:!bottom-6" :style="feedbackBtnStyle">
                 <BaseButton
                     severity="glass"
                     :icon-only="true"
