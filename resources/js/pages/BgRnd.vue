@@ -22,12 +22,22 @@ const BRAND_AMBER = '#e5ad53';
 // LoreSpinner brand UI sits on near-black; the aurora is only a faint glow.
 const BRAND_BLACK = '#050409';
 
+// Palette sources for cross-story colour swaps in the demo switcher.
+const PALETTE_TELL_TALE = { from: '#7a1a1a', via: '#0d0505', accent: '#f87171' };
+const PALETTE_ALICE = { from: '#3b4a8f', via: '#1a1a2e', accent: '#a78bfa' };
+const PALETTE_DRIFTHEART = { from: '#1a3a6a', via: '#050d15', accent: '#67e8f9' };
+/** Deep umber / plague-earth — Masque of the Red Death */
+const PALETTE_MASQUE = { from: '#5c3a22', via: '#0f0a06', accent: '#c4784a' };
+
 const STORY_THEMES: Record<string, { title: string; from: string; via: string; accent: string }> = {
-    'tell-tale-heart': { title: 'The Tell-Tale Heart', from: '#7a1a1a', via: '#0d0505', accent: '#f87171' },
+    'tell-tale-heart': { title: 'The Tell-Tale Heart', ...PALETTE_ALICE },
+    sherlock: { title: 'Sherlock Holmes', ...PALETTE_TELL_TALE },
+    oz: { title: 'The Wonderful Wizard of Oz', ...PALETTE_DRIFTHEART },
+    'masque-red-death': { title: 'The Masque of the Red Death', ...PALETTE_MASQUE },
     nocturne: { title: 'Nocturne', from: '#0a2a4a', via: '#051015', accent: '#38bdf8' },
     'anima-machina': { title: 'Anima Machina', from: '#4a1a5a', via: '#0d050e', accent: '#e879f9' },
-    wonderland: { title: "Alice's Adventures in Wonderland", from: '#3b4a8f', via: '#1a1a2e', accent: '#a78bfa' },
-    driftheart: { title: 'Driftheart', from: '#1a3a6a', via: '#050d15', accent: '#67e8f9' },
+    driftheart: { title: 'Driftheart', ...PALETTE_DRIFTHEART },
+    wonderland: { title: "Alice's Adventures in Wonderland", ...PALETTE_ALICE },
 };
 
 const selectedSlug = ref<keyof typeof STORY_THEMES>('tell-tale-heart');
