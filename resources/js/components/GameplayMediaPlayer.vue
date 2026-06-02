@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
-import { LucidePause, LucidePlay, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideX } from 'lucide-vue-next';
+import { LucideLoader, LucidePause, LucidePlay, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideX } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = withDefaults(defineProps<{ collapsed?: boolean }>(), { collapsed: false });
@@ -36,10 +36,12 @@ const onVolumeInput = (event: Event) => {
             <!-- Play / Pause -->
             <button
                 class="player-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-primary-600 transition-[transform,color] hover:scale-105 hover:text-white active:scale-95"
-                :title="tts.isPlaying.value ? 'Pause' : 'Play'"
+                :title="tts.isLoading.value ? 'Loading…' : tts.isPlaying.value ? 'Pause' : 'Play'"
+                :disabled="tts.isLoading.value"
                 @click="tts.togglePause"
             >
-                <LucidePause v-if="tts.isPlaying.value" class="player-btn-icon" fill="currentColor" />
+                <LucideLoader v-if="tts.isLoading.value" class="player-btn-icon animate-spin" />
+                <LucidePause v-else-if="tts.isPlaying.value" class="player-btn-icon" fill="currentColor" />
                 <LucidePlay v-else class="player-btn-icon" fill="currentColor" />
             </button>
 

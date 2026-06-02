@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
+import { useFeedbackWidget } from '@/composables/useFeedbackWidget';
 import { router } from '@inertiajs/vue3';
 import { Camera, LucideMessageSquare, Send, X } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+
+const { audioSheetOpen } = useFeedbackWidget();
+
+const feedbackBtnStyle = computed(() =>
+    audioSheetOpen.value ? { bottom: 'calc(50svh + 1rem)' } : {},
+);
 
 const isOpen = ref(false);
 const content = ref('');
@@ -149,7 +156,7 @@ const submit = async () => {
                 </div>
             </Transition>
 
-            <div data-feedback-btn class="fixed right-4 bottom-28 z-[998] transition-[left,right] duration-200 md:right-6 md:bottom-6">
+            <div data-feedback-btn class="fixed right-4 bottom-28 z-[998] transition-[bottom,left,right] duration-300 md:right-6 md:bottom-6 md:!bottom-6" :style="feedbackBtnStyle">
                 <BaseButton
                     severity="glass"
                     :icon-only="true"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useGameplaySettings } from '@/composables/useGameplaySettings';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
-import { LucidePause, LucidePlay, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideZap } from 'lucide-vue-next';
+import { LucideLoader, LucidePause, LucidePlay, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideZap } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const tts = useTextToSpeech();
@@ -47,10 +47,12 @@ const onProgressInput = (event: Event) => {
                         <button
                             type="button"
                             class="grid size-14 shrink-0 place-items-center rounded-full border border-primary/30 bg-primary/15 text-primary-300 transition hover:bg-primary/25 hover:text-primary-200"
-                            :title="tts.isPlaying.value ? 'Pause' : 'Play'"
+                            :title="tts.isLoading.value ? 'Loading…' : tts.isPlaying.value ? 'Pause' : 'Play'"
+                            :disabled="tts.isLoading.value"
                             @click="tts.togglePause"
                         >
-                            <LucidePause v-if="tts.isPlaying.value" class="size-6" fill="currentColor" />
+                            <LucideLoader v-if="tts.isLoading.value" class="size-6 animate-spin" />
+                            <LucidePause v-else-if="tts.isPlaying.value" class="size-6" fill="currentColor" />
                             <LucidePlay v-else class="size-6" fill="currentColor" />
                         </button>
                         <div class="min-w-0 flex-1">

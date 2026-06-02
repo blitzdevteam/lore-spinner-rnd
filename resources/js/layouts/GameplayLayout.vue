@@ -7,6 +7,7 @@ import GameplayInput from '@/components/GameplayInput.vue';
 import GameplayJournalPanel, { type JournalMeta } from '@/components/GameplayJournalPanel.vue';
 import GameplayMediaPlayer from '@/components/GameplayMediaPlayer.vue';
 import GameplaySettingsPanel from '@/components/GameplaySettingsPanel.vue';
+import { useFeedbackWidget } from '@/composables/useFeedbackWidget';
 import { useGameplaySettings } from '@/composables/useGameplaySettings';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { LucideAudioLines, LucideChevronLeft, LucideNotebookText, LucideSettings, LucideX, LucideZap } from 'lucide-vue-next';
@@ -42,6 +43,7 @@ const MOBILE_MQ = '(max-width: 767px)';
 
 const { settings } = useGameplaySettings();
 const tts = useTextToSpeech();
+const { audioSheetOpen } = useFeedbackWidget();
 
 function syncMobile() {
     if (typeof window === 'undefined') return;
@@ -62,7 +64,15 @@ watch(isMobile, (mobile) => {
         activePanel.value = null;
         tts.revealMediaPlayer();
     }
+    audioSheetOpen.value = mobile && activePanel.value === 'audio';
 });
+
+watch(
+    [isMobile, activePanel],
+    ([mobile, panel]) => {
+        audioSheetOpen.value = mobile && panel === 'audio';
+    },
+);
 
 watch(
     () => tts.mediaCollapsed.value,
