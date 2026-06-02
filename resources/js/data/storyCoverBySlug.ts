@@ -15,7 +15,7 @@ import redDeathCover from '@/assets/featured/redDeath.png';
 import treasureCover from '@/assets/featured/treasure.png';
 import sherlockCover from '@/assets/newStories/sherlock-new.png';
 import tellTaleCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
-import wizardOzCover from '@/assets/newStories/Oz landscape titled.png';
+import wizardOzCover from '@/assets/featured/wizardoz.jpg';
 
 /** Portrait / card covers aligned with home — override API media when present. */
 export const STORY_COVER_BY_SLUG: Record<string, string> = {

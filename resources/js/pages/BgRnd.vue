@@ -13,7 +13,7 @@ import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
 import { Head } from '@inertiajs/vue3';
 import { LucideArrowUp, LucideAudioLines, LucideChevronLeft, LucideNotebookText, LucidePlay, LucideSettings, LucideZap } from 'lucide-vue-next';
 import type { PromptInterface } from '@/types';
-import { computed, onUnmounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 defineOptions({ layout: null });
 
@@ -111,51 +111,17 @@ const selectChoice = (promptId: string, choice: string) => {
     pendingSelection.value[promptId] = choice;
 };
 
-// ── Chat input animated glow ─────────────────────────────────────────────────
-const inputGlowState = ref<'idle' | 'sending'>('idle');
-const orbX = ref('10%');
-const orbY = ref('50%');
-const inputWrapRef = ref<HTMLElement | null>(null);
-
-let rafId: number | null = null;
-let orbAngle = Math.PI; // start from left side of pill
-
-function orbTick() {
-    const el = inputWrapRef.value;
-    if (!el) { rafId = null; return; }
-    const rx = Math.max(el.offsetWidth / 2 - 58, 60);
-    const ry = Math.min(el.offsetHeight / 2 - 2, 28);
-    orbAngle += 0.022; // ~4.8 s per full orbit at 60 fps
-    orbX.value = `calc(50% + ${(Math.cos(orbAngle) * rx).toFixed(1)}px)`;
-    orbY.value = `calc(50% + ${(Math.sin(orbAngle) * ry).toFixed(1)}px)`;
-    rafId = requestAnimationFrame(orbTick);
-}
-
-function stopOrbit() {
-    if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
-}
+// ── Chat input glow ───────────────────────────────────────────────────────────
+const inputGlowVariant = ref<'sweep' | 'orbit'>('sweep');
 
 function handleDemoSubmit() {
-    stopOrbit();
     isSubmitting.value = true;
-    inputGlowState.value = 'sending';
-    orbAngle = Math.PI; // restart orbit from left
-    rafId = requestAnimationFrame(orbTick);
-    // Simulate response arriving after 3.5 s
+    inputGlowVariant.value = 'orbit';
     setTimeout(() => {
-        stopOrbit();
         isSubmitting.value = false;
-        inputGlowState.value = 'idle';
+        inputGlowVariant.value = 'sweep';
     }, 3500);
 }
-
-const glowOrbStyle = computed(() =>
-    inputGlowState.value === 'sending'
-        ? { left: orbX.value, top: orbY.value }
-        : {},
-);
-
-onUnmounted(stopOrbit);
 </script>
 
 <template>
@@ -246,16 +212,7 @@ onUnmounted(stopOrbit);
             <!-- Sticky input -->
             <div class="sticky bottom-0 z-10 shrink-0">
                 <div class="bg-rnd-input flex flex-col items-center gap-3 px-4 pt-10 pb-6 md:px-0">
-                    <div ref="inputWrapRef" class="bg-rnd-input-glow-wrap w-full max-w-3xl">
-                        <!-- Animated ambient glow (behind pill) -->
-                        <div
-                            class="bg-rnd-glow-orb"
-                            :class="`bg-rnd-glow-orb--${inputGlowState}`"
-                            :style="glowOrbStyle"
-                            aria-hidden="true"
-                        />
-                        <GameplayInput :disabled="isSubmitting" @submit="handleDemoSubmit" />
-                    </div>
+                    <GameplayInput :disabled="isSubmitting" :glow-variant="inputGlowVariant" @submit="handleDemoSubmit" />
                 </div>
             </div>
 
@@ -395,46 +352,4 @@ onUnmounted(stopOrbit);
     background: transparent;
 }
 
-/* ── Input animated glow ────────────────────────────────────────────────────── */
-.bg-rnd-input-glow-wrap {
-    position: relative;
-}
-
-/* Ensure GameplayInput sits above the glow orb */
-.bg-rnd-input-glow-wrap > :not(.bg-rnd-glow-orb) {
-    position: relative;
-    z-index: 1;
-}
-
-.bg-rnd-glow-orb {
-    position: absolute;
-    width: 190px;
-    height: 190px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle, rgba(8, 206, 230, 0.72) 0%, rgba(8, 206, 230, 0) 65%);
-    filter: blur(10px);
-    will-change: left, top;
-}
-
-/* Idle: soft sweep left → right → left */
-.bg-rnd-glow-orb--idle {
-    top: 50%;
-    animation: bg-rnd-glow-sweep 5.5s ease-in-out infinite;
-}
-
-@keyframes bg-rnd-glow-sweep {
-    0%, 100% { left: 10%; opacity: 0.62; }
-    50%       { left: 88%; opacity: 0.88; }
-}
-
-/* Sending: JS-driven orbital — brighter, tighter glow */
-.bg-rnd-glow-orb--sending {
-    animation: none;
-    opacity: 0.95;
-    background: radial-gradient(circle, rgba(8, 206, 230, 0.92) 0%, rgba(8, 206, 230, 0) 56%);
-    filter: blur(7px);
-}
 </style>
