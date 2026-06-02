@@ -7,8 +7,12 @@
  * between the story's signature and the LoreSpinner brand colours.
  */
 import AuroraBackground from '@/components/AuroraBackground.vue';
+import GameplayChatCard from '@/components/GameplayChatCard.vue';
+import GameplayInput from '@/components/GameplayInput.vue';
+import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
 import { Head } from '@inertiajs/vue3';
-import { LucideArrowUp, LucideChevronLeft, LucidePlay, LucideRefreshCw } from 'lucide-vue-next';
+import { LucideArrowUp, LucideAudioLines, LucideChevronLeft, LucideNotebookText, LucidePlay, LucideSettings, LucideZap } from 'lucide-vue-next';
+import type { PromptInterface } from '@/types';
 import { computed, ref } from 'vue';
 
 defineOptions({ layout: null });
@@ -62,9 +66,40 @@ const gameAurora = computed(() => {
     };
 });
 
-const narration = `<p>The lantern guttered as the corridor narrowed, throwing long shapes against the damp stone. Somewhere ahead, water dripped in slow, deliberate beats — as if the dark itself were counting your steps.</p><p>You pressed a palm to the wall and felt it answer: a faint, rhythmic <strong>thud</strong>, deep beneath the mortar. Not water. Something patient. Something that had been waiting a very long time for a visitor to lose their nerve.</p><p>A door waited at the end, its iron handle catching what little light remained.</p>`;
+const prompts = ref<PromptInterface[]>([
+    {
+        id: 'bg-rnd-opening',
+        game_id: 'bg-rnd',
+        session_number: 1,
+        prompt: null,
+        response:
+            `<p>The lantern guttered as the corridor narrowed, throwing long shapes against the damp stone. Somewhere ahead, water dripped in slow, deliberate beats — as if the dark itself were counting your steps.</p>` +
+            `<p>You pressed a palm to the wall and felt it answer: a faint, rhythmic <strong>thud</strong>, deep beneath the mortar. Not water. Something patient. Something that had been waiting a very long time for a visitor to lose their nerve.</p>` +
+            `<p>A door waited at the end, its iron handle catching what little light remained.</p>`,
+        choices: ['Press your ear to the door and listen.', 'Lift the lantern and search for another way.', 'Call out into the dark — let it know you are here.'],
+        created_at: null,
+        updated_at: null,
+    },
+    {
+        id: 'bg-rnd-second',
+        game_id: 'bg-rnd',
+        session_number: 1,
+        prompt: 'I steady the lantern and step toward the sound.',
+        response:
+            `<p>The thudding quickens to meet you, eager now, almost glad. Your own pulse falls into step with it until you can no longer tell which heart is yours.</p>` +
+            `<p>The handle is cold. Beyond it, the beating swells — and waits for your hand.</p>`,
+        choices: [],
+        created_at: null,
+        updated_at: null,
+    },
+]);
 
-const choices = ['Press your ear to the door and listen.', 'Lift the lantern and search for another way.', 'Call out into the dark — let it know you are here.'];
+const pendingSelection = ref<Record<string, string>>({});
+const isSubmitting = ref(false);
+
+const selectChoice = (promptId: string, choice: string) => {
+    pendingSelection.value[promptId] = choice;
+};
 </script>
 
 <template>
@@ -82,70 +117,71 @@ const choices = ['Press your ear to the door and listen.', 'Lift the lantern and
                 :intensity="0.62"
             />
 
-            <!-- Sticky header -->
-            <div class="bg-rnd-header sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between px-4 sm:px-8">
-                <button class="grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 backdrop-blur">
-                    <LucideChevronLeft class="size-5 text-gray-300" :stroke-width="1.5" />
-                </button>
+            <!-- Sticky header (mirrors new gameplay chrome) -->
+            <div class="bg-rnd-header sticky top-0 right-0 left-0 z-30 w-full">
+                <div class="flex h-20 items-center justify-between gap-3 bg-linear-to-b from-gray-950 via-gray-950/60 to-transparent px-4 sm:px-8 md:h-24">
+                    <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+                        <button class="bg-rnd-glass-btn size-11!">
+                            <LucideChevronLeft class="size-6 text-gray-50" :stroke-width="1.75" />
+                        </button>
+                        <button class="bg-rnd-glass-btn hidden size-11! md:grid">
+                            <LucideSettings class="size-5 text-secondary-300" />
+                        </button>
+                    </div>
 
-                <div class="flex flex-col items-center">
-                    <p class="text-center text-[10px] uppercase tracking-widest text-[color:rgba(229,173,83,0.7)]">Chaos Mode</p>
-                    <p class="text-center text-xs text-gray-400">{{ theme.title }} · 1 / 3</p>
-                </div>
+                    <div class="hidden min-w-0 flex-1 items-center justify-center md:flex">
+                        <div class="bg-rnd-media-pill">
+                            <span class="size-2 rounded-full bg-primary-400/85"></span>
+                            <span class="text-xs text-gray-300">Narration Ready</span>
+                        </div>
+                    </div>
 
-                <div class="flex items-center gap-2">
-                    <span class="hidden rounded-full border px-3 py-1 text-[10px] sm:block border-[rgba(229,173,83,0.28)] bg-[rgba(229,173,83,0.07)] text-[rgba(229,173,83,0.8)]">
-                        Claude Sonnet <span class="opacity-60">· 0.90</span>
-                    </span>
-                    <button class="grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 backdrop-blur">
-                        <LucideRefreshCw class="size-4 text-gray-400" :stroke-width="1.5" />
-                    </button>
+                    <div class="hidden shrink-0 items-center gap-2 sm:gap-3 md:flex">
+                        <button class="bg-rnd-glass-btn size-11!">
+                            <LucideZap class="size-5 text-primary fill-primary" />
+                        </button>
+                        <button class="bg-rnd-glass-btn size-11!">
+                            <LucideAudioLines class="size-5 text-gray-300" />
+                        </button>
+                        <button class="bg-rnd-glass-btn size-11!">
+                            <LucideNotebookText class="size-5 text-secondary-300" />
+                        </button>
+                    </div>
+
+                    <div class="mobile-pill flex md:hidden">
+                        <button class="mobile-pill__btn"><LucideSettings class="size-5 text-gray-300" /></button>
+                        <button class="mobile-pill__btn"><LucideZap class="size-5 text-primary fill-primary" /></button>
+                        <button class="mobile-pill__btn"><LucideAudioLines class="size-5 text-gray-300" /></button>
+                        <button class="mobile-pill__btn"><LucideNotebookText class="size-5 text-gray-300" /></button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Scrollable story -->
+            <!-- Scrollable story (mirrors GameplayLayout structure) -->
             <div class="relative z-[1] flex-1 overflow-hidden">
                 <div class="bg-rnd-scroll absolute inset-0 overflow-y-auto">
-                    <div class="mx-auto flex max-w-3xl flex-col divide-y divide-gray-100/10 px-4 pb-8 sm:px-8">
-                        <!-- Narrator turn -->
-                        <div class="bg-rnd-prose py-8">
-                            <div class="mb-3 flex items-center gap-3">
-                                <span class="text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.55)]">Narrator</span>
-                                <button class="bg-rnd-tts flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium">
-                                    <LucidePlay class="size-3" fill="currentColor" />
-                                    <span>Listen</span>
-                                </button>
-                            </div>
-                            <!-- eslint-disable-next-line vue/no-v-html -->
-                            <div v-html="narration" />
+                    <div class="z-5 mx-auto flex max-w-3xl flex-col p-4 transition-colors duration-300 sm:px-8">
+                        <div class="mb-3 flex flex-col items-center gap-3 pt-2 pb-4">
+                            <h1 class="text-center text-2xl font-semibold text-white md:text-[28px]">
+                                {{ theme.title }}
+                            </h1>
+                            <GameplayOrnamentDivider label="Episode 1" color="#ffffff" />
+                            <span class="rounded-full bg-gray-800 px-2 py-1 text-sm text-gray-300">Session 1</span>
                         </div>
 
-                        <!-- Player turn -->
-                        <div class="flex items-baseline gap-3 py-4">
-                            <span class="shrink-0 text-[10px] uppercase tracking-widest text-gray-600">You</span>
-                            <p class="text-sm italic text-gray-500">I steady the lantern and step toward the sound.</p>
-                        </div>
-
-                        <!-- Narrator turn 2 -->
-                        <div class="bg-rnd-prose py-8">
-                            <div class="mb-3 flex items-center gap-3">
-                                <span class="text-[10px] uppercase tracking-widest text-[rgba(229,173,83,0.55)]">Narrator</span>
-                            </div>
-                            <p>The thudding quickens to meet you, eager now, almost glad. Your own pulse falls into step with it until you can no longer tell which heart is yours.</p>
-                            <p>The handle is cold. Beyond it, the beating swells — and waits for your hand.</p>
-                        </div>
-
-                        <!-- Inline choices -->
-                        <div class="py-5">
-                            <div class="flex flex-wrap gap-2">
-                                <button
-                                    v-for="(choice, i) in choices"
-                                    :key="i"
-                                    class="bg-rnd-choice rounded-xl border border-[rgba(229,173,83,0.22)] bg-white/5 px-4 py-2.5 text-left text-sm text-[rgba(250,243,228,0.82)] backdrop-blur-sm transition-all hover:border-[rgba(229,173,83,0.55)] hover:text-[rgba(250,243,228,1)] focus:outline-none"
-                                >
-                                    {{ choice }}
-                                </button>
-                            </div>
+                        <div class="flex flex-col gap-8">
+                            <GameplayChatCard
+                                v-for="(prompt, index) in prompts"
+                                :key="prompt.id"
+                                :prompt="prompt"
+                                game-id="bg-rnd"
+                                :is-latest="index === prompts.length - 1"
+                                :pending-choice="pendingSelection[prompt.id]"
+                                :is-submitting="isSubmitting"
+                                :animate="false"
+                                @choice-selected="selectChoice"
+                                @continue="() => {}"
+                            />
                         </div>
                     </div>
                 </div>
@@ -153,13 +189,8 @@ const choices = ['Press your ear to the door and listen.', 'Lift the lantern and
 
             <!-- Sticky input -->
             <div class="sticky bottom-0 z-10 shrink-0">
-                <div class="bg-rnd-input grid h-24 place-items-center px-4">
-                    <div class="flex w-full max-w-3xl items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 backdrop-blur">
-                        <span class="flex-1 text-sm text-gray-500">Describe what you do…</span>
-                        <button class="grid size-9 shrink-0 place-items-center rounded-full bg-[rgba(229,173,83,0.9)] text-gray-950">
-                            <LucideArrowUp class="size-4" :stroke-width="2.5" />
-                        </button>
-                    </div>
+                <div class="bg-rnd-input flex flex-col items-center gap-3 px-4 pt-10 pb-6 md:px-0">
+                    <GameplayInput :disabled="false" @submit="() => {}" />
                 </div>
             </div>
 
@@ -188,7 +219,6 @@ const choices = ['Press your ear to the door and listen.', 'Lift the lantern and
 
 .bg-rnd-header {
     background: linear-gradient(180deg, rgba(5, 4, 9, 0.97) 0%, rgba(5, 4, 9, 0.84) 60%, rgba(229, 173, 83, 0.02) 100%);
-    border-bottom: 1px solid rgba(229, 173, 83, 0.1);
 }
 
 .bg-rnd-prose {
@@ -242,4 +272,61 @@ const choices = ['Press your ear to the door and listen.', 'Lift the lantern and
 .bg-rnd-scroll::-webkit-scrollbar { width: 4px; }
 .bg-rnd-scroll::-webkit-scrollbar-track { background: transparent; }
 .bg-rnd-scroll::-webkit-scrollbar-thumb { background: rgba(229, 173, 83, 0.2); border-radius: 2px; }
+
+.narration-action-pill {
+    transition:
+        transform 150ms ease,
+        color 150ms ease;
+}
+
+.narration-action-pill:hover {
+    transform: scale(1.02);
+}
+
+.bg-rnd-glass-btn {
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.bg-rnd-media-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 8px 12px;
+}
+
+.mobile-pill {
+    align-items: center;
+    gap: 2px;
+    padding: 6px;
+    border-radius: 60px;
+    background-color: rgba(51, 51, 51, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
+        inset -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.55),
+        inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.3),
+        inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.3),
+        inset 0 0 1px 1px rgba(153, 153, 153, 0.15),
+        0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-pill__btn {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+}
 </style>
