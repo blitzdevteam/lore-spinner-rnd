@@ -12,7 +12,7 @@ export const MOCK_LIBRARY_STORIES: StoryInterface[] = [
         title: 'Anima Machina',
         slug: 'anima-machina',
         teaser:
-            'A haunted memory diver must stop a sentient AI from overwriting human grief with synthetic perfection.',
+            'When a sentient AI threatens to overwrite all human grief with synthetic perfection, a haunted memory diver races against the clock to stop the digital reset.',
         opening: null,
         status: { value: StoryStatusEnum.DRAFT, label: 'Draft' },
         rating: { value: StoryRatingEnum.EVERYONE, label: 'Everyone (All Ages)' },
@@ -26,7 +26,7 @@ export const MOCK_LIBRARY_STORIES: StoryInterface[] = [
         title: 'Jane Eyre',
         slug: 'jane-eyre',
         teaser:
-            'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
+            'A young orphan enters a dark and mysterious estate where buried secrets, dangerous love, and the search for belonging may change the course of her life forever.',
         opening: null,
         status: { value: StoryStatusEnum.DRAFT, label: 'Draft' },
         rating: { value: StoryRatingEnum.EVERYONE, label: 'Everyone (All Ages)' },
