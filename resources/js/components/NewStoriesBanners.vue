@@ -3,7 +3,7 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import HomeBannerStoryCard from '@/components/HomeBannerStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
-import sherlockNewCover from '@/assets/newStories/sherlock-new.png';
+import { STORY_COVER_BY_SLUG } from '@/data/storyCoverBySlug';
 import ozNewCover from '@/assets/newStories/Oz landscape titled.png';
 import tellTaleNewCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
@@ -33,7 +33,7 @@ const stories: NewStory[] = [
     {
         id: 'the-adventure-of-the-speckled-band',
         title: 'The Adventures of Sherlock Holmes: The Speckled Band',
-        cover: sherlockNewCover,
+        cover: STORY_COVER_BY_SLUG['the-adventure-of-the-speckled-band'],
         category: 'Mystery',
         rating: 'Everyone',
         playable: true,

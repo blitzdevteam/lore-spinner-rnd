@@ -27,7 +27,7 @@ export const MOOD_CARD_CONFIG_BY_ID = Object.fromEntries(
 export const MOOD_TOP_PICK_SLUGS: Record<MoodId, string[]> = {
     heartfelt: ['anima-machina', 'jekyll-and-hyde', 'the-wonderful-wizard-of-oz'],
     adventurous: ['alice-in-wonderland', 'the-wonderful-wizard-of-oz', 'anima-machina'],
-    mysterious: ['nocturne', 'jekyll-and-hyde', 'anima-machina'],
+    mysterious: ['the-adventure-of-the-speckled-band', 'nocturne', 'jekyll-and-hyde'],
     epic: ['anima-machina', 'jekyll-and-hyde', 'the-wonderful-wizard-of-oz'],
     whimsical: ['alice-in-wonderland', 'nocturne', 'the-wonderful-wizard-of-oz'],
 };
