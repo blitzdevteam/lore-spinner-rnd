@@ -143,7 +143,7 @@ const statItems = computed(() => [
     },
 ]);
 
-const primaryCtaLabel = computed(() => (hasExistingGame.value ? 'Continue game' : 'Start game'));
+const primaryCtaLabel = computed(() => (hasExistingGame.value ? 'Continue Story' : 'Start Story'));
 
 const creatorAvatar = computed(() => {
     const a = props.story.creator?.avatar?.trim();
