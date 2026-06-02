@@ -25,16 +25,20 @@ defineEmits<{
         <span class="gameplay-capsule__icon" aria-hidden="true">
             <slot />
         </span>
-        <span class="gameplay-capsule__label">{{ label }}</span>
+        <span class="gameplay-capsule__label-wrap">
+            <span class="gameplay-capsule__label">{{ label }}</span>
+        </span>
     </button>
 </template>
 
 <style scoped>
 .gameplay-capsule {
-    display: inline-flex;
+    --capsule-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --capsule-duration: 0.45s;
+
+    display: grid;
+    grid-template-columns: 45px 0fr;
     align-items: center;
-    justify-content: flex-start;
-    width: 45px;
     height: 45px;
     padding: 0;
     border: none;
@@ -53,9 +57,9 @@ defineEmits<{
         inset 0 0 1px 1px rgba(153, 153, 153, 0.15),
         0 4px 24px rgba(0, 0, 0, 0.3);
     transition:
-        width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-        padding 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-        background-color 0.15s ease;
+        grid-template-columns var(--capsule-duration) var(--capsule-ease),
+        padding var(--capsule-duration) var(--capsule-ease),
+        background-color 0.2s ease;
 }
 
 .gameplay-capsule__icon {
@@ -63,43 +67,49 @@ defineEmits<{
     place-items: center;
     width: 45px;
     height: 45px;
-    flex-shrink: 0;
+}
+
+.gameplay-capsule__label-wrap {
+    min-width: 0;
+    overflow: hidden;
 }
 
 .gameplay-capsule__label {
-    max-width: 0;
-    opacity: 0;
-    overflow: hidden;
+    display: block;
+    padding-left: 4px;
+    padding-right: 0;
     white-space: nowrap;
-    font-size: 0;
+    font-size: 1.125rem;
     font-weight: 500;
     line-height: 1;
     letter-spacing: 0.02em;
     color: var(--color-primary-300);
-    padding-right: 0;
+    opacity: 0;
+    transform: translateX(-10px);
     transition:
-        max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.2s ease,
-        padding 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-        font-size 0.1s ease;
+        opacity 0.32s ease,
+        transform 0.38s var(--capsule-ease),
+        padding 0.45s var(--capsule-ease);
 }
 
 .gameplay-capsule--active {
     background: rgba(84, 244, 218, 0.12);
 }
 
-/* Desktop hover only: expand capsule and reveal label (Figma 7667:671) */
 @media (min-width: 768px) and (hover: hover) {
     .gameplay-capsule:hover {
-        width: auto;
+        grid-template-columns: 45px 1fr;
         padding-right: 14px;
     }
 
     .gameplay-capsule:hover .gameplay-capsule__label {
-        max-width: 14rem;
         opacity: 1;
-        font-size: 1.375rem;
-        padding-left: 2px;
+        transform: translateX(0);
+        padding-right: 2px;
+        transition:
+            opacity 0.4s var(--capsule-ease) 0.08s,
+            transform 0.5s var(--capsule-ease) 0.05s,
+            padding 0.45s var(--capsule-ease);
     }
 
     .gameplay-capsule:hover.gameplay-capsule--active {
@@ -109,6 +119,11 @@ defineEmits<{
 
 .gameplay-capsule:active {
     transform: scale(0.97);
+    transition:
+        grid-template-columns var(--capsule-duration) var(--capsule-ease),
+        padding var(--capsule-duration) var(--capsule-ease),
+        background-color 0.2s ease,
+        transform 0.12s ease;
 }
 
 @media (min-width: 768px) and (hover: hover) {
