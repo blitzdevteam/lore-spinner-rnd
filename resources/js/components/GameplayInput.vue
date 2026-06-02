@@ -2,7 +2,7 @@
 import BaseButton from '@/components/BaseButton.vue';
 import { useSpeechToText } from '@/composables/useSpeechToText';
 import { LucideArrowUp, LucideLoader, LucideMic, LucideSquare } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -47,6 +47,31 @@ const handleMicToggle = async () => {
         await stt.startRecording();
     }
 };
+
+// ── Smooth crossfade when glow variant switches ───────────────────────────────
+const displayedVariant = ref(props.glowVariant);
+const isFading = ref(false);
+let fadeTimer: ReturnType<typeof setTimeout> | null = null;
+
+watch(
+    () => props.glowVariant,
+    (next) => {
+        if (fadeTimer) clearTimeout(fadeTimer);
+        isFading.value = true;
+        // Wait for fade-out, then swap gradient, then fade back in
+        fadeTimer = setTimeout(() => {
+            displayedVariant.value = next;
+            fadeTimer = setTimeout(() => {
+                isFading.value = false;
+                fadeTimer = null;
+            }, 60);
+        }, 200);
+    },
+);
+
+onUnmounted(() => {
+    if (fadeTimer) clearTimeout(fadeTimer);
+});
 </script>
 
 <template>
@@ -57,10 +82,11 @@ const handleMicToggle = async () => {
         <div
             :class="[
                 'flex h-14 items-center rounded-[32px] border border-[#373737] p-2 sm:h-[70px] sm:rounded-[39px] sm:p-2.5',
-                props.glowVariant === 'sweep' && 'gp-pill--sweep',
-                props.glowVariant === 'orbit' && 'gp-pill--orbit',
+                displayedVariant === 'sweep' && 'gp-pill--sweep',
+                displayedVariant === 'orbit' && 'gp-pill--orbit',
+                isFading && 'gp-pill--fading',
             ]"
-            :style="!props.glowVariant ? { background: 'linear-gradient(90deg, rgba(0, 198, 222, 0.45) 0%, rgba(13, 112, 124, 0.45) 10.577%, rgba(26, 26, 26, 0.2) 21.154%)' } : undefined"
+            :style="!displayedVariant ? { background: 'linear-gradient(90deg, rgba(0, 198, 222, 0.45) 0%, rgba(13, 112, 124, 0.45) 10.577%, rgba(26, 26, 26, 0.2) 21.154%)' } : undefined"
         >
             <!-- Inner dark field -->
             <div class="flex h-full flex-1 items-center gap-2 rounded-[28px] border border-[#373737] bg-[#1c1c1c] sm:gap-3 sm:rounded-[35px] px-1">
@@ -146,6 +172,16 @@ const handleMicToggle = async () => {
     syntax: '<angle>';
     initial-value: 0deg;
     inherits: false;
+}
+
+/* Shared opacity transition so state switches feel smooth */
+.gp-pill--sweep,
+.gp-pill--orbit {
+    transition: opacity 0.2s ease;
+}
+
+.gp-pill--fading {
+    opacity: 0.18;
 }
 
 /* Idle: the teal band sweeps left → right → left smoothly */

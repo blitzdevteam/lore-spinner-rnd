@@ -31,6 +31,7 @@ const props = withDefaults(
 );
 
 const auroraProps = computed(() => buildAuroraProps(props.storySlug));
+const inputGlowVariant = computed<'sweep' | 'orbit'>(() => props.inputDisabled ? 'orbit' : 'sweep');
 
 type Panel = 'journal' | 'settings' | 'audio' | null;
 
@@ -269,7 +270,7 @@ const handleInputSubmit = (prompt: string) => {
                         <div class="flex w-full justify-start md:hidden">
                             <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" />
                         </div>
-                        <GameplayInput :disabled="props.inputDisabled" @submit="handleInputSubmit" />
+                        <GameplayInput :disabled="props.inputDisabled" :glow-variant="inputGlowVariant" @submit="handleInputSubmit" />
                     </div>
                 </div>
             </div>
