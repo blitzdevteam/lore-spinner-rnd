@@ -180,6 +180,8 @@ const onVolumeInput = (event: Event) => {
 
 .media-range {
     --range-fill: 0%;
+    --range-accent: var(--color-primary-600);
+    --range-track-empty: color-mix(in srgb, var(--color-primary-600) 32%, transparent);
     appearance: none;
     height: 12px;
     border-radius: 4px;
@@ -189,7 +191,7 @@ const onVolumeInput = (event: Event) => {
 }
 
 .media-range:focus-visible {
-    outline: 2px solid rgba(22, 63, 70, 0.55);
+    outline: 2px solid color-mix(in srgb, var(--color-primary-600) 55%, transparent);
     outline-offset: 2px;
     border-radius: 9999px;
 }
@@ -199,10 +201,10 @@ const onVolumeInput = (event: Event) => {
     border-radius: 4px;
     background: linear-gradient(
         to right,
-        #163f46 0%,
-        #163f46 var(--range-fill),
-        rgba(22, 63, 70, 0.28) var(--range-fill),
-        rgba(22, 63, 70, 0.28) 100%
+        var(--range-accent) 0%,
+        var(--range-accent) var(--range-fill),
+        var(--range-track-empty) var(--range-fill),
+        var(--range-track-empty) 100%
     );
 }
 
@@ -212,7 +214,7 @@ const onVolumeInput = (event: Event) => {
     height: 12px;
     margin-top: -4px;
     border-radius: 50%;
-    background: #163f46;
+    background: var(--range-accent);
     cursor: pointer;
     transition:
         transform 150ms ease,
@@ -225,19 +227,19 @@ const onVolumeInput = (event: Event) => {
 }
 
 .media-range:focus-visible::-webkit-slider-thumb {
-    box-shadow: 0 0 0 3px rgba(22, 63, 70, 0.35);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-600) 35%, transparent);
 }
 
 .media-range::-moz-range-track {
     height: 4px;
     border-radius: 4px;
-    background: rgba(22, 63, 70, 0.28);
+    background: var(--range-track-empty);
 }
 
 .media-range::-moz-range-progress {
     height: 4px;
     border-radius: 4px;
-    background: #163f46;
+    background: var(--range-accent);
 }
 
 .media-range::-moz-range-thumb {
@@ -245,7 +247,7 @@ const onVolumeInput = (event: Event) => {
     height: 12px;
     border: none;
     border-radius: 50%;
-    background: #163f46;
+    background: var(--range-accent);
     cursor: pointer;
     transition:
         transform 150ms ease,
@@ -258,6 +260,6 @@ const onVolumeInput = (event: Event) => {
 }
 
 .media-range:focus-visible::-moz-range-thumb {
-    box-shadow: 0 0 0 3px rgba(22, 63, 70, 0.35);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-600) 35%, transparent);
 }
 </style>
