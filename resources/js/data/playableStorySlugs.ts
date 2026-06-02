@@ -2,8 +2,6 @@
 export const PLAYABLE_STORY_SLUGS = [
     'the-wonderful-wizard-of-oz',
     'the-adventure-of-the-speckled-band',
-    'the-tell-tale-heart',
-    'the-masque-of-the-red-death',
 ] as const;
 
 export type PlayableStorySlug = (typeof PLAYABLE_STORY_SLUGS)[number];

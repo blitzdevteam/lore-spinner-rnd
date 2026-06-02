@@ -3,7 +3,7 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import HomePortraitStoryCard from '@/components/HomePortraitStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
-import animaCover from '@/assets/featured/anima.jpg';
+import animaCover from '@/assets/featured/anima.png';
 import aliceCover from '@/assets/featured/alice.png';
 import draculaCover from '@/assets/featured/dracula.png';
 import nocturneCover from '@/assets/featured/nocturne.png';

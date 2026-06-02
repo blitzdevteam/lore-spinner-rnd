@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SectionHeader from '@/components/SectionHeader.vue';
 import aliceCover from '@/assets/featured/alice.png';
-import animaCover from '@/assets/featured/anima.jpg';
+import animaCover from '@/assets/featured/anima.png';
 import jekyllCover from '@/assets/featured/jekyll.png';
 import nocturneCover from '@/assets/featured/nocturne.png';
 import wizardOzCover from '@/assets/featured/wizardoz.jpg';
