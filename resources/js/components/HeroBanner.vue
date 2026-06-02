@@ -50,6 +50,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'Convinced of his own sanity, a man slowly loses his grip on reality as guilt transforms the world around him.',
         fallbackAuthor: 'Edgar Allan Poe',
+        comingSoon: true,
     },
     {
         slug: 'the-wonderful-wizard-of-oz',

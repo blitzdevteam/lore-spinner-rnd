@@ -3,7 +3,7 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import HomeBannerStoryCard from '@/components/HomeBannerStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
-import sherlockNewCover from '@/assets/newStories/New stories 1- 2x.jpg';
+import sherlockNewCover from '@/assets/newStories/sherlock-new.png';
 import ozNewCover from '@/assets/newStories/Oz landscape titled.png';
 import tellTaleNewCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
@@ -60,7 +60,7 @@ const stories: NewStory[] = [
         cover: tellTaleNewCover,
         category: 'Gothic Horror',
         rating: 'Everyone',
-        playable: true,
+        playable: false,
         slug: 'the-tell-tale-heart',
         themes: ['Madness', 'Guilt', 'Obsession'],
         teaser:
