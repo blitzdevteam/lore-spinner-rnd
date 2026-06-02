@@ -4,11 +4,12 @@ import HomePortraitStoryCard from '@/components/HomePortraitStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
 import animaCover from '@/assets/featured/anima.jpg';
-import janeEyreCover from '@/assets/featured/janeEyre.png';
+import aliceCover from '@/assets/featured/alice.png';
+import draculaCover from '@/assets/featured/dracula.png';
+import nocturneCover from '@/assets/featured/nocturne.png';
+import pridePrejudiceCover from '@/assets/featured/Pride-prejudice.png';
 import redDeathCover from '@/assets/featured/redDeath.png';
-import sherlockCover from '@/assets/featured/sherlock.png';
-import tellTaleCover from '@/assets/featured/tale-tale.png';
-import wizardOzCover from '@/assets/featured/wizardoz.jpg';
+import treasureCover from '@/assets/featured/treasure.png';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
@@ -31,47 +32,27 @@ interface FeaturedGame {
 
 const games: FeaturedGame[] = [
     {
-        id: 'tell-tale-heart',
-        title: 'The Tell-Tale Heart',
-        cover: tellTaleCover,
-        playable: true,
-        slug: 'the-tell-tale-heart',
-        themes: ['Madness', 'Guilt', 'Obsession'],
+        id: 'nocturne',
+        title: 'Nocturne',
+        cover: nocturneCover,
+        playable: false,
+        slug: 'nocturne',
+        themes: ['Identity', 'Secrets', 'Control'],
         teaser:
-            'Convinced of his own sanity, a man slowly loses his grip on reality as guilt transforms the world around him.',
-    },
-    {
-        id: 'speckled-band',
-        title: 'Sherlock Holmes In The Speckled Band',
-        cover: sherlockCover,
-        playable: true,
-        slug: 'the-adventure-of-the-speckled-band',
-        themes: ['Mystery', 'Deduction', 'Betrayal'],
-        teaser:
-            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
+            'After a public scandal shatters her life, a disgraced Japanese heiress discovers the organization helping her disappear is part of an ancient cult.',
     },
     {
         id: 'red-death',
         title: 'The Masque of the Red Death',
         cover: redDeathCover,
-        playable: true,
+        playable: false,
         slug: 'the-masque-of-the-red-death',
         themes: ['Mortality', 'Isolation', 'Decay'],
         teaser:
             'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
     },
     {
-        id: 'oz',
-        title: 'The Wonderful Wizard of Oz',
-        cover: wizardOzCover,
-        playable: true,
-        slug: 'the-wonderful-wizard-of-oz',
-        themes: ['Courage', 'Home', 'Illusion'],
-        teaser:
-            'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
-    },
-    {
-        id: 'anima',
+        id: 'anima-machina',
         title: 'Anima Machina',
         cover: animaCover,
         playable: false,
@@ -81,14 +62,44 @@ const games: FeaturedGame[] = [
             'A haunted memory diver must stop a sentient AI from overwriting human grief with synthetic perfection.',
     },
     {
-        id: 'jane-eyre',
-        title: 'Jane Eyre',
-        cover: janeEyreCover,
+        id: 'alice-in-wonderland',
+        title: "Alice's Adventures in Wonderland",
+        cover: aliceCover,
         playable: false,
-        slug: 'jane-eyre',
-        themes: ['Love', 'Duty', 'Secrets'],
+        slug: 'alice-in-wonderland',
+        themes: ['Wonder', 'Curiosity', 'Transformation'],
         teaser:
-            'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
+            'A curious girl follows a white rabbit into a world where logic bends and every choice changes what you become.',
+    },
+    {
+        id: 'dracula',
+        title: 'Dracula',
+        cover: draculaCover,
+        playable: false,
+        slug: 'dracula',
+        themes: ['Hunger', 'Fear', 'Desire'],
+        teaser:
+            'A voyage, a journal, and a shadow that does not stay in the dark — face the count, and decide what survives.',
+    },
+    {
+        id: 'pride-and-prejudice',
+        title: 'Pride and Prejudice',
+        cover: pridePrejudiceCover,
+        playable: false,
+        slug: 'pride-and-prejudice',
+        themes: ['Love', 'Duty', 'Society'],
+        teaser:
+            'A sharp mind meets a guarded heart — and every conversation becomes a contest of pride, prejudice, and possibility.',
+    },
+    {
+        id: 'treasure-island',
+        title: 'Treasure Island',
+        cover: treasureCover,
+        playable: false,
+        slug: 'treasure-island',
+        themes: ['Adventure', 'Greed', 'Loyalty'],
+        teaser:
+            'A map. A mutiny. A promise of gold — and the kind of choices that turn boys into pirates or ghosts.',
     },
 ];
 
@@ -138,7 +149,7 @@ function openSheet(game: FeaturedGame) {
             <div class="container-content home-section-gap">
 
                 <SectionHeader
-                    title="Top Stories"
+                    title="Featured Worlds"
                     subtitle="Curated story worlds built for choice, consequence, and return."
                     :href="storiesIndex().url"
                     :count="storyCount"

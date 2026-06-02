@@ -3,10 +3,9 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import HomeBannerStoryCard from '@/components/HomeBannerStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
-import jekyllCover from '@/assets/commingSoon/jake-comming.png';
-import banner2 from '@/assets/newStories/New stories 2 - 2x .jpg';
-import banner3 from '@/assets/newStories/New stories 3 - 2x.jpg';
-import banner2Hover from '@/assets/newStories/s2-hover.jpg';
+import sherlockNewCover from '@/assets/newStories/New stories 1- 2x.jpg';
+import ozNewCover from '@/assets/newStories/Oz landscape titled.png';
+import tellTaleNewCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
@@ -32,37 +31,40 @@ interface NewStory {
 
 const stories: NewStory[] = [
     {
-        id: 'jekyll-and-hyde',
-        title: 'Dr. Jekyll & Mr. Hyde',
-        cover: jekyllCover,
-        category: 'Gothic Horror',
-        rating: 'Mature',
-        playable: false,
-        slug: 'jekyll-and-hyde',
-        themes: ['Duality', 'Power', 'Morality'],
+        id: 'the-adventure-of-the-speckled-band',
+        title: 'The Adventures of Sherlock Holmes: The Speckled Band',
+        cover: sherlockNewCover,
+        category: 'Mystery',
+        rating: 'Everyone',
+        playable: true,
+        slug: 'the-adventure-of-the-speckled-band',
+        themes: ['Mystery', 'Deduction', 'Betrayal'],
         teaser:
-            'Step into the fractured mind of a man at war with his own nature — and choose which side survives.',
+            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
     },
     {
-        id: 'alices-adventures-in-wonderland',
-        title: "Alice\u2019s Adventures In Wonderland",
-        cover: banner2,
-        coverHover: banner2Hover,
-        category: 'Science Fiction',
-        rating: 'Mature',
-        playable: false,
-        themes: ['Distiny', 'Courage', 'Control'],
-        teaser: 'In a city where every thought is monitored, one man discovers a truth the state will kill to suppress.',
+        id: 'the-wonderful-wizard-of-oz',
+        title: 'The Wizard of Oz',
+        cover: ozNewCover,
+        category: 'Fantasy Adventure',
+        rating: 'Everyone',
+        playable: true,
+        slug: 'the-wonderful-wizard-of-oz',
+        themes: ['Courage', 'Home', 'Illusion'],
+        teaser:
+            'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
     },
     {
-        id: 'pride-and-prejudice',
-        title: 'Pride & Prejudice',
-        cover: banner3,
-        category: 'Historical Drama',
-        rating: 'Teen',
-        playable: false,
-        themes: ['Love', 'Duty', 'Society'],
-        teaser: 'Two sisters navigate love, loss, and society\'s expectations — where the heart and reason are rarely in agreement.',
+        id: 'the-tell-tale-heart',
+        title: 'The Tell-Tale Heart',
+        cover: tellTaleNewCover,
+        category: 'Gothic Horror',
+        rating: 'Everyone',
+        playable: true,
+        slug: 'the-tell-tale-heart',
+        themes: ['Madness', 'Guilt', 'Obsession'],
+        teaser:
+            'Convinced of his own sanity, a man slowly loses his grip on reality as guilt transforms the world around him.',
     },
 ];
 
@@ -114,7 +116,7 @@ function openSheet(story: NewStory) {
             <div class="container-content home-section-gap">
 
                 <SectionHeader
-                    title="Featured Worlds"
+                    title="New Stories"
                     subtitle="New branches, hidden paths, and fresh story worlds."
                     :href="storiesIndex().url"
                     :count="storyCount"

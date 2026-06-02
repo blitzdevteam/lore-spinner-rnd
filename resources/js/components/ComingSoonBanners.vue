@@ -7,7 +7,7 @@ import janeCover from '@/assets/commingSoon/jane-comming.png';
 import frankensteinCover from '@/assets/commingSoon/frankstein-comming.png';
 import drjCover from '@/assets/commingSoon/drj-comming.png';
 import underseaCover from '@/assets/commingSoon/undersea-comming.JPG';
-import wastelandCover from '../../../database/stories/covers/wasteland.png';
+import wastelandCover from '@/assets/commingSoon/wasteland-comming.JPG';
 import romeoCover from '@/assets/commingSoon/romeo-comming.png';
 import pjCover from '@/assets/commingSoon/pj-comming.JPG';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
