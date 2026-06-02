@@ -136,21 +136,19 @@ const handleSubmit = (event: SubmitEvent) => {
 </script>
 
 <template>
-    <component
-        :is="componentTag"
-        v-bind="mergedRootBindings"
-        @click="handleClick"
-        @submit="handleSubmit"
-    >
+    <component :is="componentTag" v-bind="mergedRootBindings" @click="handleClick" @submit="handleSubmit">
         <LoaderCircle v-if="processing" class="animate-spin opacity-50" />
         <template v-else-if="isGlass">
             <!-- Figma-accurate layered glass background -->
             <span aria-hidden class="pointer-events-none absolute inset-0 rounded-[inherit]">
                 <span class="absolute inset-0 rounded-[inherit] bg-[rgba(255,255,255,0.04)]" />
-                <span class="absolute inset-0 rounded-[inherit] bg-[rgba(30,30,30,0.25)] backdrop-blur-[3px] mix-blend-plus-lighter" />
+                <span class="absolute inset-0 rounded-[inherit] bg-[#33333330] mix-blend-plus-lighter backdrop-blur-[3px]" />
             </span>
             <!-- Inset highlight border -->
-            <span aria-hidden class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]" />
+            <span
+                aria-hidden
+                class="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0.25px_0.5px_0.5px_0.25px_rgba(255,255,255,0.22),inset_-0.2px_-0.5px_0.15px_0.5px_rgba(255,255,255,0.05)]"
+            />
             <!-- Content -->
             <div class="relative z-10">
                 <slot />
