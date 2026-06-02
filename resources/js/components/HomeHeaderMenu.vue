@@ -42,7 +42,7 @@ const activeText = 'text-primary';
 const navClass = (active: boolean): string => `${navLabelRow} ${active ? activeText : inactiveText}`;
 const moodItemClass = (slug: string): string =>
     [
-        'flex h-[1.875rem] w-full items-center rounded-[0.5rem] px-[0.9375rem] font-[Inter] text-[0.875rem] font-normal leading-[2.0625rem] text-white outline-none transition-colors first:text-[1rem]',
+        'flex h-[1.875rem] w-full items-center rounded-[0.5rem] px-[0.9375rem] font-[Inter] text-[0.875rem] font-normal leading-[2.0625rem] text-white outline-none transition-colors',
         activeMood.value === slug
             ? 'border border-primary bg-cta-fill'
             : 'border border-transparent hover:border-primary hover:bg-cta-fill focus-visible:border-primary focus-visible:bg-cta-fill',
