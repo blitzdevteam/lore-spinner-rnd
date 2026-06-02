@@ -35,7 +35,6 @@ interface HeroSlideConfig {
     teaserLines: [string, string] | null;
     fallbackTeaser: string;
     fallbackAuthor: string;
-    fallbackBranching: number;
     comingSoon?: boolean;
 }
 
@@ -53,7 +52,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'Convinced of his own sanity, a man slowly loses his grip on reality as guilt transforms the world around him.',
         fallbackAuthor: 'Edgar Allan Poe',
-        fallbackBranching: 123456,
     },
     {
         slug: 'the-adventure-of-the-speckled-band',
@@ -68,7 +66,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
         fallbackAuthor: 'Arthur Conan Doyle',
-        fallbackBranching: 142857,
     },
     {
         slug: 'the-masque-of-the-red-death',
@@ -83,7 +80,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
         fallbackAuthor: 'Edgar Allan Poe',
-        fallbackBranching: 98765,
     },
     {
         slug: 'nocturne',
@@ -98,7 +94,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'After a public scandal shatters her life, a disgraced Japanese heiress discovers the organization helping her disappear is part of an ancient cult that erases and rewrites identity.',
         fallbackAuthor: 'Hilton Williams',
-        fallbackBranching: 98765,
         comingSoon: true,
     },
     {
@@ -114,7 +109,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
         fallbackAuthor: 'L. Frank Baum',
-        fallbackBranching: 156789,
     },
     {
         slug: 'jane-eyre',
@@ -129,7 +123,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
         fallbackAuthor: 'Charlotte Brontë',
-        fallbackBranching: 134521,
     },
 ];
 
@@ -142,7 +135,6 @@ interface ResolvedHeroSlide {
     teaserLines: [string, string] | null;
     teaser: string;
     author: string | null;
-    branchingCount: string;
     storyUrl: string;
     comingSoon: boolean;
 }
@@ -151,10 +143,6 @@ const swiperModules = [Autoplay, EffectFade, Pagination];
 
 const swiperRef = ref<SwiperInstance | null>(null);
 const activeIndex = ref(0);
-
-function formatBranchingCount(n: number): string {
-    return new Intl.NumberFormat('de-DE').format(n);
-}
 
 function resolveTitleLines(title: string): [string, string] | null {
     const t = title.trim();
@@ -183,12 +171,6 @@ function resolveTeaserLines(teaser: string): [string, string] | null {
     return null;
 }
 
-function branchingFromStory(story: StoryInterface | undefined, fallback: number): string {
-    if (!story) return formatBranchingCount(fallback);
-    const n = story.chapters_count ?? 0;
-    return formatBranchingCount(n * 47 + 312);
-}
-
 const slides = computed((): ResolvedHeroSlide[] =>
     heroSlideConfigs.map((config) => {
         const story = props.stories.find((s) => s.slug === config.slug);
@@ -204,7 +186,6 @@ const slides = computed((): ResolvedHeroSlide[] =>
             teaserLines: story ? resolveTeaserLines(teaser) ?? config.teaserLines : config.teaserLines,
             teaser,
             author: story?.creator?.full_name ?? config.fallbackAuthor,
-            branchingCount: branchingFromStory(story, config.fallbackBranching),
             storyUrl: show(config.slug).url,
             comingSoon: config.comingSoon ?? false,
         };
@@ -307,10 +288,6 @@ function goNext() {
                                         <p v-if="activeSlide.author" class="hero-stat-line text-white">
                                             Written by:
                                             <span class="text-primary">{{ activeSlide.author }}</span>
-                                        </p>
-                                        <p class="hero-stat-line text-white">
-                                            <span class="text-primary">{{ activeSlide.branchingCount }}</span>
-                                            <span> Branching paths explored</span>
                                         </p>
                                     </div>
                                 </div>
