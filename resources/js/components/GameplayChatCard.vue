@@ -157,7 +157,7 @@ watch(
             >
                 <!-- Background layers -->
                 <span aria-hidden class="pointer-events-none absolute inset-0">
-                    <span class="absolute inset-0 bg-[#333]" />
+                    <span class="absolute inset-0 bg-[#33333330]" />
                     <img
                         v-if="props.coverUrl"
                         class="absolute top-1/2 left-1/2 h-[58px] w-[195px] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
@@ -184,7 +184,7 @@ watch(
             <button
                 v-if="showContinueButton"
                 type="button"
-                class="narration-action-pill bg-glass-effect flex h-[50px] w-full min-w-0 items-center gap-2 overflow-hidden rounded-full p-1.5 pe-4 sm:w-auto sm:pe-5"
+                class="narration-action-pill bg-glass-effect flex h-[50px] w-full min-w-0 items-center gap-2 overflow-hidden rounded-full p-1.5 pe-4 sm:w-auto sm:pe-5 bg-[#33333330]"
                 title="Continue the story"
                 @click="handleContinue"
             >
