@@ -11,6 +11,7 @@ import StoryPlayStatStrip from '@/components/story-play/StoryPlayStatStrip.vue';
 import StoryPlayTitleProgress from '@/components/story-play/StoryPlayTitleProgress.vue';
 import StoryPlayTopBar from '@/components/story-play/StoryPlayTopBar.vue';
 import { useBookmark } from '@/composables/useBookmark';
+import { resolveStoryCover } from '@/data/storyCoverBySlug';
 import { useShare } from '@/composables/useShare';
 import { StoryInterface } from '@/types';
 import { store, show as showGame } from '@/wayfinder/actions/App/Http/Controllers/User/GameController';
@@ -83,7 +84,10 @@ const coverHeadline = computed(() => props.story.title.toUpperCase());
 
 const coverFooterCredit = computed(() => creatorName.value.toUpperCase());
 
-const coverImageUrl = computed(() => props.story.cover?.trim() || null);
+const coverImageUrl = computed(() => {
+    const resolved = resolveStoryCover(props.story.slug, props.story.cover);
+    return resolved || null;
+});
 
 const progressBadge = computed(() => (hasExistingGame.value ? '—' : '00%'));
 
