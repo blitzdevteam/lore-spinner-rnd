@@ -251,18 +251,6 @@ const selectChoice = (promptId: string, choice: string) => {
     background: rgba(229, 173, 83, 0.07);
 }
 
-/* ── Glass narration cards (override GameplayChatCard inline style) ── */
-.bg-rnd-scroll :deep(.narration-card) {
-    background-color: rgba(10, 10, 18, 0.28) !important;
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border-color: rgba(255, 255, 255, 0.11) !important;
-    box-shadow:
-        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.18),
-        inset -1px -1px 0.5px -1px rgba(255, 255, 255, 0.08),
-        0 4px 24px rgba(0, 0, 0, 0.32);
-}
-
 .bg-rnd-choice {
     transition: border-color 0.15s, color 0.15s, box-shadow 0.15s, transform 0.1s;
 }

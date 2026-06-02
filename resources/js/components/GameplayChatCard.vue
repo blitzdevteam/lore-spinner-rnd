@@ -12,6 +12,25 @@ const CONTINUE_MARKER = '__continue__';
 
 const { settings: gameplaySettings } = useGameplaySettings();
 
+function hexToRgba(hex: string, alpha: number): string {
+    const n = hex.replace('#', '');
+    const v = n.length === 3 ? n.split('').map((c) => c + c).join('') : n;
+    const num = Number.parseInt(v, 16);
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+const choiceGlassStyle = computed(() => ({
+    '--choice-tint': gameplaySettings.backgroundColor
+        ? hexToRgba(gameplaySettings.backgroundColor, 0.22)
+        : 'transparent',
+    '--choice-tint-selected': gameplaySettings.backgroundColor
+        ? hexToRgba(gameplaySettings.backgroundColor, 0.34)
+        : 'rgba(229, 173, 83, 0.12)',
+}));
+
 const props = defineProps<{
     prompt: PromptInterface;
     gameId: string;
@@ -70,17 +89,17 @@ const showChoicesAndActions = computed(() => {
 });
 
 const getChoiceClass = (choice: string) => {
-    const base = 'flex min-h-[52px] items-center gap-2 rounded-lg border px-2 py-2 transition-all duration-300 sm:min-h-[60px] sm:gap-2.5 sm:py-1';
+    const base = 'choice-glass flex min-h-[52px] items-center gap-2 rounded-lg border px-2 py-2 transition-all duration-300 sm:min-h-[60px] sm:gap-2.5 sm:py-1';
 
     if (!effectiveSelection.value) {
-        return `${base} border-[#373737] text-white cursor-pointer hover:border-primary-600 hover:bg-primary-600/5`;
+        return `${base} choice-glass--idle border-white/10 text-white cursor-pointer hover:border-primary-600/70`;
     }
 
     if (effectiveSelection.value === choice) {
-        return `${base} border-primary-600 bg-primary-600/10 text-white pointer-events-none`;
+        return `${base} choice-glass--selected border-primary-600 text-white pointer-events-none`;
     }
 
-    return `${base} border-[#373737]/40 text-gray-400 opacity-50 pointer-events-none`;
+    return `${base} choice-glass--dimmed border-white/5 text-gray-400 opacity-50 pointer-events-none`;
 };
 
 const handleChoiceClick = (choice: string) => {
@@ -134,8 +153,7 @@ watch(
         <!-- ── Narration card ── -->
         <div
             v-if="prompt.response"
-            class="narration-card rounded-xl border-[0.5px] border-[#999] p-4 sm:rounded-[14px] sm:p-5"
-            :style="{ backgroundColor: gameplaySettings.backgroundColor || '#030712' }"
+            class="narration-card rounded-xl border-[0.5px] p-4 sm:rounded-[14px] sm:p-5"
             @click="handleNarrationClick"
         >
             <div class="text-justify leading-relaxed font-normal tracking-[0.04em]" style="font-size: inherit" v-html="renderedResponse"></div>
@@ -204,7 +222,13 @@ watch(
             <GameplayOrnamentDivider v-if="canInteract" label="Make a choice" color="#ffbe58" />
 
             <div class="flex flex-col gap-2.5">
-                <div v-for="choice in prompt.choices" :key="choice" :class="getChoiceClass(choice)" @click="handleChoiceClick(choice)">
+                <div
+                    v-for="choice in prompt.choices"
+                    :key="choice"
+                    :class="getChoiceClass(choice)"
+                    :style="choiceGlassStyle"
+                    @click="handleChoiceClick(choice)"
+                >
                     <span
                         v-if="effectiveSelection === choice"
                         class="grid size-7 shrink-0 place-items-center rounded-full border-2 border-primary-600 bg-primary-600/20 text-primary-600"
@@ -254,6 +278,44 @@ watch(
         inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.75),
         inset 0 0 1px 1px rgba(153, 153, 153, 0.15),
         inset 0 0 16px 0 rgba(242, 242, 242, 0.15);
+}
+
+.narration-card {
+    background-color: rgba(10, 10, 18, 0.28);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-color: rgba(255, 255, 255, 0.11);
+    box-shadow:
+        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.18),
+        inset -1px -1px 0.5px -1px rgba(255, 255, 255, 0.08),
+        0 4px 24px rgba(0, 0, 0, 0.32);
+}
+
+.choice-glass {
+    background:
+        linear-gradient(var(--choice-tint, transparent), var(--choice-tint, transparent)),
+        rgba(10, 10, 18, 0.24);
+    backdrop-filter: blur(14px) saturate(135%);
+    -webkit-backdrop-filter: blur(14px) saturate(135%);
+    box-shadow:
+        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.12),
+        0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.choice-glass--idle:hover {
+    background:
+        linear-gradient(var(--choice-tint, transparent), var(--choice-tint, transparent)),
+        rgba(10, 10, 18, 0.32);
+    box-shadow:
+        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.14),
+        0 0 0 1px rgba(229, 173, 83, 0.18),
+        0 4px 16px rgba(0, 0, 0, 0.24);
+}
+
+.choice-glass--selected {
+    background:
+        linear-gradient(var(--choice-tint-selected, rgba(229, 173, 83, 0.12)), var(--choice-tint-selected, rgba(229, 173, 83, 0.12))),
+        rgba(10, 10, 18, 0.3);
 }
 
 .narration-card :deep(p) {
