@@ -5,7 +5,6 @@ import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetail
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
 import { STORY_COVER_BY_SLUG } from '@/data/storyCoverBySlug';
 import ozNewCover from '@/assets/newStories/Oz landscape titled.png';
-import tellTaleNewCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
@@ -57,7 +56,7 @@ const stories: NewStory[] = [
     {
         id: 'the-tell-tale-heart',
         title: 'The Tell-Tale Heart',
-        cover: tellTaleNewCover,
+        cover: STORY_COVER_BY_SLUG['the-tell-tale-heart'],
         category: 'Gothic Horror',
         rating: 'Everyone',
         playable: false,

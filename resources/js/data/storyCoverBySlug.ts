@@ -14,7 +14,7 @@ import pridePrejudiceCover from '@/assets/featured/Pride-prejudice.png';
 import redDeathCover from '@/assets/featured/redDeath.png';
 import treasureCover from '@/assets/featured/treasure.png';
 import sherlockCover from '@/assets/featured/sherlock.png';
-import tellTaleCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
+import tellTaleCover from '@/assets/featured/Tell Tale portrait titled.png';
 import wizardOzCover from '@/assets/featured/wizardoz.jpg';
 
 /** Portrait / card covers aligned with home — override API media when present. */
