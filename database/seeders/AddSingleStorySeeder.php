@@ -249,34 +249,17 @@ class AddSingleStorySeeder extends Seeder
      * Select which story to seed via the SEED_STORY env var, e.g.:
      *   SEED_STORY=masque-of-the-red-death php artisan db:seed --class=AddSingleStorySeeder --force
      *   SEED_STORY=wizard-of-oz           php artisan db:seed --class=AddSingleStorySeeder --force
-     *   SEED_STORY=lotr                   php artisan db:seed --class=AddSingleStorySeeder --force
      *
-     * Defaults to LOTR when SEED_STORY is not set.
+     * Defaults to Masque of the Red Death when SEED_STORY is not set.
      */
     protected function getStoryConfig(): array
     {
-        $key = strtolower((string) env('SEED_STORY', 'lotr'));
+        $key = strtolower((string) env('SEED_STORY', 'masque'));
 
         return match ($key) {
-            'masque', 'masque-of-the-red-death', 'the-masque-of-the-red-death' => $this->configMasque(),
             'wizard-of-oz', 'oz', 'the-wonderful-wizard-of-oz'                 => $this->configWizardOfOz(),
-            default                                                              => $this->configLotr(),
+            default                                                              => $this->configMasque(),
         };
-    }
-
-    private function configLotr(): array
-    {
-        return [
-            'title'      => 'The Lord of the Rings: The Fellowship of the Ring',
-            'slug'       => 'the-lord-of-the-rings-the-fellowship-of-the-ring',
-            'category'   => 'Fantasy Adventure',
-            'script'     => 'LOTR_FELLOWSHIP_script.txt',
-            'source_pdf' => 'RnD/the-lord-of-the-rings-the-fellowship-of-the-ring-2001.pdf',
-            'teaser'     => 'A young hobbit inherits a ring of terrible power. Pursued by darkness across Middle-earth, he must join a Fellowship of unlikely heroes — and carry the fate of the world to the fires of Mount Doom.',
-            'rating'     => StoryRatingEnum::TEEN->value,
-            'opening'    => null,
-            'creator'    => $this->classicsCreator(),
-        ];
     }
 
     private function configMasque(): array

@@ -1,25 +1,32 @@
 /**
- * Themes + branch copy for Library / featured hover popups (matches home Featured Worlds).
+ * Themes for Library / featured hover popups (matches home Top Stories).
  */
-export const STORY_HOVER_META_BY_SLUG: Record<string, { themes: string[]; branches: string | null }> = {
-    'anima-machina': {
-        themes: ['Destiny', 'Courage', 'Control'],
-        branches: '8,347',
+export const STORY_HOVER_META_BY_SLUG: Record<string, { themes: string[] }> = {
+    'the-tell-tale-heart': {
+        themes: ['Madness', 'Guilt', 'Obsession'],
     },
-    'alice-in-wonderland': {
-        themes: ['Wonder', 'Identity', 'Logic'],
-        branches: null,
+    'the-adventure-of-the-speckled-band': {
+        themes: ['Mystery', 'Deduction', 'Betrayal'],
     },
-    nocturne: {
-        themes: ['Mystery', 'Music', 'Sacrifice'],
-        branches: null,
-    },
-    'jekyll-and-hyde': {
-        themes: ['Duality', 'Power', 'Morality'],
-        branches: null,
+    'the-masque-of-the-red-death': {
+        themes: ['Mortality', 'Isolation', 'Decay'],
     },
     'the-wonderful-wizard-of-oz': {
         themes: ['Courage', 'Home', 'Illusion'],
-        branches: null,
+    },
+    'anima-machina': {
+        themes: ['Destiny', 'Courage', 'Control'],
+    },
+    'jane-eyre': {
+        themes: ['Love', 'Duty', 'Secrets'],
+    },
+    'alice-in-wonderland': {
+        themes: ['Wonder', 'Identity', 'Logic'],
+    },
+    nocturne: {
+        themes: ['Mystery', 'Music', 'Sacrifice'],
+    },
+    'jekyll-and-hyde': {
+        themes: ['Duality', 'Power', 'Morality'],
     },
 };

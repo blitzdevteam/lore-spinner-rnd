@@ -36,7 +36,7 @@ withDefaults(
         <!-- Story Changes With You -->
         <StoryChangesWithYou />
 
-        <!-- New Stories -->
+        <!-- Top Stories -->
         <FeaturedWorldsGames :story-count="stories.length" />
 
         <!-- Xen Banner -->

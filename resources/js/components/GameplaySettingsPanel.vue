@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
 import { useGameplaySettings } from '@/composables/useGameplaySettings';
+import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { router } from '@inertiajs/vue3';
-import { LucideMinus, LucidePlus, LucideRefreshCw, LucideRotateCcw } from 'lucide-vue-next';
+import { LucideExternalLink, LucideMinus, LucidePlus, LucideRefreshCw, LucideRotateCcw, LucideZap } from 'lucide-vue-next';
 import { ref } from 'vue';
 
-const props = defineProps<{
-    gameId?: string;
-}>();
+const props = withDefaults(
+    defineProps<{
+        gameId?: string;
+        variant?: 'sidebar' | 'sheet';
+    }>(),
+    { variant: 'sidebar' },
+);
 
-const { settings, defaults, fontColorPresets, backgroundPresets, reset } = useGameplaySettings();
+const { settings, fontColorPresets, backgroundPresets, reset } = useGameplaySettings();
+const tts = useTextToSpeech();
 
 const clampFontSize = (val: number) => Math.min(28, Math.max(12, val));
 
@@ -35,10 +41,20 @@ const handleResetGame = () => {
         },
     );
 };
+
+const volumePercent = () => {
+    if (tts.isMuted.value || tts.volume.value === 0) return 0;
+    return Math.round(tts.volume.value * 100);
+};
+
+const onVolumeInput = (event: Event) => {
+    tts.setVolume(Number((event.target as HTMLInputElement).value) / 100);
+};
 </script>
 
 <template>
-    <div class="flex flex-col gap-6">
+    <!-- Desktop sidebar: classic layout -->
+    <div v-if="variant === 'sidebar'" class="flex flex-col gap-6">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-100">Settings</h3>
             <BaseButton severity="transparent" :icon-only="true" class="size-8!" @click="reset">
@@ -46,7 +62,6 @@ const handleResetGame = () => {
             </BaseButton>
         </div>
 
-        <!-- Font Size -->
         <div class="flex flex-col gap-2.5">
             <label class="text-xs font-medium uppercase tracking-wider text-gray-400">Font Size</label>
             <div class="flex items-center gap-3">
@@ -82,13 +97,13 @@ const handleResetGame = () => {
             </div>
         </div>
 
-        <!-- Font Color -->
         <div class="flex flex-col gap-2.5">
             <label class="text-xs font-medium uppercase tracking-wider text-gray-400">Font Color</label>
             <div class="flex flex-wrap gap-2">
                 <button
                     v-for="preset in fontColorPresets"
                     :key="preset.value"
+                    type="button"
                     :class="[
                         'flex h-9 items-center gap-2 rounded-lg border px-3 transition-all',
                         settings.fontColor === preset.value
@@ -97,10 +112,7 @@ const handleResetGame = () => {
                     ]"
                     @click="settings.fontColor = preset.value"
                 >
-                    <span
-                        class="size-3.5 rounded-full border border-gray-600"
-                        :style="{ backgroundColor: preset.value }"
-                    />
+                    <span class="size-3.5 rounded-full border border-gray-600" :style="{ backgroundColor: preset.value }" />
                     <span class="text-xs text-gray-300">{{ preset.label }}</span>
                 </button>
             </div>
@@ -115,13 +127,13 @@ const handleResetGame = () => {
             </div>
         </div>
 
-        <!-- Background Color -->
         <div class="flex flex-col gap-2.5">
             <label class="text-xs font-medium uppercase tracking-wider text-gray-400">Background</label>
             <div class="flex flex-wrap gap-2">
                 <button
                     v-for="preset in backgroundPresets"
                     :key="preset.value"
+                    type="button"
                     :class="[
                         'flex h-9 items-center gap-2 rounded-lg border px-3 transition-all',
                         settings.backgroundColor === preset.value
@@ -150,36 +162,24 @@ const handleResetGame = () => {
             </div>
         </div>
 
-        <!-- Preview -->
         <div class="flex flex-col gap-2">
             <label class="text-xs font-medium uppercase tracking-wider text-gray-400">Preview</label>
             <div
                 class="rounded-xl border border-gray-700/40 p-4"
-                :style="{
-                    backgroundColor: settings.backgroundColor || 'transparent',
-                }"
+                :style="{ backgroundColor: settings.backgroundColor || 'transparent' }"
             >
                 <p
                     class="font-light leading-relaxed"
-                    :style="{
-                        fontSize: settings.fontSize + 'px',
-                        color: settings.fontColor,
-                    }"
+                    :style="{ fontSize: settings.fontSize + 'px', color: settings.fontColor }"
                 >
                     The ancient door creaked open, revealing a corridor bathed in moonlight...
                 </p>
             </div>
         </div>
 
-        <!-- Game controls -->
         <div v-if="gameId" class="flex flex-col gap-2.5 border-t border-gray-700/40 pt-6">
             <label class="text-xs font-medium uppercase tracking-wider text-gray-400">Game</label>
-            <BaseButton
-                severity="gray-muted"
-                class="w-full"
-                :disabled="isResetting"
-                @click="handleResetGame"
-            >
+            <BaseButton severity="gray-muted" class="w-full" :disabled="isResetting" @click="handleResetGame">
                 <LucideRefreshCw :size="16" :class="{ 'animate-spin': isResetting }" />
                 <span>{{ isResetting ? 'Resetting...' : 'Start a fresh game' }}</span>
             </BaseButton>
@@ -187,6 +187,178 @@ const handleResetGame = () => {
                 Erases all progress for this story and begins a new playthrough from the start.
             </p>
         </div>
+    </div>
+
+    <!-- Mobile bottom sheet: sectioned layout -->
+    <div v-else class="flex flex-col gap-8 pb-2">
+        <section class="gp-settings-section">
+            <div class="gp-settings-section__header">
+                <h3 class="gp-section-title">Typography</h3>
+                <BaseButton severity="transparent" :icon-only="true" class="size-8!" title="Reset settings" @click="reset">
+                    <LucideRotateCcw :size="16" />
+                </BaseButton>
+            </div>
+
+            <div class="gp-settings-group">
+                <label class="gp-field-label">Font Size</label>
+                <div class="flex items-center gap-3">
+                    <BaseButton
+                        severity="muted"
+                        :icon-only="true"
+                        class="size-9!"
+                        :disabled="settings.fontSize <= 12"
+                        @click="settings.fontSize = clampFontSize(settings.fontSize - 1)"
+                    >
+                        <LucideMinus :size="14" />
+                    </BaseButton>
+                    <input
+                        type="range"
+                        :min="12"
+                        :max="28"
+                        :value="settings.fontSize"
+                        class="gp-range w-full"
+                        @input="settings.fontSize = clampFontSize(Number(($event.target as HTMLInputElement).value))"
+                    />
+                    <BaseButton
+                        severity="muted"
+                        :icon-only="true"
+                        class="size-9!"
+                        :disabled="settings.fontSize >= 28"
+                        @click="settings.fontSize = clampFontSize(settings.fontSize + 1)"
+                    >
+                        <LucidePlus :size="14" />
+                    </BaseButton>
+                    <span class="w-9 text-center text-sm tabular-nums text-gray-300">{{ settings.fontSize }}</span>
+                </div>
+            </div>
+
+            <div class="gp-settings-group">
+                <label class="gp-field-label">Font Color</label>
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        v-for="preset in fontColorPresets"
+                        :key="preset.value"
+                        type="button"
+                        :class="[
+                            'flex h-9 items-center gap-2 rounded-lg border px-3 transition-all',
+                            settings.fontColor === preset.value
+                                ? 'border-primary-400 bg-primary-400/10'
+                                : 'border-gray-700/80 hover:border-gray-500',
+                        ]"
+                        @click="settings.fontColor = preset.value"
+                    >
+                        <span class="size-3.5 rounded-full border border-gray-600" :style="{ backgroundColor: preset.value }" />
+                        <span class="text-xs text-gray-300">{{ preset.label }}</span>
+                    </button>
+                </div>
+                <div class="mt-2 flex items-center gap-2">
+                    <input
+                        type="color"
+                        :value="settings.fontColor"
+                        class="size-8 cursor-pointer rounded border-none bg-transparent"
+                        @input="settings.fontColor = ($event.target as HTMLInputElement).value"
+                    />
+                    <span class="text-xs text-gray-500">Custom color</span>
+                </div>
+            </div>
+
+            <div class="gp-settings-group">
+                <label class="gp-field-label">Background</label>
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        v-for="preset in backgroundPresets"
+                        :key="preset.value"
+                        type="button"
+                        :class="[
+                            'flex h-9 items-center gap-2 rounded-lg border px-3 transition-all',
+                            settings.backgroundColor === preset.value
+                                ? 'border-primary-400 bg-primary-400/10'
+                                : 'border-gray-700/80 hover:border-gray-500',
+                        ]"
+                        @click="settings.backgroundColor = preset.value"
+                    >
+                        <span
+                            v-if="preset.value"
+                            class="size-3.5 rounded-full border border-gray-600"
+                            :style="{ backgroundColor: preset.value }"
+                        />
+                        <span v-else class="size-3.5 rounded-full border border-dashed border-gray-500" />
+                        <span class="text-xs text-gray-300">{{ preset.label }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="gp-settings-group">
+                <label class="gp-field-label">Preview</label>
+                <div
+                    class="rounded-xl border border-white/8 p-4"
+                    :style="{ backgroundColor: settings.backgroundColor || 'rgba(255,255,255,0.02)' }"
+                >
+                    <p
+                        class="font-light leading-relaxed"
+                        :style="{ fontSize: settings.fontSize + 'px', color: settings.fontColor }"
+                    >
+                        The ancient door creaked open, revealing a corridor bathed in moonlight...
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section v-if="gameId" class="gp-settings-section">
+            <h3 class="gp-section-title">Story Settings</h3>
+            <div class="gp-settings-group">
+                <BaseButton severity="gray-muted" class="w-full" :disabled="isResetting" @click="handleResetGame">
+                    <LucideRefreshCw :size="16" :class="{ 'animate-spin': isResetting }" />
+                    <span>{{ isResetting ? 'Resetting…' : 'Restart story' }}</span>
+                </BaseButton>
+                <p class="text-xs leading-relaxed text-gray-500">
+                    Erases all progress and begins a new playthrough from the start.
+                </p>
+            </div>
+            <div class="gp-settings-group">
+                <a
+                    href="https://lorespinner.com/faq"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex w-full items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-gray-300 no-underline transition hover:border-primary/20 hover:text-primary-300"
+                >
+                    <span>FAQ &amp; help</span>
+                    <LucideExternalLink class="size-4 opacity-60" />
+                </a>
+            </div>
+        </section>
+
+        <section class="gp-settings-section">
+            <h3 class="gp-section-title">Audio</h3>
+            <div class="gp-settings-group">
+                <label class="gp-field-label">Narration Volume</label>
+                <div class="flex items-center gap-3">
+                    <input type="range" min="0" max="100" :value="volumePercent()" class="gp-range flex-1" @input="onVolumeInput" />
+                    <span class="w-10 text-right text-sm tabular-nums text-gray-400">{{ volumePercent() }}%</span>
+                </div>
+            </div>
+            <div class="gp-settings-group">
+                <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3 transition hover:border-primary/20"
+                    @click="settings.autoplay = !settings.autoplay"
+                >
+                    <div class="flex items-center gap-3">
+                        <LucideZap
+                            class="size-4 transition-colors"
+                            :class="settings.autoplay ? 'text-primary fill-primary' : 'text-gray-500'"
+                        />
+                        <span class="text-sm text-gray-200">Autoplay narrations</span>
+                    </div>
+                    <span
+                        class="rounded-full px-2 py-0.5 text-xs font-medium"
+                        :class="settings.autoplay ? 'bg-primary/15 text-primary-300' : 'bg-white/5 text-gray-500'"
+                    >
+                        {{ settings.autoplay ? 'On' : 'Off' }}
+                    </span>
+                </button>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -210,6 +382,72 @@ const handleResetGame = () => {
 }
 
 .gameplay-range::-moz-range-thumb {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: #54f4da;
+    cursor: pointer;
+    border: 2px solid #013231;
+}
+
+.gp-settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.gp-settings-section + .gp-settings-section {
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.gp-settings-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.gp-section-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(84, 244, 218, 0.75);
+}
+
+.gp-settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.gp-field-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgb(156, 163, 175);
+}
+
+.gp-range {
+    appearance: none;
+    height: 0.25rem;
+    background: rgba(84, 244, 218, 0.15);
+    border-radius: 0.25rem;
+    outline: none;
+}
+
+.gp-range::-webkit-slider-thumb {
+    appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: #54f4da;
+    cursor: pointer;
+    border: 2px solid #013231;
+}
+
+.gp-range::-moz-range-thumb {
     width: 1rem;
     height: 1rem;
     border-radius: 50%;

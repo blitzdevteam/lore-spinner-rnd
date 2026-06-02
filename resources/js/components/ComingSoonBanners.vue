@@ -3,11 +3,13 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import HomePortraitStoryCard from '@/components/HomePortraitStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
-import cover1 from '@/assets/commingSoon/Coming soon 1- 2x.jpg';
-import cover2 from '@/assets/commingSoon/Coming soon 2 - 2x.png';
-import cover3 from '@/assets/commingSoon/Coming soon 3 - 2x.jpg';
-import cover4 from '@/assets/commingSoon/Coming soon 4 - 2x.jpg';
-import cover5 from '@/assets/commingSoon/Coming soon 5 - 2x.png';
+import janeCover from '@/assets/commingSoon/jane-comming.png';
+import frankensteinCover from '@/assets/commingSoon/frankstein-comming.png';
+import drjCover from '@/assets/commingSoon/drj-comming.png';
+import underseaCover from '@/assets/commingSoon/undersea-comming.JPG';
+import wastelandCover from '../../../database/stories/covers/wasteland.png';
+import romeoCover from '@/assets/commingSoon/romeo-comming.png';
+import pjCover from '@/assets/commingSoon/pj-comming.JPG';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
@@ -28,39 +30,53 @@ interface ComingSoonCard {
 
 const cards: ComingSoonCard[] = [
     {
-        id: 'Romeo&Juliet',
-        title: "Romeo & Juliet",
-        cover: cover1,
-        themes: ['Destiny', 'Courage', 'Control'],
-        teaser: 'Two star-crossed lovers defy their feuding families — but every choice tightens the trap of fate.',
-    },
-    {
-        id: 'hansel',
-        title: 'Hansel & Gretel',
-        cover: cover2,
-        themes: ['Survival', 'Fear', 'Family'],
-        teaser: 'Lost in the woods, siblings must outwit a witch whose house is built from hunger itself.',
-    },
-    {
-        id: 'pride',
-        title: 'Pride and Prejudice',
-        cover: cover3,
-        themes: ['Love', 'Duty', 'Society'],
-        teaser: 'First impressions and pride collide in a world where marriage is strategy and love is rebellion.',
+        id: 'jane-eyre',
+        title: 'Jane Eyre',
+        cover: janeCover,
+        themes: ['Love', 'Independence', 'Secrets'],
+        teaser: 'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
     },
     {
         id: 'frankenstein',
         title: 'Frankenstein',
-        cover: cover4,
+        cover: frankensteinCover,
         themes: ['Creation', 'Isolation', 'Ambition'],
         teaser: 'A creator abandons his masterpiece — and the creature returns to demand an answer only blood can settle.',
     },
     {
+        id: 'dr-jekyll-and-mr-hyde',
+        title: 'The Strange Case of Dr. Jekyll and Mr. Hyde',
+        cover: drjCover,
+        themes: ['Duality', 'Power', 'Morality'],
+        teaser: 'Step into the fractured mind of a man at war with his own nature — and choose which side survives.',
+    },
+    {
         id: 'leagues',
         title: '20,000 Leagues Under the Sea',
-        cover: cover5,
+        cover: underseaCover,
         themes: ['Discovery', 'Wonder', 'Peril'],
         teaser: 'Captives aboard a submarine discover a captain who has turned the ocean into a kingdom of revenge.',
+    },
+    {
+        id: 'wasteland',
+        title: 'Wasteland',
+        cover: wastelandCover,
+        themes: ['Survival', 'Betrayal', 'Escape'],
+        teaser: "After uncovering a horrifying secret inside a futuristic waste system, a soft-spoken engineer is dumped into a hidden Sahara wasteland where society's discarded must fight to survive and escape.",
+    },
+    {
+        id: 'romeo-and-juliet',
+        title: 'Romeo & Juliet',
+        cover: romeoCover,
+        themes: ['Destiny', 'Courage', 'Control'],
+        teaser: 'Two star-crossed lovers defy their feuding families — but every choice tightens the trap of fate.',
+    },
+    {
+        id: 'pjs',
+        title: "PJ's",
+        cover: pjCover,
+        themes: ['Brotherhood', 'Sacrifice', 'Courage'],
+        teaser: "After their beloved team leader is killed during a covert extraction, an elite squad of U.S. Air Force Pararescuemen must regroup under new leadership and save lives in the world's deadliest crises.",
     },
 ];
 
@@ -71,7 +87,7 @@ function scrollSlider(direction: -1 | 1) {
     if (!slider) return;
 
     const card = slider.querySelector<HTMLElement>('.story-card-slot');
-    const gap = 10;
+    const gap = 16;
     const step = card ? card.offsetWidth + gap : 214;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });

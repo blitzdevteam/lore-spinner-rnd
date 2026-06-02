@@ -130,6 +130,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
             'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
         fallbackAuthor: 'Charlotte Brontë',
         fallbackBranching: 134521,
+        comingSoon: true,
     },
 ];
 
