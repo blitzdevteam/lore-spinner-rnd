@@ -15,7 +15,7 @@ function select(value: Panel): void {
 
 const tabs: { id: Panel; label: string }[] = [
     { id: 'details', label: 'Details' },
-    { id: 'chapters', label: 'Chapters' },
+    { id: 'chapters', label: 'Episodes' },
 ];
 
 function isActive(id: Panel): boolean {
