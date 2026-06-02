@@ -6,6 +6,7 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import StoryGrid from '@/components/StoryGrid.vue';
 import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
+import { resolveStoryCover } from '@/data/storyCoverBySlug';
 import { getMoodTopPickSlugs } from '@/data/moodContent';
 import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moodBanners';
 import HomeLayout from '@/layouts/HomeLayout.vue';
@@ -36,7 +37,10 @@ const pageTitle = computed(() => (normalizedMood.value ? moodHero.value.title : 
 
 /** API stories plus featured mock worlds; mocks skipped when the same slug already exists from the server. */
 const allLibraryStories = computed((): StoryInterface[] => {
-    const real = props.stories ?? [];
+    const real = (props.stories ?? []).map((story) => ({
+        ...story,
+        cover: resolveStoryCover(story.slug, story.cover),
+    }));
     const realSlugs = new Set(real.map((s) => s.slug));
     const extra = MOCK_LIBRARY_STORIES.filter((m) => !realSlugs.has(m.slug));
     return [...real, ...extra];

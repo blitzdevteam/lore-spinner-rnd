@@ -20,7 +20,7 @@ async function extractColors(url: string): Promise<string[]> {
         img.crossOrigin = 'anonymous';
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            const size = 80;
+            const size = 150;
             canvas.width = size;
             canvas.height = size;
             const ctx = canvas.getContext('2d');
@@ -36,11 +36,11 @@ async function extractColors(url: string): Promise<string[]> {
                 const r = data[i], g = data[i + 1], b = data[i + 2];
                 // Skip near-black and near-white (too neutral)
                 const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-                if (brightness < 40 || brightness > 220) continue;
-                // Quantize into buckets to group similar colors
-                const qr = Math.round(r / 24) * 24;
-                const qg = Math.round(g / 24) * 24;
-                const qb = Math.round(b / 24) * 24;
+                if (brightness < 30 || brightness > 230) continue;
+                // Quantize into buckets to group similar colors (finer step for better variety)
+                const qr = Math.round(r / 16) * 16;
+                const qg = Math.round(g / 16) * 16;
+                const qb = Math.round(b / 16) * 16;
                 const key = `${qr},${qg},${qb}`;
                 buckets.set(key, (buckets.get(key) ?? 0) + 1);
             }
@@ -52,7 +52,7 @@ async function extractColors(url: string): Promise<string[]> {
                 const [r, g, b] = key.split(',').map(Number);
                 // Ensure picked colors are visually distinct from each other
                 const tooClose = picked.some(
-                    ([pr, pg, pb]) => Math.abs(pr - r) + Math.abs(pg - g) + Math.abs(pb - b) < 80,
+                    ([pr, pg, pb]) => Math.abs(pr - r) + Math.abs(pg - g) + Math.abs(pb - b) < 60,
                 );
                 if (!tooClose) picked.push([r, g, b]);
             }

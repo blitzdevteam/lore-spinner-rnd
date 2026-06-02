@@ -11,9 +11,7 @@ the-tell-tale-heart
 nocturne
 anima-machina
 driftheart
-indiana-jones-and-the-raiders-of-the-lost-ark
 the-snow-queen
-the-lord-of-the-rings-the-fellowship-of-the-ring
 ```
 
 ## Preflight

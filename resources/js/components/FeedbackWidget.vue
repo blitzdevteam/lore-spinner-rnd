@@ -7,28 +7,17 @@ import { ref } from 'vue';
 const isOpen = ref(false);
 const content = ref('');
 const isSubmitting = ref(false);
-
-const open = () => {
-    isOpen.value = true;
-};
-
-const close = () => {
-    isOpen.value = false;
-    content.value = '';
-};
+const screenshotStatus = ref<'idle' | 'capturing' | 'ready' | 'failed'>('idle');
+const screenshotPreview = ref<string | null>(null);
+const screenshotFile = ref<File | null>(null);
 
 const capturePageScreenshot = async (): Promise<File | null> => {
     try {
         const html2canvas = (await import('html2canvas')).default;
 
-        // Capture only the visible viewport (not the full scrollable page).
-        // This keeps the file small (~100-300 KB as JPEG) and avoids PHP's
-        // upload_max_filesize limit, which silently drops large uploads.
-        // useCORS:true + allowTaint:false skips cross-origin images rather
-        // than tainting the canvas (which would cause toBlob to throw).
         const canvas = await html2canvas(document.documentElement, {
             useCORS: true,
-            allowTaint: false,
+            allowTaint: true,
             logging: false,
             scale: 1,
             width: window.innerWidth,
@@ -37,14 +26,14 @@ const capturePageScreenshot = async (): Promise<File | null> => {
             windowHeight: window.innerHeight,
             x: window.scrollX,
             y: window.scrollY,
-            ignoreElements: (element: Element) => Boolean(element.closest('.feedback-widget-root')),
         });
 
         const blob = await new Promise<Blob | null>((resolve) =>
-            canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.75),
+            canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.80),
         );
 
         if (!blob) {
+            console.warn('[FeedbackWidget] toBlob returned null');
             return null;
         }
 
@@ -55,17 +44,45 @@ const capturePageScreenshot = async (): Promise<File | null> => {
     }
 };
 
+const open = async () => {
+    // Capture BEFORE the modal renders so the widget UI doesn't appear in the shot
+    screenshotStatus.value = 'capturing';
+    screenshotPreview.value = null;
+    screenshotFile.value = null;
+
+    const file = await capturePageScreenshot();
+
+    if (file) {
+        screenshotFile.value = file;
+        screenshotPreview.value = URL.createObjectURL(file);
+        screenshotStatus.value = 'ready';
+    } else {
+        screenshotStatus.value = 'failed';
+    }
+
+    isOpen.value = true;
+};
+
+const close = () => {
+    isOpen.value = false;
+    content.value = '';
+    screenshotStatus.value = 'idle';
+    if (screenshotPreview.value) {
+        URL.revokeObjectURL(screenshotPreview.value);
+        screenshotPreview.value = null;
+    }
+    screenshotFile.value = null;
+};
+
 const submit = async () => {
     if (!content.value.trim() || isSubmitting.value) return;
 
     isSubmitting.value = true;
 
-    const screenshot = await capturePageScreenshot();
-
     const formData = new FormData();
     formData.append('content', content.value);
-    if (screenshot) {
-        formData.append('screenshot', screenshot);
+    if (screenshotFile.value) {
+        formData.append('screenshot', screenshotFile.value);
     }
 
     router.post('/feedback', formData, {
@@ -111,7 +128,15 @@ const submit = async () => {
 
                 <div class="mt-3 flex items-center gap-2 text-xs text-gray-500">
                     <Camera :size="14" />
-                    <span>A screenshot will be included with your feedback</span>
+                    <span v-if="screenshotStatus === 'capturing'" class="animate-pulse">Capturing screenshot…</span>
+                    <span v-else-if="screenshotStatus === 'ready'" class="text-green-400">Screenshot ready</span>
+                    <span v-else-if="screenshotStatus === 'failed'" class="text-yellow-500">Screenshot unavailable — feedback will still be sent</span>
+                    <span v-else>A screenshot will be included with your feedback</span>
+                </div>
+
+                <!-- Screenshot thumbnail preview -->
+                <div v-if="screenshotStatus === 'ready' && screenshotPreview" class="mt-2 overflow-hidden rounded-lg border border-gray-700">
+                    <img :src="screenshotPreview" alt="Page screenshot preview" class="max-h-28 w-full object-cover object-top" />
                 </div>
 
                 <div class="mt-5 grid grid-cols-2 gap-3">
@@ -125,7 +150,13 @@ const submit = async () => {
             </Transition>
 
             <div data-feedback-btn class="fixed right-4 bottom-28 z-[998] transition-[left,right] duration-200 md:right-6 md:bottom-6">
-                <BaseButton severity="glass" :icon-only="true" class="size-12! shadow-lg shadow-black/30 md:size-14!" @click="open">
+                <BaseButton
+                    severity="glass"
+                    :icon-only="true"
+                    :processing="screenshotStatus === 'capturing'"
+                    class="size-12! shadow-lg shadow-black/30 md:size-14!"
+                    @click="open"
+                >
                     <LucideMessageSquare class="size-6 text-primary-300" />
                 </BaseButton>
             </div>

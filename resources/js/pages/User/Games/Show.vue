@@ -2,6 +2,7 @@
 import GameCinematicOpening from '@/components/GameCinematicOpening.vue';
 import GameplayChatCard from '@/components/GameplayChatCard.vue';
 import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
+import { useGameplaySettings } from '@/composables/useGameplaySettings';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import GameplayLayout from '@/layouts/GameplayLayout.vue';
 import { GameInterface } from '@/types';
@@ -136,11 +137,37 @@ const prompts = computed(() => props.game.prompts ?? []);
 const hasPrompts = computed(() => prompts.value.length > 0);
 const sessionComplete = computed(() => props.game.current_session_complete === true);
 
+const journalMeta = computed(() => ({
+    storyTitle: props.game.story?.title,
+    episodeLabel: (props.game as { currentEvent?: { chapter?: { position?: number } } }).currentEvent?.chapter?.position
+        ? `Episode ${(props.game as { currentEvent: { chapter: { position: number } } }).currentEvent.chapter.position}`
+        : null,
+    sessionNumber: props.game.current_session_number,
+    turnCount: prompts.value.length,
+    sessionComplete: sessionComplete.value,
+}));
+
+function stripHtml(html: string): string {
+    if (typeof document === 'undefined') {
+        return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+    const el = document.createElement('div');
+    el.innerHTML = html;
+    return (el.textContent ?? '').replace(/\s+/g, ' ').trim();
+}
+
+function excerpt(text: string, max = 120): string {
+    const plain = stripHtml(text);
+    if (plain.length <= max) return plain;
+    return `${plain.slice(0, max).trim()}…`;
+}
+
 // Cinematic opening: shown on first visit (no prompts yet); hidden once begin fires
 const showCinematic = ref(!hasPrompts.value);
 const cameFromCinematic = ref(!hasPrompts.value);
 
 const tts = useTextToSpeech();
+const { settings: gameplaySettings } = useGameplaySettings();
 // Auto-play the first narration while the showcard is still visible
 watch(
     () => prompts.value[0]?.response,
@@ -150,6 +177,23 @@ watch(
         if (!first) return;
         cameFromCinematic.value = false;
         tts.play(String(props.game.id), String(first.id));
+    },
+);
+
+// Autoplay: when a new response arrives on the latest prompt, play it automatically
+watch(
+    () => {
+        const latest = prompts.value[prompts.value.length - 1];
+        return latest ? `${latest.id}:${latest.response ?? ''}` : null;
+    },
+    (key, prevKey) => {
+        if (!gameplaySettings.autoplay) return;
+        if (!key || key === prevKey) return;
+        const latest = prompts.value[prompts.value.length - 1];
+        if (!latest?.response) return;
+        // Skip the very first prompt that came from the cinematic (already handled above)
+        if (cameFromCinematic.value) return;
+        tts.play(String(props.game.id), String(latest.id));
     },
 );
 
@@ -303,6 +347,7 @@ onMounted(() => {
         :input-disabled="!canSubmitInput"
         :game-id="game.id"
         :cover-url="game.story?.cover ?? null"
+        :journal-meta="journalMeta"
         @submit="handleSubmit"
         @back="handleBack"
     >
@@ -368,15 +413,48 @@ onMounted(() => {
         </template>
 
         <template #journals>
-            <div class="flex flex-col gap-3 py-2">
+            <!-- Desktop sidebar: classic session progress -->
+            <div class="hidden flex-col gap-3 md:flex">
                 <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Session Progress</p>
                 <div class="rounded-xl border border-gray-700/50 bg-gray-800/40 p-4">
                     <p class="text-sm text-gray-300">
-                        Session <span class="text-primary-300 font-medium">{{ game.current_session_number ?? 1 }}</span>
+                        Session <span class="font-medium text-primary-300">{{ game.current_session_number ?? 1 }}</span>
                     </p>
                     <p class="mt-1 text-xs text-gray-500">{{ prompts.length }} turn{{ prompts.length === 1 ? '' : 's' }} played this session</p>
                     <p v-if="sessionComplete" class="mt-2 text-xs text-primary-400">✓ Session complete</p>
                 </div>
+            </div>
+
+            <div class="gp-timeline flex flex-col">
+                <article
+                    v-for="(prompt, index) in prompts"
+                    :key="prompt.id"
+                    class="gp-timeline__item relative flex gap-3 pb-5 last:pb-0"
+                >
+                    <div class="gp-timeline__rail flex flex-col items-center">
+                        <span
+                            class="gp-timeline__dot grid size-7 shrink-0 place-items-center rounded-full border border-primary/30 bg-primary/10 text-[10px] font-semibold tabular-nums text-primary-300"
+                        >
+                            {{ index + 1 }}
+                        </span>
+                        <span
+                            v-if="index < prompts.length - 1"
+                            class="gp-timeline__line mt-1 w-px flex-1 min-h-4 bg-gradient-to-b from-primary/30 to-transparent"
+                        />
+                    </div>
+                    <div class="gp-timeline__card min-w-0 flex-1 rounded-xl border border-white/8 bg-white/[0.03] p-3.5">
+                        <p v-if="prompt.prompt" class="text-xs font-medium text-primary-300/90">
+                            You · {{ prompt.prompt === '__continue__' ? 'Continued' : prompt.prompt }}
+                        </p>
+                        <p v-else class="text-[10px] font-semibold uppercase tracking-wider text-gray-500">Opening</p>
+                        <p class="mt-2 text-sm leading-relaxed text-gray-300">
+                            {{ excerpt(prompt.response) }}
+                        </p>
+                    </div>
+                </article>
+                <p v-if="!prompts.length" class="py-4 text-center text-sm text-gray-500">
+                    Your story events will appear here as you play.
+                </p>
             </div>
         </template>
 
@@ -412,4 +490,8 @@ onMounted(() => {
     </GameplayLayout>
 </template>
 
-<style scoped></style>
+<style scoped>
+.gp-timeline__item:last-child .gp-timeline__line {
+    display: none;
+}
+</style>

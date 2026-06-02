@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import StoryCard from '@/components/StoryCard.vue';
+import { isStoryPlayable } from '@/data/playableStorySlugs';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
 
@@ -17,7 +18,8 @@ const props = withDefaults(
     },
 );
 
-const isComingSoon = props.story.status?.value !== StoryStatusEnum.PUBLISHED;
+const isComingSoon =
+    props.story.status?.value !== StoryStatusEnum.PUBLISHED || !isStoryPlayable(props.story.slug);
 </script>
 
 <template>

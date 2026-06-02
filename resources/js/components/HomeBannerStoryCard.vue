@@ -13,7 +13,6 @@ const props = withDefaults(
         mood?: string;
         themes: string[];
         teaser?: string | null;
-        branches?: string | null;
         playable: boolean;
         slug?: string;
         focused: boolean;
@@ -105,9 +104,6 @@ function onImageError(): void {
                             </template>
                         </div>
                         <p v-if="teaser" class="hb-card__teaser">{{ teaser }}</p>
-                        <p v-if="branches" class="hb-card__branches">
-                            {{ branches }} Branches explored
-                        </p>
                     </div>
                 </div>
 
@@ -284,13 +280,6 @@ function onImageError(): void {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
-}
-
-.hb-card__branches {
-    margin: 0;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: #ffbe58;
 }
 
 .hb-card__cta {

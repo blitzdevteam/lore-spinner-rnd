@@ -82,24 +82,10 @@ final class ChaosStoryConfig
                 'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
             [
-                'slug'          => 'indiana-jones-and-the-raiders-of-the-lost-ark',
-                'title'         => 'Indiana Jones and the Raiders of the Lost Ark',
-                'protagonist'   => 'Indy',
-                'tagline'       => 'Lucas — race the Nazis to the Ark of the Covenant.',
-                'tts_voice_id'  => null,
-            ],
-            [
                 'slug'          => 'the-snow-queen',
                 'title'         => 'The Snow Queen',
                 'protagonist'   => 'Gerda',
                 'tagline'       => 'Andersen — walk north through winter to find Kay.',
-                'tts_voice_id'  => null,
-            ],
-            [
-                'slug'          => 'the-lord-of-the-rings-the-fellowship-of-the-ring',
-                'title'         => 'The Lord of the Rings: The Fellowship of the Ring',
-                'protagonist'   => 'Frodo',
-                'tagline'       => 'Tolkien — carry the Ring out of the Shire.',
                 'tts_voice_id'  => null,
             ],
             [

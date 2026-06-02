@@ -3,10 +3,9 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import HomeBannerStoryCard from '@/components/HomeBannerStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
-import banner1 from '@/assets/newStories/New stories 1- 2x.jpg';
+import jekyllCover from '@/assets/commingSoon/jake-comming.png';
 import banner2 from '@/assets/newStories/New stories 2 - 2x .jpg';
 import banner3 from '@/assets/newStories/New stories 3 - 2x.jpg';
-import banner1Hover from '@/assets/newStories/s1-hover.jpg';
 import banner2Hover from '@/assets/newStories/s2-hover.jpg';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
@@ -29,21 +28,20 @@ interface NewStory {
     slug?: string;
     themes: string[];
     teaser: string;
-    branches: string | null;
 }
 
 const stories: NewStory[] = [
     {
-        id: 'sherlock',
-        title: 'Sherlock Holmes',
-        cover: banner1,
-        coverHover: banner1Hover,
-        category: 'Mystery',
-        rating: 'Teen',
+        id: 'jekyll-and-hyde',
+        title: 'Dr. Jekyll & Mr. Hyde',
+        cover: jekyllCover,
+        category: 'Gothic Horror',
+        rating: 'Mature',
         playable: false,
-        themes: ['Destiny', 'Deduction', 'Betrayal'],
-        teaser: 'When London\'s most famous detective faces his most personal case, the truth may cost him everything — and everyone he trusts.',
-        branches: null,
+        slug: 'jekyll-and-hyde',
+        themes: ['Duality', 'Power', 'Morality'],
+        teaser:
+            'Step into the fractured mind of a man at war with his own nature — and choose which side survives.',
     },
     {
         id: 'alices-adventures-in-wonderland',
@@ -55,7 +53,6 @@ const stories: NewStory[] = [
         playable: false,
         themes: ['Distiny', 'Courage', 'Control'],
         teaser: 'In a city where every thought is monitored, one man discovers a truth the state will kill to suppress.',
-        branches: null,
     },
     {
         id: 'pride-and-prejudice',
@@ -66,7 +63,6 @@ const stories: NewStory[] = [
         playable: false,
         themes: ['Love', 'Duty', 'Society'],
         teaser: 'Two sisters navigate love, loss, and society\'s expectations — where the heart and reason are rarely in agreement.',
-        branches: null,
     },
 ];
 
@@ -77,7 +73,7 @@ function scrollSlider(direction: -1 | 1) {
     if (!slider) return;
 
     const card = slider.querySelector<HTMLElement>('.story-card-slot');
-    const gap = 10;
+    const gap = 16;
     const step = card ? card.offsetWidth + gap : 460;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });
@@ -102,7 +98,6 @@ function toSheetData(story: NewStory): StorySheetData {
         rating: story.rating,
         isComingSoon: !story.playable,
         teaser: story.teaser,
-        branches: story.branches,
         slug: story.slug,
         cta: story.playable ? 'play' : 'coming-soon',
     };
@@ -158,7 +153,6 @@ function openSheet(story: NewStory) {
                                             :rating="story.rating"
                                             :themes="story.themes"
                                             :teaser="story.teaser"
-                                            :branches="story.branches"
                                             :playable="story.playable"
                                             :slug="story.slug"
                                             :focused="isDesktopHover && isExpanded(story.id)"

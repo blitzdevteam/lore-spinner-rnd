@@ -1,6 +1,6 @@
 import { computed, onUnmounted, ref } from 'vue';
 
-const SPEED_OPTIONS = [1, 1.25, 1.5, 2] as const;
+const SPEED_OPTIONS = [1, 1.25, 1.5, 1.75, 2] as const;
 
 const audioCache = new Map<string, HTMLAudioElement>();
 
@@ -13,6 +13,16 @@ const volume = ref(1);
 const isMuted = ref(false);
 const isLooping = ref(false);
 const activeKey = ref<string | null>(null);
+const playedKeys = new Set<string>();
+const mediaCollapsed = ref(false);
+
+function revealMediaPlayer() {
+    mediaCollapsed.value = false;
+}
+
+function collapseMediaPlayer() {
+    mediaCollapsed.value = true;
+}
 
 let currentAudio: HTMLAudioElement | null = null;
 let rafId: number | null = null;
@@ -48,6 +58,7 @@ function attachListeners(audio: HTMLAudioElement, key: string) {
         isPlaying.value = true;
         isLoading.value = false;
         duration.value = audio.duration || 0;
+        playedKeys.add(key);
         console.debug('[TTS] playing', key);
         updateTime();
     });
@@ -98,6 +109,7 @@ function play(gameId: string, promptId: string) {
 
     if (currentAudio && activeKey.value === key && !currentAudio.ended) {
         if (currentAudio.paused) {
+            revealMediaPlayer();
             currentAudio.play().catch((err) => {
                 console.warn('[TTS] play() rejected (resume)', key, err);
                 isPlaying.value = false;
@@ -107,6 +119,7 @@ function play(gameId: string, promptId: string) {
         return;
     }
 
+    revealMediaPlayer();
     stop();
 
     if (audioCache.has(key)) {
@@ -182,6 +195,7 @@ function toggle(gameId: string, promptId: string) {
     if (isPlaying.value && activeKey.value === key) {
         pause();
     } else if (activeKey.value === key && currentAudio && !currentAudio.ended) {
+        revealMediaPlayer();
         resume();
     } else {
         play(gameId, promptId);
@@ -270,6 +284,9 @@ export function useTextToSpeech() {
         formattedCurrentTime,
         formattedDuration,
         activeKey,
+        mediaCollapsed,
+        revealMediaPlayer,
+        collapseMediaPlayer,
         play,
         stop,
         dismiss,
@@ -284,5 +301,6 @@ export function useTextToSpeech() {
         toggleLoop,
         seekTo,
         seekBy,
+        hasPlayed: (gameId: string, promptId: string) => playedKeys.has(`${gameId}:${promptId}`),
     };
 }

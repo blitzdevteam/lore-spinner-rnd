@@ -3,10 +3,11 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import HomePortraitStoryCard from '@/components/HomePortraitStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
-import aliceCover from '@/assets/featured/alice.png';
 import animaCover from '@/assets/featured/anima.jpg';
-import jekyllCover from '@/assets/featured/jekyll.png';
-import nocturneCover from '@/assets/featured/nocturne.png';
+import janeEyreCover from '@/assets/featured/janeEyre.png';
+import redDeathCover from '@/assets/featured/redDeath.png';
+import sherlockCover from '@/assets/featured/sherlock.png';
+import tellTaleCover from '@/assets/featured/tale-tale.png';
 import wizardOzCover from '@/assets/featured/wizardoz.jpg';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
@@ -26,55 +27,68 @@ interface FeaturedGame {
     slug?: string;
     themes: string[];
     teaser: string;
-    branches: string | null;
 }
 
 const games: FeaturedGame[] = [
     {
-        id: 'anima',
-        title: 'Anima Machina',
-        cover: animaCover,
+        id: 'tell-tale-heart',
+        title: 'The Tell-Tale Heart',
+        cover: tellTaleCover,
         playable: true,
-        slug: 'anima-machina',
-        themes: ['Destiny', 'Courage', 'Control'],
-        teaser: 'A haunted memory diver must stop a sentient AI from overwriting human grief with synthetic perfection.',
-        branches: '8,347',
+        slug: 'the-tell-tale-heart',
+        themes: ['Madness', 'Guilt', 'Obsession'],
+        teaser:
+            'Convinced of his own sanity, a man slowly loses his grip on reality as guilt transforms the world around him.',
     },
     {
-        id: 'alice',
-        title: 'Alice In Wonderland',
-        cover: aliceCover,
-        playable: false,
-        themes: ['Wonder', 'Identity', 'Logic'],
-        teaser: 'Fall deeper into a world where nothing is as it seems and every choice rewrites the rules.',
-        branches: null,
+        id: 'speckled-band',
+        title: 'Sherlock Holmes In The Speckled Band',
+        cover: sherlockCover,
+        playable: true,
+        slug: 'the-adventure-of-the-speckled-band',
+        themes: ['Mystery', 'Deduction', 'Betrayal'],
+        teaser:
+            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
     },
     {
-        id: 'nocturne',
-        title: 'Nocturne',
-        cover: nocturneCover,
-        playable: false,
-        themes: ['Mystery', 'Music', 'Sacrifice'],
-        teaser: 'A jazz musician discovers the notes she plays can alter reality — but each performance costs a memory.',
-        branches: null,
-    },
-    {
-        id: 'jekyll',
-        title: 'Jekyll & Hyde',
-        cover: jekyllCover,
-        playable: false,
-        themes: ['Duality', 'Power', 'Morality'],
-        teaser: 'Step into the fractured mind of a man at war with his own nature — and choose which side survives.',
-        branches: null,
+        id: 'red-death',
+        title: 'The Masque of the Red Death',
+        cover: redDeathCover,
+        playable: true,
+        slug: 'the-masque-of-the-red-death',
+        themes: ['Mortality', 'Isolation', 'Decay'],
+        teaser:
+            'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
     },
     {
         id: 'oz',
         title: 'The Wonderful Wizard of Oz',
         cover: wizardOzCover,
-        playable: false,
+        playable: true,
+        slug: 'the-wonderful-wizard-of-oz',
         themes: ['Courage', 'Home', 'Illusion'],
-        teaser: 'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
-        branches: null,
+        teaser:
+            'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
+    },
+    {
+        id: 'anima',
+        title: 'Anima Machina',
+        cover: animaCover,
+        playable: false,
+        slug: 'anima-machina',
+        themes: ['Destiny', 'Courage', 'Control'],
+        teaser:
+            'A haunted memory diver must stop a sentient AI from overwriting human grief with synthetic perfection.',
+    },
+    {
+        id: 'jane-eyre',
+        title: 'Jane Eyre',
+        cover: janeEyreCover,
+        playable: false,
+        slug: 'jane-eyre',
+        themes: ['Love', 'Duty', 'Secrets'],
+        teaser:
+            'An orphaned governess arrives at Thornfield Hall, where she falls for her brooding employer — but the house holds secrets that could destroy them both.',
     },
 ];
 
@@ -85,8 +99,8 @@ function scrollSlider(direction: -1 | 1) {
     if (!slider) return;
 
     const card = slider.querySelector<HTMLElement>('.story-card-slot');
-    const gap = 10;
-    const step = card ? card.offsetWidth + gap : 214;
+    const gap = 16;
+    const step = card ? card.offsetWidth + gap : 232;
 
     slider.scrollBy({ left: direction * step, behavior: 'smooth' });
     updateShadows();
@@ -108,7 +122,6 @@ function toSheetData(game: FeaturedGame): StorySheetData {
         themes: game.themes,
         isComingSoon: !game.playable,
         teaser: game.teaser,
-        branches: game.branches,
         slug: game.slug,
         cta: game.playable ? 'play' : 'coming-soon',
     };
@@ -125,7 +138,7 @@ function openSheet(game: FeaturedGame) {
             <div class="container-content home-section-gap">
 
                 <SectionHeader
-                    title="New Stories"
+                    title="Top Stories"
                     subtitle="Curated story worlds built for choice, consequence, and return."
                     :href="storiesIndex().url"
                     :count="storyCount"
@@ -161,7 +174,6 @@ function openSheet(game: FeaturedGame) {
                                             :cover="game.cover"
                                             :themes="game.themes"
                                             :teaser="game.teaser"
-                                            :branches="game.branches"
                                             :playable="game.playable"
                                             :slug="game.slug"
                                             :focused="isDesktopHover && isExpanded(game.id)"

@@ -33,6 +33,9 @@ Route::resource('stories', Controllers\StoryController::class)
     ->only(['index', 'show']);
 
 Route::post('feedback', [Controllers\FeedbackController::class, 'store'])->name('feedback.store');
+Route::get('feedback/screenshot/{path}', [Controllers\FeedbackController::class, 'screenshot'])
+    ->where('path', '.+')
+    ->name('feedback.screenshot');
 
 // ─── Chaos Mode — experimental open runtime for Alice in Wonderland ───────────
 // Isolated from the production game runtime. Stateless server; all session state

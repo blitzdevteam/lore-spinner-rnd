@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import StoryCard, { type StoryCardCta } from '@/components/StoryCard.vue';
+import { isStoryPlayable } from '@/data/playableStorySlugs';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
@@ -22,7 +23,8 @@ function ctaForStory(story: StoryInterface): StoryCardCta | undefined {
 }
 
 function isComingSoon(story: StoryInterface): boolean {
-    return story.status?.value !== StoryStatusEnum.PUBLISHED;
+    if (story.status?.value !== StoryStatusEnum.PUBLISHED) return true;
+    return !isStoryPlayable(story.slug);
 }
 
 function genreForStory(story: StoryInterface): string | undefined {

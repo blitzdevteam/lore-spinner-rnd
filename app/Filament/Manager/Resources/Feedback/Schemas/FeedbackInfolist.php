@@ -25,8 +25,10 @@ final class FeedbackInfolist
                             ->columnSpanFull(),
                         ImageEntry::make('screenshot_path')
                             ->label('Page screenshot')
-                            ->disk('public')
-                            ->visibility('public')
+                            ->getStateUsing(fn (Feedback $record): ?string => filled($record->screenshot_path)
+                                ? route('feedback.screenshot', ['path' => $record->screenshot_path])
+                                : null)
+                            ->checkFileExistence(false)
                             ->columnSpanFull()
                             ->extraImgAttributes([
                                 'class' => 'rounded-lg border border-gray-200 dark:border-gray-700 max-w-full',

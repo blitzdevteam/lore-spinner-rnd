@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
 import GameplayContinueIcon from '@/components/icons/GameplayContinueIcon.vue';
+import { useGameplaySettings } from '@/composables/useGameplaySettings';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { useTypewriter } from '@/composables/useTypewriter';
 import { PromptInterface } from '@/types';
@@ -8,6 +9,8 @@ import { LucideCheck, LucideLoader, LucidePause, LucidePlay } from 'lucide-vue-n
 import { computed, onMounted, watch } from 'vue';
 
 const CONTINUE_MARKER = '__continue__';
+
+const { settings: gameplaySettings } = useGameplaySettings();
 
 const props = defineProps<{
     prompt: PromptInterface;
@@ -47,9 +50,9 @@ const showCustomAction = computed(() => {
     return !props.prompt.choices?.includes(effectiveSelection.value);
 });
 
-// Continue is only a functional fallback for beats that offer no choices
+// Continue is always available when the player can interact and a response exists
 const showContinueButton = computed(() => {
-    return canInteract.value && !!props.prompt.response && !hasChoices.value;
+    return canInteract.value && !!props.prompt.response;
 });
 
 const renderedResponse = computed(() => {
@@ -93,6 +96,7 @@ const handleContinue = () => {
 const thisKey = computed(() => `${props.gameId}:${props.prompt.id}`);
 const isThisPlaying = computed(() => tts.isPlaying.value && tts.activeKey.value === thisKey.value);
 const isThisLoading = computed(() => tts.isLoading.value && tts.activeKey.value === thisKey.value);
+const hasPlayedOnce = computed(() => tts.hasPlayed(props.gameId, props.prompt.id) || isThisPlaying.value || isThisLoading.value);
 
 const handleListenAgain = () => {
     tts.toggle(props.gameId, props.prompt.id);
@@ -130,7 +134,8 @@ watch(
         <!-- ── Narration card ── -->
         <div
             v-if="prompt.response"
-            class="narration-card rounded-xl border-[0.5px] border-[#999] bg-gray-950 p-4 sm:rounded-[14px] sm:p-5"
+            class="narration-card rounded-xl border-[0.5px] border-[#999] p-4 sm:rounded-[14px] sm:p-5"
+            :style="{ backgroundColor: gameplaySettings.backgroundColor || '#030712' }"
             @click="handleNarrationClick"
         >
             <div class="text-justify leading-relaxed font-normal tracking-[0.04em]" style="font-size: inherit" v-html="renderedResponse"></div>
@@ -147,6 +152,7 @@ watch(
             <button
                 type="button"
                 class="narration-action-pill listen-again-pill relative flex h-[50px] w-auto items-center gap-[5px] overflow-hidden rounded-[60px] p-[6px] pe-3.5"
+                :title="isThisPlaying ? 'Pause narration' : hasPlayedOnce ? 'Listen again' : 'Listen'"
                 @click="handleListenAgain"
             >
                 <!-- Background layers -->
@@ -170,8 +176,8 @@ watch(
                 </span>
                 <!-- Label -->
                 <span class="relative flex min-w-0 flex-col items-start leading-tight tracking-[0.5px]">
-                    <span class="text-sm text-primary-600">Listen Again</span>
-                    <span class="text-xs font-light text-[#7e7e7e]">Replay Narration</span>
+                    <span class="text-sm text-primary-600">{{ hasPlayedOnce ? 'Listen Again' : 'Listen' }}</span>
+                    <span class="text-xs font-light text-[#7e7e7e]">{{ hasPlayedOnce ? 'Replay Narration' : 'Play Narration' }}</span>
                 </span>
             </button>
 
@@ -179,15 +185,16 @@ watch(
                 v-if="showContinueButton"
                 type="button"
                 class="narration-action-pill bg-glass-effect flex h-[50px] w-full min-w-0 items-center gap-2 overflow-hidden rounded-full p-1.5 pe-4 sm:w-auto sm:pe-5"
+                title="Continue the story"
                 @click="handleContinue"
             >
-                <span class="bg-muted-glass-effect grid size-9 shrink-0 place-items-center rounded-full text-white">
+                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-primary-600 text-white">
                     <GameplayContinueIcon />
                 </span>
                 <span class="flex min-w-0 flex-col items-start leading-tight">
                     <span class="text-sm text-primary-400 sm:hidden">Continue</span>
                     <span class="hidden text-sm text-primary-400 sm:inline">Continue: Hear What Happens Next</span>
-                    <span class="text-xs font-light text-[#7e7e7e]">No Choice Right Now</span>
+                    <span class="text-xs font-light text-[#7e7e7e]">Let the story progress</span>
                 </span>
             </button>
         </div>
