@@ -127,6 +127,7 @@ export const STORY_MOODS_BY_SLUG: Record<string, MoodId[]> = {
     'jekyll-and-hyde': ['heartfelt', 'mysterious', 'epic'],
     'the-wonderful-wizard-of-oz': ['heartfelt', 'adventurous', 'epic', 'whimsical'],
     'the-adventure-of-the-speckled-band': ['mysterious', 'adventurous'],
+    'the-tell-tale-heart': ['mysterious', 'heartfelt'],
 };
 
 /** Collapse common genre spellings to a stable snake_case key before mood lookup. */
