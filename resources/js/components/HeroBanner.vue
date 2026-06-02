@@ -210,28 +210,6 @@ function goNext() {
                     </div>
                 </SwiperSlide>
             </Swiper>
-
-            <button
-                type="button"
-                class="hero-arrow hero-arrow-prev"
-                aria-label="Previous slide"
-                @click="goPrev"
-            >
-                <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
-                    <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-
-            <button
-                type="button"
-                class="hero-arrow hero-arrow-next"
-                aria-label="Next slide"
-                @click="goNext"
-            >
-                <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
         </div>
 
         <div class="hero-copy-wrap">
@@ -285,12 +263,37 @@ function goNext() {
                 </div>
             </div>
         </div>
+
+        <div class="hero-nav" aria-label="Hero carousel controls">
+            <button
+                type="button"
+                class="hero-arrow hero-arrow-prev"
+                aria-label="Previous slide"
+                @click="goPrev"
+            >
+                <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="rotate-180">
+                    <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+
+            <button
+                type="button"
+                class="hero-arrow hero-arrow-next"
+                aria-label="Next slide"
+                @click="goNext"
+            >
+                <svg viewBox="0 0 8 14" width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M1 1L7 7L1 13" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
     </section>
 </template>
 
 <style scoped>
 /* Full viewport height — no cap */
 .hero-banner {
+    position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -436,10 +439,25 @@ function goNext() {
         inset 0 1px 0 color-mix(in srgb, var(--color-secondary-300) 14%, rgba(255, 255, 255, 0.08)) !important;
 }
 
+/*
+ * Full-bleed control rail — arrows pin to hero edges (not a grid column seam).
+ * Mobile: rail matches media height only. Desktop: spans hero, sits above copy z-index.
+ */
+.hero-nav {
+    position: absolute;
+    z-index: 25;
+    top: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    aspect-ratio: 16 / 9;
+    min-height: 12.5rem;
+    max-height: min(48vh, 20.5rem);
+}
+
 .hero-arrow {
     position: absolute;
     top: 50%;
-    z-index: 20;
     display: flex;
     width: 2.125rem;
     height: 2.125rem;
@@ -449,6 +467,7 @@ function goNext() {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(6px);
+    pointer-events: auto;
     transform: translateY(-50%);
     transition: background 0.2s, border-color 0.2s;
 }
@@ -489,6 +508,18 @@ function goNext() {
         max-height: min(44vh, 23rem);
     }
 
+    .hero-nav {
+        max-height: min(44vh, 23rem);
+    }
+
+    .hero-arrow-prev {
+        left: 0.875rem;
+    }
+
+    .hero-arrow-next {
+        right: 0.875rem;
+    }
+
     .hero-copy-wrap {
         padding: 1.5rem 0 1.75rem;
     }
@@ -519,14 +550,6 @@ function goNext() {
     .hero-arrow {
         width: 2.375rem;
         height: 2.375rem;
-    }
-
-    .hero-arrow-prev {
-        left: 0.875rem;
-    }
-
-    .hero-arrow-next {
-        right: 0.875rem;
     }
 }
 
@@ -561,7 +584,6 @@ function goNext() {
     }
 
     .hero-banner {
-        position: relative;
         display: block;
         /* Scale with viewport height on large displays; floor matches original design. */
         height: clamp(33rem, 50vh, 48rem);
@@ -579,6 +601,7 @@ function goNext() {
     .hero-copy-wrap {
         position: absolute;
         inset: 0;
+        z-index: 10;
         display: flex;
         align-items: flex-start;
         background: transparent;
@@ -595,7 +618,8 @@ function goNext() {
         pointer-events: auto;
         max-width: min(34.75rem, 100%);
         gap: 1.5rem;
-        padding-right: 1.5rem;
+        /* Clear left-edge carousel control (arrow + gutter) */
+        padding-inline: 3.5rem 1.5rem;
     }
 
     .hero-copy-body {
@@ -621,6 +645,14 @@ function goNext() {
         text-shadow: 0 1px 10px rgba(0, 0, 0, 0.75);
     }
 
+    .hero-nav {
+        inset: 0;
+        aspect-ratio: unset;
+        min-height: unset;
+        max-height: none;
+        height: 100%;
+    }
+
     .hero-arrow {
         width: 2.5rem;
         height: 2.5rem;
@@ -633,7 +665,28 @@ function goNext() {
     .hero-arrow-next {
         right: 1rem;
     }
+}
 
+/* Tablet / small desktop overlay: pin controls to bottom corners (clear of copy stack) */
+@media (min-width: 48rem) and (max-width: 74.9375rem) {
+    .hero-arrow {
+        top: auto;
+        bottom: 3.75rem;
+        transform: none;
+    }
+}
+
+/* Wide desktop: copy no longer needs extra inset; arrows stay on viewport edges */
+@media (min-width: 75rem) {
+    .hero-arrow {
+        top: 50%;
+        bottom: auto;
+        transform: translateY(-50%);
+    }
+    .hero-copy {
+        padding-inline-start: 0;
+        padding-right: 1.5rem;
+    }
 }
 
 @media (min-width: 64rem) {
