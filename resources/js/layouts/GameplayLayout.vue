@@ -169,17 +169,18 @@ const handleInputSubmit = (prompt: string) => {
                             <BaseButton severity="header-glass" :icon-only="true" class="size-11!" title="Go back" @click="$emit('back')">
                                 <LucideChevronLeft class="size-6 text-gray-50" :stroke-width="1.75" />
                             </BaseButton>
-                            <GameplayCapsuleButton
-                                class="hidden md:inline-flex"
-                                label="Settings"
-                                label-tone="secondary"
-                                :title="activePanel === 'settings' ? 'Close settings' : 'Settings'"
-                                :active="activePanel === 'settings'"
-                                @click="toggleSettings"
-                            >
-                                <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
-                                <LucideSettings v-else class="size-5 text-secondary-300" />
-                            </GameplayCapsuleButton>
+                            <div class="hidden md:inline-flex">
+                                <GameplayCapsuleButton
+                                    label="Settings"
+                                    label-tone="secondary"
+                                    :title="activePanel === 'settings' ? 'Close settings' : 'Settings'"
+                                    :active="activePanel === 'settings'"
+                                    @click="toggleSettings"
+                                >
+                                    <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
+                                    <LucideSettings v-else class="size-5 text-secondary-300" />
+                                </GameplayCapsuleButton>
+                            </div>
                         </div>
 
                         <!-- Center: media player (desktop) -->
