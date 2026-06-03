@@ -161,7 +161,7 @@ const handleInputSubmit = (prompt: string) => {
             :intensity="auroraProps.intensity"
         />
         <div class="relative flex min-h-svh">
-            <div class="flex-1">
+            <div class="flex flex-col flex-1 min-h-svh">
                 <!-- ── Top header bar ── -->
                 <div class="sticky top-0 right-0 left-0 z-30 w-full">
                     <div
@@ -275,7 +275,7 @@ const handleInputSubmit = (prompt: string) => {
 
                 <!-- ── Scrolling content ── -->
                 <div
-                    class="z-5 mx-auto flex max-w-3xl flex-col p-4 transition-colors duration-300"
+                    class="z-5 mx-auto flex w-full max-w-3xl flex-1 flex-col p-4 pb-36 transition-colors duration-300 md:pb-40"
                     :style="{ fontSize: settings.fontSize + 'px', color: settings.fontColor }"
                 >
                     <div class="mb-2">
