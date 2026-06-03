@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AuroraBackground from '@/components/AuroraBackground.vue';
 import BaseButton from '@/components/BaseButton.vue';
+import GameplayCapsuleButton from '@/components/GameplayCapsuleButton.vue';
 import GameplayAudioPanel from '@/components/GameplayAudioPanel.vue';
 import GameplayBottomSheet from '@/components/GameplayBottomSheet.vue';
 import GameplayInput from '@/components/GameplayInput.vue';
@@ -149,16 +150,16 @@ const handleInputSubmit = (prompt: string) => {
                             <BaseButton severity="glass" :icon-only="true" class="size-11!" title="Go back" @click="$emit('back')">
                                 <LucideChevronLeft class="size-6 text-gray-50" :stroke-width="1.75" />
                             </BaseButton>
-                            <BaseButton
-                                severity="glass"
-                                :icon-only="true"
-                                class="hidden size-11! md:flex"
+                            <GameplayCapsuleButton
+                                class="hidden md:inline-flex"
+                                label="Settings"
                                 :title="activePanel === 'settings' ? 'Close settings' : 'Settings'"
+                                :active="activePanel === 'settings'"
                                 @click="toggleSettings"
                             >
                                 <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
                                 <LucideSettings v-else class="size-5 text-secondary-300" />
-                            </BaseButton>
+                            </GameplayCapsuleButton>
                         </div>
 
                         <!-- Center: media player (desktop) -->
@@ -166,42 +167,39 @@ const handleInputSubmit = (prompt: string) => {
                             <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" />
                         </div>
 
-                        <!-- Right: desktop action buttons -->
+                        <!-- Right: desktop action buttons (capsule expands on hover) -->
                         <div class="hidden shrink-0 items-center gap-2 sm:gap-3 md:flex">
-                            <BaseButton
-                                severity="glass"
-                                :icon-only="true"
-                                class="size-11!"
+                            <GameplayCapsuleButton
+                                label="Auto Play"
                                 :title="settings.autoplay ? 'Autoplay on' : 'Autoplay off'"
+                                :active="settings.autoplay"
                                 @click="settings.autoplay = !settings.autoplay"
                             >
                                 <LucideZap
                                     class="size-5 transition-colors"
                                     :class="settings.autoplay ? 'text-primary fill-primary' : 'text-gray-300'"
                                 />
-                            </BaseButton>
-                            <BaseButton
-                                severity="glass"
-                                :icon-only="true"
-                                class="size-11!"
+                            </GameplayCapsuleButton>
+                            <GameplayCapsuleButton
+                                label="Audio"
                                 :title="tts.mediaCollapsed.value ? 'Show audio player' : 'Hide audio player'"
+                                :active="tts.isActive.value && !tts.mediaCollapsed.value"
                                 @click="toggleMedia"
                             >
                                 <LucideAudioLines
                                     class="size-5"
                                     :class="tts.isActive.value && !tts.mediaCollapsed.value ? 'text-primary' : 'text-gray-300'"
                                 />
-                            </BaseButton>
-                            <BaseButton
-                                severity="glass"
-                                :icon-only="true"
-                                class="size-11!"
+                            </GameplayCapsuleButton>
+                            <GameplayCapsuleButton
+                                label="Notes"
                                 :title="activePanel === 'journal' ? 'Close notes' : 'Notes'"
+                                :active="activePanel === 'journal'"
                                 @click="toggleJournal"
                             >
                                 <LucideX v-if="activePanel === 'journal'" class="size-5 text-secondary-300" />
                                 <LucideNotebookText v-else class="size-5 text-secondary-300" />
-                            </BaseButton>
+                            </GameplayCapsuleButton>
                         </div>
 
                         <!-- Mobile: action pill -->

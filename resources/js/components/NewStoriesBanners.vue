@@ -40,7 +40,7 @@ const stories: NewStory[] = [
         slug: 'the-adventure-of-the-speckled-band',
         themes: ['Mystery', 'Deduction', 'Betrayal'],
         teaser:
-            'Helen Stoner fears she will die as her twin did — in a locked room, after a low whistle at three in the morning. Holmes and Watson must unravel the mystery before the speckled band strikes again.',
+            'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
     },
     {
         id: 'the-wonderful-wizard-of-oz',
@@ -52,7 +52,7 @@ const stories: NewStory[] = [
         slug: 'the-wonderful-wizard-of-oz',
         themes: ['Courage', 'Home', 'Illusion'],
         teaser:
-            'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
+            'A storm carries you into the magical land of Oz, where witches whisper, lions tremble, and every step down the Yellow Brick Road changes who you are becoming.',
     },
     {
         id: 'the-tell-tale-heart',
@@ -64,7 +64,7 @@ const stories: NewStory[] = [
         slug: 'the-tell-tale-heart',
         themes: ['Madness', 'Guilt', 'Obsession'],
         teaser:
-            'Convinced of his own sanity, a man slowly loses his grip on reality as guilt transforms the world around him.',
+            "As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape: the beating of a dead man's heart.",
     },
 ];
 

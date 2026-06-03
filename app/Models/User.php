@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -76,9 +75,44 @@ final class User extends Authenticatable implements CanResetPassword, HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('avatar')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png'])
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/svg+xml'])
             ->singleFile()
-            ->useFallbackUrl(Storage::disk('public')->url('avatar/'.(($this->id % 9) + 1).'.png'));
+            ->useDisk('public')
+            ->useFallbackUrl('/storage/profile.svg');
+    }
+
+    /**
+     * Public URL for the user's avatar, always as a same-origin /storage/ path.
+     */
+    public function resolveAvatarUrl(): string
+    {
+        $mediaUrl = $this->getFirstMediaUrl('avatar');
+
+        if (filled($mediaUrl)) {
+            return self::toRelativeStoragePath($mediaUrl) ?? $this->defaultAvatarPath();
+        }
+
+        return $this->defaultAvatarPath();
+    }
+
+    private function defaultAvatarPath(): string
+    {
+        if ($this->id) {
+            return '/storage/avatar/'.(($this->id % 9) + 1).'.png';
+        }
+
+        return '/storage/profile.svg';
+    }
+
+    private static function toRelativeStoragePath(string $url): ?string
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+
+        if (! is_string($path) || ! str_starts_with($path, '/storage/')) {
+            return null;
+        }
+
+        return $path;
     }
 
     /**
@@ -131,7 +165,7 @@ final class User extends Authenticatable implements CanResetPassword, HasMedia
     protected function avatar(): Attribute
     {
         return Attribute::make(
-            get: fn (): string => Storage::disk('public')->url('profile.svg')
+            get: fn (): string => $this->resolveAvatarUrl(),
         );
     }
 

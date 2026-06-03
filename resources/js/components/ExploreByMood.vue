@@ -40,7 +40,7 @@ const gamesById: Record<string, MoodGame> = {
         playable: true,
         slug: 'anima-machina',
         themes: ['Destiny', 'Courage', 'Control'],
-        teaser: 'A haunted memory diver must stop a sentient AI from overwriting human grief with synthetic perfection.',
+        teaser: 'When a sentient AI threatens to overwrite all human grief with synthetic perfection, a haunted memory diver races against the clock to stop the digital reset.',
     },
     alice: {
         id: 'alice',
@@ -48,7 +48,7 @@ const gamesById: Record<string, MoodGame> = {
         cover: aliceCover,
         playable: false,
         themes: ['Wonder', 'Identity', 'Logic'],
-        teaser: 'Fall deeper into a world where nothing is as it seems and every choice rewrites the rules.',
+        teaser: 'Follow Alice into a curious world of talking cats, mad tea parties, and impossible adventures where every path leads somewhere unexpected.',
     },
     nocturne: {
         id: 'nocturne',
@@ -56,7 +56,7 @@ const gamesById: Record<string, MoodGame> = {
         cover: nocturneCover,
         playable: false,
         themes: ['Mystery', 'Music', 'Sacrifice'],
-        teaser: 'A jazz musician discovers the notes she plays can alter reality — but each performance costs a memory.',
+        teaser: 'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten and nothing is quite as voluntary as it seems.',
     },
     jekyll: {
         id: 'jekyll',
@@ -64,7 +64,7 @@ const gamesById: Record<string, MoodGame> = {
         cover: jekyllCover,
         playable: false,
         themes: ['Duality', 'Power', 'Morality'],
-        teaser: 'Step into the fractured mind of a man at war with his own nature — and choose which side survives.',
+        teaser: "Beneath the fog-covered streets of Victorian London, a terrifying secret grows inside Dr. Jekyll's laboratory, threatening to consume everyone around him.",
     },
     oz: {
         id: 'oz',
@@ -72,7 +72,7 @@ const gamesById: Record<string, MoodGame> = {
         cover: ozCover,
         playable: false,
         themes: ['Courage', 'Home', 'Illusion'],
-        teaser: 'Follow the yellow brick road — but every path leads somewhere different, and not all roads lead home.',
+        teaser: 'A storm carries you into the magical land of Oz, where witches whisper, lions tremble, and every step down the Yellow Brick Road changes who you are becoming.',
     },
 };
 

@@ -20,7 +20,7 @@ final class AddWizardOfOzSeeder extends AddSingleStorySeeder
             'slug'    => 'the-wonderful-wizard-of-oz',
             'category' => 'Fantasy Adventure',
             'script'  => 'THE WONDERFUL WIZARD OF OZ_script.txt',
-            'teaser'  => 'A Kansas girl is swept by a cyclone to the magical land of Oz. To find her way home she must follow the yellow brick road — but the Wizard who can help her may not be what he seems.',
+            'teaser'  => 'A storm carries you into the magical land of Oz, where witches whisper, lions tremble, and every step down the Yellow Brick Road changes who you are becoming.',
             'rating'  => StoryRatingEnum::EVERYONE->value,
             'opening' => null,
             'creator' => [

@@ -39,7 +39,7 @@ const games: FeaturedGame[] = [
         slug: 'nocturne',
         themes: ['Identity', 'Secrets', 'Control'],
         teaser:
-            'After a public scandal shatters her life, a disgraced Japanese heiress discovers the organization helping her disappear is part of an ancient cult.',
+            'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten and nothing is quite as voluntary as it seems.',
     },
     {
         id: 'red-death',
@@ -49,7 +49,7 @@ const games: FeaturedGame[] = [
         slug: 'the-masque-of-the-red-death',
         themes: ['Mortality', 'Isolation', 'Decay'],
         teaser:
-            'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
+            'Behind locked gates and glittering masks, a night of celebration slowly transforms into a nightmare no one can escape.',
     },
     {
         id: 'anima-machina',
@@ -59,7 +59,7 @@ const games: FeaturedGame[] = [
         slug: 'anima-machina',
         themes: ['Destiny', 'Courage', 'Control'],
         teaser:
-            'A haunted memory diver must stop a sentient AI from overwriting human grief with synthetic perfection.',
+            'When a sentient AI threatens to overwrite all human grief with synthetic perfection, a haunted memory diver races against the clock to stop the digital reset.',
     },
     {
         id: 'alice-in-wonderland',
@@ -69,7 +69,7 @@ const games: FeaturedGame[] = [
         slug: 'alice-in-wonderland',
         themes: ['Wonder', 'Curiosity', 'Transformation'],
         teaser:
-            'A curious girl follows a white rabbit into a world where logic bends and every choice changes what you become.',
+            'Follow Alice into a curious world of talking cats, mad tea parties, and impossible adventures where every path leads somewhere unexpected.',
     },
     {
         id: 'dracula',
@@ -79,7 +79,7 @@ const games: FeaturedGame[] = [
         slug: 'dracula',
         themes: ['Hunger', 'Fear', 'Desire'],
         teaser:
-            'A voyage, a journal, and a shadow that does not stay in the dark — face the count, and decide what survives.',
+            'Step into a world where love, faith, and reason are tested by a hunger older than death.',
     },
     {
         id: 'pride-and-prejudice',
@@ -89,7 +89,7 @@ const games: FeaturedGame[] = [
         slug: 'pride-and-prejudice',
         themes: ['Love', 'Duty', 'Society'],
         teaser:
-            'A sharp mind meets a guarded heart — and every conversation becomes a contest of pride, prejudice, and possibility.',
+            'In a world ruled by reputation, romance, and social expectation, Elizabeth Bennet must navigate pride, misunderstanding, and the dangerous possibility of falling in love.',
     },
     {
         id: 'treasure-island',
@@ -99,7 +99,7 @@ const games: FeaturedGame[] = [
         slug: 'treasure-island',
         themes: ['Adventure', 'Greed', 'Loyalty'],
         teaser:
-            'A map. A mutiny. A promise of gold — and the kind of choices that turn boys into pirates or ghosts.',
+            'Every choice at sea carries a price: who to trust, when to run, and what kind of courage survives betrayal. The map is only the beginning.',
     },
 ];
 

@@ -21,7 +21,7 @@ final class AddMasqueSeeder extends AddSingleStorySeeder
             'category'   => 'Horror',
             'script'     => 'The Masque of the Red Death_script.txt',
             'source_pdf' => 'RnD/The Masque of the Red Death copy.pdf',
-            'teaser'     => 'A prince seals his revellers inside a great abbey to escape a plague. But at the height of the masquerade, a masked stranger moves through every room — and no mortal hand can stop what walks beneath the mask.',
+            'teaser'     => 'Behind locked gates and glittering masks, a night of celebration slowly transforms into a nightmare no one can escape.',
             'rating'     => StoryRatingEnum::MATURE->value,
             'opening'    => null,
             'creator'    => [

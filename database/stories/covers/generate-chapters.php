@@ -26,9 +26,9 @@ $storyTeasers = [
     'B.U.G.S.' => 'A renegade team of underground operatives uncovers a nuclear smuggling plot tied to a shadow conspiracy.',
     'Dream Police' => 'A black-ops agent who polices the dream world hunts a rogue scientist weaponizing dreams.',
     'Necropolis' => 'A federal investigator dies in a bombing and awakens as a Shadow Walker in a war between angels and demons.',
-    "PJ's" => 'An elite squad of Air Force Pararescuemen must regroup and save lives in the deadliest crises.',
-    'Wasteland' => 'An engineer is dumped into a hidden Sahara wasteland where the discarded must fight to survive.',
-    'The Wonderful Wizard of Oz' => 'Swept from Kansas by a cyclone into the magical Land of Oz, a young girl and her unlikely companions must journey to the Emerald City and confront a powerful witch to find their way home.',
+    "PJ's" => "A team of elite Air Force PJs discover that the hardest battlefield may be the one where there's no enemy to shoot, only lives to save and ghosts to outrun.",
+    'Wasteland' => "Abandoned in a desert built from humanity's castoffs, an engineer must decide whether to escape or help the people that the world chose to forget.",
+    'The Wonderful Wizard of Oz' => 'A storm carries you into the magical land of Oz, where witches whisper, lions tremble, and every step down the Yellow Brick Road changes who you are becoming.',
 ];
 
 $slugMap = [
