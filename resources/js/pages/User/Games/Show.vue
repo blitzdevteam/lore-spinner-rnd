@@ -8,6 +8,7 @@ import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import GameplayLayout from '@/layouts/GameplayLayout.vue';
 import { GameInterface } from '@/types';
 import { store as storePrompt } from '@/wayfinder/actions/App/Http/Controllers/User/Game/PromptController';
+import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { router, usePage } from '@inertiajs/vue3';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
@@ -35,6 +36,11 @@ const shouldAnimate = ref(false);
 const prompts = computed(() => props.game.prompts ?? []);
 const hasPrompts = computed(() => prompts.value.length > 0);
 const sessionComplete = computed(() => props.game.current_session_complete === true);
+const isLastSession = computed(() => {
+    const total = props.game.total_sessions ?? 0;
+    const current = props.game.current_session_number ?? 1;
+    return total > 0 && current >= total;
+});
 
 const journalMeta = computed(() => ({
     storyTitle: props.game.story?.title,
@@ -64,7 +70,9 @@ function excerpt(text: string, max = 120): string {
 // Cinematic outro: shown when the full story is completed
 const page = usePage();
 const showOutro = computed(() => (page.props.flash as Record<string, unknown>)?.story_complete === true);
-const handleOutroDone = () => { router.visit(window.location.pathname, { replace: true }); };
+const handleOutroDone = () => {
+    router.visit(storiesIndex().url, { replace: true });
+};
 
 // Cinematic opening: shown on first visit (no prompts yet); hidden once begin fires
 const showCinematic = ref(!hasPrompts.value && !showOutro.value);
@@ -289,24 +297,28 @@ onMounted(() => {
                 @continue="handleContinue"
             />
 
-            <!-- Session complete — next chapter prompt -->
+            <!-- Session complete — next chapter or end story -->
             <div v-if="sessionComplete && !isStartingNextSession" class="flex flex-col items-center gap-6 py-12 text-center">
                 <div class="flex flex-col gap-2">
                     <p class="text-lg font-light text-gray-200">Session complete.</p>
-                    <p class="text-sm text-gray-500">The story continues in the next chapter.</p>
+                    <p v-if="!isLastSession" class="text-sm text-gray-500">
+                        The story continues in the next chapter.
+                    </p>
                 </div>
                 <button
                     class="rounded-full border border-primary-400/60 bg-primary-400/10 px-8 py-3 text-sm font-medium text-primary-300 transition hover:bg-primary-400/20 hover:text-primary-200"
                     @click="handleNextSession"
                 >
-                    Continue to next chapter
+                    {{ isLastSession ? 'Click to end story' : 'Continue to next chapter' }}
                 </button>
             </div>
 
             <!-- Loading state for next-session call -->
             <div v-if="isStartingNextSession" class="flex flex-col items-center gap-4 py-12">
                 <div class="size-8 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
-                <p class="text-sm text-gray-400">Opening the next chapter…</p>
+                <p class="text-sm text-gray-400">
+                    {{ isLastSession ? 'Ending story…' : 'Opening the next chapter…' }}
+                </p>
             </div>
 
             <!-- Loading skeleton while AI generates the next response -->

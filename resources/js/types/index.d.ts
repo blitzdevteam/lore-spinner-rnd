@@ -132,6 +132,7 @@ export interface GameInterface {
     user_id: number;
     current_session_number: number | null;
     current_session_complete: boolean;
+    total_sessions: number;
     model: string;
     created_at: string | null;
     updated_at: string | null;

@@ -42,7 +42,9 @@ final class GameController extends Controller
     public function show(Game $game): Response
     {
         $game->load([
-            'story',
+            'story' => fn ($q) => $q->with([
+                'adaptation' => fn ($a) => $a->withCount('sessionAdaptations'),
+            ]),
             'prompts' => fn ($q) => $q
                 ->select(['id', 'game_id', 'session_number', 'response', 'choices', 'prompt'])
                 ->oldest(),
