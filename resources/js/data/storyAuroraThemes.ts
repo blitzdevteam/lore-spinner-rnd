@@ -51,18 +51,19 @@ export interface AuroraProps {
  */
 export function buildAuroraProps(slug: string | null | undefined): AuroraProps {
     const p = PALETTES[slug ?? ''] ?? PALETTES.__default__;
-    const base = mixHex(p.via, BRAND_BLACK, 0.38);
+    // Tuned on /bg-rnd: brighter folds, stronger story/brand separation vs dark base.
+    const base = mixHex(p.via, BRAND_BLACK, 0.30);
     return {
         deep:            base,
         mids: [
-            mixHex(p.from,        base, 0.55),
-            mixHex(BRAND_TIFFANY, base, 0.66),
-            mixHex(p.from,        base, 0.55),
-            mixHex(BRAND_AMBER,   base, 0.70),
+            mixHex(p.from,        base, 0.40),
+            mixHex(BRAND_TIFFANY, base, 0.50),
+            mixHex(p.from,        base, 0.40),
+            mixHex(BRAND_AMBER,   base, 0.54),
         ],
-        accent:          mixHex(p.accent, base, 0.50),
-        highlight:       mixHex('#fdf5e4', base, 0.35),
+        accent:          mixHex(p.accent, base, 0.18),
+        highlight:       mixHex('#fdf5e4', base, 0.18),
         secondsPerColor: 14,
-        intensity:       0.62,
+        intensity:       0.75,
     };
 }

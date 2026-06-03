@@ -7,13 +7,25 @@
  * between the story's signature and the LoreSpinner brand colours.
  */
 import AuroraBackground from '@/components/AuroraBackground.vue';
+import BgRndAuroraNotes from '@/components/BgRndAuroraNotes.vue';
+import BgRndAuroraLabPanel, {
+    type AuroraBrandColors,
+    type AuroraPaletteColors,
+    type AuroraTuning,
+} from '@/components/BgRndAuroraLabPanel.vue';
+import GameplayBottomSheet from '@/components/GameplayBottomSheet.vue';
 import GameplayChatCard from '@/components/GameplayChatCard.vue';
 import GameplayInput from '@/components/GameplayInput.vue';
 import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
 import { Head } from '@inertiajs/vue3';
-import { LucideArrowUp, LucideAudioLines, LucideChevronLeft, LucideNotebookText, LucidePlay, LucideSettings, LucideZap } from 'lucide-vue-next';
+import { LucideAudioLines, LucideChevronLeft, LucideNotebookText, LucideSettings, LucideX, LucideZap } from 'lucide-vue-next';
 import type { PromptInterface } from '@/types';
-import { computed, ref } from 'vue';
+import Tab from 'primevue/tab';
+import TabList from 'primevue/tablist';
+import TabPanel from 'primevue/tabpanel';
+import TabPanels from 'primevue/tabpanels';
+import Tabs from 'primevue/tabs';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 defineOptions({ layout: null });
 
@@ -43,6 +55,74 @@ const STORY_THEMES: Record<string, { title: string; from: string; via: string; a
 const selectedSlug = ref<keyof typeof STORY_THEMES>('tell-tale-heart');
 const theme = computed(() => STORY_THEMES[selectedSlug.value]);
 
+const DEFAULT_TUNING: AuroraTuning = {
+    baseMix: 0.3,
+    midFromMix: 0.4,
+    midTiffanyMix: 0.5,
+    midAmberMix: 0.54,
+    accentMix: 0.18,
+    highlightMix: 0.18,
+    intensity: 0.75,
+    secondsPerColor: 14,
+};
+
+const DEFAULT_BRAND: AuroraBrandColors = {
+    tiffany: BRAND_TIFFANY,
+    amber: BRAND_AMBER,
+    black: BRAND_BLACK,
+    highlight: '#fdf5e4',
+};
+
+const tuning = ref<AuroraTuning>({ ...DEFAULT_TUNING });
+const brand = ref<AuroraBrandColors>({ ...DEFAULT_BRAND });
+const customPalette = ref<AuroraPaletteColors>({ from: '#3b4a8f', via: '#1a1a2e', accent: '#a78bfa' });
+const useCustomColors = ref(false);
+
+const settingsOpen = ref(false);
+const settingsTab = ref<'aurora' | 'notes'>('aurora');
+const isMobile = ref(false);
+const MOBILE_MQ = '(max-width: 767px)';
+
+function syncMobile() {
+    if (typeof window === 'undefined') return;
+    isMobile.value = window.matchMedia(MOBILE_MQ).matches;
+}
+
+onMounted(() => {
+    syncMobile();
+    window.matchMedia(MOBILE_MQ).addEventListener('change', syncMobile);
+});
+
+onUnmounted(() => {
+    window.matchMedia(MOBILE_MQ)?.removeEventListener('change', syncMobile);
+});
+
+const toggleSettings = () => {
+    settingsOpen.value = !settingsOpen.value;
+};
+
+const closeSettings = () => {
+    settingsOpen.value = false;
+};
+
+const activePalette = computed((): AuroraPaletteColors => {
+    if (useCustomColors.value) return customPalette.value;
+    const t = theme.value;
+    return { from: t.from, via: t.via, accent: t.accent };
+});
+
+function syncPaletteFromStory() {
+    const t = theme.value;
+    customPalette.value = { from: t.from, via: t.via, accent: t.accent };
+}
+
+function resetAuroraLab() {
+    tuning.value = { ...DEFAULT_TUNING };
+    brand.value = { ...DEFAULT_BRAND };
+    useCustomColors.value = false;
+    syncPaletteFromStory();
+}
+
 function mixHex(a: string, b: string, t: number): string {
     const parse = (h: string) => {
         const n = h.replace('#', '');
@@ -57,22 +137,22 @@ function mixHex(a: string, b: string, t: number): string {
 }
 
 const gameAurora = computed(() => {
-    const t = theme.value;
-    // Deep base sits on a darker, brand-leaning black so the screen reads as
-    // refined UI. The aurora stays present but dim: its drifting tones are
-    // pulled well toward the dark base, lowering their saturation/opacity so
-    // the haze is a soft, low-key glow rather than a vivid wash.
-    const base = mixHex(t.via, BRAND_BLACK, 0.38);
+    const p = activePalette.value;
+    const b = brand.value;
+    const t = tuning.value;
+    const base = mixHex(p.via, b.black, t.baseMix);
     return {
         deep: base,
         mids: [
-            mixHex(t.from, base, 0.55),
-            mixHex(BRAND_TIFFANY, base, 0.66),
-            mixHex(t.from, base, 0.55),
-            mixHex(BRAND_AMBER, base, 0.7),
+            mixHex(p.from, base, t.midFromMix),
+            mixHex(b.tiffany, base, t.midTiffanyMix),
+            mixHex(p.from, base, t.midFromMix),
+            mixHex(b.amber, base, t.midAmberMix),
         ],
-        accent: mixHex(t.accent, base, 0.5),
-        highlight: mixHex('#fdf5e4', base, 0.35),
+        accent: mixHex(p.accent, base, t.accentMix),
+        highlight: mixHex(b.highlight, base, t.highlightMix),
+        intensity: t.intensity,
+        secondsPerColor: t.secondsPerColor,
     };
 });
 
@@ -128,16 +208,18 @@ function handleDemoSubmit() {
     <Head title="Gameplay Demo — Aurora" />
 
     <div class="bg-rnd-root relative h-svh overflow-hidden" :style="{ '--chaos-brand': BRAND_AMBER }">
-        <div class="relative z-[1] flex h-full flex-col overflow-hidden" :style="{ background: gameAurora.deep }">
+        <div class="relative z-[1] flex h-full flex-col overflow-hidden md:flex-row" :style="{ background: gameAurora.deep }">
             <AuroraBackground
                 class="pointer-events-none absolute inset-0 z-0"
                 :deep="gameAurora.deep"
                 :mids="gameAurora.mids"
                 :accent="gameAurora.accent"
-                :seconds-per-color="14"
+                :seconds-per-color="gameAurora.secondsPerColor"
                 :highlight="gameAurora.highlight"
-                :intensity="0.62"
+                :intensity="gameAurora.intensity"
             />
+
+            <div class="relative z-[1] flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
 
             <!-- Sticky header (mirrors new gameplay chrome) -->
             <div class="bg-rnd-header sticky top-0 right-0 left-0 z-30 w-full">
@@ -146,8 +228,14 @@ function handleDemoSubmit() {
                         <button class="bg-rnd-glass-btn size-11!">
                             <LucideChevronLeft class="size-6 text-gray-50" :stroke-width="1.75" />
                         </button>
-                        <button class="bg-rnd-glass-btn hidden size-11! md:grid">
-                            <LucideSettings class="size-5 text-secondary-300" />
+                        <button
+                            class="bg-rnd-glass-btn hidden size-11! md:grid"
+                            :class="settingsOpen ? 'ring-1 ring-primary/60' : ''"
+                            title="Aurora lab"
+                            @click="toggleSettings"
+                        >
+                            <LucideX v-if="settingsOpen" class="size-5 text-secondary-300" />
+                            <LucideSettings v-else class="size-5 text-secondary-300" />
                         </button>
                     </div>
 
@@ -171,7 +259,10 @@ function handleDemoSubmit() {
                     </div>
 
                     <div class="mobile-pill flex md:hidden">
-                        <button class="mobile-pill__btn"><LucideSettings class="size-5 text-gray-300" /></button>
+                        <button class="mobile-pill__btn" title="Aurora lab" @click="toggleSettings">
+                            <LucideX v-if="settingsOpen" class="size-5 text-gray-300" />
+                            <LucideSettings v-else class="size-5 text-gray-300" />
+                        </button>
                         <button class="mobile-pill__btn"><LucideZap class="size-5 text-primary fill-primary" /></button>
                         <button class="mobile-pill__btn"><LucideAudioLines class="size-5 text-gray-300" /></button>
                         <button class="mobile-pill__btn"><LucideNotebookText class="size-5 text-gray-300" /></button>
@@ -229,7 +320,108 @@ function handleDemoSubmit() {
                     {{ s.title.split(/[':]/)[0].replace('The ', '').trim() }}
                 </button>
             </div>
+            </div>
+
+            <!-- Desktop: settings sidebar -->
+            <Transition name="bg-rnd-sidebar">
+                <aside
+                    v-if="!isMobile && settingsOpen"
+                    class="relative z-40 flex h-full w-[min(100%,22rem)] shrink-0 flex-col overflow-hidden border-s border-gray-700/80 bg-gray-950/95 backdrop-blur-md"
+                >
+                    <Tabs v-model:value="settingsTab" class="flex h-full min-h-0 flex-col px-4 pt-6" :show-navigators="false" unstyled>
+                        <TabList pt:tab-list="flex shrink-0 gap-2 pb-4" pt:content="" pt:active-bar="hidden">
+                            <Tab value="aurora" v-slot="slotProps" as-child>
+                                <button
+                                    type="button"
+                                    class="flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-colors"
+                                    :class="
+                                        slotProps.active
+                                            ? 'border-primary/50 bg-primary/10 text-primary'
+                                            : 'border-gray-700 text-gray-400 hover:border-gray-500'
+                                    "
+                                    @click="slotProps.onClick"
+                                >
+                                    Aurora
+                                </button>
+                            </Tab>
+                            <Tab value="notes" v-slot="slotProps" as-child>
+                                <button
+                                    type="button"
+                                    class="flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-colors"
+                                    :class="
+                                        slotProps.active
+                                            ? 'border-primary/50 bg-primary/10 text-primary'
+                                            : 'border-gray-700 text-gray-400 hover:border-gray-500'
+                                    "
+                                    @click="slotProps.onClick"
+                                >
+                                    Notes
+                                </button>
+                            </Tab>
+                        </TabList>
+                        <TabPanels class="min-h-0 flex-1 overflow-y-auto">
+                            <TabPanel value="aurora">
+                                <BgRndAuroraLabPanel
+                                    v-model:tuning="tuning"
+                                    v-model:brand="brand"
+                                    v-model:palette="customPalette"
+                                    v-model:use-custom-colors="useCustomColors"
+                                    :story-title="theme.title"
+                                    @reset="resetAuroraLab"
+                                    @sync-from-story="syncPaletteFromStory"
+                                />
+                            </TabPanel>
+                            <TabPanel value="notes">
+                                <BgRndAuroraNotes />
+                            </TabPanel>
+                        </TabPanels>
+                    </Tabs>
+                </aside>
+            </Transition>
         </div>
+
+        <GameplayBottomSheet :open="isMobile && settingsOpen" title="Settings" @close="closeSettings">
+            <Tabs v-model:value="settingsTab" class="flex flex-col px-1" :show-navigators="false" unstyled>
+                <TabList pt:tab-list="mb-4 flex gap-2" pt:content="" pt:active-bar="hidden">
+                    <Tab value="aurora" v-slot="slotProps" as-child>
+                        <button
+                            type="button"
+                            class="flex-1 rounded-lg border px-3 py-2 text-xs font-medium"
+                            :class="slotProps.active ? 'border-primary/50 bg-primary/10 text-primary' : 'border-gray-700 text-gray-400'"
+                            @click="slotProps.onClick"
+                        >
+                            Aurora
+                        </button>
+                    </Tab>
+                    <Tab value="notes" v-slot="slotProps" as-child>
+                        <button
+                            type="button"
+                            class="flex-1 rounded-lg border px-3 py-2 text-xs font-medium"
+                            :class="slotProps.active ? 'border-primary/50 bg-primary/10 text-primary' : 'border-gray-700 text-gray-400'"
+                            @click="slotProps.onClick"
+                        >
+                            Notes
+                        </button>
+                    </Tab>
+                </TabList>
+                <TabPanels>
+                    <TabPanel value="aurora">
+                        <BgRndAuroraLabPanel
+                            v-model:tuning="tuning"
+                            v-model:brand="brand"
+                            v-model:palette="customPalette"
+                            v-model:use-custom-colors="useCustomColors"
+                            :story-title="theme.title"
+                            @reset="resetAuroraLab"
+                            @sync-from-story="syncPaletteFromStory"
+                        />
+                    </TabPanel>
+                    <TabPanel value="notes">
+                        <BgRndAuroraNotes />
+                    </TabPanel>
+                </TabPanels>
+            </Tabs>
+        </GameplayBottomSheet>
     </div>
 </template>
 
@@ -350,6 +542,17 @@ function handleDemoSubmit() {
     border-radius: 50%;
     border: none;
     background: transparent;
+}
+
+.bg-rnd-sidebar-enter-active,
+.bg-rnd-sidebar-leave-active {
+    transition: width 0.28s ease, opacity 0.28s ease;
+}
+
+.bg-rnd-sidebar-enter-from,
+.bg-rnd-sidebar-leave-to {
+    width: 0;
+    opacity: 0;
 }
 
 </style>
