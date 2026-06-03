@@ -207,12 +207,12 @@ onUnmounted(() => {
     background: conic-gradient(
         from var(--gp-glow-angle) at 50% 50%,
         rgba(8, 206, 230, 0.92) 0deg,
-        rgba(8, 206, 230, 0.55) 22deg,
-        rgba(26, 26, 26, 0.14) 44deg 316deg,
-        rgba(8, 206, 230, 0.55) 338deg,
+        rgba(8, 206, 230, 0.55) 18deg,
+        rgba(26, 26, 26, 0.14) 36deg 324deg,
+        rgba(8, 206, 230, 0.55) 342deg,
         rgba(8, 206, 230, 0.92) 360deg
     );
-    animation: gp-glow-orbit 2.8s linear infinite;
+    animation: gp-glow-orbit 4.6s linear infinite;
 }
 
 @keyframes gp-glow-orbit {
