@@ -8,6 +8,7 @@ import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
 import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moodBanners';
+import { filterVisibleLibraryStories } from '@/data/hiddenLibraryStorySlugs';
 import { dedupeStoriesByCanonicalSlug } from '@/data/moodStories';
 import HomeLayout from '@/layouts/HomeLayout.vue';
 import { StoryInterface } from '@/types';
@@ -37,7 +38,7 @@ const pageTitle = computed(() => (normalizedMood.value ? moodHero.value.title : 
 
 /** API stories plus featured mock worlds; mocks skipped when the same slug already exists from the server. */
 const allLibraryStories = computed((): StoryInterface[] => {
-    const real = (props.stories ?? []).map((story) => ({
+    const real = filterVisibleLibraryStories(props.stories ?? []).map((story) => ({
         ...story,
         cover: resolveStoryCover(story.slug, story.cover),
     }));

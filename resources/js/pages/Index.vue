@@ -9,9 +9,11 @@ import StoryChangesWithYou from '@/components/StoryChangesWithYou.vue';
 import XenBanner from '@/components/XenBanner.vue';
 import ContinueStories from '@/components/ContinueStories.vue';
 import HomeLayout from '@/layouts/HomeLayout.vue';
+import { filterVisibleLibraryStories } from '@/data/hiddenLibraryStorySlugs';
 import { GameInterface, StoryInterface } from '@/types';
+import { computed } from 'vue';
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         featuredStory?: StoryInterface | null;
         lastGame?: GameInterface | null;
@@ -23,12 +25,14 @@ withDefaults(
         stories: () => [],
     },
 );
+
+const visibleStories = computed(() => filterVisibleLibraryStories(props.stories));
 </script>
 
 <template>
     <HomeLayout>
         <!-- Hero -->
-        <HeroBanner :stories="stories" />
+        <HeroBanner :stories="visibleStories" />
 
         <!-- Continue Stories -->
         <ContinueStories v-if="lastGame" :game="lastGame" />
@@ -37,18 +41,18 @@ withDefaults(
         <StoryChangesWithYou />
 
         <!-- Top Stories -->
-        <FeaturedWorldsGames :story-count="stories.length" />
+        <FeaturedWorldsGames :story-count="visibleStories.length" />
 
         <!-- Xen Banner -->
         <XenBanner />
 
         <!-- Explore by Mood -->
-        <ExploreByMood :story-count="stories.length" />
+        <ExploreByMood :story-count="visibleStories.length" />
 
         <!-- Featured Worlds -->
-        <NewStoriesBanners :story-count="stories.length" />
+        <NewStoriesBanners :story-count="visibleStories.length" />
 
-        <ComingSoonBanners :story-count="stories.length" />
+        <ComingSoonBanners :story-count="visibleStories.length" />
 
         <!-- FAQ: slightly tighter top padding after Coming Soon so spacing matches Figma (hover glow → heading). -->
         <div class="pt-10 pb-14 md:pt-12 md:pb-[3.75rem]">
