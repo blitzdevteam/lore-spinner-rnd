@@ -82,11 +82,11 @@ onUnmounted(() => {
         <div
             :class="[
                 'flex h-14 items-center rounded-[32px] border border-[#373737] p-2 sm:h-[70px] sm:rounded-[39px] sm:p-2.5',
+                !displayedVariant && 'gp-pill--breathe',
                 displayedVariant === 'sweep' && 'gp-pill--sweep',
                 displayedVariant === 'orbit' && 'gp-pill--orbit',
                 isFading && 'gp-pill--fading',
             ]"
-            :style="!displayedVariant ? { background: 'linear-gradient(90deg, rgba(0, 198, 222, 0.45) 0%, rgba(13, 112, 124, 0.45) 10.577%, rgba(26, 26, 26, 0.2) 21.154%)' } : undefined"
         >
             <!-- Inner dark field -->
             <div class="flex h-full flex-1 items-center gap-2 rounded-[28px] border border-[#373737] bg-[#1c1c1c] sm:gap-3 sm:rounded-[35px] px-1">
@@ -174,10 +174,33 @@ onUnmounted(() => {
     inherits: false;
 }
 
+@property --gp-breathe-alpha {
+    syntax: '<number>';
+    initial-value: 0.28;
+    inherits: false;
+}
+
 /* Shared opacity transition so state switches feel smooth */
+.gp-pill--breathe,
 .gp-pill--sweep,
 .gp-pill--orbit {
     transition: opacity 0.2s ease;
+}
+
+/* Resting state: left-edge teal with a slow, gentle heartbeat */
+.gp-pill--breathe {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 198, 222, var(--gp-breathe-alpha)) 0%,
+        rgba(13, 112, 124, var(--gp-breathe-alpha)) 10.577%,
+        rgba(26, 26, 26, 0.14) 21.154%
+    );
+    animation: gp-glow-breathe 3.8s ease-in-out infinite;
+}
+
+@keyframes gp-glow-breathe {
+    0%, 100% { --gp-breathe-alpha: 0.22; }
+    50%       { --gp-breathe-alpha: 0.48; }
 }
 
 .gp-pill--fading {
