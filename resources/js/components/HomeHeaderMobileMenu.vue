@@ -135,7 +135,7 @@ const moodLinkClass = (slug: string): string =>
                         class="flex h-12 w-full items-center justify-center rounded-full border border-primary bg-cta-fill text-sm font-medium text-[#f3f4ee] transition-colors hover:border-primary-300 hover:bg-cta-hover"
                         @click="closeMenu"
                     >
-                        Login / Sign Up
+                        Log in / Sign Up
                     </Link>
                 </div>
             </aside>

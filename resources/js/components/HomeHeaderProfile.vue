@@ -46,7 +46,7 @@ onClickOutside(profileWrap, () => {
             :href="login.create().url"
             class="flex h-10 items-center justify-center rounded-full border border-primary/70 bg-transparent px-4 text-sm font-medium leading-none whitespace-nowrap text-[#c8ced1] transition-colors hover:border-primary hover:text-white"
         >
-            Login/Sign Up
+            Log in/Sign Up
         </Link>
     </template>
     <template v-else>
