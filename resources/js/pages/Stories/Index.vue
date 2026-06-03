@@ -7,10 +7,13 @@ import StoryGrid from '@/components/StoryGrid.vue';
 import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
-import { resolveStoryTopMoodCover } from '@/data/storyTopMoodCoverBySlug';
 import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moodBanners';
 import { filterVisibleLibraryStories } from '@/data/hiddenLibraryStorySlugs';
-import { dedupeStoriesByCanonicalSlug } from '@/data/moodStories';
+import {
+    dedupeStoriesByCanonicalSlug,
+    getMoodSecondaryPickSlugs,
+    selectStoriesByMoodSlugs,
+} from '@/data/moodStories';
 import HomeLayout from '@/layouts/HomeLayout.vue';
 import { StoryInterface } from '@/types';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
@@ -51,16 +54,27 @@ const allLibraryStories = computed((): StoryInterface[] => {
     return dedupeStoriesByCanonicalSlug([...real, ...extra]);
 });
 
+/** All stories assigned to the active mood (home portrait / landscape card art). */
+const moodPageStories = computed((): StoryInterface[] => {
+    const mood = normalizedMood.value;
+    if (!mood) return [];
+
+    return allLibraryStories.value.filter((story) => storyMatchesMood(story.slug, mood));
+});
+
+/** Mood page grid: secondary picks only, same covers as the home library. */
+const moodSecondaryStories = computed((): StoryInterface[] => {
+    const mood = normalizedMood.value;
+    if (!mood) return [];
+
+    return selectStoriesByMoodSlugs(moodPageStories.value, getMoodSecondaryPickSlugs(mood));
+});
+
 const libraryStories = computed((): StoryInterface[] => {
     const mood = normalizedMood.value;
     if (!mood) return allLibraryStories.value;
 
-    return allLibraryStories.value
-        .filter((story) => storyMatchesMood(story.slug, mood))
-        .map((story) => ({
-            ...story,
-            cover: resolveStoryTopMoodCover(story.slug, story.cover),
-        }));
+    return moodSecondaryStories.value;
 });
 
 const isMoodPage = computed(() => normalizedMood.value !== null);
@@ -127,8 +141,8 @@ function cycleSort(): void {
                 <MoodTopPicks
                     :mood="normalizedMood"
                     :mood-label="moodHero.label"
-                    :stories="libraryStories"
-                    :total-count="libraryStories.length"
+                    :stories="moodPageStories"
+                    :total-count="moodSecondaryStories.length"
                 />
 
                 <div id="all-stories" class="mood-page-stories-section pb-12 md:pb-[3.75rem]">

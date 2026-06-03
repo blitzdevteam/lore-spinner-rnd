@@ -91,6 +91,18 @@ export function getMoodSecondaryPickSlugs(mood: MoodId): string[] {
     return MOOD_SECONDARY_PICK_SLUGS[mood] ?? [];
 }
 
+/** Resolve stories in catalog slug order (top picks, secondary, or custom list). */
+export function selectStoriesByMoodSlugs<T extends { slug: string }>(stories: T[], slugs: string[]): T[] {
+    const bySlug = new Map<string, T>();
+    for (const story of stories) {
+        const key = canonicalMoodStorySlug(story.slug);
+        if (!bySlug.has(key)) {
+            bySlug.set(key, story);
+        }
+    }
+    return slugs.map((slug) => bySlug.get(slug)).filter((story): story is T => story != null);
+}
+
 export function getMoodStorySlugs(mood: MoodId): string[] {
     return [...MOOD_STORY_CATALOG[mood].top, ...MOOD_STORY_CATALOG[mood].secondary];
 }
