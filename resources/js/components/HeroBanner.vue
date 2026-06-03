@@ -78,7 +78,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         ],
         fallbackTeaser:
             'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
-        fallbackAuthor: 'Arthur Conan Doyle',
+        fallbackAuthor: 'Sir Arthur Conan Doyle',
     },
     {
         slug: 'jane-eyre',
@@ -156,7 +156,7 @@ const slides = computed((): ResolvedHeroSlide[] =>
             title,
             teaserLines: story ? resolveTeaserLines(teaser) ?? config.teaserLines : config.teaserLines,
             teaser,
-            author: story?.creator?.full_name ?? config.fallbackAuthor,
+            author: config.fallbackAuthor,
             storyUrl: show(config.slug).url,
             comingSoon: config.comingSoon ?? false,
         };
