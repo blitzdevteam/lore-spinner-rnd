@@ -13,7 +13,7 @@ const defaults: GameplaySettings = {
     fontSize: 18,
     fontColor: '#e5e5e5',
     backgroundColor: '',
-    autoplay: false,
+    autoplay: true,
 };
 
 const fontColorPresets = [

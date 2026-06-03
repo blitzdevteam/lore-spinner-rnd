@@ -42,11 +42,11 @@ const isLastSession = computed(() => {
     return total > 0 && current >= total;
 });
 
+const episodePosition = computed(() => props.game.currentEvent?.chapter?.position);
+
 const journalMeta = computed(() => ({
     storyTitle: props.game.story?.title,
-    episodeLabel: (props.game as { currentEvent?: { chapter?: { position?: number } } }).currentEvent?.chapter?.position
-        ? `Episode ${(props.game as { currentEvent: { chapter: { position: number } } }).currentEvent.chapter.position}`
-        : null,
+    episodeLabel: episodePosition.value != null ? `Episode ${episodePosition.value}` : null,
     sessionNumber: props.game.current_session_number,
     turnCount: prompts.value.length,
     sessionComplete: sessionComplete.value,
@@ -273,8 +273,8 @@ onMounted(() => {
                     {{ game.story?.title ?? 'Adventure' }}
                 </h1>
                 <GameplayOrnamentDivider
-                    v-if="(game as any).currentEvent?.chapter?.position"
-                    :label="`Episode ${(game as any).currentEvent.chapter.position}`"
+                    v-if="journalMeta.episodeLabel"
+                    :label="journalMeta.episodeLabel"
                     color="#ffffff"
                 />
                 <span v-if="game.current_session_number" class="rounded-full bg-gray-800 px-2 py-1 text-sm text-gray-300">

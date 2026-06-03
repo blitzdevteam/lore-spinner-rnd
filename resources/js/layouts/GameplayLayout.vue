@@ -33,27 +33,25 @@ const props = withDefaults(
 
 const auroraProps = computed(() => buildAuroraProps(props.storySlug));
 
-// Glow ritual: static on load → orbit while AI works → sweep blooms when response lands.
-// The sweep is the signal that the engine has delivered its event.
+// Glow: static while reading → orbit while AI works → sweep only when user engages the input.
 const inputGlowVariant = ref<'sweep' | 'orbit' | undefined>(undefined);
-let sweepRevealTimer: ReturnType<typeof setTimeout> | null = null;
 
 watch(
     () => props.inputDisabled,
-    (disabled, wasDisabled) => {
-        if (sweepRevealTimer) { clearTimeout(sweepRevealTimer); sweepRevealTimer = null; }
+    (disabled) => {
         if (disabled) {
-            // User submitted — orbit while waiting
             inputGlowVariant.value = 'orbit';
-        } else if (wasDisabled) {
-            // Response just arrived — let text settle, then bloom the sweep
-            sweepRevealTimer = setTimeout(() => {
-                inputGlowVariant.value = 'sweep';
-                sweepRevealTimer = null;
-            }, 400);
+        } else {
+            inputGlowVariant.value = undefined;
         }
     },
 );
+
+function onInputReadyToType() {
+    if (!props.inputDisabled) {
+        inputGlowVariant.value = 'sweep';
+    }
+}
 
 type Panel = 'journal' | 'settings' | 'audio' | null;
 
@@ -80,7 +78,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.matchMedia(MOBILE_MQ).removeEventListener('change', syncMobile);
-    if (sweepRevealTimer) clearTimeout(sweepRevealTimer);
 });
 
 watch(isMobile, (mobile) => {
@@ -292,7 +289,12 @@ const handleInputSubmit = (prompt: string) => {
                         <div class="flex w-full justify-start md:hidden">
                             <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" />
                         </div>
-                        <GameplayInput :disabled="props.inputDisabled" :glow-variant="inputGlowVariant" @submit="handleInputSubmit" />
+                        <GameplayInput
+                            :disabled="props.inputDisabled"
+                            :glow-variant="inputGlowVariant"
+                            @submit="handleInputSubmit"
+                            @ready-to-type="onInputReadyToType"
+                        />
                     </div>
                 </div>
             </div>

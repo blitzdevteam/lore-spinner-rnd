@@ -15,9 +15,14 @@ const props = withDefaults(
 
 const emit = defineEmits<{
     submit: [prompt: string];
+    /** User focused the bar or started typing — parent may show the sweep glow. */
+    readyToType: [];
 }>();
 
 const inputText = ref('');
+const inputEl = ref<{ $el?: HTMLElement } | null>(null);
+/** One ready-to-type signal per turn (resets when input is disabled for AI). */
+const readySignaled = ref(false);
 const stt = useSpeechToText();
 
 const hasText = computed(() => inputText.value.trim().length > 0);
@@ -36,6 +41,25 @@ const handleKeydown = (event: KeyboardEvent) => {
         handleSubmit();
     }
 };
+
+function focusInput() {
+    const el = inputEl.value?.$el ?? inputEl.value;
+    const input = el instanceof HTMLElement ? el.querySelector('input') : null;
+    (input as HTMLInputElement | null)?.focus();
+}
+
+function signalReadyToType() {
+    if (props.disabled || readySignaled.value) return;
+    readySignaled.value = true;
+    emit('readyToType');
+}
+
+watch(
+    () => props.disabled,
+    (disabled) => {
+        if (disabled) readySignaled.value = false;
+    },
+);
 
 const handleMicToggle = async () => {
     if (stt.isRecording.value) {
@@ -89,16 +113,22 @@ onUnmounted(() => {
             ]"
         >
             <!-- Inner dark field -->
-            <div class="flex h-full flex-1 items-center gap-2 rounded-[28px] border border-[#373737] bg-[#1c1c1c] sm:gap-3 sm:rounded-[35px] px-1">
+            <div
+                class="flex h-full flex-1 items-center gap-2 rounded-[28px] border border-[#373737] bg-[#1c1c1c] sm:gap-3 sm:rounded-[35px] px-1"
+                @click="focusInput"
+            >
                 <!-- Recording pulse indicator -->
                 <span v-if="stt.isRecording.value" class="inline-block size-2 shrink-0 animate-pulse rounded-full bg-red-500" />
 
                 <PrimeInputText
+                    ref="inputEl"
                     v-model="inputText"
                     class="flex-1 border-none! bg-transparent! py-0! px-2! text-sm! text-white! shadow-none! outline-none! ring-0! placeholder:text-gray-500! sm:text-base!"
                     :placeholder="stt.isRecording.value ? 'Listening...' : stt.isTranscribing.value ? 'Transcribing...' : 'What Do You Do?'"
                     :disabled="props.disabled || stt.isRecording.value || stt.isTranscribing.value"
                     @keydown="handleKeydown"
+                    @focus="signalReadyToType"
+                    @input="signalReadyToType"
                 />
 
                 <!-- Right action: send arrow when text present, mic otherwise -->

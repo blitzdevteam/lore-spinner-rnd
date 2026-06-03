@@ -141,6 +141,7 @@ export interface GameInterface {
     story?: StoryInterface;
     user?: UserInterface;
     prompts?: PromptInterface[];
+    currentEvent?: EventInterface;
 
     // Counts
     prompts_count?: number;

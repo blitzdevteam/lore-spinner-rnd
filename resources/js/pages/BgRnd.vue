@@ -193,9 +193,8 @@ const selectChoice = (promptId: string, choice: string) => {
     pendingSelection.value[promptId] = choice;
 };
 
-// ── Chat input glow (ritual state machine) ────────────────────────────────────
-// static → orbit (user submits) → sweep blooms ~400ms after response lands.
-// The sweep is the signal: "the engine has spoken, it's your move."
+// ── Chat input glow ───────────────────────────────────────────────────────────
+// static while reading → orbit on submit → sweep when user focuses/types input.
 const inputGlowVariant = ref<'sweep' | 'orbit' | undefined>(undefined);
 
 function handleDemoSubmit() {
@@ -203,11 +202,14 @@ function handleDemoSubmit() {
     inputGlowVariant.value = 'orbit';
     setTimeout(() => {
         isSubmitting.value = false;
-        // Let the narration text settle for a beat before the sweep blooms in
-        setTimeout(() => {
-            inputGlowVariant.value = 'sweep';
-        }, 400);
+        inputGlowVariant.value = undefined;
     }, 3500);
+}
+
+function onInputReadyToType() {
+    if (!isSubmitting.value) {
+        inputGlowVariant.value = 'sweep';
+    }
 }
 </script>
 
@@ -310,7 +312,12 @@ function handleDemoSubmit() {
             <!-- Sticky input -->
             <div class="sticky bottom-0 z-10 shrink-0">
                 <div class="bg-rnd-input flex flex-col items-center gap-3 px-4 pt-10 pb-6 md:px-0">
-                    <GameplayInput :disabled="isSubmitting" :glow-variant="inputGlowVariant" @submit="handleDemoSubmit" />
+                    <GameplayInput
+                        :disabled="isSubmitting"
+                        :glow-variant="inputGlowVariant"
+                        @submit="handleDemoSubmit"
+                        @ready-to-type="onInputReadyToType"
+                    />
                 </div>
             </div>
 
