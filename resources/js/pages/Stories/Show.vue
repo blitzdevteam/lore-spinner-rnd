@@ -11,6 +11,7 @@ import StoryPlayStatStrip from '@/components/story-play/StoryPlayStatStrip.vue';
 import StoryPlayTitleProgress from '@/components/story-play/StoryPlayTitleProgress.vue';
 import StoryPlayTopBar from '@/components/story-play/StoryPlayTopBar.vue';
 import { useBookmark } from '@/composables/useBookmark';
+import { formatCreatorDisplayName } from '@/data/loreSpinnerSeriesLabels';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
 import { useShare } from '@/composables/useShare';
 import { StoryInterface } from '@/types';
@@ -72,13 +73,15 @@ const handleBack = (): void => {
 
 const teaserText = computed(() => props.story.teaser?.trim() || '');
 
-const creatorName = computed(
-    () =>
+const creatorName = computed(() => {
+    const raw =
         props.story.creator?.full_name?.trim() ||
         [props.story.creator?.first_name, props.story.creator?.last_name].filter(Boolean).join(' ') ||
         props.story.creator?.username ||
-        'Author',
-);
+        'Author';
+
+    return formatCreatorDisplayName(raw, props.story.creator);
+});
 
 const coverHeadline = computed(() => props.story.title.toUpperCase());
 
@@ -88,8 +91,6 @@ const coverImageUrl = computed(() => {
     const resolved = resolveStoryCover(props.story.slug, props.story.cover);
     return resolved || null;
 });
-
-const progressBadge = computed(() => (hasExistingGame.value ? '—' : '00%'));
 
 const durationLabel = computed(() => {
     const n = props.story.chapters_count ?? props.story.chapters?.length ?? 0;
@@ -223,7 +224,7 @@ const rightColumnChapters = computed(() => props.story.chapters?.filter((_, inde
                         <div class="story-show-chapters__align hidden shrink-0 lg:block" aria-hidden="true" />
                         <div class="flex flex-col gap-4 lg:gap-5">
                             <div class="flex flex-col gap-2.5">
-                                <StoryPlayTitleProgress :title="story.title" :progress-label="progressBadge" />
+                                <StoryPlayTitleProgress :title="story.title" />
                                 <StoryPlayMetaRow :duration-label="durationLabel" :genre-label="genreLabel" />
                                 <StoryPlayStatStrip :items="statItems" />
                             </div>
