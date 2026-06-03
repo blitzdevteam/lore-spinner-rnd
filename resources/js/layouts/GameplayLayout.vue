@@ -18,7 +18,7 @@ import TabPanel from 'primevue/tabpanel';
 import TabPanels from 'primevue/tabpanels';
 import Tabs from 'primevue/tabs';
 import { buildAuroraProps } from '@/data/storyAuroraThemes';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -31,31 +31,25 @@ const props = withDefaults(
     { inputDisabled: false, gameId: undefined, coverUrl: undefined, journalMeta: undefined, storySlug: undefined },
 );
 
-const auroraProps = ref(buildAuroraProps(props.storySlug));
-watch(() => props.storySlug, (slug) => { auroraProps.value = buildAuroraProps(slug); });
+const auroraProps = computed(() => buildAuroraProps(props.storySlug));
 
-// ── Input glow state machine ──────────────────────────────────────────────────
-// static (undefined) → orbit (AI processing) → sweep (response landed) → static
+// Glow ritual: static on load → orbit while AI works → sweep blooms when response lands.
+// The sweep is the signal that the engine has delivered its event.
 const inputGlowVariant = ref<'sweep' | 'orbit' | undefined>(undefined);
-let glowSweepTimer: ReturnType<typeof setTimeout> | null = null;
-let glowResetTimer: ReturnType<typeof setTimeout> | null = null;
+let sweepRevealTimer: ReturnType<typeof setTimeout> | null = null;
 
 watch(
     () => props.inputDisabled,
     (disabled, wasDisabled) => {
-        if (glowSweepTimer) { clearTimeout(glowSweepTimer); glowSweepTimer = null; }
-        if (glowResetTimer) { clearTimeout(glowResetTimer); glowResetTimer = null; }
-
+        if (sweepRevealTimer) { clearTimeout(sweepRevealTimer); sweepRevealTimer = null; }
         if (disabled) {
+            // User submitted — orbit while waiting
             inputGlowVariant.value = 'orbit';
         } else if (wasDisabled) {
-            // Response just landed — brief pause lets narration text settle, then bloom
-            glowSweepTimer = setTimeout(() => {
+            // Response just arrived — let text settle, then bloom the sweep
+            sweepRevealTimer = setTimeout(() => {
                 inputGlowVariant.value = 'sweep';
-                // Fade back to static after ~8 s so it never becomes wallpaper
-                glowResetTimer = setTimeout(() => {
-                    inputGlowVariant.value = undefined;
-                }, 8000);
+                sweepRevealTimer = null;
             }, 400);
         }
     },
@@ -86,8 +80,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.matchMedia(MOBILE_MQ).removeEventListener('change', syncMobile);
-    if (glowSweepTimer) clearTimeout(glowSweepTimer);
-    if (glowResetTimer) clearTimeout(glowResetTimer);
+    if (sweepRevealTimer) clearTimeout(sweepRevealTimer);
 });
 
 watch(isMobile, (mobile) => {
@@ -151,10 +144,6 @@ const emit = defineEmits<{
 }>();
 
 const handleInputSubmit = (prompt: string) => {
-    // Immediately go to orbit — don't wait for parent to flip inputDisabled
-    if (glowSweepTimer) { clearTimeout(glowSweepTimer); glowSweepTimer = null; }
-    if (glowResetTimer) { clearTimeout(glowResetTimer); glowResetTimer = null; }
-    inputGlowVariant.value = 'orbit';
     emit('submit', prompt);
 };
 </script>

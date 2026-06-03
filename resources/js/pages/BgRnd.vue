@@ -97,8 +97,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.matchMedia(MOBILE_MQ)?.removeEventListener('change', syncMobile);
-    if (demoSweepTimer) clearTimeout(demoSweepTimer);
-    if (demoResetTimer) clearTimeout(demoResetTimer);
 });
 
 const toggleSettings = () => {
@@ -195,29 +193,19 @@ const selectChoice = (promptId: string, choice: string) => {
     pendingSelection.value[promptId] = choice;
 };
 
-// ── Chat input glow state machine ────────────────────────────────────────────
-// Same ritual rhythm as the main game:
-// static → orbit (processing) → sweep (response landed, ~8 s) → static
+// ── Chat input glow (ritual state machine) ────────────────────────────────────
+// static → orbit (user submits) → sweep blooms ~400ms after response lands.
+// The sweep is the signal: "the engine has spoken, it's your move."
 const inputGlowVariant = ref<'sweep' | 'orbit' | undefined>(undefined);
-let demoSweepTimer: ReturnType<typeof setTimeout> | null = null;
-let demoResetTimer: ReturnType<typeof setTimeout> | null = null;
 
 function handleDemoSubmit() {
-    if (demoSweepTimer) { clearTimeout(demoSweepTimer); demoSweepTimer = null; }
-    if (demoResetTimer) { clearTimeout(demoResetTimer); demoResetTimer = null; }
-
     isSubmitting.value = true;
     inputGlowVariant.value = 'orbit';
-
     setTimeout(() => {
         isSubmitting.value = false;
-        // Short pause so the narration can settle before the sweep blooms in
-        demoSweepTimer = setTimeout(() => {
+        // Let the narration text settle for a beat before the sweep blooms in
+        setTimeout(() => {
             inputGlowVariant.value = 'sweep';
-            // Auto-fade back to static so it never becomes wallpaper
-            demoResetTimer = setTimeout(() => {
-                inputGlowVariant.value = undefined;
-            }, 8000);
         }, 400);
     }, 3500);
 }
