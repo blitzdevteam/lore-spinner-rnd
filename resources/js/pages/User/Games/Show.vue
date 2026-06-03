@@ -63,8 +63,8 @@ function excerpt(text: string, max = 120): string {
 
 // Cinematic outro: shown when the full story is completed
 const page = usePage();
-const showOutro = ref((page.props.flash as Record<string, unknown>)?.story_complete === true);
-const handleOutroDone = () => { showOutro.value = false; };
+const showOutro = computed(() => (page.props.flash as Record<string, unknown>)?.story_complete === true);
+const handleOutroDone = () => { router.visit(window.location.pathname, { replace: true }); };
 
 // Cinematic opening: shown on first visit (no prompts yet); hidden once begin fires
 const showCinematic = ref(!hasPrompts.value && !showOutro.value);
