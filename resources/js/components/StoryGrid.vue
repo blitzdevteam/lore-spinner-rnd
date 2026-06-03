@@ -40,6 +40,7 @@ function isComingSoon(story: StoryInterface): boolean {
             :mood="moodLabel"
             :is-coming-soon="isComingSoon(story)"
             :cta="ctaForStory(story)"
+            :teaser="story.teaser"
         />
     </div>
 </template>
@@ -51,7 +52,7 @@ function isComingSoon(story: StoryInterface): boolean {
     min-width: 0;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
-    align-items: stretch;
+    align-items: start;
 }
 
 @media (min-width: 768px) {

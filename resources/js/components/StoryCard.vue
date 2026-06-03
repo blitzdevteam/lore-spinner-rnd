@@ -14,6 +14,7 @@ const props = withDefaults(
         slug: string;
         status?: StoryStatusEnum | string;
         mood?: string;
+        teaser?: string | null;
         isComingSoon?: boolean;
         cta?: StoryCardCta;
         dimmed?: boolean;
@@ -22,6 +23,7 @@ const props = withDefaults(
         coverImage: null,
         status: undefined,
         mood: undefined,
+        teaser: null,
         isComingSoon: false,
         cta: undefined,
         dimmed: false,
@@ -77,6 +79,12 @@ const isInteractive = computed(() => resolvedCta.value !== 'coming-soon');
                     <h3 class="story-card__title">{{ title }}</h3>
                 </div>
 
+                <div v-if="teaser" class="story-card__reveal">
+                    <div class="story-card__reveal-inner">
+                        <p class="story-card__teaser">{{ teaser }}</p>
+                    </div>
+                </div>
+
                 <div class="story-card__cta">
                     <Link
                         v-if="isInteractive"
@@ -105,13 +113,13 @@ const isInteractive = computed(() => resolvedCta.value !== 'coming-soon');
     background: var(--story-card-bg);
     box-shadow: var(--story-card-shadow);
     transition:
-        transform 200ms ease,
-        box-shadow 200ms ease;
+        box-shadow var(--story-card-hover-duration) var(--story-card-ease),
+        border-color var(--story-card-hover-duration) var(--story-card-ease);
 }
 
 @media (min-width: 1024px) {
     .group:hover .story-card__frame {
-        transform: scale(1.03);
+        border-color: rgba(255, 255, 255, 0.1);
         box-shadow: var(--story-card-shadow-hover);
     }
 }
@@ -147,6 +155,37 @@ const isInteractive = computed(() => resolvedCta.value !== 'coming-soon');
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* Fixed 2-line slot so grid rows never resize on hover (avoids crush between cards). */
+.story-card__reveal {
+    flex-shrink: 0;
+    height: 2.4375rem;
+    opacity: 0;
+    transition: opacity var(--story-card-hover-duration) var(--story-card-ease);
+}
+
+.story-card__reveal-inner {
+    overflow: hidden;
+    height: 100%;
+}
+
+.story-card__teaser {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.52);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (min-width: 1024px) {
+    .group:hover .story-card__reveal {
+        opacity: 1;
+    }
 }
 
 .story-card__cta {

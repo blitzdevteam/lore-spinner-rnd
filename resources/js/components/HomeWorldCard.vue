@@ -30,6 +30,7 @@ const isComingSoon =
         :status="story.status?.value"
         :genre="story.category?.title"
         :is-coming-soon="isComingSoon"
+        :teaser="story.teaser"
         :dimmed="dimmed"
     />
 </template>
