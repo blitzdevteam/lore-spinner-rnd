@@ -18,9 +18,9 @@ defineEmits<{
 <template>
     <button
         type="button"
-        class="gameplay-capsule"
+        class="gameplay-capsule gameplay-narration-glass"
         :class="[
-            { 'gameplay-capsule--active': active },
+            { 'gameplay-capsule--active gameplay-narration-glass--active': active },
             labelTone === 'secondary' && 'gameplay-capsule--label-secondary',
         ]"
         :title="title"
@@ -51,20 +51,11 @@ defineEmits<{
     cursor: pointer;
     flex-shrink: 0;
     overflow: hidden;
-    background-color: rgba(51, 51, 51, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow:
-        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
-        inset -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.55),
-        inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.3),
-        inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.3),
-        inset 0 0 1px 1px rgba(153, 153, 153, 0.15),
-        0 4px 24px rgba(0, 0, 0, 0.3);
     transition:
         grid-template-columns var(--capsule-duration) var(--capsule-ease),
         padding var(--capsule-duration) var(--capsule-ease),
-        background-color 0.2s ease;
+        background 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .gameplay-capsule__icon {
@@ -101,10 +92,6 @@ defineEmits<{
     color: var(--color-secondary-300);
 }
 
-.gameplay-capsule--active {
-    background: rgba(84, 244, 218, 0.12);
-}
-
 @media (min-width: 768px) and (hover: hover) {
     .gameplay-capsule:hover {
         grid-template-columns: 45px 1fr;
@@ -119,10 +106,6 @@ defineEmits<{
             opacity 0.4s var(--capsule-ease) 0.08s,
             transform 0.5s var(--capsule-ease) 0.05s,
             padding 0.45s var(--capsule-ease);
-    }
-
-    .gameplay-capsule:hover.gameplay-capsule--active {
-        background: rgba(84, 244, 218, 0.16);
     }
 }
 

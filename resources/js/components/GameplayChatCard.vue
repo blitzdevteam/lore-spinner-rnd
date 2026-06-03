@@ -137,7 +137,7 @@ watch(
         <!-- ── Narration card ── -->
         <div
             v-if="prompt.response"
-            class="narration-card rounded-xl border-[0.5px] p-4 sm:rounded-[14px] sm:p-5"
+            class="narration-card gameplay-narration-glass rounded-xl p-4 sm:rounded-[14px] sm:p-5"
             :style="panelGlassStyle"
             @click="handleNarrationClick"
         >
@@ -263,20 +263,6 @@ watch(
         inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.75),
         inset 0 0 1px 1px rgba(153, 153, 153, 0.15),
         inset 0 0 16px 0 rgba(242, 242, 242, 0.15);
-}
-
-.narration-card {
-    background:
-        linear-gradient(var(--glass-tint-solid, transparent), var(--glass-tint-solid, transparent)),
-        rgba(10, 10, 18, 0.2);
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border-color: rgba(255, 255, 255, 0.11);
-    box-shadow:
-        inset 0 0 56px 4px var(--glass-tint, transparent),
-        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.18),
-        inset -1px -1px 0.5px -1px rgba(255, 255, 255, 0.08),
-        0 4px 24px rgba(0, 0, 0, 0.32);
 }
 
 .choice-glass {

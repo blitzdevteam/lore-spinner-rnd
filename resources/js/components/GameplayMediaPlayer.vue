@@ -31,11 +31,11 @@ const onVolumeInput = (event: Event) => {
     <Transition name="player-slide">
         <div
             v-if="tts.isActive.value && !props.collapsed"
-            class="player-bar pointer-events-auto relative flex items-center gap-2 overflow-hidden rounded-full px-2 py-2 backdrop-blur-md sm:gap-2.5 sm:px-2.5"
+            class="player-bar gameplay-narration-glass pointer-events-auto relative flex items-center gap-2 overflow-hidden rounded-full px-2 py-2 sm:gap-2.5 sm:px-2.5"
         >
             <!-- Play / Pause -->
             <button
-                class="player-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-primary-600 transition-[transform,color] hover:scale-105 hover:text-white active:scale-95"
+                class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-primary-600 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-white active:scale-95"
                 :title="tts.isLoading.value ? 'Loading…' : tts.isPlaying.value ? 'Pause' : 'Play'"
                 :disabled="tts.isLoading.value"
                 @click="tts.togglePause"
@@ -53,7 +53,7 @@ const onVolumeInput = (event: Event) => {
             <!-- Mute + volume slider -->
             <div class="volume-control flex items-center gap-1.5">
                 <button
-                    class="player-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-primary-600 transition-[transform,color,opacity] hover:scale-105 hover:text-white active:scale-95"
+                    class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-primary-600 transition-[transform,color,opacity,background-color] hover:scale-105 hover:bg-white/10 hover:text-white active:scale-95"
                     :class="isVolumeMuted ? 'text-white' : 'opacity-80 hover:opacity-100'"
                     :aria-pressed="isVolumeMuted"
                     :title="isVolumeMuted ? 'Unmute' : 'Mute'"
@@ -89,7 +89,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip back 15s -->
             <button
-                class="player-btn bg-muted-glass-effect relative grid shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
+                class="player-btn relative grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95"
                 title="Skip back 15s"
                 @click="tts.seekBy(-15)"
             >
@@ -99,7 +99,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Skip forward 15s -->
             <button
-                class="player-btn bg-muted-glass-effect relative grid shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
+                class="player-btn relative grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95"
                 title="Skip forward 15s"
                 @click="tts.seekBy(15)"
             >
@@ -109,7 +109,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Speed -->
             <button
-                class="player-btn player-speed-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
+                class="player-btn player-speed-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95"
                 :class="{ 'text-primary-600': tts.playbackRate.value !== 1 }"
                 title="Playback speed"
                 aria-label="Playback speed"
@@ -120,7 +120,7 @@ const onVolumeInput = (event: Event) => {
 
             <!-- Close -->
             <button
-                class="player-btn bg-muted-glass-effect grid shrink-0 place-items-center rounded-full text-gray-300 transition-[transform,color] hover:scale-105 hover:text-primary-600 active:scale-95"
+                class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95"
                 title="Close player"
                 @click="tts.dismiss"
             >
@@ -134,17 +134,6 @@ const onVolumeInput = (event: Event) => {
 .player-slide-enter-active,
 .player-slide-leave-active {
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.player-bar {
-    background-color: #1e1e1e;
-    box-shadow:
-        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.12),
-        inset -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.1),
-        inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.08),
-        inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.08),
-        inset 0 0 1px 1px rgba(0, 0, 0, 0.4),
-        0 8px 30px rgba(0, 0, 0, 0.55);
 }
 
 .player-slide-enter-from,

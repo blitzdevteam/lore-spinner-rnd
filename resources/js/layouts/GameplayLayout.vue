@@ -18,6 +18,7 @@ import TabPanel from 'primevue/tabpanel';
 import TabPanels from 'primevue/tabpanels';
 import Tabs from 'primevue/tabs';
 import { buildAuroraProps } from '@/data/storyAuroraThemes';
+import { glassTintVars } from '@/utils/color';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(
@@ -65,6 +66,7 @@ const isMobile = ref(false);
 const MOBILE_MQ = '(max-width: 767px)';
 
 const { settings } = useGameplaySettings();
+const headerGlassStyle = computed(() => glassTintVars(settings.backgroundColor));
 const tts = useTextToSpeech();
 const { audioSheetOpen } = useFeedbackWidget();
 
@@ -163,13 +165,13 @@ const handleInputSubmit = (prompt: string) => {
         <div class="relative flex min-h-svh">
             <div class="flex flex-col flex-1 min-h-svh">
                 <!-- ── Top header bar ── -->
-                <div class="sticky top-0 right-0 left-0 z-30 w-full">
+                <div class="sticky top-0 right-0 left-0 z-30 w-full" :style="headerGlassStyle">
                     <div
                         class="z-50 flex h-20 items-center justify-between gap-3 bg-linear-to-b from-gray-950 via-gray-950/60 to-transparent px-4 transition-all duration-300 sm:px-8 md:h-24"
                     >
                         <!-- Left: back + settings (desktop) -->
                         <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-                            <BaseButton severity="glass" :icon-only="true" class="size-11!" title="Go back" @click="$emit('back')">
+                            <BaseButton severity="narration-glass" :icon-only="true" class="size-11!" title="Go back" @click="$emit('back')">
                                 <LucideChevronLeft class="size-6 text-gray-50" :stroke-width="1.75" />
                             </BaseButton>
                             <GameplayCapsuleButton
@@ -227,7 +229,7 @@ const handleInputSubmit = (prompt: string) => {
                         </div>
 
                         <!-- Mobile: action pill -->
-                        <div class="mobile-pill flex md:hidden">
+                        <div class="mobile-pill gameplay-narration-glass flex md:hidden">
                             <button
                                 class="mobile-pill__btn"
                                 :class="{ 'mobile-pill__btn--active': activePanel === 'settings' }"
@@ -407,16 +409,6 @@ const handleInputSubmit = (prompt: string) => {
     gap: 2px;
     padding: 6px;
     border-radius: 60px;
-    background-color: rgba(51, 51, 51, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow:
-        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
-        inset -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.55),
-        inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.3),
-        inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.3),
-        inset 0 0 1px 1px rgba(153, 153, 153, 0.15),
-        0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
 .mobile-pill__btn {
@@ -428,16 +420,22 @@ const handleInputSubmit = (prompt: string) => {
     border: none;
     background: transparent;
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease;
     flex-shrink: 0;
 }
 
-.mobile-pill__btn:active,
 .mobile-pill__btn--active {
-    background: rgba(84, 244, 218, 0.12);
+    background:
+        linear-gradient(var(--glass-tint-strong, rgba(84, 244, 218, 0.2)), var(--glass-tint-strong, rgba(84, 244, 218, 0.2))),
+        rgba(10, 10, 18, 0.28);
+    box-shadow:
+        inset 0 0 28px 3px var(--glass-tint-strong, rgba(84, 244, 218, 0.15)),
+        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.12);
 }
 
 .mobile-pill__btn:active {
-    background: rgba(255, 255, 255, 0.08);
+    transform: scale(0.96);
 }
 </style>
