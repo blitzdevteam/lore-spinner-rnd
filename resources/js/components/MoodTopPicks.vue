@@ -5,6 +5,7 @@ import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
 import { MOOD_TOP_PICK_SLUGS } from '@/data/moodCards';
 import type { MoodId } from '@/data/moodBanners';
 import { isStoryPlayable } from '@/data/playableStorySlugs';
+import { resolveStoryTopMoodCover } from '@/data/storyTopMoodCoverBySlug';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
@@ -64,6 +65,10 @@ function isPlayable(story: StoryInterface): boolean {
     return story.status?.value === StoryStatusEnum.PUBLISHED && isStoryPlayable(story.slug);
 }
 
+function coverForStory(story: StoryInterface): string {
+    return resolveStoryTopMoodCover(story.slug, story.cover);
+}
+
 function scrollSlider(direction: -1 | 1): void {
     const slider = sliderEl.value;
     if (!slider) return;
@@ -119,7 +124,7 @@ function scrollSlider(direction: -1 | 1): void {
                                     >
                                         <HomeBannerStoryCard
                                             :title="story.title"
-                                            :cover="story.cover"
+                                            :cover="coverForStory(story)"
                                             :category="categoryForStory(story)"
                                             :rating="ratingForStory(story)"
                                             :mood="moodLabel"
