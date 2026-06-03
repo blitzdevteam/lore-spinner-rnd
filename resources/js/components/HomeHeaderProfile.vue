@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { logout } from '@/wayfinder/routes/user/authentication';
 import login from '@/wayfinder/routes/user/authentication/login';
+import { DEFAULT_PROFILE_AVATAR, resolvePublicStorageUrl } from '@/utils/publicStorageUrl';
 import { Link, usePage } from '@inertiajs/vue3';
 import { onClickOutside } from '@vueuse/core';
 import { computed, ref } from 'vue';
@@ -20,8 +21,18 @@ const page = usePage();
 
 const auth = computed(() => page.props.auth);
 
+const avatarSrc = computed(() => resolvePublicStorageUrl(auth.value?.avatar));
+
 const profileWrap = ref<HTMLElement | null>(null);
 const dropdownOpen = ref(false);
+
+function onAvatarError(event: Event) {
+    const img = event.target as HTMLImageElement | null;
+    if (!img || img.src.endsWith(DEFAULT_PROFILE_AVATAR)) {
+        return;
+    }
+    img.src = DEFAULT_PROFILE_AVATAR;
+}
 
 onClickOutside(profileWrap, () => {
     dropdownOpen.value = false;
@@ -47,12 +58,14 @@ onClickOutside(profileWrap, () => {
                 @click="dropdownOpen = !dropdownOpen"
             >
                 <img
-                    :src="auth.avatar"
+                    :src="avatarSrc"
                     alt=""
+                    class="object-cover"
                     :class="[
                         'cursor-pointer rounded-full border-2 border-primary outline-2 outline-transparent transition hover:brightness-110',
                         compact ? 'size-11' : 'size-[2.8125rem]',
                     ]"
+                    @error="onAvatarError"
                 />
             </button>
 

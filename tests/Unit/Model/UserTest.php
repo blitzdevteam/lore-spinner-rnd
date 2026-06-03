@@ -11,6 +11,10 @@ beforeEach(function () {
     $this->user = User::factory()->create();
 });
 
+it('exposes avatar as a same-origin storage path', function () {
+    expect($this->user->avatar)->toStartWith('/storage/');
+});
+
 it('serializes with expected keys', function () {
     expect(array_keys($this->user->fresh()->toArray()))->toEqualCanonicalizing([
         'id',
