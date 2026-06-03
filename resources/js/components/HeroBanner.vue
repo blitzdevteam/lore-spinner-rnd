@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import janeEyreImage from '@/assets/carosel/Ultrawide jane eyre.png';
+import masqueImage from '@/assets/carosel/Ultrawide 21_9 The Masque of the Red Death.png';
+import nocturneImage from '@/assets/carosel/Ultrawide nocturne.png';
 import ozImage from '@/assets/carosel/Ultrawide Oz.png';
 import sherlockImage from '@/assets/carosel/Sherlock Ultrawide hero banner.png';
 import tellTaleImage from '@/assets/carosel/Ultrawide the tell tale heart.png';
@@ -39,20 +41,19 @@ interface HeroSlideConfig {
 
 const heroSlideConfigs: HeroSlideConfig[] = [
     {
-        slug: 'the-tell-tale-heart',
-        image: tellTaleImage,
-        imagePosition: 'object-[62%_top] md:object-top',
-        titleLines: ['The Tell-Tale', 'Heart'],
-        fallbackTitle: 'The Tell-Tale Heart',
+        slug: 'the-adventure-of-the-speckled-band',
+        image: sherlockImage,
+        imagePosition: 'object-[60%_top] md:object-top',
+        titleLines: ['Sherlock Holmes', 'In The Speckled Band'],
+        fallbackTitle: 'Sherlock Holmes in The Speckled Band',
         teaserLines: [
-            'As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape:',
-            "the beating of a dead man's heart.",
+            'A young woman fears she will suffer the same fate as her sister,',
+            'forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
         ],
         fallbackTeaser:
-            "As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape: the beating of a dead man's heart.",
-        fallbackAuthor: 'Edgar Allan Poe',
+            'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
+        fallbackAuthor: 'Sir Arthur Conan Doyle',
         seriesLabel: 'The Classics, Unbound',
-        comingSoon: true,
     },
     {
         slug: 'the-wonderful-wizard-of-oz',
@@ -70,19 +71,52 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         seriesLabel: 'The Classics, Unbound',
     },
     {
-        slug: 'the-adventure-of-the-speckled-band',
-        image: sherlockImage,
-        imagePosition: 'object-[60%_top] md:object-top',
-        titleLines: ['Sherlock Holmes', 'In The Speckled Band'],
-        fallbackTitle: 'Sherlock Holmes in The Speckled Band',
+        slug: 'the-tell-tale-heart',
+        image: tellTaleImage,
+        imagePosition: 'object-[62%_top] md:object-top',
+        titleLines: ['The Tell-Tale', 'Heart'],
+        fallbackTitle: 'The Tell-Tale Heart',
         teaserLines: [
-            'A young woman fears she will suffer the same fate as her sister,',
-            'forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
+            'As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape:',
+            "the beating of a dead man's heart.",
         ],
         fallbackTeaser:
-            'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
-        fallbackAuthor: 'Sir Arthur Conan Doyle',
+            "As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape: the beating of a dead man's heart.",
+        fallbackAuthor: 'Edgar Allan Poe',
         seriesLabel: 'The Classics, Unbound',
+        comingSoon: true,
+    },
+    {
+        slug: 'the-masque-of-the-red-death',
+        image: masqueImage,
+        imagePosition: 'object-[68%_top] md:object-top',
+        titleLines: ['The Masque of', 'the Red Death'],
+        fallbackTitle: 'The Masque of the Red Death',
+        teaserLines: [
+            'Behind locked gates and glittering masks, a night of celebration slowly transforms into',
+            'a nightmare no one can escape.',
+        ],
+        fallbackTeaser:
+            'Behind locked gates and glittering masks, a night of celebration slowly transforms into a nightmare no one can escape.',
+        fallbackAuthor: 'Edgar Allan Poe',
+        seriesLabel: 'The Classics, Unbound',
+        comingSoon: true,
+    },
+    {
+        slug: 'nocturne',
+        image: nocturneImage,
+        imagePosition: 'object-[70%_top] md:object-top',
+        titleLines: null,
+        fallbackTitle: 'Nocturne',
+        teaserLines: [
+            'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten',
+            'and nothing is quite as voluntary as it seems.',
+        ],
+        fallbackTeaser:
+            'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten and nothing is quite as voluntary as it seems.',
+        fallbackAuthor: 'Thomas Wittmer',
+        seriesLabel: 'Lorespinner original',
+        comingSoon: true,
     },
     {
         slug: 'jane-eyre',
@@ -383,6 +417,7 @@ function goNext() {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hero-stat-line {
@@ -648,7 +683,7 @@ function goNext() {
         font-size: 1.125rem;
         line-height: 1.444;
         text-shadow: 0 1px 12px rgba(0, 0, 0, 0.75);
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3;
     }
 
     .hero-stat-line {
