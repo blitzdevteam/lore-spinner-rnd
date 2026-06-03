@@ -10,7 +10,7 @@ import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
 import { isStoryPlayable } from '@/data/playableStorySlugs';
 import { getMoodStorySlugs } from '@/data/moodStories';
 import { resolveStoryTopMoodCover } from '@/data/storyTopMoodCoverBySlug';
-import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
+import { getStoryDescriptorThemes } from '@/data/storyCardHoverMeta';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
 import { X } from 'lucide-vue-next';
@@ -27,25 +27,11 @@ interface MoodGame {
     teaser: string;
 }
 
-const EXPLORE_THEMES_BY_SLUG: Record<string, string[]> = {
-    'pride-and-prejudice': ['Love', 'Duty', 'Society'],
-    'romeo-and-juliet': ['Love', 'Fate', 'Passion'],
-    pjs: ['Brotherhood', 'Sacrifice', 'Courage'],
-    wasteland: ['Survival', 'Betrayal', 'Escape'],
-    frankenstein: ['Creation', 'Isolation', 'Ambition'],
-    'treasure-island': ['Adventure', 'Greed', 'Loyalty'],
-    leagues: ['Discovery', 'Wonder', 'Peril'],
-    dracula: ['Hunger', 'Fear', 'Desire'],
-    'dr-jekyll-and-mr-hyde': ['Duality', 'Power', 'Morality'],
-};
-
 const mockBySlug = Object.fromEntries(MOCK_LIBRARY_STORIES.map((s) => [s.slug, s]));
 
 function gameFromSlug(slug: string): MoodGame | null {
     const mock = mockBySlug[slug];
     if (!mock) return null;
-
-    const meta = STORY_HOVER_META_BY_SLUG[slug];
 
     return {
         id: slug,
@@ -53,7 +39,7 @@ function gameFromSlug(slug: string): MoodGame | null {
         title: mock.title,
         cover: resolveStoryTopMoodCover(slug, mock.cover),
         playable: isStoryPlayable(slug),
-        themes: meta?.themes ?? EXPLORE_THEMES_BY_SLUG[slug] ?? [],
+        themes: getStoryDescriptorThemes(slug),
         teaser: mock.teaser,
     };
 }

@@ -13,6 +13,7 @@ import pjCover from '@/assets/commingSoon/pj-comming.JPG';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
+import { getStoryDescriptorThemes } from '@/data/storyCardHoverMeta';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { ref } from 'vue';
 
@@ -20,7 +21,6 @@ interface ComingSoonCard {
     id: string;
     title: string;
     cover: string;
-    themes: string[];
     teaser: string;
 }
 
@@ -29,49 +29,42 @@ const cards: ComingSoonCard[] = [
         id: 'jane-eyre',
         title: 'Jane Eyre',
         cover: janeCover,
-        themes: ['Love', 'Independence', 'Secrets'],
         teaser: 'A young orphan enters a dark and mysterious estate where buried secrets, dangerous love, and the search for belonging may change the course of her life forever.',
     },
     {
         id: 'frankenstein',
         title: 'Frankenstein',
         cover: frankensteinCover,
-        themes: ['Creation', 'Isolation', 'Ambition'],
         teaser: 'Step inside a world where creation, rejection, and consequence follow you like a shadow.',
     },
     {
         id: 'dr-jekyll-and-mr-hyde',
         title: 'The Strange Case of Dr. Jekyll and Mr. Hyde',
         cover: drjCover,
-        themes: ['Duality', 'Power', 'Morality'],
         teaser: "Beneath the fog-covered streets of Victorian London, a terrifying secret grows inside Dr. Jekyll's laboratory, threatening to consume everyone around him.",
     },
     {
         id: 'leagues',
         title: '20,000 Leagues Under the Sea',
         cover: underseaCover,
-        themes: ['Discovery', 'Wonder', 'Peril'],
         teaser: 'Step aboard the Nautilus, where each choice pulls you deeper into beauty, danger, and the mystery of Captain Nemo.',
     },
     {
         id: 'wasteland',
         title: 'Wasteland',
         cover: wastelandCover,
-        themes: ['Survival', 'Betrayal', 'Escape'],
         teaser: "Abandoned in a desert built from humanity's castoffs, an engineer must decide whether to escape or help the people that the world chose to forget.",
     },
     {
         id: 'romeo-and-juliet',
         title: 'Romeo & Juliet',
         cover: romeoCover,
-        themes: ['Destiny', 'Courage', 'Control'],
         teaser: 'A masked room. A borrowed name. A city holding its breath. Somewhere in the dark of Verona, love discovers it has enemies.',
     },
     {
         id: 'pjs',
         title: "PJ's",
         cover: pjCover,
-        themes: ['Brotherhood', 'Sacrifice', 'Courage'],
         teaser: "A team of elite Air Force PJs discover that the hardest battlefield may be the one where there's no enemy to shoot, only lives to save and ghosts to outrun.",
     },
 ];
@@ -103,7 +96,7 @@ function toSheetData(card: ComingSoonCard): StorySheetData {
         id: card.id,
         title: card.title,
         cover: card.cover,
-        themes: card.themes,
+        themes: getStoryDescriptorThemes(card.id),
         isComingSoon: true,
         teaser: card.teaser,
     };
@@ -152,7 +145,7 @@ function openSheet(card: ComingSoonCard) {
                                         <HomePortraitStoryCard
                                             :title="card.title"
                                             :cover="card.cover"
-                                            :themes="card.themes"
+                                            :themes="getStoryDescriptorThemes(card.id)"
                                             :teaser="card.teaser"
                                             :playable="false"
                                             :focused="isDesktopHover && isExpanded(card.id)"

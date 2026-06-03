@@ -9,6 +9,7 @@ import tellTaleNewCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
+import { getStoryDescriptorThemes } from '@/data/storyCardHoverMeta';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { ref } from 'vue';
 
@@ -21,7 +22,6 @@ interface NewStory {
     rating: string;
     playable: boolean;
     slug?: string;
-    themes: string[];
     teaser: string;
 }
 
@@ -34,7 +34,6 @@ const stories: NewStory[] = [
         rating: 'Everyone',
         playable: true,
         slug: 'the-adventure-of-the-speckled-band',
-        themes: ['Mystery', 'Deduction', 'Betrayal'],
         teaser:
             'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
     },
@@ -46,7 +45,6 @@ const stories: NewStory[] = [
         rating: 'Everyone',
         playable: true,
         slug: 'the-wonderful-wizard-of-oz',
-        themes: ['Courage', 'Home', 'Illusion'],
         teaser:
             'A storm carries you into the magical land of Oz, where witches whisper, lions tremble, and every step down the Yellow Brick Road changes who you are becoming.',
     },
@@ -58,7 +56,6 @@ const stories: NewStory[] = [
         rating: 'Everyone',
         playable: false,
         slug: 'the-tell-tale-heart',
-        themes: ['Madness', 'Guilt', 'Obsession'],
         teaser:
             "As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape: the beating of a dead man's heart.",
     },
@@ -91,7 +88,7 @@ function toSheetData(story: NewStory): StorySheetData {
         id: story.id,
         title: story.title,
         cover: story.coverHover ?? story.cover,
-        themes: story.themes,
+        themes: getStoryDescriptorThemes(story.slug ?? story.id),
         category: story.category,
         rating: story.rating,
         isComingSoon: !story.playable,
@@ -148,7 +145,7 @@ function openSheet(story: NewStory) {
                                             :cover="story.cover"
                                             :category="story.category"
                                             :rating="story.rating"
-                                            :themes="story.themes"
+                                            :themes="getStoryDescriptorThemes(story.slug ?? story.id)"
                                             :teaser="story.teaser"
                                             :playable="story.playable"
                                             :slug="story.slug"

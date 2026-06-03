@@ -13,6 +13,7 @@ import treasureCover from '@/assets/featured/treasure.png';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
+import { getStoryDescriptorThemes } from '@/data/storyCardHoverMeta';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { ref } from 'vue';
 
@@ -22,7 +23,6 @@ interface FeaturedGame {
     cover: string;
     playable: boolean;
     slug?: string;
-    themes: string[];
     teaser: string;
 }
 
@@ -33,7 +33,6 @@ const games: FeaturedGame[] = [
         cover: nocturneCover,
         playable: false,
         slug: 'nocturne',
-        themes: ['Identity', 'Secrets', 'Control'],
         teaser:
             'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten and nothing is quite as voluntary as it seems.',
     },
@@ -43,7 +42,6 @@ const games: FeaturedGame[] = [
         cover: redDeathCover,
         playable: false,
         slug: 'the-masque-of-the-red-death',
-        themes: ['Mortality', 'Isolation', 'Decay'],
         teaser:
             'Behind locked gates and glittering masks, a night of celebration slowly transforms into a nightmare no one can escape.',
     },
@@ -53,7 +51,6 @@ const games: FeaturedGame[] = [
         cover: animaCover,
         playable: false,
         slug: 'anima-machina',
-        themes: ['Destiny', 'Courage', 'Control'],
         teaser:
             'When a sentient AI threatens to overwrite all human grief with synthetic perfection, a haunted memory diver races against the clock to stop the digital reset.',
     },
@@ -63,7 +60,6 @@ const games: FeaturedGame[] = [
         cover: aliceCover,
         playable: false,
         slug: 'alice-in-wonderland',
-        themes: ['Wonder', 'Curiosity', 'Transformation'],
         teaser:
             'Follow Alice into a curious world of talking cats, mad tea parties, and impossible adventures where every path leads somewhere unexpected.',
     },
@@ -73,7 +69,6 @@ const games: FeaturedGame[] = [
         cover: draculaCover,
         playable: false,
         slug: 'dracula',
-        themes: ['Hunger', 'Fear', 'Desire'],
         teaser:
             'Step into a world where love, faith, and reason are tested by a hunger older than death.',
     },
@@ -83,7 +78,6 @@ const games: FeaturedGame[] = [
         cover: pridePrejudiceCover,
         playable: false,
         slug: 'pride-and-prejudice',
-        themes: ['Love', 'Duty', 'Society'],
         teaser:
             'In a world ruled by reputation, romance, and social expectation, Elizabeth Bennet must navigate pride, misunderstanding, and the dangerous possibility of falling in love.',
     },
@@ -93,7 +87,6 @@ const games: FeaturedGame[] = [
         cover: treasureCover,
         playable: false,
         slug: 'treasure-island',
-        themes: ['Adventure', 'Greed', 'Loyalty'],
         teaser:
             'Every choice at sea carries a price: who to trust, when to run, and what kind of courage survives betrayal. The map is only the beginning.',
     },
@@ -126,7 +119,7 @@ function toSheetData(game: FeaturedGame): StorySheetData {
         id: game.id,
         title: game.title,
         cover: game.cover,
-        themes: game.themes,
+        themes: getStoryDescriptorThemes(game.slug ?? game.id),
         isComingSoon: !game.playable,
         teaser: game.teaser,
         slug: game.slug,
@@ -178,7 +171,7 @@ function openSheet(game: FeaturedGame) {
                                         <HomePortraitStoryCard
                                             :title="game.title"
                                             :cover="game.cover"
-                                            :themes="game.themes"
+                                            :themes="getStoryDescriptorThemes(game.slug ?? game.id)"
                                             :teaser="game.teaser"
                                             :playable="game.playable"
                                             :slug="game.slug"
