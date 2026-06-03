@@ -20,11 +20,6 @@ import GameplayOrnamentDivider from '@/components/GameplayOrnamentDivider.vue';
 import { Head } from '@inertiajs/vue3';
 import { LucideAudioLines, LucideChevronLeft, LucideNotebookText, LucideSettings, LucideX, LucideZap } from 'lucide-vue-next';
 import type { PromptInterface } from '@/types';
-import Tab from 'primevue/tab';
-import TabList from 'primevue/tablist';
-import TabPanel from 'primevue/tabpanel';
-import TabPanels from 'primevue/tabpanels';
-import Tabs from 'primevue/tabs';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 defineOptions({ layout: null });
@@ -80,6 +75,13 @@ const useCustomColors = ref(false);
 
 const settingsOpen = ref(false);
 const settingsTab = ref<'aurora' | 'notes'>('aurora');
+
+function settingsTabBtnClass(tab: 'aurora' | 'notes'): string {
+    const active = settingsTab.value === tab;
+    return active
+        ? 'border-primary/70 bg-primary/15 text-primary shadow-[0_0_12px_rgba(229,173,83,0.15)]'
+        : 'border-gray-600 text-gray-300 hover:border-gray-500 hover:text-gray-100';
+}
 const isMobile = ref(false);
 const MOBILE_MQ = '(max-width: 767px)';
 
@@ -95,6 +97,8 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.matchMedia(MOBILE_MQ)?.removeEventListener('change', syncMobile);
+    if (demoSweepTimer) clearTimeout(demoSweepTimer);
+    if (demoResetTimer) clearTimeout(demoResetTimer);
 });
 
 const toggleSettings = () => {
@@ -191,15 +195,30 @@ const selectChoice = (promptId: string, choice: string) => {
     pendingSelection.value[promptId] = choice;
 };
 
-// ── Chat input glow ───────────────────────────────────────────────────────────
-const inputGlowVariant = ref<'sweep' | 'orbit'>('sweep');
+// ── Chat input glow state machine ────────────────────────────────────────────
+// Same ritual rhythm as the main game:
+// static → orbit (processing) → sweep (response landed, ~8 s) → static
+const inputGlowVariant = ref<'sweep' | 'orbit' | undefined>(undefined);
+let demoSweepTimer: ReturnType<typeof setTimeout> | null = null;
+let demoResetTimer: ReturnType<typeof setTimeout> | null = null;
 
 function handleDemoSubmit() {
+    if (demoSweepTimer) { clearTimeout(demoSweepTimer); demoSweepTimer = null; }
+    if (demoResetTimer) { clearTimeout(demoResetTimer); demoResetTimer = null; }
+
     isSubmitting.value = true;
     inputGlowVariant.value = 'orbit';
+
     setTimeout(() => {
         isSubmitting.value = false;
-        inputGlowVariant.value = 'sweep';
+        // Short pause so the narration can settle before the sweep blooms in
+        demoSweepTimer = setTimeout(() => {
+            inputGlowVariant.value = 'sweep';
+            // Auto-fade back to static so it never becomes wallpaper
+            demoResetTimer = setTimeout(() => {
+                inputGlowVariant.value = undefined;
+            }, 8000);
+        }, 400);
     }, 3500);
 }
 </script>
@@ -328,99 +347,85 @@ function handleDemoSubmit() {
                     v-if="!isMobile && settingsOpen"
                     class="relative z-40 flex h-full w-[min(100%,22rem)] shrink-0 flex-col overflow-hidden border-s border-gray-700/80 bg-gray-950/95 backdrop-blur-md"
                 >
-                    <Tabs v-model:value="settingsTab" class="flex h-full min-h-0 flex-col px-4 pt-6" :show-navigators="false" unstyled>
-                        <TabList pt:tab-list="flex shrink-0 gap-2 pb-4" pt:content="" pt:active-bar="hidden">
-                            <Tab value="aurora" v-slot="slotProps" as-child>
-                                <button
-                                    type="button"
-                                    class="flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-colors"
-                                    :class="
-                                        slotProps.active
-                                            ? 'border-primary/50 bg-primary/10 text-primary'
-                                            : 'border-gray-700 text-gray-400 hover:border-gray-500'
-                                    "
-                                    @click="slotProps.onClick"
-                                >
-                                    Aurora
-                                </button>
-                            </Tab>
-                            <Tab value="notes" v-slot="slotProps" as-child>
-                                <button
-                                    type="button"
-                                    class="flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-colors"
-                                    :class="
-                                        slotProps.active
-                                            ? 'border-primary/50 bg-primary/10 text-primary'
-                                            : 'border-gray-700 text-gray-400 hover:border-gray-500'
-                                    "
-                                    @click="slotProps.onClick"
-                                >
-                                    Notes
-                                </button>
-                            </Tab>
-                        </TabList>
-                        <TabPanels class="min-h-0 flex-1 overflow-y-auto">
-                            <TabPanel value="aurora">
-                                <BgRndAuroraLabPanel
-                                    v-model:tuning="tuning"
-                                    v-model:brand="brand"
-                                    v-model:palette="customPalette"
-                                    v-model:use-custom-colors="useCustomColors"
-                                    :story-title="theme.title"
-                                    @reset="resetAuroraLab"
-                                    @sync-from-story="syncPaletteFromStory"
-                                />
-                            </TabPanel>
-                            <TabPanel value="notes">
-                                <BgRndAuroraNotes />
-                            </TabPanel>
-                        </TabPanels>
-                    </Tabs>
+                    <div class="flex h-full min-h-0 flex-col px-4 pt-6">
+                        <div class="flex shrink-0 gap-2 pb-4" role="tablist">
+                            <button
+                                type="button"
+                                role="tab"
+                                :aria-selected="settingsTab === 'aurora'"
+                                class="flex-1 rounded-lg border px-3 py-2.5 text-sm font-semibold transition-colors"
+                                :class="settingsTabBtnClass('aurora')"
+                                @click="settingsTab = 'aurora'"
+                            >
+                                Aurora
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                :aria-selected="settingsTab === 'notes'"
+                                class="flex-1 rounded-lg border px-3 py-2.5 text-sm font-semibold transition-colors"
+                                :class="settingsTabBtnClass('notes')"
+                                @click="settingsTab = 'notes'"
+                            >
+                                Notes
+                            </button>
+                        </div>
+                        <div class="min-h-0 flex-1 overflow-y-auto" role="tabpanel">
+                            <BgRndAuroraLabPanel
+                                v-if="settingsTab === 'aurora'"
+                                v-model:tuning="tuning"
+                                v-model:brand="brand"
+                                v-model:palette="customPalette"
+                                v-model:use-custom-colors="useCustomColors"
+                                :story-title="theme.title"
+                                @reset="resetAuroraLab"
+                                @sync-from-story="syncPaletteFromStory"
+                            />
+                            <BgRndAuroraNotes v-else />
+                        </div>
+                    </div>
                 </aside>
             </Transition>
         </div>
 
         <GameplayBottomSheet :open="isMobile && settingsOpen" title="Settings" @close="closeSettings">
-            <Tabs v-model:value="settingsTab" class="flex flex-col px-1" :show-navigators="false" unstyled>
-                <TabList pt:tab-list="mb-4 flex gap-2" pt:content="" pt:active-bar="hidden">
-                    <Tab value="aurora" v-slot="slotProps" as-child>
-                        <button
-                            type="button"
-                            class="flex-1 rounded-lg border px-3 py-2 text-xs font-medium"
-                            :class="slotProps.active ? 'border-primary/50 bg-primary/10 text-primary' : 'border-gray-700 text-gray-400'"
-                            @click="slotProps.onClick"
-                        >
-                            Aurora
-                        </button>
-                    </Tab>
-                    <Tab value="notes" v-slot="slotProps" as-child>
-                        <button
-                            type="button"
-                            class="flex-1 rounded-lg border px-3 py-2 text-xs font-medium"
-                            :class="slotProps.active ? 'border-primary/50 bg-primary/10 text-primary' : 'border-gray-700 text-gray-400'"
-                            @click="slotProps.onClick"
-                        >
-                            Notes
-                        </button>
-                    </Tab>
-                </TabList>
-                <TabPanels>
-                    <TabPanel value="aurora">
-                        <BgRndAuroraLabPanel
-                            v-model:tuning="tuning"
-                            v-model:brand="brand"
-                            v-model:palette="customPalette"
-                            v-model:use-custom-colors="useCustomColors"
-                            :story-title="theme.title"
-                            @reset="resetAuroraLab"
-                            @sync-from-story="syncPaletteFromStory"
-                        />
-                    </TabPanel>
-                    <TabPanel value="notes">
-                        <BgRndAuroraNotes />
-                    </TabPanel>
-                </TabPanels>
-            </Tabs>
+            <div class="flex flex-col px-1">
+                <div class="mb-4 flex gap-2" role="tablist">
+                    <button
+                        type="button"
+                        role="tab"
+                        :aria-selected="settingsTab === 'aurora'"
+                        class="flex-1 rounded-lg border px-3 py-2.5 text-sm font-semibold transition-colors"
+                        :class="settingsTabBtnClass('aurora')"
+                        @click="settingsTab = 'aurora'"
+                    >
+                        Aurora
+                    </button>
+                    <button
+                        type="button"
+                        role="tab"
+                        :aria-selected="settingsTab === 'notes'"
+                        class="flex-1 rounded-lg border px-3 py-2.5 text-sm font-semibold transition-colors"
+                        :class="settingsTabBtnClass('notes')"
+                        @click="settingsTab = 'notes'"
+                    >
+                        Notes
+                    </button>
+                </div>
+                <div role="tabpanel">
+                    <BgRndAuroraLabPanel
+                        v-if="settingsTab === 'aurora'"
+                        v-model:tuning="tuning"
+                        v-model:brand="brand"
+                        v-model:palette="customPalette"
+                        v-model:use-custom-colors="useCustomColors"
+                        :story-title="theme.title"
+                        @reset="resetAuroraLab"
+                        @sync-from-story="syncPaletteFromStory"
+                    />
+                    <BgRndAuroraNotes v-else />
+                </div>
+            </div>
         </GameplayBottomSheet>
     </div>
 </template>

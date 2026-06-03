@@ -18,7 +18,7 @@ import TabPanel from 'primevue/tabpanel';
 import TabPanels from 'primevue/tabpanels';
 import Tabs from 'primevue/tabs';
 import { buildAuroraProps } from '@/data/storyAuroraThemes';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -31,8 +31,35 @@ const props = withDefaults(
     { inputDisabled: false, gameId: undefined, coverUrl: undefined, journalMeta: undefined, storySlug: undefined },
 );
 
-const auroraProps = computed(() => buildAuroraProps(props.storySlug));
-const inputGlowVariant = computed<'sweep' | 'orbit'>(() => props.inputDisabled ? 'orbit' : 'sweep');
+const auroraProps = ref(buildAuroraProps(props.storySlug));
+watch(() => props.storySlug, (slug) => { auroraProps.value = buildAuroraProps(slug); });
+
+// ── Input glow state machine ──────────────────────────────────────────────────
+// static (undefined) → orbit (AI processing) → sweep (response landed) → static
+const inputGlowVariant = ref<'sweep' | 'orbit' | undefined>(undefined);
+let glowSweepTimer: ReturnType<typeof setTimeout> | null = null;
+let glowResetTimer: ReturnType<typeof setTimeout> | null = null;
+
+watch(
+    () => props.inputDisabled,
+    (disabled, wasDisabled) => {
+        if (glowSweepTimer) { clearTimeout(glowSweepTimer); glowSweepTimer = null; }
+        if (glowResetTimer) { clearTimeout(glowResetTimer); glowResetTimer = null; }
+
+        if (disabled) {
+            inputGlowVariant.value = 'orbit';
+        } else if (wasDisabled) {
+            // Response just landed — brief pause lets narration text settle, then bloom
+            glowSweepTimer = setTimeout(() => {
+                inputGlowVariant.value = 'sweep';
+                // Fade back to static after ~8 s so it never becomes wallpaper
+                glowResetTimer = setTimeout(() => {
+                    inputGlowVariant.value = undefined;
+                }, 8000);
+            }, 400);
+        }
+    },
+);
 
 type Panel = 'journal' | 'settings' | 'audio' | null;
 
@@ -59,6 +86,8 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.matchMedia(MOBILE_MQ).removeEventListener('change', syncMobile);
+    if (glowSweepTimer) clearTimeout(glowSweepTimer);
+    if (glowResetTimer) clearTimeout(glowResetTimer);
 });
 
 watch(isMobile, (mobile) => {
@@ -122,6 +151,10 @@ const emit = defineEmits<{
 }>();
 
 const handleInputSubmit = (prompt: string) => {
+    // Immediately go to orbit — don't wait for parent to flip inputDisabled
+    if (glowSweepTimer) { clearTimeout(glowSweepTimer); glowSweepTimer = null; }
+    if (glowResetTimer) { clearTimeout(glowResetTimer); glowResetTimer = null; }
+    inputGlowVariant.value = 'orbit';
     emit('submit', prompt);
 };
 </script>
