@@ -3,6 +3,7 @@ import HomeBannerStoryCard from '@/components/HomeBannerStoryCard.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
 import { MOOD_TOP_PICK_SLUGS } from '@/data/moodCards';
+import { canonicalMoodStorySlug } from '@/data/moodStories';
 import type { MoodId } from '@/data/moodBanners';
 import { isStoryPlayable } from '@/data/playableStorySlugs';
 import { resolveStoryTopMoodCover } from '@/data/storyTopMoodCoverBySlug';
@@ -34,16 +35,16 @@ const viewAllHref = computed(() => `${storiesIndex().url}?mood=${props.mood}#all
 
 const topPickStories = computed((): StoryInterface[] => {
     const bySlug = new Map(props.stories.map((story) => [story.slug, story]));
-    const curated = MOOD_TOP_PICK_SLUGS[props.mood]
-        .map((slug) => bySlug.get(slug))
+    return MOOD_TOP_PICK_SLUGS[props.mood]
+        .map((slug) => {
+            const direct = bySlug.get(slug);
+            if (direct) return direct;
+            for (const story of props.stories) {
+                if (canonicalMoodStorySlug(story.slug) === slug) return story;
+            }
+            return undefined;
+        })
         .filter((story): story is StoryInterface => story != null);
-
-    if (curated.length >= 3) return curated;
-
-    const usedSlugs = new Set(curated.map((story) => story.slug));
-    const extras = props.stories.filter((story) => !usedSlugs.has(story.slug));
-
-    return [...curated, ...extras].slice(0, Math.max(3, curated.length));
 });
 
 function themesForStory(story: StoryInterface): string[] {

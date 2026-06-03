@@ -3,7 +3,7 @@ import heartImg from '@/assets/mood/Heart.svg';
 import mountainsImg from '@/assets/mood/Mountains.svg';
 import spiralImg from '@/assets/mood/Spiral.svg';
 import swordImg from '@/assets/mood/Sword.svg';
-import { MOOD_IDS, type MoodId } from '@/data/moodBanners';
+import { MOOD_IDS, type MoodId } from '@/data/moodStories';
 
 export interface MoodCardConfig {
     id: MoodId;
@@ -23,13 +23,6 @@ export const MOOD_CARD_CONFIG_BY_ID = Object.fromEntries(
     MOOD_CARD_CONFIGS.map((config) => [config.id, config]),
 ) as Record<MoodId, MoodCardConfig>;
 
-/** Curated top-pick story slugs per mood (matches home Explore by mood panel). */
-export const MOOD_TOP_PICK_SLUGS: Record<MoodId, string[]> = {
-    heartfelt: ['anima-machina', 'jekyll-and-hyde', 'the-wonderful-wizard-of-oz'],
-    adventurous: ['alice-in-wonderland', 'the-wonderful-wizard-of-oz', 'anima-machina'],
-    mysterious: ['the-adventure-of-the-speckled-band', 'nocturne', 'jekyll-and-hyde'],
-    epic: ['anima-machina', 'jekyll-and-hyde', 'the-wonderful-wizard-of-oz'],
-    whimsical: ['alice-in-wonderland', 'nocturne', 'the-wonderful-wizard-of-oz'],
-};
+export { MOOD_TOP_PICK_SLUGS } from '@/data/moodStories';
 
 export { MOOD_IDS };

@@ -54,17 +54,10 @@ export const MOOD_CARD_CONFIGS: MoodCardConfig[] = [
     },
 ];
 
-/** Curated top picks per mood — slugs must exist in the library pool. */
-export const MOOD_TOP_PICK_SLUGS: Record<MoodId, string[]> = {
-    heartfelt: ['anima-machina', 'jekyll-and-hyde', 'the-wonderful-wizard-of-oz'],
-    adventurous: ['alice-in-wonderland', 'the-wonderful-wizard-of-oz', 'anima-machina'],
-    mysterious: ['the-adventure-of-the-speckled-band', 'nocturne', 'jekyll-and-hyde'],
-    epic: ['anima-machina', 'jekyll-and-hyde', 'the-wonderful-wizard-of-oz'],
-    whimsical: ['alice-in-wonderland', 'nocturne', 'the-wonderful-wizard-of-oz'],
-};
-
-export function getMoodTopPickSlugs(mood: MoodId): string[] {
-    return MOOD_TOP_PICK_SLUGS[mood] ?? [];
-}
+export {
+    MOOD_TOP_PICK_SLUGS,
+    getMoodTopPickSlugs,
+    getMoodSecondaryPickSlugs,
+} from '@/data/moodStories';
 
 export { MOOD_IDS };

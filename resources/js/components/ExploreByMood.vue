@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import SectionHeader from '@/components/SectionHeader.vue';
-import aliceCover from '@/assets/featured/alice.png';
-import animaCover from '@/assets/featured/anima.png';
-import jekyllCover from '@/assets/featured/jekyll.png';
-import nocturneCover from '@/assets/featured/nocturne.png';
-import ozCover from '@/assets/featured/wizardoz.jpg';
 import heartImg from '@/assets/mood/Heart.svg';
 import mountainsImg from '@/assets/mood/Mountains.svg';
 import eyeImg from '@/assets/mood/Eye.svg';
 import swordImg from '@/assets/mood/Sword.svg';
 import spiralImg from '@/assets/mood/Spiral.svg';
+import { MOOD_BANNER_CONFIGS, MOOD_IDS, type MoodId } from '@/data/moodBanners';
+import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
+import { isStoryPlayable } from '@/data/playableStorySlugs';
+import { getMoodStorySlugs } from '@/data/moodStories';
+import { resolveStoryCover } from '@/data/storyCoverBySlug';
+import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
 import { X } from 'lucide-vue-next';
@@ -20,105 +21,62 @@ defineProps<{
     storyCount?: number;
 }>();
 
-type MoodId = 'heartfelt' | 'adventurous' | 'mysterious' | 'epic' | 'whimsical';
-
 interface MoodGame {
     id: string;
     title: string;
     cover: string;
     playable: boolean;
-    slug?: string;
+    slug: string;
     themes: string[];
     teaser: string;
 }
 
-const gamesById: Record<string, MoodGame> = {
-    anima: {
-        id: 'anima',
-        title: 'Anima Machina',
-        cover: animaCover,
-        playable: true,
-        slug: 'anima-machina',
-        themes: ['Destiny', 'Courage', 'Control'],
-        teaser: 'When a sentient AI threatens to overwrite all human grief with synthetic perfection, a haunted memory diver races against the clock to stop the digital reset.',
-    },
-    alice: {
-        id: 'alice',
-        title: 'Alice In Wonderland',
-        cover: aliceCover,
-        playable: false,
-        themes: ['Wonder', 'Identity', 'Logic'],
-        teaser: 'Follow Alice into a curious world of talking cats, mad tea parties, and impossible adventures where every path leads somewhere unexpected.',
-    },
-    nocturne: {
-        id: 'nocturne',
-        title: 'Nocturne',
-        cover: nocturneCover,
-        playable: false,
-        themes: ['Mystery', 'Music', 'Sacrifice'],
-        teaser: 'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten and nothing is quite as voluntary as it seems.',
-    },
-    jekyll: {
-        id: 'jekyll',
-        title: 'Jekyll & Hyde',
-        cover: jekyllCover,
-        playable: false,
-        themes: ['Duality', 'Power', 'Morality'],
-        teaser: "Beneath the fog-covered streets of Victorian London, a terrifying secret grows inside Dr. Jekyll's laboratory, threatening to consume everyone around him.",
-    },
-    oz: {
-        id: 'oz',
-        title: 'The Wonderful Wizard of Oz',
-        cover: ozCover,
-        playable: false,
-        themes: ['Courage', 'Home', 'Illusion'],
-        teaser: 'A storm carries you into the magical land of Oz, where witches whisper, lions tremble, and every step down the Yellow Brick Road changes who you are becoming.',
-    },
+const EXPLORE_THEMES_BY_SLUG: Record<string, string[]> = {
+    'pride-and-prejudice': ['Love', 'Duty', 'Society'],
+    'romeo-and-juliet': ['Love', 'Fate', 'Passion'],
+    pjs: ['Brotherhood', 'Sacrifice', 'Courage'],
+    wasteland: ['Survival', 'Betrayal', 'Escape'],
+    frankenstein: ['Creation', 'Isolation', 'Ambition'],
+    'treasure-island': ['Adventure', 'Greed', 'Loyalty'],
+    leagues: ['Discovery', 'Wonder', 'Peril'],
+    dracula: ['Hunger', 'Fear', 'Desire'],
+    'dr-jekyll-and-mr-hyde': ['Duality', 'Power', 'Morality'],
 };
 
-const moodConfigs: {
-    id: MoodId;
-    label: string;
-    accentRgb: string;
-    blurb: string;
-    gameIds: string[];
-}[] = [
-    {
-        id: 'heartfelt',
-        label: 'Heartfelt',
-        accentRgb: '201, 52, 52',
-        blurb: 'Stories centered on connection, loss, and hope.',
-        gameIds: ['anima', 'jekyll', 'oz'],
-    },
-    {
-        id: 'adventurous',
-        label: 'Adventurous',
-        accentRgb: '236, 200, 99',
-        blurb: 'Bold journeys, perilous roads, and unforgettable detours.',
-        gameIds: ['alice', 'oz', 'anima'],
-    },
-    {
-        id: 'mysterious',
-        label: 'Mysterious',
-        accentRgb: '98, 232, 219',
-        blurb: 'Secrets, shadows, and riddles that refuse to stay buried.',
-        gameIds: ['nocturne', 'jekyll', 'anima'],
-    },
-    {
-        id: 'epic',
-        label: 'Epic',
-        accentRgb: '88, 217, 161',
-        blurb: 'High stakes, sweeping scale, and choices that echo forward.',
-        gameIds: ['anima', 'jekyll', 'oz'],
-    },
-    {
-        id: 'whimsical',
-        label: 'Whimsical',
-        accentRgb: '169, 121, 194',
-        blurb: 'Strange, playful worlds where logic takes a holiday.',
-        gameIds: ['alice', 'nocturne', 'oz'],
-    },
-];
+const mockBySlug = Object.fromEntries(MOCK_LIBRARY_STORIES.map((s) => [s.slug, s]));
+
+function gameFromSlug(slug: string): MoodGame | null {
+    const mock = mockBySlug[slug];
+    if (!mock) return null;
+
+    const meta = STORY_HOVER_META_BY_SLUG[slug];
+
+    return {
+        id: slug,
+        slug,
+        title: mock.title,
+        cover: resolveStoryCover(slug, mock.cover),
+        playable: isStoryPlayable(slug),
+        themes: meta?.themes ?? EXPLORE_THEMES_BY_SLUG[slug] ?? [],
+        teaser: mock.teaser,
+    };
+}
+
+const MOOD_ACCENT_RGB: Record<MoodId, string> = {
+    heartfelt: '201, 52, 52',
+    adventurous: '236, 200, 99',
+    mysterious: '98, 232, 219',
+    epic: '88, 217, 161',
+    whimsical: '169, 121, 194',
+};
+
+const moodConfigs = MOOD_IDS.map((id) => ({
+    id,
+    label: MOOD_BANNER_CONFIGS[id].label,
+    accentRgb: MOOD_ACCENT_RGB[id],
+    blurb: MOOD_BANNER_CONFIGS[id].subtitle,
+    storySlugs: getMoodStorySlugs(id),
+}));
 
 const openMoodId = ref<MoodId | null>(null);
 const moodScrollEl = ref<HTMLElement | null>(null);
@@ -133,9 +91,11 @@ const { leftShadowVisible: panelLeftShadow, rightShadowVisible: panelRightShadow
 
 const activeMoodConfig = computed(() => moodConfigs.find((m) => m.id === openMoodId.value) ?? null);
 
-const panelGames = computed(() => {
+const panelGames = computed((): MoodGame[] => {
     if (!activeMoodConfig.value) return [];
-    return activeMoodConfig.value.gameIds.map((gid) => gamesById[gid]).filter(Boolean);
+    return activeMoodConfig.value.storySlugs
+        .map((slug) => gameFromSlug(slug))
+        .filter((game): game is MoodGame => game != null);
 });
 
 function openMood(id: MoodId) {

@@ -7,7 +7,6 @@ import StoryGrid from '@/components/StoryGrid.vue';
 import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
-import { getMoodTopPickSlugs } from '@/data/moodContent';
 import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moodBanners';
 import HomeLayout from '@/layouts/HomeLayout.vue';
 import { StoryInterface } from '@/types';

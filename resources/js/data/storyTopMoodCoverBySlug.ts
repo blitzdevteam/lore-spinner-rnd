@@ -24,6 +24,8 @@ export const STORY_TOP_MOOD_COVER_BY_SLUG: Record<string, string> = {
     frankenstein: frankensteinTopMood,
     'jane-eyre': janeEyreTopMood,
     'jekyll-and-hyde': jekyllTopMood,
+    'dr-jekyll-and-mr-hyde': jekyllTopMood,
+    '20000-leagues-under-the-sea': leaguesTopMood,
     leagues: leaguesTopMood,
     nocturne: nocturneTopMood,
     pjs: pjsTopMood,

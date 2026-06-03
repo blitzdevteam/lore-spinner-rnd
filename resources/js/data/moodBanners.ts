@@ -5,8 +5,9 @@ import heartfeltBanner from '@/assets/mood/HeartfeltBanner.png';
 import mysteriousBanner from '@/assets/mood/MysteriousBanner.JPG';
 import whimsicalBanner from '@/assets/mood/WhimsicalBanner.png';
 
-/** Canonical mood ids used in URLs and banner config. */
-export type MoodId = 'heartfelt' | 'adventurous' | 'mysterious' | 'epic' | 'whimsical';
+import { MOOD_IDS, type MoodId } from '@/data/moodStories';
+
+export type { MoodId };
 
 export interface MoodBannerConfig {
     mood: MoodId;
@@ -28,7 +29,7 @@ export interface ResolvedMoodBanner {
     isFallback: boolean;
 }
 
-export const MOOD_IDS = ['heartfelt', 'adventurous', 'mysterious', 'epic', 'whimsical'] as const satisfies readonly MoodId[];
+export { MOOD_IDS };
 
 export const DEFAULT_LIBRARY_BANNER = defaultLibraryBanner;
 
@@ -119,16 +120,7 @@ const MOOD_ALIASES: Record<string, MoodId> = {
     surreal: 'whimsical',
 };
 
-/** Slugs that belong to each mood (for client-side library filtering). */
-export const STORY_MOODS_BY_SLUG: Record<string, MoodId[]> = {
-    'anima-machina': ['heartfelt', 'adventurous', 'mysterious', 'epic'],
-    'alice-in-wonderland': ['adventurous', 'whimsical'],
-    nocturne: ['mysterious', 'whimsical'],
-    'jekyll-and-hyde': ['heartfelt', 'mysterious', 'epic'],
-    'the-wonderful-wizard-of-oz': ['heartfelt', 'adventurous', 'epic', 'whimsical'],
-    'the-adventure-of-the-speckled-band': ['mysterious', 'adventurous'],
-    'the-tell-tale-heart': ['mysterious', 'heartfelt'],
-};
+export { STORY_MOODS_BY_SLUG, storyMatchesMood } from '@/data/moodStories';
 
 /** Collapse common genre spellings to a stable snake_case key before mood lookup. */
 const MOOD_KEY_ALIASES: Record<string, string> = {
@@ -200,11 +192,6 @@ export function getMoodBannerConfig(mood: string | null | undefined): ResolvedMo
         objectPosition: DEFAULT_LIBRARY_HERO.objectPosition,
         isFallback: true,
     };
-}
-
-export function storyMatchesMood(storySlug: string, mood: MoodId): boolean {
-    const moods = STORY_MOODS_BY_SLUG[storySlug];
-    return moods?.includes(mood) ?? false;
 }
 
 export function getMoodNavLinks(storiesIndexUrl: string): { title: string; slug: MoodId; href: string }[] {

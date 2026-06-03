@@ -29,4 +29,31 @@ export const STORY_HOVER_META_BY_SLUG: Record<string, { themes: string[] }> = {
     'jekyll-and-hyde': {
         themes: ['Duality', 'Power', 'Morality'],
     },
+    'dr-jekyll-and-mr-hyde': {
+        themes: ['Duality', 'Power', 'Morality'],
+    },
+    'pride-and-prejudice': {
+        themes: ['Love', 'Duty', 'Society'],
+    },
+    dracula: {
+        themes: ['Hunger', 'Fear', 'Desire'],
+    },
+    'treasure-island': {
+        themes: ['Adventure', 'Greed', 'Loyalty'],
+    },
+    frankenstein: {
+        themes: ['Creation', 'Isolation', 'Ambition'],
+    },
+    wasteland: {
+        themes: ['Survival', 'Betrayal', 'Escape'],
+    },
+    pjs: {
+        themes: ['Brotherhood', 'Sacrifice', 'Courage'],
+    },
+    'romeo-and-juliet': {
+        themes: ['Love', 'Fate', 'Passion'],
+    },
+    leagues: {
+        themes: ['Discovery', 'Wonder', 'Peril'],
+    },
 };
