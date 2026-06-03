@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { LucideCopy, LucideRotateCcw } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { LucideCopy, LucideMail, LucideRotateCcw } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+
+const DANIEL_EMAIL = 'danial.nrahimi@gmail.com';
 
 export interface AuroraTuning {
     baseMix: number;
@@ -69,8 +71,25 @@ function patchPalette<K extends keyof AuroraPaletteColors>(key: K, value: string
     palette.value = { ...palette.value, [key]: value };
 }
 
+const copied = ref(false);
+let copiedTimer: ReturnType<typeof setTimeout> | undefined;
+
+const mailtoHref = computed(() => {
+    const title = props.storyTitle ? ` — ${props.storyTitle}` : '';
+    const subject = encodeURIComponent(`LoreSpinner aurora tuning${title}`);
+    const body = encodeURIComponent(
+        `Hi Daniel,\n\nMy aurora background settings from the playground:\n\n${exportJson.value}\n`,
+    );
+    return `mailto:${DANIEL_EMAIL}?subject=${subject}&body=${body}`;
+});
+
 async function copyExport() {
     await navigator.clipboard.writeText(exportJson.value);
+    copied.value = true;
+    if (copiedTimer) clearTimeout(copiedTimer);
+    copiedTimer = setTimeout(() => {
+        copied.value = false;
+    }, 5000);
 }
 </script>
 
@@ -334,7 +353,33 @@ async function copyExport() {
             </div>
         </section>
 
-        <pre class="aurora-lab__export">{{ exportJson }}</pre>
+        <section class="aurora-lab__section aurora-lab__share">
+            <h4 class="aurora-lab__section-title">Share with Daniel</h4>
+            <p class="aurora-lab__hint">Copy the block below, or open email with everything filled in.</p>
+
+            <div class="aurora-lab__export-wrap">
+                <pre class="aurora-lab__export">{{ exportJson }}</pre>
+                <button type="button" class="aurora-lab__export-copy" title="Copy JSON" @click="copyExport">
+                    <LucideCopy class="size-3.5" />
+                    Copy
+                </button>
+            </div>
+
+            <p v-if="copied" class="aurora-lab__copied" role="status">
+                Copied! Send this in Telegram to Daniel!
+            </p>
+
+            <div class="aurora-lab__share-actions">
+                <button type="button" class="aurora-lab__share-btn aurora-lab__share-btn--primary" @click="copyExport">
+                    <LucideCopy class="size-4 shrink-0" />
+                    Copy JSON
+                </button>
+                <a :href="mailtoHref" class="aurora-lab__share-btn">
+                    <LucideMail class="size-4 shrink-0" />
+                    Email Daniel
+                </a>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -494,17 +539,97 @@ async function copyExport() {
     cursor: not-allowed;
 }
 
+.aurora-lab__share {
+    gap: 0.625rem;
+}
+
+.aurora-lab__export-wrap {
+    position: relative;
+}
+
 .aurora-lab__export {
     max-height: 10rem;
     overflow: auto;
     border-radius: 0.5rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(0, 0, 0, 0.4);
-    padding: 0.625rem;
+    padding: 0.625rem 4.5rem 0.625rem 0.625rem;
     font-size: 0.625rem;
     line-height: 1.45;
     color: rgba(229, 173, 83, 0.75);
     white-space: pre-wrap;
     word-break: break-all;
+    margin: 0;
+}
+
+.aurora-lab__export-copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(229, 173, 83, 0.35);
+    background: rgba(229, 173, 83, 0.12);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: rgba(250, 235, 200, 0.95);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.aurora-lab__export-copy:hover {
+    border-color: rgba(229, 173, 83, 0.6);
+    background: rgba(229, 173, 83, 0.22);
+}
+
+.aurora-lab__copied {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgba(84, 244, 218, 0.95);
+    line-height: 1.4;
+}
+
+.aurora-lab__share-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.aurora-lab__share-btn {
+    display: inline-flex;
+    flex: 1;
+    min-width: 7.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.625rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgb(209, 213, 219);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.aurora-lab__share-btn:hover {
+    border-color: rgba(229, 173, 83, 0.45);
+    color: rgb(250, 235, 200);
+}
+
+.aurora-lab__share-btn--primary {
+    border-color: rgba(229, 173, 83, 0.4);
+    background: rgba(229, 173, 83, 0.14);
+    color: rgba(250, 235, 200, 0.95);
+}
+
+.aurora-lab__share-btn--primary:hover {
+    background: rgba(229, 173, 83, 0.24);
 }
 </style>

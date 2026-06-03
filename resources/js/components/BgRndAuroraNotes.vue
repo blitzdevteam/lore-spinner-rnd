@@ -17,10 +17,10 @@
         <section class="aurora-notes__block">
             <h4 class="aurora-notes__heading">When something feels right</h4>
             <p>
-                Tap the <strong class="text-amber-200">copy</strong> icon at the top of the Aurora tab. That copies a JSON snapshot of everything you tuned — colours, mixes, intensity, timing.
+                Scroll to <strong class="text-amber-200">Share with Daniel</strong> at the bottom of the Aurora tab. Use <strong class="text-amber-200">Copy</strong> on the JSON block (or the big Copy JSON button), then paste in Telegram.
             </p>
             <p>
-                Send that JSON to <strong class="text-primary font-semibold">Daniel</strong> by email or Telegram. A short note about what you were going for (moody, brighter, more contrast, etc.) is always welcome.
+                Or tap <strong class="text-amber-200">Email Daniel</strong> — your mail app opens with the JSON already in the message. A short note about the mood you wanted is always welcome.
             </p>
         </section>
 
