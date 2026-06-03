@@ -6,6 +6,7 @@ import ozImage from '@/assets/carosel/Ultrawide Oz.png';
 import sherlockImage from '@/assets/carosel/Sherlock Ultrawide hero banner.png';
 import tellTaleImage from '@/assets/carosel/Ultrawide the tell tale heart.png';
 import BaseButton from '@/components/BaseButton.vue';
+import { LORE_SPINNER_CLASSIC, LORE_SPINNER_ORIGINAL } from '@/data/loreSpinnerSeriesLabels';
 import { StoryInterface } from '@/types';
 import { show } from '@/wayfinder/routes/stories';
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
@@ -13,9 +14,6 @@ import type { Swiper as SwiperInstance } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { LucideStar } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-
-const LORE_SPINNER_CLASSIC = 'A LoreSpinner Classic';
-const LORE_SPINNER_ORIGINAL = 'A LoreSpinner Original';
 
 import 'swiper/css';
 import 'swiper/css/effect-fade';
