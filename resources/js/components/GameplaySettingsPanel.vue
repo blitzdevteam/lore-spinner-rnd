@@ -27,7 +27,7 @@ const isResetting = ref(false);
 const handleResetGame = () => {
     if (!props.gameId || isResetting.value) return;
     const confirmed = window.confirm(
-        'Start a fresh game? This will erase all your current progress, including every prompt and choice you have made.',
+        'Start a fresh story? This will erase all your current progress, including every prompt and choice you have made.',
     );
     if (!confirmed) return;
 
@@ -179,10 +179,10 @@ const onVolumeInput = (event: Event) => {
         </div>
 
         <div v-if="gameId" class="flex flex-col gap-2.5 border-t border-gray-700/40 pt-6">
-            <label class="text-xs font-medium uppercase tracking-wider text-gray-400">Game</label>
+            <label class="text-xs font-medium uppercase tracking-wider text-gray-400">Story</label>
             <BaseButton severity="gray-muted" class="w-full" :disabled="isResetting" @click="handleResetGame">
                 <LucideRefreshCw :size="16" :class="{ 'animate-spin': isResetting }" />
-                <span>{{ isResetting ? 'Resetting...' : 'Start a fresh game' }}</span>
+                <span>{{ isResetting ? 'Resetting...' : 'Start a fresh story' }}</span>
             </BaseButton>
             <p class="text-xs leading-relaxed text-gray-500">
                 Erases all progress for this story and begins a new playthrough from the start.
@@ -304,11 +304,11 @@ const onVolumeInput = (event: Event) => {
         </section>
 
         <section v-if="gameId" class="gp-settings-section">
-            <h3 class="gp-section-title">Story Settings</h3>
+            <h3 class="gp-section-title">Story</h3>
             <div class="gp-settings-group">
                 <BaseButton severity="gray-muted" class="w-full" :disabled="isResetting" @click="handleResetGame">
                     <LucideRefreshCw :size="16" :class="{ 'animate-spin': isResetting }" />
-                    <span>{{ isResetting ? 'Resetting…' : 'Restart story' }}</span>
+                    <span>{{ isResetting ? 'Resetting…' : 'Start a fresh story' }}</span>
                 </BaseButton>
                 <p class="text-xs leading-relaxed text-gray-500">
                     Erases all progress and begins a new playthrough from the start.

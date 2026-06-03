@@ -34,11 +34,6 @@ const storyUrl = computed(() =>
 
 const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
 
-const metadataLine = computed(() => {
-    const parts = [props.mood, props.category].filter(Boolean);
-    return parts.length ? parts.join(' • ') : props.category;
-});
-
 const imageFailed = ref(false);
 
 watch(
@@ -88,7 +83,6 @@ function onImageError(): void {
             <div class="hb-card__body">
                 <div class="hb-card__info">
                     <p class="hb-card__title">{{ title }}</p>
-                    <p class="hb-card__meta">{{ metadataLine }}</p>
                 </div>
 
                 <div
@@ -212,16 +206,6 @@ function onImageError(): void {
     font-weight: 700;
     line-height: 1.3;
     color: #fff;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.hb-card__meta {
-    margin: 0;
-    font-size: var(--story-card-meta-size);
-    line-height: 1.35;
-    color: var(--story-card-meta-color);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

@@ -34,11 +34,6 @@ const storyUrl = computed(() =>
 
 const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
 
-const metadataLine = computed(() => {
-    const genre = props.genre ?? props.themes[0] ?? null;
-    const parts = [props.mood, genre].filter(Boolean);
-    return parts.length ? parts.join(' • ') : null;
-});
 </script>
 
 <template>
@@ -61,7 +56,6 @@ const metadataLine = computed(() => {
             <div class="hp-card__body">
                 <div class="hp-card__info">
                     <p class="hp-card__title">{{ title }}</p>
-                    <p v-if="metadataLine" class="hp-card__meta">{{ metadataLine }}</p>
                 </div>
 
                 <div
@@ -134,16 +128,6 @@ const metadataLine = computed(() => {
     font-weight: 700;
     line-height: 1.3;
     color: #fff;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.hp-card__meta {
-    margin: 0;
-    font-size: var(--story-card-meta-size);
-    line-height: 1.35;
-    color: var(--story-card-meta-color);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
