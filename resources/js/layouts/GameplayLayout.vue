@@ -146,7 +146,7 @@ const handleInputSubmit = (prompt: string) => {
 </script>
 
 <template>
-    <div class="relative h-svh">
+    <div class="relative min-h-svh">
         <div class="pointer-events-none fixed inset-0 z-0" :style="{ background: auroraProps.deep }" />
         <AuroraBackground
             class="pointer-events-none fixed inset-0 z-0"
@@ -157,8 +157,8 @@ const handleInputSubmit = (prompt: string) => {
             :seconds-per-color="auroraProps.secondsPerColor"
             :intensity="auroraProps.intensity"
         />
-        <div class="relative flex h-svh min-h-0 overflow-hidden">
-            <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div class="relative flex flex-1">
+            <div class="flex w-full flex-1 flex-col">
                 <!-- ── Top header bar ── -->
                 <div class="sticky top-0 right-0 left-0 z-30 w-full">
                     <div
@@ -270,9 +270,9 @@ const handleInputSubmit = (prompt: string) => {
                     </div>
                 </div>
 
-                <!-- ── Scrolling content ── -->
+                <!-- ── Story content + input (single flow — input sits under choices) ── -->
                 <div
-                    class="z-5 mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-4 pb-24 transition-colors duration-300 md:pb-28"
+                    class="z-5 mx-auto flex w-full max-w-3xl flex-col p-4 transition-colors duration-300"
                     :style="{ fontSize: settings.fontSize + 'px', color: settings.fontColor }"
                 >
                     <div class="mb-2">
@@ -281,20 +281,21 @@ const handleInputSubmit = (prompt: string) => {
                     <div class="flex flex-col gap-8">
                         <slot name="game" />
                     </div>
-                </div>
 
-                <!-- ── Bottom input ── -->
-                <div class="shrink-0 right-0 bottom-0 left-0 z-20 w-full">
-                    <div class="flex flex-col items-center gap-3 bg-linear-to-t from-gray-950 via-gray-950/80 to-transparent px-4 pt-6 pb-5 md:px-0 md:pt-8 md:pb-6">
-                        <div class="flex w-full justify-start md:hidden">
-                            <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" />
+                    <div class="gameplay-input-anchor sticky bottom-0 z-20 mt-4 w-full pb-5 md:mt-5 md:pb-6">
+                        <div
+                            class="flex flex-col items-center gap-3 bg-linear-to-t from-gray-950 via-gray-950/90 to-transparent px-0 pt-4 md:pt-5"
+                        >
+                            <div class="flex w-full justify-start md:hidden">
+                                <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" />
+                            </div>
+                            <GameplayInput
+                                :disabled="props.inputDisabled"
+                                :glow-variant="inputGlowVariant"
+                                @submit="handleInputSubmit"
+                                @ready-to-type="onInputReadyToType"
+                            />
                         </div>
-                        <GameplayInput
-                            :disabled="props.inputDisabled"
-                            :glow-variant="inputGlowVariant"
-                            @submit="handleInputSubmit"
-                            @ready-to-type="onInputReadyToType"
-                        />
                     </div>
                 </div>
             </div>

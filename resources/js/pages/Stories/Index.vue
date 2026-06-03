@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LibrarySortMenu, { type LibrarySortMode } from '@/components/LibrarySortMenu.vue';
 import MoodHeroBanner from '@/components/MoodHeroBanner.vue';
 import MoodSelector from '@/components/MoodSelector.vue';
 import MoodTopPicks from '@/components/MoodTopPicks.vue';
@@ -18,10 +19,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
 import { StoryInterface } from '@/types';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { Head } from '@inertiajs/vue3';
-import { ArrowDownUp } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-
-type SortMode = 'recent' | 'title_asc' | 'title_desc';
 
 const props = withDefaults(
     defineProps<{
@@ -93,7 +91,7 @@ const headerTitle = computed(() => {
     return `${listHeading.value} (${libraryStories.value.length})`;
 });
 
-const sortMode = ref<SortMode>('recent');
+const sortMode = ref<LibrarySortMode>('recent');
 
 const sortedStories = computed(() => {
     const list = [...libraryStories.value];
@@ -112,22 +110,6 @@ const sortedStories = computed(() => {
     return list;
 });
 
-const sortLabel = computed(() => {
-    switch (sortMode.value) {
-        case 'title_asc':
-            return 'A–Z';
-        case 'title_desc':
-            return 'Z–A';
-        default:
-            return 'Recent';
-    }
-});
-
-function cycleSort(): void {
-    const order: SortMode[] = ['recent', 'title_asc', 'title_desc'];
-    const i = order.indexOf(sortMode.value);
-    sortMode.value = order[(i + 1) % order.length]!;
-}
 </script>
 
 <template>
@@ -150,21 +132,7 @@ function cycleSort(): void {
                         <div class="container-content mood-page-section-header-gap">
                             <SectionHeader :title="headerTitle">
                                 <template #action>
-                                    <button
-                                        type="button"
-                                        class="library-sort-btn group"
-                                        :title="`Sorting: ${sortLabel}. Click to change.`"
-                                        :aria-label="`Sort stories. Current: ${sortLabel}.`"
-                                        @click="cycleSort"
-                                    >
-                                        <ArrowDownUp
-                                            class="library-sort-btn__icon"
-                                            :stroke-width="2.25"
-                                            aria-hidden="true"
-                                        />
-                                        <span class="library-sort-btn__label">Sort</span>
-                                        <span class="sr-only"> ({{ sortLabel }})</span>
-                                    </button>
+                                    <LibrarySortMenu v-model="sortMode" />
                                 </template>
                             </SectionHeader>
 
@@ -207,21 +175,7 @@ function cycleSort(): void {
                     >
                         <SectionHeader :title="headerTitle">
                         <template #action>
-                            <button
-                                type="button"
-                                class="library-sort-btn group"
-                                :title="`Sorting: ${sortLabel}. Click to change.`"
-                                :aria-label="`Sort stories. Current: ${sortLabel}.`"
-                                @click="cycleSort"
-                            >
-                                <ArrowDownUp
-                                    class="library-sort-btn__icon"
-                                    :stroke-width="2.25"
-                                    aria-hidden="true"
-                                />
-                                <span class="library-sort-btn__label">Sort</span>
-                                <span class="sr-only"> ({{ sortLabel }})</span>
-                            </button>
+                            <LibrarySortMenu v-model="sortMode" />
                         </template>
                     </SectionHeader>
 
@@ -250,59 +204,4 @@ function cycleSort(): void {
     }
 }
 
-.library-sort-btn {
-    position: relative;
-    display: inline-flex;
-    height: calc(1.375rem * 1.1);
-    flex-shrink: 0;
-    align-items: center;
-    gap: 0.3125rem;
-    border: 0;
-    background: transparent;
-    padding: 0;
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: 0.01em;
-    color: var(--color-primary, #00d4aa);
-    white-space: nowrap;
-    cursor: pointer;
-    transition: opacity 150ms ease, transform 150ms ease;
-}
-
-@media (min-width: 768px) {
-    .library-sort-btn {
-        height: calc(1.625rem * 1.1);
-    }
-}
-
-.library-sort-btn::before {
-    content: '';
-    position: absolute;
-    inset: -0.625rem -0.375rem;
-}
-
-.library-sort-btn:hover {
-    opacity: 0.8;
-}
-
-.library-sort-btn:active {
-    opacity: 0.7;
-    transform: scale(0.98);
-}
-
-.library-sort-btn__icon {
-    width: 1em;
-    height: 1em;
-    flex-shrink: 0;
-    transition: transform 150ms ease;
-}
-
-.library-sort-btn:hover .library-sort-btn__icon {
-    transform: rotate(180deg);
-}
-
-.library-sort-btn__label {
-    line-height: 1;
-}
 </style>
