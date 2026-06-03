@@ -34,11 +34,11 @@ const visibleStories = computed(() => filterVisibleLibraryStories(props.stories)
         <!-- Hero -->
         <HeroBanner :stories="visibleStories" />
 
-        <!-- Continue Stories -->
-        <ContinueStories v-if="lastGame" :game="lastGame" />
-
         <!-- Story Changes With You -->
         <StoryChangesWithYou />
+
+        <!-- Continue Stories -->
+        <ContinueStories v-if="lastGame" :game="lastGame" />
 
         <!-- Top Stories -->
         <FeaturedWorldsGames :story-count="visibleStories.length" />

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
-import { resolveStoryCover } from '@/data/storyCoverBySlug';
+import { resolveStoryTopMoodCover } from '@/data/storyTopMoodCoverBySlug';
 import { GameInterface } from '@/types';
 import { show } from '@/wayfinder/routes/user/games';
 import { LucidePlay, LucideClock } from 'lucide-vue-next';
@@ -16,7 +16,9 @@ const story = computed(() => props.game.story);
 const posterUrl = computed(() => {
     const s = story.value;
     if (!s?.slug) return '';
-    return resolveStoryCover(s.slug, s.cover);
+    const banner = s.banner?.trim();
+    if (banner) return banner;
+    return resolveStoryTopMoodCover(s.slug, s.cover);
 });
 
 const hasCover = computed(() => !!posterUrl.value);
@@ -52,17 +54,19 @@ const sessionLabel = computed(() => {
 
                 <div class="group relative overflow-hidden rounded-xl border border-gray-700/60 bg-gray-800/50 transition-all hover:border-primary-500/40 sm:rounded-2xl">
                     <div class="flex flex-col sm:flex-row">
-                        <!-- Cover image -->
-                        <div class="relative h-40 shrink-0 overflow-hidden sm:h-auto sm:w-48 md:w-72">
+                        <!-- Wide (16:9) poster -->
+                        <div
+                            class="continue-card__poster relative aspect-[16/9] w-full shrink-0 overflow-hidden sm:w-[17.5rem] md:w-[22.5rem]"
+                        >
                             <img
                                 v-if="hasCover"
                                 :src="posterUrl"
                                 :alt="story!.title"
-                                class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                                class="absolute inset-0 size-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                             />
                             <div
                                 v-else
-                                class="grid h-full w-full place-items-center bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
+                                class="absolute inset-0 grid place-items-center bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
                             >
                                 <span class="text-4xl font-bold text-primary/40 sm:text-5xl">{{ story?.title?.charAt(0)?.toUpperCase() }}</span>
                             </div>
