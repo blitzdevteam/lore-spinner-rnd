@@ -72,16 +72,47 @@ function patchPalette<K extends keyof AuroraPaletteColors>(key: K, value: string
 }
 
 const copied = ref(false);
+const emailOpened = ref(false);
 let copiedTimer: ReturnType<typeof setTimeout> | undefined;
+let emailTimer: ReturnType<typeof setTimeout> | undefined;
 
-const mailtoHref = computed(() => {
-    const title = props.storyTitle ? ` — ${props.storyTitle}` : '';
-    const subject = encodeURIComponent(`LoreSpinner aurora tuning${title}`);
-    const body = encodeURIComponent(
-        `Hi Daniel,\n\nMy aurora background settings from the playground:\n\n${exportJson.value}\n`,
-    );
-    return `mailto:${DANIEL_EMAIL}?subject=${subject}&body=${body}`;
+function buildEmailContent() {
+    const title = props.storyTitle ? ` - ${props.storyTitle}` : '';
+    const subject = `LoreSpinner aurora tuning${title}`;
+    const body = `Hi Daniel,\n\nMy aurora background settings from the playground:\n\n${exportJson.value}\n`;
+    return { subject, body };
+}
+
+function buildMailtoHref(): string {
+    const { subject, body } = buildEmailContent();
+    return `mailto:${DANIEL_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+const gmailComposeHref = computed(() => {
+    const { subject, body } = buildEmailContent();
+    const params = new URLSearchParams({
+        view: 'cm',
+        fs: '1',
+        to: DANIEL_EMAIL,
+        su: subject,
+        body,
+    });
+    return `https://mail.google.com/mail/?${params.toString()}`;
 });
+
+/** Must run synchronously inside the click handler or the OS may block mailto. */
+function openMailtoClient() {
+    const link = document.createElement('a');
+    link.href = buildMailtoHref();
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function openGmailWeb() {
+    window.open(gmailComposeHref.value, '_blank', 'noopener,noreferrer');
+}
 
 async function copyExport() {
     await navigator.clipboard.writeText(exportJson.value);
@@ -90,6 +121,17 @@ async function copyExport() {
     copiedTimer = setTimeout(() => {
         copied.value = false;
     }, 5000);
+}
+
+function emailDaniel() {
+    // Mailto first (preserves user-gesture); clipboard after.
+    openMailtoClient();
+    void copyExport();
+    emailOpened.value = true;
+    if (emailTimer) clearTimeout(emailTimer);
+    emailTimer = setTimeout(() => {
+        emailOpened.value = false;
+    }, 8000);
 }
 </script>
 
@@ -365,8 +407,11 @@ async function copyExport() {
                 </button>
             </div>
 
-            <p v-if="copied" class="aurora-lab__copied" role="status">
+            <p v-if="copied && !emailOpened" class="aurora-lab__copied" role="status">
                 Copied! Send this in Telegram to Daniel!
+            </p>
+            <p v-if="emailOpened" class="aurora-lab__copied" role="status">
+                JSON copied. If Mail did not open, use <strong class="text-amber-100">Gmail (web)</strong> below and paste, or send on Telegram.
             </p>
 
             <div class="aurora-lab__share-actions">
@@ -374,11 +419,14 @@ async function copyExport() {
                     <LucideCopy class="size-4 shrink-0" />
                     Copy JSON
                 </button>
-                <a :href="mailtoHref" class="aurora-lab__share-btn">
+                <button type="button" class="aurora-lab__share-btn" @click="emailDaniel">
                     <LucideMail class="size-4 shrink-0" />
                     Email Daniel
-                </a>
+                </button>
             </div>
+            <button type="button" class="aurora-lab__gmail-fallback" @click="openGmailWeb">
+                Gmail (web) — opens compose in the browser
+            </button>
         </section>
     </div>
 </template>
@@ -631,5 +679,23 @@ async function copyExport() {
 
 .aurora-lab__share-btn--primary:hover {
     background: rgba(229, 173, 83, 0.24);
+}
+
+.aurora-lab__gmail-fallback {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0.25rem 0;
+    font-size: 0.6875rem;
+    text-align: center;
+    color: rgba(156, 163, 175, 0.95);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.aurora-lab__gmail-fallback:hover {
+    color: rgba(229, 173, 83, 0.95);
 }
 </style>
