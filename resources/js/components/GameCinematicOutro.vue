@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import spinnerImg from '@/assets/intro/spinner.jpg';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
@@ -38,6 +39,9 @@ function preloadCard() {
     const img = new window.Image();
     img.onload = img.onerror = () => { cardReady.value = true; };
     img.src = posterSrc.value;
+
+    const spinner = new window.Image();
+    spinner.src = spinnerImg;
 }
 
 // Poll until image is decoded, then reveal
@@ -95,9 +99,18 @@ onUnmounted(() => {
         @keydown.enter.prevent="skipToCard"
     >
         <Transition name="co-phrase">
-            <p v-if="showChoices" key="c" class="co-phrase">
-                Every story leaves something behind.
-            </p>
+            <div v-if="showChoices" key="c" class="co-story-phase">
+                <img
+                    :src="spinnerImg"
+                    alt=""
+                    class="co-spinner"
+                    draggable="false"
+                    aria-hidden="true"
+                />
+                <p class="co-story-phase__text">
+                    Every story leaves something behind.
+                </p>
+            </div>
         </Transition>
 
         <Transition name="co-card">
@@ -149,13 +162,27 @@ onUnmounted(() => {
     opacity: 0.35;
 }
 
-.co-phrase {
+.co-story-phase {
     position: absolute;
     inset: 0;
+    z-index: 10;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: clamp(1.25rem, 3.5vw, 2.25rem);
     padding: 0 clamp(2rem, 10vw, 6rem);
+    pointer-events: none;
+}
+
+.co-spinner {
+    width: clamp(11rem, 34vw, 20rem);
+    height: auto;
+    object-fit: contain;
+}
+
+.co-story-phase__text {
+    margin: 0;
     text-align: center;
     font-family: 'Marcellus SC', serif;
     font-weight: 400;
@@ -164,8 +191,6 @@ onUnmounted(() => {
     letter-spacing: 0.04em;
     color: rgba(250, 246, 238, 0.9);
     text-shadow: 0 0 80px rgba(250, 246, 238, 0.08);
-    z-index: 10;
-    pointer-events: none;
 }
 
 .co-card-wrap {
