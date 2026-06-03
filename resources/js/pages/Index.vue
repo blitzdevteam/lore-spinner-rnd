@@ -47,7 +47,7 @@ const visibleStories = computed(() => filterVisibleLibraryStories(props.stories)
         <XenBanner />
 
         <!-- Explore by Mood -->
-        <ExploreByMood :story-count="visibleStories.length" />
+        <ExploreByMood />
 
         <!-- Featured Worlds -->
         <NewStoriesBanners :story-count="visibleStories.length" />

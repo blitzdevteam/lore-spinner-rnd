@@ -17,10 +17,6 @@ import { X } from 'lucide-vue-next';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { computed, onUnmounted, ref, watch } from 'vue';
 
-defineProps<{
-    storyCount?: number;
-}>();
-
 interface MoodGame {
     id: string;
     title: string;
@@ -140,8 +136,6 @@ onUnmounted(() => {
                 <SectionHeader
                     title="Explore by mood"
                     subtitle="Choose the feeling you want to step into."
-                    :href="storiesIndex().url"
-                    :count="storyCount"
                 />
 
                 <!-- Figma 5412:908: flex row, gap exactly 10px (not stretched 1fr columns) -->

@@ -31,7 +31,7 @@ const { onCardEnter, onCardLeave, isExpanded, isDimmed, hoveredId } = useStoryCa
 
 const sectionTitle = computed(() => `Top ${props.moodLabel} Picks`);
 
-const viewAllHref = computed(() => `${storiesIndex().url}?mood=${props.mood}#all-stories`);
+const viewAllHref = computed(() => storiesIndex().url);
 
 const topPickStories = computed((): StoryInterface[] => {
     const bySlug = new Map(props.stories.map((story) => [story.slug, story]));
