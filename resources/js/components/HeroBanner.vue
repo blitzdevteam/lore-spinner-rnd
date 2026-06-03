@@ -115,7 +115,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten and nothing is quite as voluntary as it seems.',
         fallbackAuthor: 'Thomas Wittmer',
-        seriesLabel: 'Lorespinner original',
+        seriesLabel: 'A Lorespinner Orginal',
         comingSoon: true,
     },
     {

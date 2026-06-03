@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import mainLogo from '@/assets/logo/main-logo.png';
+import logoTag from '@/assets/logo/logo-tag.png';
 import { index } from '@/wayfinder/routes';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { index as dashboardIndex } from '@/wayfinder/routes/user/dashboard';
@@ -39,7 +39,7 @@ const moods: FooterColumn = {
     ],
 };
 
-const contactEmail = 'Contact@lorespinner.com';
+const contactEmail = 'contact@lorespinner.com';
 
 const getInTouch: FooterColumn = {
     title: 'Get in touch',
@@ -71,11 +71,11 @@ const headingClass =
                 class="container-content pt-12 pb-10 sm:pt-16 sm:pb-12 lg:pt-[4.625rem] lg:pb-[5.8125rem]"
             >
                 <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-                    <div class="w-full max-w-[27.8125rem] shrink-0">
+                    <div class="flex w-full max-w-[27.8125rem] shrink-0 flex-col items-center text-center">
                         <img
-                            :src="mainLogo"
+                            :src="logoTag"
                             alt="LoreSpinner"
-                            class="footer-logo block w-auto object-contain object-left"
+                            class="footer-logo mx-auto block w-auto object-contain"
                             width="800"
                             height="180"
                             decoding="async"
@@ -83,7 +83,7 @@ const headingClass =
                         <p
                             class="mt-3 max-w-[34ch] text-[0.8125rem] font-light leading-[1.45] tracking-[-0.52px] text-white/90 sm:mt-2.5 sm:max-w-none sm:leading-[100%] lg:mt-[0.6875rem]"
                         >
-                        You’re not just listening to a story. You’re inside one.
+                            You’re not just listening to a story. You’re inside one.
                         </p>
                     </div>
 
@@ -166,28 +166,28 @@ const headingClass =
 
 <style scoped>
 .footer-logo {
-    height: 3rem;
-    max-width: min(100%, 13.75rem);
+    height: 3.5rem;
+    max-width: min(100%, 16rem);
 }
 
 @media (min-width: 40rem) {
     .footer-logo {
-        height: 4.5rem;
-        max-width: min(100%, 20.3125rem);
+        height: 5.25rem;
+        max-width: min(100%, 24rem);
     }
 }
 
 @media (min-width: 48rem) {
     .footer-logo {
-        height: 5rem;
-        max-width: min(100%, 23.1875rem);
+        height: 6rem;
+        max-width: min(100%, 27.5rem);
     }
 }
 
 @media (min-width: 64rem) {
     .footer-logo {
-        height: 6rem;
-        max-width: 24.75rem;
+        height: 7rem;
+        max-width: min(100%, 29.5rem);
     }
 }
 </style>
