@@ -12,6 +12,7 @@ import { filterVisibleLibraryStories } from '@/data/hiddenLibraryStorySlugs';
 import {
     dedupeStoriesByCanonicalSlug,
     getMoodSecondaryPickSlugs,
+    getMoodStorySlugs,
     selectStoriesByMoodSlugs,
 } from '@/data/moodStories';
 import HomeLayout from '@/layouts/HomeLayout.vue';
@@ -62,7 +63,7 @@ const moodPageStories = computed((): StoryInterface[] => {
     return allLibraryStories.value.filter((story) => storyMatchesMood(story.slug, mood));
 });
 
-/** Mood page grid: secondary picks only, same covers as the home library. */
+/** Secondary picks only — used for Top Picks “View all” count (unchanged). */
 const moodSecondaryStories = computed((): StoryInterface[] => {
     const mood = normalizedMood.value;
     if (!mood) return [];
@@ -70,11 +71,19 @@ const moodSecondaryStories = computed((): StoryInterface[] => {
     return selectStoriesByMoodSlugs(moodPageStories.value, getMoodSecondaryPickSlugs(mood));
 });
 
+/** Mood page grid: top picks + secondary, catalog order, library portrait covers. */
+const moodGridStories = computed((): StoryInterface[] => {
+    const mood = normalizedMood.value;
+    if (!mood) return [];
+
+    return selectStoriesByMoodSlugs(moodPageStories.value, getMoodStorySlugs(mood));
+});
+
 const libraryStories = computed((): StoryInterface[] => {
     const mood = normalizedMood.value;
     if (!mood) return allLibraryStories.value;
 
-    return moodSecondaryStories.value;
+    return moodGridStories.value;
 });
 
 const isMoodPage = computed(() => normalizedMood.value !== null);
@@ -101,13 +110,14 @@ const sortedStories = computed(() => {
         list.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
     } else if (sortMode.value === 'title_desc') {
         list.sort((a, b) => b.title.localeCompare(a.title, undefined, { sensitivity: 'base' }));
-    } else {
+    } else if (!normalizedMood.value) {
         list.sort((a, b) => {
             const ta = a.updated_at ? new Date(a.updated_at).getTime() : 0;
             const tb = b.updated_at ? new Date(b.updated_at).getTime() : 0;
             return tb - ta;
         });
     }
+    /* Mood pages: keep catalog order (top picks, then secondary) when sort is Recent. */
     return list;
 });
 

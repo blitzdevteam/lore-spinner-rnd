@@ -1,4 +1,4 @@
-import janeComingCover from '@/assets/commingSoon/jane-comming.png';
+import janeEyreCover from '@/assets/featured/janeEyre.png';
 import frankensteinComingCover from '@/assets/commingSoon/frankstein-comming.png';
 import drjComingCover from '@/assets/commingSoon/drj-comming.png';
 import underseaComingCover from '@/assets/commingSoon/undersea-comming.JPG';
@@ -16,6 +16,7 @@ import treasureCover from '@/assets/featured/treasure.png';
 import sherlockCover from '@/assets/featured/sherlock.png';
 import tellTaleCover from '@/assets/featured/Tell Tale portrait titled.png';
 import wizardOzCover from '@/assets/featured/wizardoz.jpg';
+import { canonicalMoodStorySlug } from '@/data/moodStories';
 
 /** Portrait / card covers aligned with home — override API media when present. */
 export const STORY_COVER_BY_SLUG: Record<string, string> = {
@@ -34,8 +35,10 @@ export const STORY_COVER_BY_SLUG: Record<string, string> = {
     'the-tell-tale-heart': tellTaleCover,
     // Explore by Mood / mood library picks
     'jekyll-and-hyde': jekyllCover,
-    // Coming Soon
-    'jane-eyre': janeComingCover,
+    'the-strange-case-of-dr-jekyll-and-mr-hyde': drjComingCover,
+    '20000-leagues-under-the-sea': underseaComingCover,
+    // Coming Soon / library portrait cards
+    'jane-eyre': janeEyreCover,
     frankenstein: frankensteinComingCover,
     'dr-jekyll-and-mr-hyde': drjComingCover,
     leagues: underseaComingCover,
@@ -45,7 +48,8 @@ export const STORY_COVER_BY_SLUG: Record<string, string> = {
 };
 
 export function resolveStoryCover(slug: string, cover?: string | null): string {
-    const override = STORY_COVER_BY_SLUG[slug];
+    const canonical = canonicalMoodStorySlug(slug);
+    const override = STORY_COVER_BY_SLUG[slug] ?? STORY_COVER_BY_SLUG[canonical];
     if (override) return override;
 
     const trimmed = cover?.trim();
