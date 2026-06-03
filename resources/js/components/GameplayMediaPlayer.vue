@@ -31,7 +31,7 @@ const onVolumeInput = (event: Event) => {
     <Transition name="player-slide">
         <div
             v-if="tts.isActive.value && !props.collapsed"
-            class="player-bar gameplay-narration-glass pointer-events-auto relative flex items-center gap-2 overflow-hidden rounded-full px-2 py-2 sm:gap-2.5 sm:px-2.5"
+            class="player-bar gameplay-header-glass pointer-events-auto relative flex items-center gap-2 overflow-hidden rounded-full px-2 py-2 sm:gap-2.5 sm:px-2.5"
         >
             <!-- Play / Pause -->
             <button

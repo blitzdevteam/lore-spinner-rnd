@@ -20,7 +20,7 @@ type Severity =
     | 'muted'
     | 'gray-muted'
     | 'glass'
-    | 'narration-glass'
+    | 'header-glass'
     | 'muted-glass'
     | 'primary-glass'
     | 'transparent';
@@ -67,7 +67,7 @@ const severityClasses: Record<Severity, string> = {
     'gray-muted': 'bg-gray-700 text-gray-300 font-normal outline-gray-500/15 border-transparent',
     'muted-glass': 'bg-muted-glass-effect overflow-hidden',
     glass: 'overflow-hidden border-transparent shadow-[0px_4px_80px_0px_rgba(0,0,0,0.2)]',
-    'narration-glass': 'gameplay-narration-glass overflow-hidden',
+    'header-glass': 'gameplay-header-glass overflow-hidden',
     'primary-glass': 'bg-glass-effect overflow-hidden',
     transparent: 'bg-transparent text-primary outline-transparent border-transparent',
 };
@@ -75,7 +75,7 @@ const severityClasses: Record<Severity, string> = {
 const hoverClasses: Partial<Record<Severity, string>> = {
     primary: 'hover:bg-cta-hover active:bg-cta-active focus:outline-4 hover:outline-4',
     glass: 'hover:scale-110 active:scale-95',
-    'narration-glass': 'hover:scale-105 active:scale-95',
+    'header-glass': 'hover:scale-105 active:scale-95',
     'muted-glass': 'hover:scale-110 hover:bg-white/20',
     'primary-glass': 'hover:scale-110 hover:bg-white/20',
     transparent: 'hover:bg-primary-50/10 hover:outline-primary-200/30',
@@ -86,7 +86,7 @@ const isLink = computed(() => props.type === 'internal-link' || props.type === '
 const isButtonType = computed(() => props.type === 'submit' || props.type === 'button');
 const isPrimaryGlass = computed(() => props.severity === 'primary-glass');
 const isGlass = computed(() => props.severity === 'glass');
-const isNarrationGlass = computed(() => props.severity === 'narration-glass');
+const isHeaderGlass = computed(() => props.severity === 'header-glass');
 
 const componentTag = computed(() => componentTagMap[props.type]);
 
@@ -142,7 +142,7 @@ const handleSubmit = (event: SubmitEvent) => {
 <template>
     <component :is="componentTag" v-bind="mergedRootBindings" @click="handleClick" @submit="handleSubmit">
         <LoaderCircle v-if="processing" class="animate-spin opacity-50" />
-        <template v-else-if="isNarrationGlass">
+        <template v-else-if="isHeaderGlass">
             <div class="relative z-10">
                 <slot />
             </div>

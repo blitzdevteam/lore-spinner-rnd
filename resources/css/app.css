@@ -170,7 +170,7 @@ body.wl-playground-open [data-feedback-btn] {
     background-image: linear-gradient(154deg, var(--color-primary-100) 10%, var(--color-primary-700) 130%);
 }
 
-/* Narration panel glass — shared by story text, choices, and gameplay header controls */
+/* Narration / choice panels — optional tint via --glass-tint* from settings */
 .gameplay-narration-glass {
     background:
         linear-gradient(var(--glass-tint-solid, transparent), var(--glass-tint-solid, transparent)),
@@ -185,14 +185,24 @@ body.wl-playground-open [data-feedback-btn] {
         0 4px 24px rgba(0, 0, 0, 0.32);
 }
 
-.gameplay-narration-glass--active {
-    background:
-        linear-gradient(var(--glass-tint-strong, rgba(84, 244, 218, 0.2)), var(--glass-tint-strong, rgba(84, 244, 218, 0.2))),
-        rgba(10, 10, 18, 0.24);
+/* Header controls — same frosted glass, no color tint */
+.gameplay-header-glass {
+    background: rgba(10, 10, 18, 0.2);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 0.5px solid rgba(255, 255, 255, 0.11);
     box-shadow:
-        inset 0 0 52px 6px var(--glass-tint-strong, rgba(84, 244, 218, 0.18)),
-        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.14),
-        0 0 0 1px color-mix(in srgb, var(--glass-tint-strong, rgba(84, 244, 218, 0.35)) 40%, rgba(255, 255, 255, 0.08)),
+        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.18),
+        inset -1px -1px 0.5px -1px rgba(255, 255, 255, 0.08),
+        0 4px 24px rgba(0, 0, 0, 0.32);
+}
+
+.gameplay-header-glass--active {
+    background: rgba(10, 10, 18, 0.28);
+    box-shadow:
+        inset 1px 1px 0.5px -1px rgba(255, 255, 255, 0.16),
+        inset 0 0 24px 2px rgba(255, 255, 255, 0.06),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
         0 4px 24px rgba(0, 0, 0, 0.32);
 }
 

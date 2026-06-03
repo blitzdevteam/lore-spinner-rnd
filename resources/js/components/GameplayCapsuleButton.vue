@@ -18,9 +18,9 @@ defineEmits<{
 <template>
     <button
         type="button"
-        class="gameplay-capsule gameplay-narration-glass"
+        class="gameplay-capsule gameplay-header-glass"
         :class="[
-            { 'gameplay-capsule--active gameplay-narration-glass--active': active },
+            { 'gameplay-capsule--active gameplay-header-glass--active': active },
             labelTone === 'secondary' && 'gameplay-capsule--label-secondary',
         ]"
         :title="title"
