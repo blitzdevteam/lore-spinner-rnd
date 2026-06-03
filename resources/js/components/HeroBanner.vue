@@ -11,7 +11,11 @@ import { show } from '@/wayfinder/routes/stories';
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
 import type { Swiper as SwiperInstance } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/vue';
+import { LucideStar } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+
+const LORE_SPINNER_CLASSIC = 'A LoreSpinner Classic';
+const LORE_SPINNER_ORIGINAL = 'A LoreSpinner Original';
 
 import 'swiper/css';
 import 'swiper/css/effect-fade';
@@ -53,7 +57,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
         fallbackAuthor: 'Sir Arthur Conan Doyle',
-        seriesLabel: 'The Classics, Unbound',
+        seriesLabel: LORE_SPINNER_CLASSIC,
     },
     {
         slug: 'the-wonderful-wizard-of-oz',
@@ -68,7 +72,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'A storm carries you into the magical land of Oz, where witches whisper, lions tremble, and every step down the Yellow Brick Road changes who you are becoming.',
         fallbackAuthor: 'L. Frank Baum',
-        seriesLabel: 'The Classics, Unbound',
+        seriesLabel: LORE_SPINNER_CLASSIC,
     },
     {
         slug: 'the-tell-tale-heart',
@@ -83,7 +87,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             "As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape: the beating of a dead man's heart.",
         fallbackAuthor: 'Edgar Allan Poe',
-        seriesLabel: 'The Classics, Unbound',
+        seriesLabel: LORE_SPINNER_CLASSIC,
         comingSoon: true,
     },
     {
@@ -99,7 +103,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'Behind locked gates and glittering masks, a night of celebration slowly transforms into a nightmare no one can escape.',
         fallbackAuthor: 'Edgar Allan Poe',
-        seriesLabel: 'The Classics, Unbound',
+        seriesLabel: LORE_SPINNER_CLASSIC,
         comingSoon: true,
     },
     {
@@ -115,7 +119,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten and nothing is quite as voluntary as it seems.',
         fallbackAuthor: 'Thomas Wittmer',
-        seriesLabel: 'A Lorespinner Orginal',
+        seriesLabel: LORE_SPINNER_ORIGINAL,
         comingSoon: true,
     },
     {
@@ -131,7 +135,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'A young orphan enters a dark and mysterious estate where buried secrets, dangerous love, and the search for belonging may change the course of her life forever.',
         fallbackAuthor: 'Charlotte Brontë',
-        seriesLabel: 'The Classics, Unbound',
+        seriesLabel: LORE_SPINNER_CLASSIC,
         comingSoon: true,
     },
 ];
@@ -279,8 +283,16 @@ function goNext() {
                                             Written by:
                                             <span class="text-primary">{{ activeSlide.author }}</span>
                                         </p>
-                                        <p v-if="activeSlide.seriesLabel" class="hero-stat-line text-primary">
-                                            {{ activeSlide.seriesLabel }}
+                                        <p
+                                            v-if="activeSlide.seriesLabel"
+                                            class="hero-stat-line hero-series-badge text-primary"
+                                        >
+                                            <LucideStar
+                                                class="hero-series-badge__icon"
+                                                :stroke-width="1.75"
+                                                aria-hidden="true"
+                                            />
+                                            <span>{{ activeSlide.seriesLabel }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -424,6 +436,22 @@ function goNext() {
     font-size: 0.8125rem;
     line-height: 1.5;
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.75);
+}
+
+.hero-series-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.hero-series-badge__icon {
+    width: 0.8125rem;
+    height: 0.8125rem;
+    flex-shrink: 0;
+    fill: currentColor;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 50%, transparent));
 }
 
 /* See-through glass with subtle brand tint — slide still visible behind */
