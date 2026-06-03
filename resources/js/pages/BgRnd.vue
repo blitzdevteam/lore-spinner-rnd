@@ -51,13 +51,13 @@ const selectedSlug = ref<keyof typeof STORY_THEMES>('tell-tale-heart');
 const theme = computed(() => STORY_THEMES[selectedSlug.value]);
 
 const DEFAULT_TUNING: AuroraTuning = {
-    baseMix: 0.3,
-    midFromMix: 0.4,
-    midTiffanyMix: 0.5,
+    baseMix: 0.92,
+    midFromMix: 0.61,
+    midTiffanyMix: 0.57,
     midAmberMix: 0.54,
     accentMix: 0.18,
     highlightMix: 0.18,
-    intensity: 0.75,
+    intensity: 0.64,
     secondsPerColor: 14,
 };
 
