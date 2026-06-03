@@ -31,7 +31,8 @@ final class SkipToEndCommand extends Command
     protected $signature = 'game:skip-to-end
                             {--user=    : User ID}
                             {--story=   : Story slug or ID}
-                            {--remaining=3 : How many sessions to leave remaining (default 3)}';
+                            {--remaining=3 : How many sessions to leave remaining (default 3)}
+                            {--force|y  : Skip the confirmation prompt}';
 
     protected $description = 'Fast-forward a game to the last N sessions for outro testing';
 
@@ -76,7 +77,7 @@ final class SkipToEndCommand extends Command
         $this->info("Game ID:        {$game->id}");
         $this->newLine();
 
-        if (! $this->confirm('Fast-forward this game? All prompts from session '.$targetSession.' onwards will be deleted.')) {
+        if (! $this->option('force') && ! $this->confirm('Fast-forward this game? All prompts from session '.$targetSession.' onwards will be deleted.')) {
             $this->line('Aborted.');
 
             return self::SUCCESS;
