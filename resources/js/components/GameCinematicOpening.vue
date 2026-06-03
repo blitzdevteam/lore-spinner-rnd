@@ -233,11 +233,9 @@ onUnmounted(() => {
 }
 
 .co-spinner {
-    width: clamp(7.5rem, 20vw, 12.5rem);
+    width: clamp(11rem, 34vw, 20rem);
     height: auto;
     object-fit: contain;
-    filter: drop-shadow(0 0 48px rgba(255, 196, 72, 0.45));
-    animation: co-spinner-glow 3.2s ease-in-out infinite;
 }
 
 .co-story-phase__text {
@@ -250,16 +248,6 @@ onUnmounted(() => {
     letter-spacing: 0.04em;
     color: rgba(250, 246, 238, 0.9);
     text-shadow: 0 0 80px rgba(250, 246, 238, 0.08);
-}
-
-@keyframes co-spinner-glow {
-    0%,
-    100% {
-        filter: drop-shadow(0 0 40px rgba(255, 196, 72, 0.35));
-    }
-    50% {
-        filter: drop-shadow(0 0 64px rgba(255, 210, 96, 0.55));
-    }
 }
 
 /* "Headphones Recommended." — whisper before the curtain */
