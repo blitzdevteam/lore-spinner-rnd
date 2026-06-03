@@ -14,7 +14,6 @@ const props = withDefaults(
         slug: string;
         status?: StoryStatusEnum | string;
         mood?: string;
-        genre?: string;
         isComingSoon?: boolean;
         cta?: StoryCardCta;
         dimmed?: boolean;
@@ -23,7 +22,6 @@ const props = withDefaults(
         coverImage: null,
         status: undefined,
         mood: undefined,
-        genre: undefined,
         isComingSoon: false,
         cta: undefined,
         dimmed: false,
@@ -57,11 +55,6 @@ const ctaLabel = computed(() => {
 });
 
 const isInteractive = computed(() => resolvedCta.value !== 'coming-soon');
-
-const metadataLine = computed(() => {
-    const parts = [props.mood, props.genre].filter(Boolean);
-    return parts.length ? parts.join(' • ') : null;
-});
 </script>
 
 <template>
@@ -82,7 +75,6 @@ const metadataLine = computed(() => {
             <div class="story-card__body">
                 <div class="story-card__info">
                     <h3 class="story-card__title">{{ title }}</h3>
-                    <p v-if="metadataLine" class="story-card__meta">{{ metadataLine }}</p>
                 </div>
 
                 <div class="story-card__cta">
@@ -152,16 +144,6 @@ const metadataLine = computed(() => {
     font-weight: 700;
     line-height: 1.3;
     color: #fff;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.story-card__meta {
-    margin: 0;
-    font-size: var(--story-card-meta-size);
-    line-height: 1.35;
-    color: var(--story-card-meta-color);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
