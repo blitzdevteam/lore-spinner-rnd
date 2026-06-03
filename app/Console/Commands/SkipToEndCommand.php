@@ -32,7 +32,7 @@ final class SkipToEndCommand extends Command
                             {--user=    : User ID}
                             {--story=   : Story slug or ID}
                             {--remaining=3 : How many sessions to leave remaining (default 3)}
-                            {--force|y  : Skip the confirmation prompt}';
+                            {--force : Skip the confirmation prompt}';
 
     protected $description = 'Fast-forward a game to the last N sessions for outro testing';
 
@@ -68,36 +68,73 @@ final class SkipToEndCommand extends Command
 
         $remaining = max(1, (int) ($this->option('remaining') ?? 3));
 
-        // The session the player should be placed at (first of the last N)
-        $targetSession = max(1, $totalSessions - $remaining + 1);
+        // The first of the remaining sessions the player will need to play through.
+        // e.g. total=10, remaining=3 → firstRemaining=8 (sessions 8, 9, 10 left to play)
+        $firstRemaining = max(1, $totalSessions - $remaining + 1);
+
+        // The last session that should already be "done" — the player can then
+        // click "Next Session" and the engine will generate from firstRemaining onward.
+        $lastCompleted = $firstRemaining - 1;
 
         $this->info("Story:          {$story->title}");
         $this->info("Total sessions: {$totalSessions}");
-        $this->info("Target session: {$targetSession}  (leaving {$remaining} session(s) remaining)");
+        $this->info("Remaining:      {$remaining} session(s) to play (sessions {$firstRemaining}–{$totalSessions})");
+        $this->info("Last completed: ".($lastCompleted > 0 ? "session {$lastCompleted}" : 'none (game will reset to beginning)'));
         $this->info("Game ID:        {$game->id}");
         $this->newLine();
 
-        if (! $this->option('force') && ! $this->confirm('Fast-forward this game? All prompts from session '.$targetSession.' onwards will be deleted.')) {
+        if (! $this->option('force') && ! $this->confirm("Fast-forward this game? Prompts from session {$firstRemaining} onwards will be deleted.")) {
             $this->line('Aborted.');
 
             return self::SUCCESS;
         }
 
-        // Delete prompts from the target session onwards so the engine re-runs them
+        // Delete all prompts from firstRemaining onwards so the engine re-generates them
         $deleted = $game->prompts()
-            ->where('session_number', '>=', $targetSession)
+            ->where('session_number', '>=', $firstRemaining)
             ->delete();
 
-        // Rewind the game state
-        $game->update([
-            'current_session_number'   => $targetSession,
-            'current_session_complete' => false,
-        ]);
+        if ($lastCompleted > 0) {
+            // Ensure the previous session prompt exists so hasPrompts=true on the frontend
+            // (prevents the intro cinematic from re-playing).
+            $hasLastPrompt = $game->prompts()
+                ->where('session_number', $lastCompleted)
+                ->exists();
 
-        $this->info("Deleted {$deleted} prompt(s) from session {$targetSession}+.");
-        $this->info("Game rewound to session {$targetSession} / {$totalSessions}.");
+            if (! $hasLastPrompt) {
+                $game->prompts()->create([
+                    'session_number' => $lastCompleted,
+                    'response'       => '[skipped for testing]',
+                    'choices'        => [],
+                ]);
+                $this->warn("No prompt existed for session {$lastCompleted} — created a stub so the game UI loads correctly.");
+            }
+
+            $game->update([
+                'current_session_number'   => $lastCompleted,
+                'current_session_complete' => true,
+            ]);
+        } else {
+            // firstRemaining=1 means we're resetting to the very start;
+            // the intro cinematic will play and session 1 will be generated fresh.
+            $game->prompts()->delete();
+            $game->update([
+                'current_session_number'   => 1,
+                'current_session_complete' => false,
+                'world_state'              => null,
+                'alignment_scaffold'       => null,
+                'symbolic_memory'          => null,
+                'is_climactic_choice'      => false,
+                'defining_choice_id'       => null,
+                'defining_choice_line'     => null,
+            ]);
+            $this->warn('remaining >= total sessions — game fully reset to session 1 (intro will replay).');
+        }
+
+        $this->info("Deleted {$deleted} prompt(s) from session {$firstRemaining}+.");
+        $this->info("Game set to: session ".($lastCompleted > 0 ? "{$lastCompleted} (complete)" : '1 (not started)')." / {$totalSessions} total.");
         $this->newLine();
-        $this->line('→ Visit the game in the browser and play through the remaining sessions to trigger the outro.');
+        $this->line('→ Visit the game in the browser and click "Next Session" to play through the remaining sessions and trigger the outro.');
 
         return self::SUCCESS;
     }
