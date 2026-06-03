@@ -9,7 +9,7 @@ import { MOOD_BANNER_CONFIGS, MOOD_IDS, type MoodId } from '@/data/moodBanners';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
 import { isStoryPlayable } from '@/data/playableStorySlugs';
 import { getMoodStorySlugs } from '@/data/moodStories';
-import { resolveStoryCover } from '@/data/storyCoverBySlug';
+import { resolveStoryTopMoodCover } from '@/data/storyTopMoodCoverBySlug';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import { index as storiesIndex, show as storyShow } from '@/wayfinder/routes/stories';
 import { Link } from '@inertiajs/vue3';
@@ -55,7 +55,7 @@ function gameFromSlug(slug: string): MoodGame | null {
         id: slug,
         slug,
         title: mock.title,
-        cover: resolveStoryCover(slug, mock.cover),
+        cover: resolveStoryTopMoodCover(slug, mock.cover),
         playable: isStoryPlayable(slug),
         themes: meta?.themes ?? EXPLORE_THEMES_BY_SLUG[slug] ?? [],
         teaser: mock.teaser,

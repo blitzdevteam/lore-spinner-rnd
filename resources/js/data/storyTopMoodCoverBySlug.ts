@@ -14,6 +14,7 @@ import romeoTopMood from '@/assets/top-moods/Romeo juliet 16_9 untitled.png';
 import sherlockTopMood from '@/assets/top-moods/Sherlock in the speckled band 16_9 untitled.png';
 import tellTaleTopMood from '@/assets/top-moods/Tell tale heart 16_9 untitled.png';
 import treasureTopMood from '@/assets/top-moods/Treasure island 16_9 untitled.png';
+import wastelandTopMood from '@/assets/top-moods/Wasteland wide 16_9 untitled.JPG';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
 
 /** 16:9 landscape art for mood-page “Top … Picks” banner cards. */
@@ -37,6 +38,7 @@ export const STORY_TOP_MOOD_COVER_BY_SLUG: Record<string, string> = {
     'the-tell-tale-heart': tellTaleTopMood,
     'the-wonderful-wizard-of-oz': ozTopMood,
     'treasure-island': treasureTopMood,
+    wasteland: wastelandTopMood,
 };
 
 export function resolveStoryTopMoodCover(slug: string, cover?: string | null): string {

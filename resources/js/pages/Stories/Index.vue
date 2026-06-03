@@ -7,6 +7,7 @@ import StoryGrid from '@/components/StoryGrid.vue';
 import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
+import { resolveStoryTopMoodCover } from '@/data/storyTopMoodCoverBySlug';
 import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moodBanners';
 import { filterVisibleLibraryStories } from '@/data/hiddenLibraryStorySlugs';
 import { dedupeStoriesByCanonicalSlug } from '@/data/moodStories';
@@ -53,7 +54,13 @@ const allLibraryStories = computed((): StoryInterface[] => {
 const libraryStories = computed((): StoryInterface[] => {
     const mood = normalizedMood.value;
     if (!mood) return allLibraryStories.value;
-    return allLibraryStories.value.filter((story) => storyMatchesMood(story.slug, mood));
+
+    return allLibraryStories.value
+        .filter((story) => storyMatchesMood(story.slug, mood))
+        .map((story) => ({
+            ...story,
+            cover: resolveStoryTopMoodCover(story.slug, story.cover),
+        }));
 });
 
 const isMoodPage = computed(() => normalizedMood.value !== null);
