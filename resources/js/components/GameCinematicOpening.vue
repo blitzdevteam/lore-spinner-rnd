@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import spinnerImg from '@/assets/intro/spinner.jpg';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 const emit = defineEmits<{
@@ -42,6 +43,9 @@ function preloadCard() {
     const img = new window.Image();
     img.onload = img.onerror = () => { cardReady.value = true; };
     img.src = '/images/opening/showcard.webp';
+
+    const spinner = new window.Image();
+    spinner.src = spinnerImg;
 }
 
 // Poll until image is decoded, then reveal
@@ -121,9 +125,18 @@ onUnmounted(() => {
         </Transition>
 
         <Transition name="co-phrase">
-            <p v-if="showStory" key="s" class="co-phrase">
-                Let Me Tell You a Story&hellip;
-            </p>
+            <div v-if="showStory" key="s" class="co-story-phase">
+                <img
+                    :src="spinnerImg"
+                    alt=""
+                    class="co-spinner"
+                    draggable="false"
+                    aria-hidden="true"
+                />
+                <p class="co-story-phase__text">
+                    Let Me Tell You a Story&hellip;
+                </p>
+            </div>
         </Transition>
 
         <Transition name="co-phrase">
@@ -203,6 +216,50 @@ onUnmounted(() => {
     text-shadow: 0 0 80px rgba(250, 246, 238, 0.08);
     z-index: 10;
     pointer-events: none;
+}
+
+/* "Let Me Tell You a Story…" + spinner mascot */
+.co-story-phase {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.25rem, 3.5vw, 2.25rem);
+    padding: 0 clamp(2rem, 10vw, 6rem);
+    pointer-events: none;
+}
+
+.co-spinner {
+    width: clamp(7.5rem, 20vw, 12.5rem);
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 48px rgba(255, 196, 72, 0.45));
+    animation: co-spinner-glow 3.2s ease-in-out infinite;
+}
+
+.co-story-phase__text {
+    margin: 0;
+    text-align: center;
+    font-family: 'Marcellus SC', serif;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.8vw, 3.4rem);
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+    color: rgba(250, 246, 238, 0.9);
+    text-shadow: 0 0 80px rgba(250, 246, 238, 0.08);
+}
+
+@keyframes co-spinner-glow {
+    0%,
+    100% {
+        filter: drop-shadow(0 0 40px rgba(255, 196, 72, 0.35));
+    }
+    50% {
+        filter: drop-shadow(0 0 64px rgba(255, 210, 96, 0.55));
+    }
 }
 
 /* "Headphones Recommended." — whisper before the curtain */
