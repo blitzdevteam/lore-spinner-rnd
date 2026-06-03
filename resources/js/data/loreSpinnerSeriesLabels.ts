@@ -1,6 +1,8 @@
+import loreSpinnerClassicAvatar from '@/assets/avatars/lore-spinner-classic.svg';
 import type { CreatorInterface } from '@/types';
 
 export const LORE_SPINNER_CLASSIC = 'A LoreSpinner Classic';
+export const LORE_SPINNER_CLASSIC_AVATAR = loreSpinnerClassicAvatar;
 export const LORE_SPINNER_ORIGINAL = 'A LoreSpinner Original';
 
 const CLASSICS_CREATOR_EMAIL = 'classics@lorespinner.com';
@@ -46,4 +48,14 @@ export function formatCreatorDisplayName(rawName: string, creator?: CreatorLike)
     }
 
     return rawName;
+}
+
+/** Avatar for classics series row — simple brand mark, readable at small sizes. */
+export function resolveClassicsCreatorAvatar(creator?: CreatorLike, avatarUrl?: string | null): string | null {
+    if (isClassicsUnboundCreator(creator)) {
+        return LORE_SPINNER_CLASSIC_AVATAR;
+    }
+
+    const trimmed = avatarUrl?.trim();
+    return trimmed || null;
 }

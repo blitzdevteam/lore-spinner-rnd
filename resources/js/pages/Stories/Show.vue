@@ -11,8 +11,9 @@ import StoryPlayStatStrip from '@/components/story-play/StoryPlayStatStrip.vue';
 import StoryPlayTitleProgress from '@/components/story-play/StoryPlayTitleProgress.vue';
 import StoryPlayTopBar from '@/components/story-play/StoryPlayTopBar.vue';
 import { useBookmark } from '@/composables/useBookmark';
-import { formatCreatorDisplayName } from '@/data/loreSpinnerSeriesLabels';
+import { formatCreatorDisplayName, resolveClassicsCreatorAvatar } from '@/data/loreSpinnerSeriesLabels';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
+import { resolveStoryDisplayTitle } from '@/data/storyDisplayTitleBySlug';
 import { useShare } from '@/composables/useShare';
 import { StoryInterface } from '@/types';
 import { store, show as showGame } from '@/wayfinder/actions/App/Http/Controllers/User/GameController';
@@ -42,10 +43,12 @@ const storyShareUrl = computed(() => {
     return storyShowRoute.url(props.story.slug);
 });
 
+const displayTitle = computed(() => resolveStoryDisplayTitle(props.story.slug, props.story.title));
+
 const handleShare = async (): Promise<void> => {
     const result = await share({
-        title: props.story.title,
-        text: teaserText.value || props.story.title,
+        title: displayTitle.value,
+        text: teaserText.value || displayTitle.value,
         url: storyShareUrl.value,
     });
 
@@ -83,7 +86,7 @@ const creatorName = computed(() => {
     return formatCreatorDisplayName(raw, props.story.creator);
 });
 
-const coverHeadline = computed(() => props.story.title.toUpperCase());
+const coverHeadline = computed(() => displayTitle.value.toUpperCase());
 
 const coverFooterCredit = computed(() => creatorName.value.toUpperCase());
 
@@ -151,10 +154,9 @@ const statItems = computed(() => [
 
 const primaryCtaLabel = computed(() => (hasExistingGame.value ? 'Continue Story' : 'Start Story'));
 
-const creatorAvatar = computed(() => {
-    const a = props.story.creator?.avatar?.trim();
-    return a || null;
-});
+const creatorAvatar = computed(() =>
+    resolveClassicsCreatorAvatar(props.story.creator, props.story.creator?.avatar),
+);
 
 const leftColumnChapters = computed(() => props.story.chapters?.filter((_, index) => index % 2 === 0) ?? []);
 
@@ -180,7 +182,7 @@ const rightColumnChapters = computed(() => props.story.chapters?.filter((_, inde
             <div
                 class="relative mb-8 w-[20.875rem] max-w-full shrink-0 self-center lg:mb-0 lg:flex lg:w-[20.875rem] lg:shrink-0 lg:self-center xl:mr-2"
             >
-                <StoryPlayCoverColumn :src="coverImageUrl" :title="story.title" :headline="coverHeadline" :footer-credit="coverFooterCredit">
+                <StoryPlayCoverColumn :src="coverImageUrl" :title="displayTitle" :headline="coverHeadline" :footer-credit="coverFooterCredit">
                     <template #overlay>
                         <div class="pointer-events-auto absolute left-4 top-4 lg:hidden">
                             <StoryPlayGlassRoundButton
@@ -196,7 +198,7 @@ const rightColumnChapters = computed(() => props.story.chapters?.filter((_, inde
                             aria-hidden="true"
                         >
                             <span class="font-['Marcellus_SC','Marcellus SC',serif] text-4xl uppercase tracking-wider text-white/55">
-                                {{ story.title.charAt(0)?.toUpperCase() }}
+                                {{ displayTitle.charAt(0)?.toUpperCase() }}
                             </span>
                         </div>
                     </template>
@@ -224,7 +226,7 @@ const rightColumnChapters = computed(() => props.story.chapters?.filter((_, inde
                         <div class="story-show-chapters__align hidden shrink-0 lg:block" aria-hidden="true" />
                         <div class="flex flex-col gap-4 lg:gap-5">
                             <div class="flex flex-col gap-2.5">
-                                <StoryPlayTitleProgress :title="story.title" />
+                                <StoryPlayTitleProgress :title="displayTitle" />
                                 <StoryPlayMetaRow :duration-label="durationLabel" :genre-label="genreLabel" />
                                 <StoryPlayStatStrip :items="statItems" />
                             </div>

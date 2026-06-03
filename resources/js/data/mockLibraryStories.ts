@@ -125,7 +125,7 @@ export const MOCK_LIBRARY_STORIES: StoryInterface[] = [
     },
     {
         id: -13,
-        title: 'Sherlock Holmes: The Speckled Band',
+        title: 'Sherlock Holmes in The Speckled Band',
         slug: 'the-adventure-of-the-speckled-band',
         teaser:
             'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',

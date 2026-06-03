@@ -48,7 +48,7 @@ final class ChaosStoryConfig
             ],
             [
                 'slug'          => 'the-adventure-of-the-speckled-band',
-                'title'         => 'The Adventure of the Speckled Band',
+                'title'         => 'Sherlock Holmes in The Speckled Band',
                 'protagonist'   => 'Watson',
                 'tagline'       => 'Doyle — investigate beside Holmes.',
                 'tts_voice_id'  => null,

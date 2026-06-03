@@ -28,7 +28,7 @@ interface NewStory {
 const stories: NewStory[] = [
     {
         id: 'the-adventure-of-the-speckled-band',
-        title: 'The Adventures of Sherlock Holmes: The Speckled Band',
+        title: 'Sherlock Holmes in The Speckled Band',
         cover: sherlockNewCover,
         category: 'Mystery',
         rating: 'Everyone',
