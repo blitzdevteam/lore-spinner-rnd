@@ -31,7 +31,7 @@ final class SkipToEndCommand extends Command
     protected $signature = 'game:skip-to-end
                             {--user=    : User ID}
                             {--story=   : Story slug or ID}
-                            {--remaining=3 : How many sessions to leave remaining (default 3)}
+                            {--remaining=1 : How many sessions to leave remaining (default 1)}
                             {--force : Skip the confirmation prompt}';
 
     protected $description = 'Fast-forward a game to the last N sessions for outro testing';
@@ -68,13 +68,14 @@ final class SkipToEndCommand extends Command
 
         $remaining = max(1, (int) ($this->option('remaining') ?? 3));
 
-        // The first of the remaining sessions the player will need to play through.
-        // e.g. total=10, remaining=3 → firstRemaining=8 (sessions 8, 9, 10 left to play)
-        $firstRemaining = max(1, $totalSessions - $remaining + 1);
+        // The session that will be stubbed as already "complete".
+        // remaining=1 → lastCompleted=totalSessions  → one click fires the outro directly
+        // remaining=2 → lastCompleted=totalSessions-1 → one real session, then outro
+        // remaining=3 → lastCompleted=totalSessions-2 → two real sessions, then outro
+        $lastCompleted = max(0, $totalSessions - $remaining + 1);
 
-        // The last session that should already be "done" — the player can then
-        // click "Next Session" and the engine will generate from firstRemaining onward.
-        $lastCompleted = $firstRemaining - 1;
+        // firstRemaining is only used for the deleted-prompt range label
+        $firstRemaining = $lastCompleted + 1;
 
         $this->info("Story:          {$story->title}");
         $this->info("Total sessions: {$totalSessions}");
