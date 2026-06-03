@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
+import { resolveStoryCover } from '@/data/storyCoverBySlug';
 import { GameInterface } from '@/types';
 import { show } from '@/wayfinder/routes/user/games';
 import { LucidePlay, LucideClock } from 'lucide-vue-next';
@@ -11,7 +12,14 @@ const props = defineProps<{
 }>();
 
 const story = computed(() => props.game.story);
-const hasCover = computed(() => !!story.value?.cover);
+
+const posterUrl = computed(() => {
+    const s = story.value;
+    if (!s?.slug) return '';
+    return resolveStoryCover(s.slug, s.cover);
+});
+
+const hasCover = computed(() => !!posterUrl.value);
 const gameUrl = computed(() => show(props.game.id).url);
 
 const timeAgo = computed(() => {
@@ -48,7 +56,7 @@ const sessionLabel = computed(() => {
                         <div class="relative h-40 shrink-0 overflow-hidden sm:h-auto sm:w-48 md:w-72">
                             <img
                                 v-if="hasCover"
-                                :src="story!.cover"
+                                :src="posterUrl"
                                 :alt="story!.title"
                                 class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                             />
