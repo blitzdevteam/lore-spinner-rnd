@@ -11,7 +11,7 @@ import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moo
 import { filterVisibleLibraryStories } from '@/data/hiddenLibraryStorySlugs';
 import {
     dedupeStoriesByCanonicalSlug,
-    getMoodStorySlugs,
+    getMoodSecondaryPickSlugs,
     selectStoriesByMoodSlugs,
 } from '@/data/moodStories';
 import HomeLayout from '@/layouts/HomeLayout.vue';
@@ -62,12 +62,12 @@ const moodPageStories = computed((): StoryInterface[] => {
     return allLibraryStories.value.filter((story) => storyMatchesMood(story.slug, mood));
 });
 
-/** Mood page grid: top picks + secondary, catalog order, library portrait covers. */
+/** Mood page grid: secondary catalog order (top picks live in MoodTopPicks). */
 const moodGridStories = computed((): StoryInterface[] => {
     const mood = normalizedMood.value;
     if (!mood) return [];
 
-    return selectStoriesByMoodSlugs(moodPageStories.value, getMoodStorySlugs(mood));
+    return selectStoriesByMoodSlugs(moodPageStories.value, getMoodSecondaryPickSlugs(mood));
 });
 
 const libraryStories = computed((): StoryInterface[] => {
@@ -108,7 +108,7 @@ const sortedStories = computed(() => {
             return tb - ta;
         });
     }
-    /* Mood pages: keep catalog order (top picks, then secondary) when sort is Recent. */
+    /* Mood pages: keep secondary catalog order when sort is Recent. */
     return list;
 });
 

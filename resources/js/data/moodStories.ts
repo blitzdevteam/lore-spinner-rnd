@@ -11,36 +11,68 @@ export interface MoodStoryCatalog {
 export const MOOD_STORY_CATALOG: Record<MoodId, MoodStoryCatalog> = {
     heartfelt: {
         top: ['pride-and-prejudice', 'jane-eyre', 'romeo-and-juliet', 'pjs'],
-        secondary: ['wasteland', 'frankenstein', 'the-wonderful-wizard-of-oz'],
+        secondary: [
+            'wasteland',
+            'frankenstein',
+            'the-wonderful-wizard-of-oz',
+            'pride-and-prejudice',
+            'jane-eyre',
+            'romeo-and-juliet',
+            'pjs',
+        ],
     },
     adventurous: {
-        top: [
+        top: ['the-wonderful-wizard-of-oz', 'treasure-island', 'anima-machina', 'leagues'],
+        secondary: [
+            'wasteland',
+            'alice-in-wonderland',
+            'dracula',
+            'the-adventure-of-the-speckled-band',
             'the-wonderful-wizard-of-oz',
             'treasure-island',
-            'leagues',
-            'wasteland',
             'anima-machina',
+            'leagues',
         ],
-        secondary: ['alice-in-wonderland', 'dracula', 'the-adventure-of-the-speckled-band'],
     },
     mysterious: {
         top: [
             'the-adventure-of-the-speckled-band',
             'nocturne',
-            'dracula',
             'the-tell-tale-heart',
+            'dracula',
+        ],
+        secondary: [
             'dr-jekyll-and-mr-hyde',
             'frankenstein',
+            'jane-eyre',
+            'anima-machina',
+            'the-adventure-of-the-speckled-band',
+            'nocturne',
+            'the-tell-tale-heart',
+            'dracula',
         ],
-        secondary: ['jane-eyre', 'anima-machina'],
     },
     epic: {
-        top: ['anima-machina', 'dracula', 'frankenstein', 'pjs'],
-        secondary: ['the-wonderful-wizard-of-oz', 'treasure-island', 'leagues', 'wasteland'],
+        top: ['anima-machina', 'frankenstein', 'pjs', 'dracula'],
+        secondary: [
+            'the-wonderful-wizard-of-oz',
+            'treasure-island',
+            'leagues',
+            'wasteland',
+            'anima-machina',
+            'frankenstein',
+            'pjs',
+            'dracula',
+        ],
     },
     whimsical: {
         top: ['alice-in-wonderland', 'the-wonderful-wizard-of-oz'],
-        secondary: ['leagues', 'anima-machina'],
+        secondary: [
+            'leagues',
+            'anima-machina',
+            'alice-in-wonderland',
+            'the-wonderful-wizard-of-oz',
+        ],
     },
 };
 
@@ -103,8 +135,12 @@ export function selectStoriesByMoodSlugs<T extends { slug: string }>(stories: T[
     return slugs.map((slug) => bySlug.get(slug)).filter((story): story is T => story != null);
 }
 
+/** Full mood story order: top picks first, then secondary-only slugs (preserves secondary order). */
 export function getMoodStorySlugs(mood: MoodId): string[] {
-    return [...MOOD_STORY_CATALOG[mood].top, ...MOOD_STORY_CATALOG[mood].secondary];
+    const { top, secondary } = MOOD_STORY_CATALOG[mood];
+    const topSet = new Set(top);
+    const rest = secondary.filter((slug) => !topSet.has(slug));
+    return [...top, ...rest];
 }
 
 export function storyMatchesMood(storySlug: string, mood: MoodId): boolean {
