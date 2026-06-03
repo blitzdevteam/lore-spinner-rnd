@@ -24,6 +24,7 @@ export const STORY_COVER_BY_SLUG: Record<string, string> = {
     'the-masque-of-the-red-death': redDeathCover,
     'anima-machina': animaCover,
     'alice-in-wonderland': aliceCover,
+    'alices-adventures-in-wonderland': aliceCover,
     dracula: draculaCover,
     'pride-and-prejudice': pridePrejudiceCover,
     'treasure-island': treasureCover,

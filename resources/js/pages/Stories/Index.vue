@@ -8,6 +8,7 @@ import { useHomeHeaderNav } from '@/composables/useHomeHeaderNav';
 import { MOCK_LIBRARY_STORIES } from '@/data/mockLibraryStories';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
 import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moodBanners';
+import { dedupeStoriesByCanonicalSlug } from '@/data/moodStories';
 import HomeLayout from '@/layouts/HomeLayout.vue';
 import { StoryInterface } from '@/types';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
@@ -45,7 +46,7 @@ const allLibraryStories = computed((): StoryInterface[] => {
         ...story,
         cover: resolveStoryCover(story.slug, story.cover),
     }));
-    return [...real, ...extra];
+    return dedupeStoriesByCanonicalSlug([...real, ...extra]);
 });
 
 const libraryStories = computed((): StoryInterface[] => {

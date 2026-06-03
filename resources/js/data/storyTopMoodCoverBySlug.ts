@@ -19,6 +19,7 @@ import { resolveStoryCover } from '@/data/storyCoverBySlug';
 /** 16:9 landscape art for mood-page “Top … Picks” banner cards. */
 export const STORY_TOP_MOOD_COVER_BY_SLUG: Record<string, string> = {
     'alice-in-wonderland': aliceTopMood,
+    'alices-adventures-in-wonderland': aliceTopMood,
     'anima-machina': animaTopMood,
     dracula: draculaTopMood,
     frankenstein: frankensteinTopMood,

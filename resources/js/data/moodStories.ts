@@ -100,3 +100,31 @@ export function storyMatchesMood(storySlug: string, mood: MoodId): boolean {
     const moods = STORY_MOODS_BY_SLUG[canonical];
     return moods?.includes(mood) ?? false;
 }
+
+/** Prefer canonical slug, then mock rows (negative id) over API alias duplicates. */
+function preferCanonicalStory<T extends { id: number; slug: string }>(current: T, candidate: T): T {
+    const key = canonicalMoodStorySlug(current.slug);
+    const currentIsCanonical = current.slug === key;
+    const candidateIsCanonical = candidate.slug === key;
+
+    if (candidateIsCanonical && !currentIsCanonical) return candidate;
+    if (currentIsCanonical && !candidateIsCanonical) return current;
+
+    if (candidate.id < 0 && current.id >= 0) return candidate;
+    if (current.id < 0 && candidate.id >= 0) return current;
+
+    return current;
+}
+
+/** Collapse alias slugs (e.g. alices-adventures-in-wonderland → alice-in-wonderland). */
+export function dedupeStoriesByCanonicalSlug<T extends { id: number; slug: string }>(stories: T[]): T[] {
+    const byCanonical = new Map<string, T>();
+
+    for (const story of stories) {
+        const key = canonicalMoodStorySlug(story.slug);
+        const existing = byCanonical.get(key);
+        byCanonical.set(key, existing ? preferCanonicalStory(existing, story) : story);
+    }
+
+    return [...byCanonical.values()];
+}
