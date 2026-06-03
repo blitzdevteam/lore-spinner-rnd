@@ -33,6 +33,7 @@ interface HeroSlideConfig {
     teaserLines: [string, string] | null;
     fallbackTeaser: string;
     fallbackAuthor: string;
+    seriesLabel: string;
     comingSoon?: boolean;
 }
 
@@ -50,6 +51,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             "As guilt begins to twist reality around him, a man struggles to silence the terrifying sound he cannot escape: the beating of a dead man's heart.",
         fallbackAuthor: 'Edgar Allan Poe',
+        seriesLabel: 'The Classics, Unbound',
         comingSoon: true,
     },
     {
@@ -65,6 +67,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'A storm carries you into the magical land of Oz, where witches whisper, lions tremble, and every step down the Yellow Brick Road changes who you are becoming.',
         fallbackAuthor: 'L. Frank Baum',
+        seriesLabel: 'The Classics, Unbound',
     },
     {
         slug: 'the-adventure-of-the-speckled-band',
@@ -79,6 +82,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
         fallbackAuthor: 'Sir Arthur Conan Doyle',
+        seriesLabel: 'The Classics, Unbound',
     },
     {
         slug: 'jane-eyre',
@@ -93,6 +97,7 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'A young orphan enters a dark and mysterious estate where buried secrets, dangerous love, and the search for belonging may change the course of her life forever.',
         fallbackAuthor: 'Charlotte Brontë',
+        seriesLabel: 'The Classics, Unbound',
         comingSoon: true,
     },
 ];
@@ -106,6 +111,7 @@ interface ResolvedHeroSlide {
     teaserLines: [string, string] | null;
     teaser: string;
     author: string | null;
+    seriesLabel: string;
     storyUrl: string;
     comingSoon: boolean;
 }
@@ -157,6 +163,7 @@ const slides = computed((): ResolvedHeroSlide[] =>
             teaserLines: story ? resolveTeaserLines(teaser) ?? config.teaserLines : config.teaserLines,
             teaser,
             author: config.fallbackAuthor,
+            seriesLabel: config.seriesLabel,
             storyUrl: show(config.slug).url,
             comingSoon: config.comingSoon ?? false,
         };
@@ -237,6 +244,9 @@ function goNext() {
                                         <p v-if="activeSlide.author" class="hero-stat-line text-white">
                                             Written by:
                                             <span class="text-primary">{{ activeSlide.author }}</span>
+                                        </p>
+                                        <p v-if="activeSlide.seriesLabel" class="hero-stat-line text-primary">
+                                            {{ activeSlide.seriesLabel }}
                                         </p>
                                     </div>
                                 </div>
