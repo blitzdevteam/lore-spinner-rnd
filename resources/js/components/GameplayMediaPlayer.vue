@@ -31,9 +31,11 @@ const onVolumeInput = (event: Event) => {
     <Transition name="player-slide">
         <div
             v-if="tts.isActive.value && !props.collapsed"
-            class="player-bar gameplay-header-glass pointer-events-auto relative flex items-center gap-2 overflow-hidden rounded-full px-2 py-2 sm:gap-2.5 sm:px-2.5"
+            class="player-bar pointer-events-auto relative isolate z-10 flex items-center gap-2 overflow-hidden rounded-full px-2 py-2 sm:gap-2.5 sm:px-2.5"
         >
-            <!-- Play / Pause -->
+            <span class="player-bar__backdrop" aria-hidden="true" />
+            <div class="player-bar__controls relative z-[1] flex items-center gap-2 sm:gap-2.5">
+                <!-- Play / Pause -->
             <button
                 class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-primary-600 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-white active:scale-95"
                 :title="tts.isLoading.value ? 'Loading…' : tts.isPlaying.value ? 'Pause' : 'Play'"
@@ -126,6 +128,7 @@ const onVolumeInput = (event: Event) => {
             >
                 <LucideX class="player-btn-icon" :stroke-width="1.75" />
             </button>
+            </div>
         </div>
     </Transition>
 </template>
@@ -140,6 +143,28 @@ const onVolumeInput = (event: Event) => {
 .player-slide-leave-to {
     opacity: 0;
     transform: translateY(-12px) scale(0.95);
+}
+
+.player-bar {
+    border: 0.5px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.player-bar__backdrop {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(6, 10, 12, 0.82);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+}
+
+.player-bar__controls {
+    width: 100%;
+    min-width: 0;
 }
 
 .volume-control {
