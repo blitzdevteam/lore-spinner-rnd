@@ -175,6 +175,7 @@ const handleInputSubmit = (prompt: string) => {
                             <GameplayCapsuleButton
                                 class="hidden md:inline-flex"
                                 label="Settings"
+                                label-tone="secondary"
                                 :title="activePanel === 'settings' ? 'Close settings' : 'Settings'"
                                 :active="activePanel === 'settings'"
                                 @click="toggleSettings"
@@ -215,6 +216,7 @@ const handleInputSubmit = (prompt: string) => {
                             </GameplayCapsuleButton>
                             <GameplayCapsuleButton
                                 label="Notes"
+                                label-tone="secondary"
                                 :title="activePanel === 'journal' ? 'Close notes' : 'Notes'"
                                 :active="activePanel === 'journal'"
                                 @click="toggleJournal"

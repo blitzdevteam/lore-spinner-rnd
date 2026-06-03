@@ -10,7 +10,6 @@ import { resolveStoryTopMoodCover } from '@/data/storyTopMoodCoverBySlug';
 import { STORY_HOVER_META_BY_SLUG } from '@/data/storyCardHoverMeta';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
-import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
@@ -20,7 +19,6 @@ const props = defineProps<{
     mood: MoodId;
     moodLabel: string;
     stories: StoryInterface[];
-    totalCount: number;
 }>();
 
 const sliderEl = ref<HTMLElement | null>(null);
@@ -30,8 +28,6 @@ const isDesktopHover = useDesktopStoryPreview();
 const { onCardEnter, onCardLeave, isExpanded, isDimmed, hoveredId } = useStoryCardExpand(isDesktopHover);
 
 const sectionTitle = computed(() => `Top ${props.moodLabel} Picks`);
-
-const viewAllHref = computed(() => storiesIndex().url);
 
 const topPickStories = computed((): StoryInterface[] => {
     const bySlug = new Map(props.stories.map((story) => [story.slug, story]));
@@ -88,11 +84,7 @@ function scrollSlider(direction: -1 | 1): void {
     <section class="mood-top-picks" :aria-label="sectionTitle">
         <div class="container">
             <div class="container-content mood-page-section-header-gap">
-                <SectionHeader
-                    :title="sectionTitle"
-                    :href="viewAllHref"
-                    :count="totalCount"
-                />
+                <SectionHeader :title="sectionTitle" />
 
                 <div
                     class="story-slider-viewport story-slider-viewport--banner relative overflow-visible"

@@ -4,8 +4,10 @@ withDefaults(
         label: string;
         title: string;
         active?: boolean;
+        /** Label color when the capsule expands — matches icon accent. */
+        labelTone?: 'primary' | 'secondary';
     }>(),
-    { active: false },
+    { active: false, labelTone: 'primary' },
 );
 
 defineEmits<{
@@ -17,7 +19,10 @@ defineEmits<{
     <button
         type="button"
         class="gameplay-capsule"
-        :class="{ 'gameplay-capsule--active': active }"
+        :class="[
+            { 'gameplay-capsule--active': active },
+            labelTone === 'secondary' && 'gameplay-capsule--label-secondary',
+        ]"
         :title="title"
         :aria-label="title"
         @click="$emit('click')"
@@ -90,6 +95,10 @@ defineEmits<{
         opacity 0.32s ease,
         transform 0.38s var(--capsule-ease),
         padding 0.45s var(--capsule-ease);
+}
+
+.gameplay-capsule--label-secondary .gameplay-capsule__label {
+    color: var(--color-secondary-300);
 }
 
 .gameplay-capsule--active {

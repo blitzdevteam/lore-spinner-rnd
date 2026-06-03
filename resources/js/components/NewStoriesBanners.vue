@@ -12,10 +12,6 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { ref } from 'vue';
 
-defineProps<{
-    storyCount: number;
-}>();
-
 interface NewStory {
     id: string;
     title: string;
@@ -119,7 +115,6 @@ function openSheet(story: NewStory) {
                     title="New Stories"
                     subtitle="New branches, hidden paths, and fresh story worlds."
                     :href="storiesIndex().url"
-                    :count="storyCount"
                 />
 
                 <div class="story-slider-viewport story-slider-viewport--banner relative overflow-visible">

@@ -41,7 +41,7 @@ const visibleStories = computed(() => filterVisibleLibraryStories(props.stories)
         <ContinueStories v-if="lastGame" :game="lastGame" />
 
         <!-- Top Stories -->
-        <FeaturedWorldsGames :story-count="visibleStories.length" />
+        <FeaturedWorldsGames />
 
         <!-- Xen Banner -->
         <XenBanner />
@@ -50,9 +50,9 @@ const visibleStories = computed(() => filterVisibleLibraryStories(props.stories)
         <ExploreByMood />
 
         <!-- Featured Worlds -->
-        <NewStoriesBanners :story-count="visibleStories.length" />
+        <NewStoriesBanners />
 
-        <ComingSoonBanners :story-count="visibleStories.length" />
+        <ComingSoonBanners />
 
         <!-- FAQ: slightly tighter top padding after Coming Soon so spacing matches Figma (hover glow → heading). -->
         <div class="pt-10 pb-14 md:pt-12 md:pb-[3.75rem]">

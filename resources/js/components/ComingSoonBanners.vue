@@ -16,10 +16,6 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { ref } from 'vue';
 
-defineProps<{
-    storyCount: number;
-}>();
-
 interface ComingSoonCard {
     id: string;
     title: string;
@@ -126,7 +122,6 @@ function openSheet(card: ComingSoonCard) {
                     title="Coming Soon"
                     subtitle="New worlds are coming soon."
                     :href="storiesIndex().url"
-                    :count="storyCount"
                 />
 
                 <div class="story-slider-viewport story-slider-viewport--portrait relative overflow-visible">

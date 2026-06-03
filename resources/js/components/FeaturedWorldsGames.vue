@@ -16,10 +16,6 @@ import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { useSliderEdgeShadows } from '@/composables/useSliderEdgeShadows';
 import { ref } from 'vue';
 
-defineProps<{
-    storyCount: number;
-}>();
-
 interface FeaturedGame {
     id: string;
     title: string;
@@ -152,7 +148,6 @@ function openSheet(game: FeaturedGame) {
                     title="Featured Worlds"
                     subtitle="Curated story worlds built for choice, consequence, and return."
                     :href="storiesIndex().url"
-                    :count="storyCount"
                 />
 
                 <div class="story-slider-viewport story-slider-viewport--portrait relative overflow-visible">

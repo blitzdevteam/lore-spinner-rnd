@@ -11,7 +11,6 @@ import { getMoodBannerConfig, normalizeMood, storyMatchesMood } from '@/data/moo
 import { filterVisibleLibraryStories } from '@/data/hiddenLibraryStorySlugs';
 import {
     dedupeStoriesByCanonicalSlug,
-    getMoodSecondaryPickSlugs,
     getMoodStorySlugs,
     selectStoriesByMoodSlugs,
 } from '@/data/moodStories';
@@ -61,14 +60,6 @@ const moodPageStories = computed((): StoryInterface[] => {
     if (!mood) return [];
 
     return allLibraryStories.value.filter((story) => storyMatchesMood(story.slug, mood));
-});
-
-/** Secondary picks only — used for Top Picks “View all” count (unchanged). */
-const moodSecondaryStories = computed((): StoryInterface[] => {
-    const mood = normalizedMood.value;
-    if (!mood) return [];
-
-    return selectStoriesByMoodSlugs(moodPageStories.value, getMoodSecondaryPickSlugs(mood));
 });
 
 /** Mood page grid: top picks + secondary, catalog order, library portrait covers. */
@@ -152,7 +143,6 @@ function cycleSort(): void {
                     :mood="normalizedMood"
                     :mood-label="moodHero.label"
                     :stories="moodPageStories"
-                    :total-count="moodSecondaryStories.length"
                 />
 
                 <div id="all-stories" class="mood-page-stories-section pb-12 md:pb-[3.75rem]">
