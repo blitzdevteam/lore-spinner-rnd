@@ -157,8 +157,8 @@ const handleInputSubmit = (prompt: string) => {
             :seconds-per-color="auroraProps.secondsPerColor"
             :intensity="auroraProps.intensity"
         />
-        <div class="relative flex min-h-svh">
-            <div class="flex flex-col flex-1 min-h-svh">
+        <div class="relative flex h-svh min-h-0 overflow-hidden">
+            <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
                 <!-- ── Top header bar ── -->
                 <div class="sticky top-0 right-0 left-0 z-30 w-full">
                     <div
@@ -272,7 +272,7 @@ const handleInputSubmit = (prompt: string) => {
 
                 <!-- ── Scrolling content ── -->
                 <div
-                    class="z-5 mx-auto flex w-full max-w-3xl flex-1 flex-col p-4 pb-36 transition-colors duration-300 md:pb-40"
+                    class="z-5 mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-4 pb-24 transition-colors duration-300 md:pb-28"
                     :style="{ fontSize: settings.fontSize + 'px', color: settings.fontColor }"
                 >
                     <div class="mb-2">
@@ -284,8 +284,8 @@ const handleInputSubmit = (prompt: string) => {
                 </div>
 
                 <!-- ── Bottom input ── -->
-                <div class="sticky right-0 bottom-0 left-0 z-20 w-full">
-                    <div class="flex flex-col items-center gap-3 bg-linear-to-t from-gray-950 via-gray-950/80 to-transparent px-4 pt-10 pb-6 md:px-0">
+                <div class="shrink-0 right-0 bottom-0 left-0 z-20 w-full">
+                    <div class="flex flex-col items-center gap-3 bg-linear-to-t from-gray-950 via-gray-950/80 to-transparent px-4 pt-6 pb-5 md:px-0 md:pt-8 md:pb-6">
                         <div class="flex w-full justify-start md:hidden">
                             <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" />
                         </div>
