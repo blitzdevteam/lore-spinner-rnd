@@ -123,7 +123,7 @@ onUnmounted(() => {
                 <PrimeInputText
                     ref="inputEl"
                     v-model="inputText"
-                    class="flex-1 border-none! bg-transparent! py-0! px-2! text-sm! text-white! shadow-none! outline-none! ring-0! placeholder:text-gray-500! sm:text-base!"
+                    class="flex-1 border-none! bg-transparent! py-0! px-2! text-base! text-white! shadow-none! outline-none! ring-0! placeholder:text-gray-500!"
                     :placeholder="stt.isRecording.value ? 'Listening...' : stt.isTranscribing.value ? 'Transcribing...' : 'What Do You Do?'"
                     :disabled="props.disabled || stt.isRecording.value || stt.isTranscribing.value"
                     @keydown="handleKeydown"
