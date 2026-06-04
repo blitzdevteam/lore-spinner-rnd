@@ -1,7 +1,7 @@
 import loreSpinnerClassicAvatar from '@/assets/avatars/lore-spinner-classic.svg';
 import type { CreatorInterface } from '@/types';
 
-export const LORE_SPINNER_CLASSIC = 'A LoreSpinner classic adaptation';
+export const LORE_SPINNER_CLASSIC = 'A LoreSpinner Classic Adaptation';
 export const LORE_SPINNER_CLASSIC_AVATAR = loreSpinnerClassicAvatar;
 export const LORE_SPINNER_ORIGINAL = 'A LoreSpinner Original';
 
