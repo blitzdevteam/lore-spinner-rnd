@@ -15,6 +15,7 @@ const props = withDefaults(
         status?: StoryStatusEnum | string;
         mood?: string;
         teaser?: string | null;
+        themes?: string[];
         isComingSoon?: boolean;
         cta?: StoryCardCta;
         dimmed?: boolean;
@@ -24,6 +25,7 @@ const props = withDefaults(
         status: undefined,
         mood: undefined,
         teaser: null,
+        themes: () => [],
         isComingSoon: false,
         cta: undefined,
         dimmed: false,
@@ -57,6 +59,8 @@ const ctaLabel = computed(() => {
 });
 
 const isInteractive = computed(() => resolvedCta.value !== 'coming-soon');
+
+const hasReveal = computed(() => props.themes.length > 0 || Boolean(props.teaser));
 </script>
 
 <template>
@@ -79,9 +83,19 @@ const isInteractive = computed(() => resolvedCta.value !== 'coming-soon');
                     <h3 class="story-card__title">{{ title }}</h3>
                 </div>
 
-                <div v-if="teaser" class="story-card__reveal">
+                <div
+                    v-if="hasReveal"
+                    class="story-card__reveal"
+                    :class="themes.length && 'story-card__reveal--with-themes'"
+                >
                     <div class="story-card__reveal-inner">
-                        <p class="story-card__teaser">{{ teaser }}</p>
+                        <div v-if="themes.length" class="story-card__themes">
+                            <template v-for="(theme, i) in themes" :key="theme">
+                                <span v-if="i > 0" class="story-card__theme-dot" aria-hidden="true">•</span>
+                                <span class="story-card__theme">{{ theme }}</span>
+                            </template>
+                        </div>
+                        <p v-if="teaser" class="story-card__teaser">{{ teaser }}</p>
                     </div>
                 </div>
 
@@ -165,9 +179,35 @@ const isInteractive = computed(() => resolvedCta.value !== 'coming-soon');
     transition: opacity var(--story-card-hover-duration) var(--story-card-ease);
 }
 
+.story-card__reveal--with-themes {
+    height: 4rem;
+}
+
 .story-card__reveal-inner {
     overflow: hidden;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.story-card__themes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.375rem;
+}
+
+.story-card__theme-dot {
+    font-size: 0.625rem;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.28);
+}
+
+.story-card__theme {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-primary, #6fafba);
 }
 
 .story-card__teaser {

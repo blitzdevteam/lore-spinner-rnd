@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import StoryCard, { type StoryCardCta } from '@/components/StoryCard.vue';
 import { isStoryPlayable } from '@/data/playableStorySlugs';
+import { getStoryDescriptorThemes } from '@/data/storyCardHoverMeta';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
 
@@ -41,6 +42,7 @@ function isComingSoon(story: StoryInterface): boolean {
             :is-coming-soon="isComingSoon(story)"
             :cta="ctaForStory(story)"
             :teaser="story.teaser"
+            :themes="getStoryDescriptorThemes(story.slug)"
         />
     </div>
 </template>
