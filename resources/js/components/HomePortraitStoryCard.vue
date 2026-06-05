@@ -18,11 +18,13 @@ const props = withDefaults(
         isDesktopHover: boolean;
         /** Carousel hover reveal — disable in grid layouts. */
         expandOnHover?: boolean;
+        showCta?: boolean;
     }>(),
     {
         expandOnHover: true,
         mood: undefined,
         genre: undefined,
+        showCta: true,
     },
 );
 
@@ -75,6 +77,7 @@ const ctaLabel = computed(() => (props.playable ? 'Play' : 'Coming Soon'));
                 </div>
 
                 <div
+                    v-if="showCta"
                     class="hp-card__cta"
                     :class="playable ? 'hp-card__cta--active' : 'hp-card__cta--disabled'"
                 >

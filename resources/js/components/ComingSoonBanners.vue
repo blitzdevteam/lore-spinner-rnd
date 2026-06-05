@@ -148,6 +148,7 @@ function openSheet(card: ComingSoonCard) {
                                             :themes="getStoryDescriptorThemes(card.id)"
                                             :teaser="card.teaser"
                                             :playable="false"
+                                            :show-cta="false"
                                             :focused="isDesktopHover && isExpanded(card.id)"
                                             :is-desktop-hover="isDesktopHover"
                                             @preview="openSheet(card)"
