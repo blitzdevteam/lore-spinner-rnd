@@ -4,11 +4,18 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'LoreSpinner') }}</title>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.png" type="image/png">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <!-- Favicon — versioned to bust browser/Google cache -->
+        <link rel="icon" href="/favicon.ico?v=2" sizes="any">
+        <link rel="icon" href="/favicon.png?v=2" type="image/png">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+        <link rel="manifest" href="/site.webmanifest">
+
+        <!-- SEO / Open Graph -->
+        <meta name="application-name" content="LoreSpinner">
+        <meta property="og:site_name" content="LoreSpinner">
+        <meta name="twitter:site" content="@lorespinner">
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
