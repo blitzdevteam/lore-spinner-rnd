@@ -12,6 +12,7 @@ import StoryPlayTitleProgress from '@/components/story-play/StoryPlayTitleProgre
 import StoryPlayTopBar from '@/components/story-play/StoryPlayTopBar.vue';
 import { useBookmark } from '@/composables/useBookmark';
 import { formatCreatorDisplayName, resolveClassicsCreatorAvatar } from '@/data/loreSpinnerSeriesLabels';
+import { getStoryDescriptorThemes } from '@/data/storyCardHoverMeta';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
 import { resolveStoryDisplayTitle } from '@/data/storyDisplayTitleBySlug';
 import { useShare } from '@/composables/useShare';
@@ -44,6 +45,8 @@ const storyShareUrl = computed(() => {
 });
 
 const displayTitle = computed(() => resolveStoryDisplayTitle(props.story.slug, props.story.title));
+
+const descriptorThemes = computed(() => getStoryDescriptorThemes(props.story.slug));
 
 const handleShare = async (): Promise<void> => {
     const result = await share({
@@ -226,7 +229,7 @@ const rightColumnChapters = computed(() => props.story.chapters?.filter((_, inde
                         <div class="story-show-chapters__align hidden shrink-0 lg:block" aria-hidden="true" />
                         <div class="flex flex-col gap-4 lg:gap-5">
                             <div class="flex flex-col gap-2.5">
-                                <StoryPlayTitleProgress :title="displayTitle" :series-label="creatorName" />
+                                <StoryPlayTitleProgress :title="displayTitle" :themes="descriptorThemes" />
                                 <StoryPlayMetaRow :duration-label="durationLabel" :genre-label="genreLabel" />
                                 <StoryPlayStatStrip :items="statItems" />
                             </div>
