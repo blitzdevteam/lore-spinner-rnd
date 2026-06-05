@@ -226,7 +226,7 @@ const rightColumnChapters = computed(() => props.story.chapters?.filter((_, inde
                         <div class="story-show-chapters__align hidden shrink-0 lg:block" aria-hidden="true" />
                         <div class="flex flex-col gap-4 lg:gap-5">
                             <div class="flex flex-col gap-2.5">
-                                <StoryPlayTitleProgress :title="displayTitle" />
+                                <StoryPlayTitleProgress :title="displayTitle" :series-label="creatorName" />
                                 <StoryPlayMetaRow :duration-label="durationLabel" :genre-label="genreLabel" />
                                 <StoryPlayStatStrip :items="statItems" />
                             </div>
