@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
+import { formatCreatorDisplayName } from '@/data/loreSpinnerSeriesLabels';
 import { resolveStoryTopMoodCover } from '@/data/storyTopMoodCoverBySlug';
 import { GameInterface } from '@/types';
 import { show } from '@/wayfinder/routes/user/games';
@@ -38,6 +39,21 @@ const timeAgo = computed(() => {
 const sessionLabel = computed(() => {
     const n = props.game.current_session_number;
     return n ? `Session ${n}` : null;
+});
+
+const creatorName = computed(() => {
+    const creator = story.value?.creator;
+    if (!creator) return '';
+
+    const raw =
+        creator.full_name?.trim() ||
+        [creator.first_name, creator.last_name].filter(Boolean).join(' ') ||
+        creator.username ||
+        '';
+
+    if (!raw) return '';
+
+    return formatCreatorDisplayName(raw, creator);
 });
 </script>
 
@@ -87,8 +103,8 @@ const sessionLabel = computed(() => {
 
                                 <h3 class="text-lg font-semibold text-white sm:text-xl md:text-2xl">{{ story?.title }}</h3>
 
-                                <p v-if="story?.creator" class="text-xs text-gray-400 sm:text-sm">
-                                    By {{ story.creator.full_name }}
+                                <p v-if="creatorName" class="text-xs text-gray-400 sm:text-sm">
+                                    {{ creatorName }}
                                 </p>
                             </div>
 
