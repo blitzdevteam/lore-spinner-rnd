@@ -12,6 +12,9 @@
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
         <link rel="manifest" href="/site.webmanifest">
 
+        <!-- Google Search Console verification -->
+        <meta name="google-site-verification" content="google3e64d38c504450d9">
+
         <!-- SEO / Open Graph -->
         <meta name="application-name" content="LoreSpinner">
         <meta property="og:site_name" content="LoreSpinner">
