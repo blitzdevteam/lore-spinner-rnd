@@ -7,12 +7,12 @@ import janeEyreTopMood from '@/assets/top-moods/Jane eyre 16_9 untitled.png';
 import jekyllTopMood from '@/assets/top-moods/Jeckell Hyde 16_9 untitled.png';
 import redDeathTopMood from '@/assets/top-moods/Masque red death 16_9 untitled.png';
 import nocturneTopMood from '@/assets/top-moods/Nocturne 16_9 untitled.png';
-import ozTopMood from '@/assets/top-moods/Oz 16_9 untitled.png';
+import ozHomeLandscape from '@/assets/newStories/Oz landscape titled.png';
+import sherlockHomeLandscape from '@/assets/newStories/sherlock-new.png';
+import tellTaleHomeLandscape from '@/assets/newStories/Tell Tale 5_3 landscape.png';
 import pjsTopMood from '@/assets/top-moods/PJS 16_9 untitled.JPG';
 import prideTopMood from '@/assets/top-moods/Pride prejudice 16_9 untitled.png';
 import romeoTopMood from '@/assets/top-moods/Romeo juliet 16_9 untitled.png';
-import sherlockTopMood from '@/assets/top-moods/Sherlock in the speckled band 16_9 untitled.png';
-import tellTaleTopMood from '@/assets/top-moods/Tell tale heart 16_9 untitled.png';
 import treasureTopMood from '@/assets/top-moods/Treasure island 16_9 untitled.png';
 import wastelandTopMood from '@/assets/top-moods/Wasteland wide 16_9 untitled.JPG';
 import { resolveStoryCover } from '@/data/storyCoverBySlug';
@@ -33,10 +33,10 @@ export const STORY_TOP_MOOD_COVER_BY_SLUG: Record<string, string> = {
     pjs: pjsTopMood,
     'pride-and-prejudice': prideTopMood,
     'romeo-and-juliet': romeoTopMood,
-    'the-adventure-of-the-speckled-band': sherlockTopMood,
+    'the-adventure-of-the-speckled-band': sherlockHomeLandscape,
     'the-masque-of-the-red-death': redDeathTopMood,
-    'the-tell-tale-heart': tellTaleTopMood,
-    'the-wonderful-wizard-of-oz': ozTopMood,
+    'the-tell-tale-heart': tellTaleHomeLandscape,
+    'the-wonderful-wizard-of-oz': ozHomeLandscape,
     'treasure-island': treasureTopMood,
     wasteland: wastelandTopMood,
 };

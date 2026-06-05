@@ -16,8 +16,6 @@ const story = computed(() => props.game.story);
 const posterUrl = computed(() => {
     const s = story.value;
     if (!s?.slug) return '';
-    const banner = s.banner?.trim();
-    if (banner) return banner;
     return resolveStoryTopMoodCover(s.slug, s.cover);
 });
 
