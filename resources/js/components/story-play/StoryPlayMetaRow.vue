@@ -3,7 +3,6 @@ import { LucideClock } from 'lucide-vue-next';
 
 defineProps<{
     durationLabel?: string | null;
-    genreLabel?: string | null;
 }>();
 </script>
 
@@ -18,17 +17,6 @@ defineProps<{
                 class="font-['Inter',sans-serif] text-[0.8125rem] font-semibold not-italic leading-[1.375rem] text-[#373737]"
             >
                 {{ durationLabel }}
-            </span>
-        </div>
-        <div
-            v-if="genreLabel"
-            class="flex h-[1.375rem] w-auto min-w-0 items-center justify-start gap-[0.3307rem]"
-        >
-            <span class="inline-block size-[1rem] shrink-0 rounded-sm border-[1.25px] border-[#373737]" aria-hidden="true" />
-            <span
-                class="min-w-0 font-['Inter',sans-serif] text-[0.8125rem] font-semibold not-italic leading-[1.375rem] text-[#373737]"
-            >
-                {{ genreLabel }}
             </span>
         </div>
     </div>

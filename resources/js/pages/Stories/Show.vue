@@ -107,8 +107,6 @@ const durationLabel = computed(() => {
     return `${mins}min`;
 });
 
-const genreLabel = computed(() => props.story.category?.title ?? null);
-
 function formatRelativeUpdated(dateIso: string | null | undefined): string {
     if (!dateIso) {
         return '—';
@@ -230,7 +228,7 @@ const rightColumnChapters = computed(() => props.story.chapters?.filter((_, inde
                         <div class="flex flex-col gap-4 lg:gap-5">
                             <div class="flex flex-col gap-2.5">
                                 <StoryPlayTitleProgress :title="displayTitle" :themes="descriptorThemes" />
-                                <StoryPlayMetaRow :duration-label="durationLabel" :genre-label="genreLabel" />
+                                <StoryPlayMetaRow :duration-label="durationLabel" />
                                 <StoryPlayStatStrip :items="statItems" />
                             </div>
 
