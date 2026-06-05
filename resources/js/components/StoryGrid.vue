@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import StoryCard, { type StoryCardCta } from '@/components/StoryCard.vue';
+import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
+import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { isStoryPlayable } from '@/data/playableStorySlugs';
 import { getStoryDescriptorThemes } from '@/data/storyCardHoverMeta';
 import { StoryInterface } from '@/types';
 import { StoryStatusEnum } from '@/types/enum';
+import { ref } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -27,6 +30,31 @@ function isComingSoon(story: StoryInterface): boolean {
     return !isStoryPlayable(story.slug);
 }
 
+const isDesktopHover = useDesktopStoryPreview();
+const sheetStory = ref<StorySheetData | null>(null);
+
+function toSheetData(story: StoryInterface): StorySheetData {
+    const comingSoon = isComingSoon(story);
+    const cta = ctaForStory(story);
+
+    return {
+        id: story.id,
+        title: story.title,
+        cover: story.cover ?? '',
+        themes: getStoryDescriptorThemes(story.slug),
+        category: story.category?.title,
+        rating: story.rating?.label,
+        isComingSoon: comingSoon,
+        teaser: story.teaser,
+        slug: story.slug,
+        cta: cta ?? (comingSoon ? 'coming-soon' : 'play'),
+    };
+}
+
+function openSheet(story: StoryInterface): void {
+    sheetStory.value = toSheetData(story);
+}
+
 </script>
 
 <template>
@@ -43,8 +71,12 @@ function isComingSoon(story: StoryInterface): boolean {
             :cta="ctaForStory(story)"
             :teaser="story.teaser"
             :themes="getStoryDescriptorThemes(story.slug)"
+            :is-desktop-hover="isDesktopHover"
+            @preview="openSheet(story)"
         />
     </div>
+
+    <StoryDetailsSheet v-if="!isDesktopHover" :story="sheetStory" @close="sheetStory = null" />
 </template>
 
 <style scoped>

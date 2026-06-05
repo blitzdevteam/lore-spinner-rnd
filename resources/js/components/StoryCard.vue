@@ -19,6 +19,8 @@ const props = withDefaults(
         isComingSoon?: boolean;
         cta?: StoryCardCta;
         dimmed?: boolean;
+        /** Desktop: hover reveal + direct links. Touch/mobile: tap cover/title to preview. */
+        isDesktopHover?: boolean;
     }>(),
     {
         coverImage: null,
@@ -29,8 +31,11 @@ const props = withDefaults(
         isComingSoon: false,
         cta: undefined,
         dimmed: false,
+        isDesktopHover: true,
     },
 );
+
+const emit = defineEmits<{ preview: [] }>();
 
 const storyUrl = computed(() => show(props.slug).url);
 
@@ -61,6 +66,18 @@ const ctaLabel = computed(() => {
 const isInteractive = computed(() => resolvedCta.value !== 'coming-soon');
 
 const hasReveal = computed(() => props.themes.length > 0 || Boolean(props.teaser));
+
+const coverComponent = computed(() => {
+    if (props.isDesktopHover && isInteractive.value) return Link;
+    if (!props.isDesktopHover) return 'button';
+    return 'div';
+});
+
+function onCoverActivate(): void {
+    if (!props.isDesktopHover) {
+        emit('preview');
+    }
+}
 </script>
 
 <template>
@@ -71,17 +88,28 @@ const hasReveal = computed(() => props.themes.length > 0 || Boolean(props.teaser
     >
         <div class="story-card__frame">
             <component
-                :is="isInteractive ? Link : 'div'"
-                :href="isInteractive ? storyUrl : undefined"
-                class="story-card__cover-link block min-w-0 outline-none"
+                :is="coverComponent"
+                :href="isDesktopHover && isInteractive ? storyUrl : undefined"
+                type="button"
+                class="story-card__cover-link block min-w-0 border-0 bg-transparent p-0 text-left outline-none"
+                :class="!isDesktopHover && 'cursor-pointer'"
+                :aria-label="!isDesktopHover ? `Preview ${title}` : undefined"
+                @click="onCoverActivate"
             >
                 <StoryCardCover :src="coverImage" :title="title" />
             </component>
 
             <div class="story-card__body">
-                <div class="story-card__info">
+                <component
+                    :is="!isDesktopHover ? 'button' : 'div'"
+                    type="button"
+                    class="story-card__info min-w-0 border-0 bg-transparent p-0 text-left outline-none"
+                    :class="!isDesktopHover && 'cursor-pointer'"
+                    :aria-label="!isDesktopHover ? `Preview ${title}` : undefined"
+                    @click="!isDesktopHover && emit('preview')"
+                >
                     <h3 class="story-card__title">{{ title }}</h3>
-                </div>
+                </component>
 
                 <div
                     v-if="hasReveal"
