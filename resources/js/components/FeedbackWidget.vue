@@ -7,10 +7,12 @@ import { computed, nextTick, ref } from 'vue';
 
 const tts = useTextToSpeech();
 
-// Lift the button above the audio player bar when it is visible on mobile
+// Lift the button above the audio player bar when it is visible on mobile.
+// Sticky bottom area height: pt-4(16) + player(52) + gap(12) + input(~56) + pb-5(20) ≈ 156px
+// Use 200px so the 48px button sits comfortably clear of the whole strip.
 const feedbackBtnStyle = computed(() =>
     tts.isActive.value && !tts.mediaCollapsed.value
-        ? { bottom: '165px' }
+        ? { bottom: '200px' }
         : {},
 );
 
@@ -168,7 +170,7 @@ const submit = async () => {
             <Transition name="feedback-slide">
                 <div
                     v-if="isOpen"
-                    class="fixed right-4 bottom-44 left-4 z-[1000] max-w-sm rounded-2xl border border-primary-400/20 bg-gray-900 p-6 shadow-2xl shadow-primary-400/5 md:right-6 md:bottom-24 md:left-auto md:w-full"
+                    class="fixed right-4 bottom-40 left-4 z-[1000] max-w-sm rounded-2xl border border-primary-400/20 bg-gray-900 p-6 shadow-2xl shadow-primary-400/5 md:right-6 md:bottom-24 md:left-auto md:w-full"
                 >
                     <div class="flex items-start justify-between">
                         <h3 class="text-xl font-semibold text-primary-300">Feedback</h3>
@@ -211,7 +213,7 @@ const submit = async () => {
             <!-- Floating trigger button -->
             <div
                 data-feedback-btn
-                class="fixed right-4 bottom-32 z-[998] transition-[bottom,left,right] duration-300 md:right-6 md:!bottom-6"
+                class="fixed right-4 bottom-28 z-[998] transition-[bottom] duration-300 md:right-6 md:!bottom-6"
                 :style="feedbackBtnStyle"
             >
                 <BaseButton
