@@ -92,6 +92,10 @@ function scrollMoodGames(delta: number) {
     moodSliderEl.value?.scrollBy({ left: delta, behavior: 'smooth' });
 }
 
+function formatThemes(themes: string[]): string {
+    return themes.join(' · ');
+}
+
 function onBackdropKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
         closeMood();
@@ -458,7 +462,7 @@ onUnmounted(() => {
                                     />
                                     <button
                                         type="button"
-                                        class="slider-arrow absolute -left-1 top-[8.75rem] z-10 hidden -translate-y-1/2 sm:flex"
+                                        class="slider-arrow absolute -left-1 top-[8.75rem] z-10 hidden sm:flex"
                                         aria-label="Scroll picks left"
                                         @click="scrollMoodGames(-228)"
                                     >
@@ -466,7 +470,7 @@ onUnmounted(() => {
                                     </button>
                                     <button
                                         type="button"
-                                        class="slider-arrow absolute -right-1 top-[8.75rem] z-10 hidden -translate-y-1/2 sm:flex"
+                                        class="slider-arrow absolute -right-1 top-[8.75rem] z-10 hidden sm:flex"
                                         aria-label="Scroll picks right"
                                         @click="scrollMoodGames(228)"
                                     >
@@ -475,7 +479,7 @@ onUnmounted(() => {
 
                                     <div
                                         ref="moodSliderEl"
-                                        class="mood-game-slider flex gap-4 overflow-x-auto px-2 pb-2 pt-1 sm:gap-5 sm:px-1"
+                                        class="mood-game-slider flex items-stretch gap-4 overflow-x-auto px-2 pb-2 pt-1 sm:gap-5 sm:px-1"
                                     >
                                         <article
                                             v-for="game in panelGames"
@@ -501,33 +505,31 @@ onUnmounted(() => {
                                                     />
                                                 </div>
                                             </component>
-                                            <div class="flex min-h-0 flex-col gap-1.5 px-0.5">
+                                            <div class="flex min-h-0 flex-1 flex-col gap-1.5 px-0.5">
                                                 <p class="truncate text-base font-semibold text-white">
                                                     {{ game.title }}
                                                 </p>
-                                                <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem] leading-snug text-[#5fd4e8]">
-                                                    <template v-for="(theme, ti) in game.themes" :key="theme">
-                                                        <span v-if="ti > 0" class="text-white/25">·</span>
-                                                        <span>{{ theme }}</span>
-                                                    </template>
+                                                <p class="line-clamp-2 min-h-[2.75rem] text-[0.8125rem] leading-snug text-[#5fd4e8]">
+                                                    {{ formatThemes(game.themes) }}
                                                 </p>
-                                                <p class="line-clamp-2 text-[0.8125rem] leading-relaxed text-[#8a8a8a]">
+                                                <p class="line-clamp-2 min-h-[2.75rem] flex-1 text-[0.8125rem] leading-relaxed text-[#8a8a8a]">
                                                     {{ game.teaser }}
                                                 </p>
-                                                <template v-if="game.playable && game.slug">
+                                                <div class="mt-auto shrink-0 pt-1">
                                                     <Link
+                                                        v-if="game.playable && game.slug"
                                                         :href="storyShow(game.slug).url"
-                                                        class="mt-1 inline-flex h-9 w-full items-center justify-center rounded-lg bg-cta-fill text-sm font-semibold text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
+                                                        class="inline-flex h-9 w-full items-center justify-center rounded-lg bg-cta-fill text-sm font-semibold text-cta-text no-underline transition-colors hover:bg-cta-hover active:bg-cta-active"
                                                         @click="closeMood"
                                                     >
                                                         Play
                                                     </Link>
-                                                </template>
-                                                <div
-                                                    v-else
-                                                    class="mt-1 flex h-9 w-full items-center justify-center rounded-lg border border-white/15 bg-white/5 text-sm font-medium text-white/45"
-                                                >
-                                                    Coming soon
+                                                    <div
+                                                        v-else
+                                                        class="flex h-9 w-full items-center justify-center rounded-lg border border-white/15 bg-white/5 text-sm font-medium text-white/45"
+                                                    >
+                                                        Coming soon
+                                                    </div>
                                                 </div>
                                             </div>
                                         </article>
@@ -569,6 +571,7 @@ onUnmounted(() => {
 }
 
 .slider-arrow {
+    display: flex;
     width: 2.375rem;
     height: 2.375rem;
     align-items: center;
@@ -576,11 +579,11 @@ onUnmounted(() => {
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: background 0.2s, transform 0.15s;
+    transform: translateY(-50%);
+    transition: background 0.2s;
 }
 .slider-arrow:hover {
     background: rgba(255, 255, 255, 0.18);
-    transform: translateY(-50%) scale(1.04);
 }
 .slider-arrow-icon {
     font-size: 1.375rem;
