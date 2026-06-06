@@ -151,7 +151,7 @@ watch(
         </div>
 
         <!-- ── Listen Again + Continue ── -->
-        <div v-if="prompt.response && showChoicesAndActions" class="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <div v-if="prompt.response && showChoicesAndActions" class="flex flex-row flex-wrap items-center gap-1.5">
             <button
                 type="button"
                 class="narration-action-pill listen-again-pill relative flex h-[50px] w-auto items-center gap-[5px] overflow-hidden rounded-[60px] p-[6px] pe-3.5"
@@ -187,7 +187,7 @@ watch(
             <button
                 v-if="showContinueButton"
                 type="button"
-                class="narration-action-pill bg-glass-effect flex h-[50px] w-full min-w-0 items-center gap-2 overflow-hidden rounded-full p-1.5 pe-4 sm:w-auto sm:pe-5 bg-[#33333330]"
+                class="narration-action-pill bg-glass-effect flex h-[50px] w-auto min-w-0 items-center gap-2 overflow-hidden rounded-full p-1.5 pe-4 sm:pe-5 bg-[#33333330]"
                 title="Continue the story"
                 @click="handleContinue"
             >
