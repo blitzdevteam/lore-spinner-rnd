@@ -99,9 +99,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div
-        :class="['relative w-full max-w-3xl', props.disabled && 'pointer-events-none']"
-    >
+    <div :class="['relative w-full max-w-3xl', props.disabled && 'pointer-events-none']">
         <!-- Gradient border pill -->
         <div
             :class="[
@@ -114,7 +112,7 @@ onUnmounted(() => {
         >
             <!-- Inner dark field -->
             <div
-                class="flex h-full flex-1 items-center gap-2 rounded-[28px] border border-[#373737] bg-[#1c1c1c] sm:gap-3 sm:rounded-[35px] px-1"
+                class="flex h-full flex-1 items-center gap-2 rounded-[28px] border border-[#373737] bg-[#1c1c1c] px-1 sm:gap-3 sm:rounded-[35px]"
                 @click="focusInput"
             >
                 <!-- Recording pulse indicator -->
@@ -123,9 +121,14 @@ onUnmounted(() => {
                 <PrimeInputText
                     ref="inputEl"
                     v-model="inputText"
-                    class="flex-1 border-none! bg-transparent! py-0! px-2! text-base! text-white! shadow-none! outline-none! ring-0! placeholder:text-gray-500!"
+                    class="flex-1 border-none! bg-transparent! px-2! py-0! text-base! text-white! shadow-none! ring-0! outline-none! placeholder:text-gray-500!"
                     :placeholder="stt.isRecording.value ? 'Listening...' : stt.isTranscribing.value ? 'Transcribing...' : 'What Do You Do?'"
                     :disabled="props.disabled || stt.isRecording.value || stt.isTranscribing.value"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    name="story_input"
                     @keydown="handleKeydown"
                     @focus="signalReadyToType"
                     @input="signalReadyToType"
@@ -142,14 +145,7 @@ onUnmounted(() => {
                 >
                     <LucideArrowUp class="size-4 sm:size-5" :stroke-width="2.75" />
                 </button>
-                <BaseButton
-                    v-else
-                    severity="glass"
-                    :icon-only="true"
-                    class="size-9! shrink-0 sm:size-10!"
-                    type="button"
-                    @click="handleMicToggle"
-                >
+                <BaseButton v-else severity="glass" :icon-only="true" class="size-9! shrink-0 sm:size-10!" type="button" @click="handleMicToggle">
                     <LucideLoader v-if="stt.isTranscribing.value" class="size-5 animate-spin text-white" />
                     <LucideSquare v-else-if="stt.isRecording.value" fill="white" class="size-3.5 text-white" />
                     <LucideMic v-else class="size-5 text-gray-300" />
@@ -229,8 +225,13 @@ onUnmounted(() => {
 }
 
 @keyframes gp-glow-breathe {
-    0%, 100% { --gp-breathe-alpha: 0.22; }
-    50%       { --gp-breathe-alpha: 0.48; }
+    0%,
+    100% {
+        --gp-breathe-alpha: 0.22;
+    }
+    50% {
+        --gp-breathe-alpha: 0.48;
+    }
 }
 
 .gp-pill--fading {
@@ -251,8 +252,13 @@ onUnmounted(() => {
 }
 
 @keyframes gp-glow-sweep {
-    0%, 100% { --gp-glow-pos: -5%; }
-    50%       { --gp-glow-pos: 82%; }
+    0%,
+    100% {
+        --gp-glow-pos: -5%;
+    }
+    50% {
+        --gp-glow-pos: 82%;
+    }
 }
 
 /* Sending: the glow travels clockwise around the pill perimeter */
@@ -269,7 +275,11 @@ onUnmounted(() => {
 }
 
 @keyframes gp-glow-orbit {
-    from { --gp-glow-angle: 0deg; }
-    to   { --gp-glow-angle: 360deg; }
+    from {
+        --gp-glow-angle: 0deg;
+    }
+    to {
+        --gp-glow-angle: 360deg;
+    }
 }
 </style>

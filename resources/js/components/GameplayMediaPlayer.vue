@@ -35,7 +35,7 @@ const onVolumeInput = (event: Event) => {
     <Transition name="player-slide">
         <div
             v-if="tts.isActive.value && !props.collapsed"
-            class="player-bar pointer-events-auto relative isolate z-10 flex items-center gap-2 overflow-hidden rounded-full px-2 py-2 sm:gap-2.5 sm:px-2.5"
+            class="player-bar pointer-events-auto relative isolate z-10 flex w-full items-center gap-2 overflow-hidden rounded-full px-2 py-2 sm:gap-2.5 sm:px-2.5 md:w-auto"
         >
             <span class="player-bar__backdrop" aria-hidden="true" />
             <div class="player-bar__controls relative z-[1] flex items-center justify-between gap-2 sm:gap-2.5">
