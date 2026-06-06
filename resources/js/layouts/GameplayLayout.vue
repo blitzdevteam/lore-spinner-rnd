@@ -286,8 +286,7 @@ const { anchorStyle: inputAnchorStyle, isDocked: inputAnchorDocked } = useMobile
                     <div
                         ref="inputAnchorRef"
                         class="gameplay-input-anchor z-20 mt-4 w-full bg-linear-to-t from-gray-950 from-15% via-gray-950/90 to-transparent pb-5 pt-4 md:mt-5 md:pb-6 md:pt-5"
-                        :class="{ 'sticky bottom-0': !inputAnchorDocked }"
-                        :style="inputAnchorStyle"
+                        :class="{ 'sticky bottom-0': true }"
                     >
                         <div
                             class="flex flex-col items-center gap-3 px-0"

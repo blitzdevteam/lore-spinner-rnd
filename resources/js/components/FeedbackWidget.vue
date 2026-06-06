@@ -1,20 +1,60 @@
 <script setup lang="ts">
 import BaseButton from '@/components/BaseButton.vue';
+import { useFeedbackWidget } from '@/composables/useFeedbackWidget';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { router } from '@inertiajs/vue3';
 import { LucideMessageSquare, Send, X } from 'lucide-vue-next';
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
 
 const tts = useTextToSpeech();
+const { audioSheetOpen } = useFeedbackWidget();
+
+// Distance (px) from the viewport bottom to the top edge of the open voice
+// settings sheet — keeps the feedback button floating just above the modal.
+const sheetOffset = ref<number | null>(null);
+
+const measureSheetOffset = (): void => {
+    if (typeof window === 'undefined') {
+        return;
+    }
+    const panel = document.querySelector<HTMLElement>('.gp-sheet-panel');
+    if (!panel) {
+        sheetOffset.value = null;
+        return;
+    }
+    // Sit the 48px button 12px above the sheet's top edge.
+    sheetOffset.value = window.innerHeight - panel.getBoundingClientRect().top + 12;
+};
+
+watch(audioSheetOpen, (open) => {
+    if (open) {
+        // Wait for the sheet slide-up transition to settle before measuring.
+        nextTick(() => {
+            setTimeout(measureSheetOffset, 340);
+        });
+        window.addEventListener('resize', measureSheetOffset);
+    } else {
+        sheetOffset.value = null;
+        window.removeEventListener('resize', measureSheetOffset);
+    }
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', measureSheetOffset);
+});
 
 // Lift the button above the audio player bar when it is visible on mobile.
 // Sticky bottom area height: pt-4(16) + player(52) + gap(12) + input(~56) + pb-5(20) ≈ 156px
 // Use 200px so the 48px button sits comfortably clear of the whole strip.
-const feedbackBtnStyle = computed(() =>
-    tts.isActive.value && !tts.mediaCollapsed.value
-        ? { bottom: '200px' }
-        : {},
-);
+const feedbackBtnStyle = computed(() => {
+    if (audioSheetOpen.value && sheetOffset.value !== null) {
+        return { bottom: `${sheetOffset.value}px` };
+    }
+    if (tts.isActive.value && !tts.mediaCollapsed.value) {
+        return { bottom: '200px' };
+    }
+    return {};
+});
 
 type Phase = 'idle' | 'capturing' | 'sending';
 
