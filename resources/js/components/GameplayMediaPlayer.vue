@@ -114,11 +114,11 @@ const onVolumeInput = (event: Event) => {
                 />
             </div>
 
-            <span class="hidden h-6 w-px bg-white/15 sm:block" />
+            <span class="hidden h-6 w-px bg-white/15 md:block" />
 
-            <!-- Skip back 15s -->
+            <!-- Skip back 15s (desktop) -->
             <button
-                class="player-btn relative grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95"
+                class="player-btn relative hidden shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95 md:grid"
                 title="Skip back 15s"
                 @click="tts.seekBy(-15)"
             >
@@ -126,9 +126,9 @@ const onVolumeInput = (event: Event) => {
                 <span class="absolute text-[9px] font-semibold tabular-nums">15</span>
             </button>
 
-            <!-- Skip forward 15s -->
+            <!-- Skip forward 15s (desktop) -->
             <button
-                class="player-btn relative grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95"
+                class="player-btn relative hidden shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95 md:grid"
                 title="Skip forward 15s"
                 @click="tts.seekBy(15)"
             >
