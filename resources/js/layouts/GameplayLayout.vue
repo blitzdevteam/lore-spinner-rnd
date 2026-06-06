@@ -297,7 +297,10 @@ const { anchorStyle: inputAnchorStyle, isDocked: inputAnchorDocked } = useMobile
                             class="flex flex-col items-center gap-3 bg-linear-to-t from-gray-950 via-gray-950/90 to-transparent px-0 pt-4 md:pt-5"
                         >
                             <div class="flex w-full justify-start md:hidden">
-                                <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" />
+                                <GameplayMediaPlayer
+                                    :collapsed="tts.mediaCollapsed.value"
+                                    @open-audio-settings="toggleMedia"
+                                />
                             </div>
                             <GameplayInput
                                 :disabled="props.inputDisabled"

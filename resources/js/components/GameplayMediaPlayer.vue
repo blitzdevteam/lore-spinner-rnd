@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
-import { LucideLoader, LucidePause, LucidePlay, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideX } from 'lucide-vue-next';
+import { LucideAudioLines, LucideLoader, LucidePause, LucidePlay, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideX } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = withDefaults(defineProps<{ collapsed?: boolean }>(), { collapsed: false });
+
+const emit = defineEmits<{
+    'open-audio-settings': [];
+}>();
 
 const tts = useTextToSpeech();
 
@@ -52,8 +56,31 @@ const onVolumeInput = (event: Event) => {
                 {{ tts.formattedCurrentTime.value }}
             </span>
 
-            <!-- Mute + volume slider -->
-            <div class="volume-control flex items-center gap-1.5">
+            <!-- Mute (mobile) -->
+            <button
+                class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-primary-600 transition-[transform,color,opacity,background-color] hover:scale-105 hover:bg-white/10 hover:text-white active:scale-95 md:hidden"
+                :class="isVolumeMuted ? 'text-white' : 'opacity-80 hover:opacity-100'"
+                :aria-pressed="isVolumeMuted"
+                :title="isVolumeMuted ? 'Unmute' : 'Mute'"
+                aria-label="Toggle mute"
+                @click="tts.toggleMute"
+            >
+                <LucideVolumeX v-if="isVolumeMuted" class="player-btn-icon" :stroke-width="1.75" />
+                <LucideVolume2 v-else class="player-btn-icon" :stroke-width="1.75" />
+            </button>
+
+            <!-- Audio settings (mobile) -->
+            <button
+                class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95 md:hidden"
+                title="Audio settings"
+                aria-label="Audio settings"
+                @click="emit('open-audio-settings')"
+            >
+                <LucideAudioLines class="player-btn-icon" :stroke-width="1.75" />
+            </button>
+
+            <!-- Mute + volume slider (desktop) -->
+            <div class="volume-control hidden items-center gap-1.5 md:flex">
                 <button
                     class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-primary-600 transition-[transform,color,opacity,background-color] hover:scale-105 hover:bg-white/10 hover:text-white active:scale-95"
                     :class="isVolumeMuted ? 'text-white' : 'opacity-80 hover:opacity-100'"
