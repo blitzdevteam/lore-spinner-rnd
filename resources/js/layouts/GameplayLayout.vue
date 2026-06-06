@@ -96,15 +96,6 @@ watch(
     },
 );
 
-watch(
-    () => tts.mediaCollapsed.value,
-    (collapsed) => {
-        if (!collapsed && isMobile.value && activePanel.value === 'audio') {
-            activePanel.value = null;
-        }
-    },
-);
-
 const toggleJournal = () => {
     activePanel.value = activePanel.value === 'journal' ? null : 'journal';
 };
@@ -116,22 +107,27 @@ const toggleSettings = () => {
 const toggleMedia = () => {
     if (isMobile.value) {
         if (activePanel.value === 'audio') {
-            activePanel.value = null;
-            tts.revealMediaPlayer();
+            closeMobilePanel();
             return;
         }
-        tts.collapseMediaPlayer();
-        activePanel.value = 'audio';
+        openAudioSettings();
         return;
     }
     tts.mediaCollapsed.value = !tts.mediaCollapsed.value;
 };
 
+function openAudioSettings() {
+    if (!isMobile.value || activePanel.value === 'audio') return;
+    activePanel.value = 'audio';
+    tts.collapseMediaPlayer();
+}
+
 const closeMobilePanel = () => {
-    if (activePanel.value === 'audio') {
+    const wasAudio = activePanel.value === 'audio';
+    activePanel.value = null;
+    if (wasAudio) {
         tts.revealMediaPlayer();
     }
-    activePanel.value = null;
 };
 
 const showDesktopBackdrop = () => !isMobile.value && (activePanel.value === 'journal' || activePanel.value === 'settings');
@@ -296,10 +292,10 @@ const { anchorStyle: inputAnchorStyle, isDocked: inputAnchorDocked } = useMobile
                         <div
                             class="flex flex-col items-center gap-3 bg-linear-to-t from-gray-950 via-gray-950/90 to-transparent px-0 pt-4 md:pt-5"
                         >
-                            <div class="flex w-full justify-start md:hidden">
+                            <div class="flex min-h-[3.25rem] w-full items-center justify-start md:hidden">
                                 <GameplayMediaPlayer
                                     :collapsed="tts.mediaCollapsed.value"
-                                    @open-audio-settings="toggleMedia"
+                                    @open-audio-settings="openAudioSettings"
                                 />
                             </div>
                             <GameplayInput

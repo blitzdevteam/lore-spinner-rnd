@@ -74,7 +74,7 @@ const onVolumeInput = (event: Event) => {
                 class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95 md:hidden"
                 title="Audio settings"
                 aria-label="Audio settings"
-                @click="emit('open-audio-settings')"
+                @click.stop="emit('open-audio-settings')"
             >
                 <LucideAudioLines class="player-btn-icon" :stroke-width="1.75" />
             </button>

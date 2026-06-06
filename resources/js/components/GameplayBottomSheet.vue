@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { lockBodyScroll, unlockBodyScroll } from '@/composables/useBodyScrollLock';
 import { LucideX } from 'lucide-vue-next';
 import { onUnmounted, ref, watch } from 'vue';
 
@@ -23,13 +24,13 @@ function onKeydown(e: KeyboardEvent) {
 
 watch(
     () => props.open,
-    (val) => {
+    (val, wasOpen) => {
         if (typeof document === 'undefined') return;
         if (val) {
-            document.body.classList.add('overflow-hidden');
+            lockBodyScroll();
             window.addEventListener('keydown', onKeydown);
-        } else {
-            document.body.classList.remove('overflow-hidden');
+        } else if (wasOpen) {
+            unlockBodyScroll();
             window.removeEventListener('keydown', onKeydown);
         }
     },
@@ -38,7 +39,9 @@ watch(
 
 onUnmounted(() => {
     if (typeof document === 'undefined') return;
-    document.body.classList.remove('overflow-hidden');
+    if (props.open) {
+        unlockBodyScroll();
+    }
     window.removeEventListener('keydown', onKeydown);
 });
 
