@@ -8,6 +8,9 @@ use App\Filament\Manager\Resources\Feedback\FeedbackResource;
 use App\Filament\Manager\Resources\Feedback\Pages\ListFeedbacks;
 use App\Filament\Manager\Resources\Feedback\Pages\ViewFeedback;
 use App\Filament\Manager\Widgets;
+use App\Filament\Manager\Widgets\Analytics\AnalyticsFunnelWidget;
+use App\Filament\Manager\Widgets\Analytics\AnalyticsKpiWidget;
+use App\Filament\Manager\Widgets\Analytics\AnalyticsRetentionWidget;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -38,6 +41,22 @@ final class ManagerPanelProvider extends PanelProvider
         Livewire::component(
             'app.filament.manager.resources.feedback.pages.view-feedback',
             ViewFeedback::class,
+        );
+
+        // Analytics widgets are NOT in discoverWidgets (they would appear on the
+        // main dashboard and crash if analytics tables do not exist). Register them
+        // as Livewire components manually so AnalyticsDashboard can render them.
+        Livewire::component(
+            'app.filament.manager.widgets.analytics.analytics-kpi-widget',
+            AnalyticsKpiWidget::class,
+        );
+        Livewire::component(
+            'app.filament.manager.widgets.analytics.analytics-funnel-widget',
+            AnalyticsFunnelWidget::class,
+        );
+        Livewire::component(
+            'app.filament.manager.widgets.analytics.analytics-retention-widget',
+            AnalyticsRetentionWidget::class,
         );
 
         // Register the nav item on every manager request. FeedbackResource uses
@@ -74,7 +93,9 @@ final class ManagerPanelProvider extends PanelProvider
                 FeedbackResource::registerRoutes($panel);
             })
             ->discoverPages(in: app_path('Filament/Manager/Pages'), for: 'App\Filament\Manager\Pages')
-            ->discoverWidgets(in: app_path('Filament/Manager/Widgets'), for: 'App\Filament\Manager\Widgets')
+            // Global widgets are listed explicitly in ->widgets() below.
+            // Analytics widgets are NOT discovered here — they are registered as
+            // Livewire components in boot() so they only render on the analytics page.
             ->pages([
                 Dashboard::class,
             ])
