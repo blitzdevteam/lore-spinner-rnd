@@ -27,7 +27,7 @@
     --story-card-btn-bg-hover: var(--color-cta-hover);
     --story-card-btn-bg-active: var(--color-cta-active);
     --story-card-btn-text: var(--color-cta-text);
-    /** Resting card body below cover (title, meta, gap, CTA, padding) — arrows center on cover + this. */
+    /** Resting card body below cover (title, meta, gap, CTA, padding). */
     --story-card-rest-body-height: calc(
         var(--story-card-body-pad-y) + 1.625rem + 0.375rem +
             calc(var(--story-card-meta-size) * 1.35) + var(--story-card-body-gap) +
