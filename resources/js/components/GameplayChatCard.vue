@@ -88,11 +88,13 @@ const getChoiceClass = (choice: string) => {
 
 const handleChoiceClick = (choice: string) => {
     if (!canInteract.value) return;
+    tts.primeAudio();
     emit('choice-selected', props.prompt.id, choice);
 };
 
 const handleContinue = () => {
     if (!canInteract.value) return;
+    tts.primeAudio();
     emit('continue');
 };
 

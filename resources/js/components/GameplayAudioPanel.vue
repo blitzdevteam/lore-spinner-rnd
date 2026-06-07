@@ -14,6 +14,11 @@ const volumePercent = computed(() => {
 
 const isVolumeMuted = computed(() => tts.isMuted.value || tts.volume.value === 0);
 
+const toggleAutoplay = () => {
+    tts.primeAudio();
+    settings.autoplay = !settings.autoplay;
+};
+
 const speedLabel = computed(() => {
     const r = tts.playbackRate.value;
     return r === 1 ? '1×' : `${r}×`;
@@ -143,7 +148,7 @@ const onProgressInput = (event: Event) => {
             <button
                 type="button"
                 class="flex w-full items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3.5 transition hover:border-primary/20 hover:bg-white/[0.05]"
-                @click="settings.autoplay = !settings.autoplay"
+                @click="toggleAutoplay"
             >
                 <div class="flex items-center gap-3">
                     <LucideZap

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import spinnerImg from '@/assets/intro/spinner.jpg';
+import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { onMounted, onUnmounted, ref } from 'vue';
+
+const tts = useTextToSpeech();
 
 const emit = defineEmits<{
     // Fired when the showcard appears → parent should start the game API call in background
@@ -71,8 +74,13 @@ function beginFadeOut() {
     schedule(() => emitDone(), 1100); // wait for fade-out CSS transition
 }
 
+function primeAudioFromGesture() {
+    tts.primeAudio();
+}
+
 // Click/tap: skip text phases, jump straight to showcard
 function skipToCard() {
+    primeAudioFromGesture();
     if (atCardPhase.value) return;
     timers.forEach(clearTimeout);
     timers.length = 0;
@@ -114,6 +122,7 @@ onUnmounted(() => {
         tabindex="0"
         aria-label="Story opening sequence. Tap to skip."
         @click="skipToCard"
+        @pointerdown="primeAudioFromGesture"
         @keydown.space.prevent="skipToCard"
         @keydown.enter.prevent="skipToCard"
     >

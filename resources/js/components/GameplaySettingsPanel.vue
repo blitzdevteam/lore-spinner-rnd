@@ -20,6 +20,11 @@ const tts = useTextToSpeech();
 
 const glassPreviewStyle = computed(() => glassTintVars(settings.backgroundColor));
 
+const toggleAutoplay = () => {
+    tts.primeAudio();
+    settings.autoplay = !settings.autoplay;
+};
+
 const clampFontSize = (val: number) => Math.min(28, Math.max(12, val));
 
 const isResetting = ref(false);
@@ -340,7 +345,7 @@ const onVolumeInput = (event: Event) => {
                 <button
                     type="button"
                     class="flex w-full items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3 transition hover:border-primary/20"
-                    @click="settings.autoplay = !settings.autoplay"
+                    @click="toggleAutoplay"
                 >
                     <div class="flex items-center gap-3">
                         <LucideZap

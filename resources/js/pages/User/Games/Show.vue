@@ -138,6 +138,7 @@ const handleBegin = () => {
 
 const handleNextSession = () => {
     if (isStartingNextSession.value) return;
+    tts.primeAudio();
     isStartingNextSession.value = true;
 
     router.post(
@@ -160,12 +161,14 @@ const handleNextSession = () => {
 
 const handleChoiceSelected = (promptId: string, choice: string) => {
     if (isSubmitting.value) return;
+    tts.primeAudio();
     pendingSelection.value[promptId] = choice;
     submitPrompt(choice);
 };
 
 const handleContinue = () => {
     if (isSubmitting.value) return;
+    tts.primeAudio();
     const latestPrompt = prompts.value[prompts.value.length - 1];
     if (latestPrompt) {
         pendingSelection.value[latestPrompt.id] = CONTINUE_MARKER;
@@ -175,6 +178,7 @@ const handleContinue = () => {
 
 const handleSubmit = (prompt: string) => {
     if (isSubmitting.value) return;
+    tts.primeAudio();
     submitPrompt(prompt);
 };
 
@@ -206,6 +210,7 @@ const handleCinemaPrepare = () => {
 };
 
 const handleRetryBegin = () => {
+    tts.primeAudio();
     beginSettled.value = false;
     isAutoBeginning.value = true;
     handleBegin();

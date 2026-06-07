@@ -104,6 +104,11 @@ const toggleSettings = () => {
     activePanel.value = activePanel.value === 'settings' ? null : 'settings';
 };
 
+const toggleAutoplay = () => {
+    tts.primeAudio();
+    settings.autoplay = !settings.autoplay;
+};
+
 const toggleMedia = () => {
     if (isMobile.value) {
         if (activePanel.value === 'audio') {
@@ -138,6 +143,7 @@ const emit = defineEmits<{
 }>();
 
 const handleInputSubmit = (prompt: string) => {
+    tts.primeAudio();
     emit('submit', prompt);
 };
 
@@ -194,7 +200,7 @@ const { anchorStyle: inputAnchorStyle, isDocked: inputAnchorDocked } = useMobile
                                 label="Auto Play"
                                 :title="settings.autoplay ? 'Autoplay on' : 'Autoplay off'"
                                 :active="settings.autoplay"
-                                @click="settings.autoplay = !settings.autoplay"
+                                @click="toggleAutoplay"
                             >
                                 <LucideZap
                                     class="size-5 transition-colors"
@@ -238,7 +244,7 @@ const { anchorStyle: inputAnchorStyle, isDocked: inputAnchorDocked } = useMobile
                             <button
                                 class="mobile-pill__btn"
                                 :title="settings.autoplay ? 'Autoplay on' : 'Autoplay off'"
-                                @click="settings.autoplay = !settings.autoplay"
+                                @click="toggleAutoplay"
                             >
                                 <LucideZap
                                     class="size-5 transition-colors"

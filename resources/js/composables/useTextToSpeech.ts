@@ -2,6 +2,12 @@ import { computed, onUnmounted, ref } from 'vue';
 
 const SPEED_OPTIONS = [1, 1.25, 1.5, 1.75, 2] as const;
 
+// Minimal silent WAV — played once during a user gesture to unlock mobile autoplay.
+const SILENT_WAV =
+    'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+
+const IOS = typeof navigator !== 'undefined' && /iP(hone|od|ad)/.test(navigator.userAgent);
+
 const audioCache = new Map<string, HTMLAudioElement>();
 
 const isPlaying = ref(false);
@@ -26,6 +32,70 @@ function collapseMediaPlayer() {
 
 let currentAudio: HTMLAudioElement | null = null;
 let rafId: number | null = null;
+let unlockAudio: HTMLAudioElement | null = null;
+let audioUnlocked = false;
+let pendingAutoplay: { gameId: string; promptId: string } | null = null;
+
+function configureAudioElement(audio: HTMLAudioElement) {
+    audio.setAttribute('playsinline', 'true');
+    if (IOS) {
+        audio.crossOrigin = 'anonymous';
+    }
+}
+
+function isAutoplayBlocked(err: unknown): boolean {
+    return err instanceof DOMException && err.name === 'NotAllowedError';
+}
+
+function queuePendingAutoplay(gameId: string, promptId: string) {
+    pendingAutoplay = { gameId, promptId };
+}
+
+function flushPendingAutoplay() {
+    if (!pendingAutoplay || !audioUnlocked) return;
+    const { gameId, promptId } = pendingAutoplay;
+    pendingAutoplay = null;
+    play(gameId, promptId);
+}
+
+/** Call synchronously from a user-gesture handler (tap/click) to unlock mobile audio. */
+function primeAudio() {
+    if (typeof window === 'undefined') return;
+
+    if (audioUnlocked) {
+        flushPendingAutoplay();
+        return;
+    }
+
+    if (!unlockAudio) {
+        unlockAudio = new Audio(SILENT_WAV);
+        unlockAudio.volume = 0.001;
+        configureAudioElement(unlockAudio);
+    }
+
+    const attempt = unlockAudio.play();
+    if (!attempt) return;
+
+    attempt
+        .then(() => {
+            unlockAudio?.pause();
+            if (unlockAudio) unlockAudio.currentTime = 0;
+            audioUnlocked = true;
+            flushPendingAutoplay();
+        })
+        .catch(() => {
+            // Gesture may have expired; a later interaction will retry.
+        });
+}
+
+function handlePlayRejected(key: string, err: unknown, gameId: string, promptId: string) {
+    if (isAutoplayBlocked(err)) {
+        queuePendingAutoplay(gameId, promptId);
+    }
+    console.warn('[TTS] play() rejected', key, err);
+    isPlaying.value = false;
+    isLoading.value = false;
+}
 
 function updateTime() {
     if (currentAudio) {
@@ -113,9 +183,7 @@ function play(gameId: string, promptId: string) {
             isLoading.value = true;
             revealMediaPlayer();
             currentAudio.play().catch((err) => {
-                console.warn('[TTS] play() rejected (resume)', key, err);
-                isPlaying.value = false;
-                isLoading.value = false;
+                handlePlayRejected(key, err, gameId, promptId);
             });
         }
         return;
@@ -131,9 +199,7 @@ function play(gameId: string, promptId: string) {
         applyAudioSettings(currentAudio);
         isLoading.value = true;
         currentAudio.play().catch((err) => {
-            console.warn('[TTS] play() rejected (cache replay)', key, err);
-            isPlaying.value = false;
-            isLoading.value = false;
+            handlePlayRejected(key, err, gameId, promptId);
         });
         return;
     }
@@ -142,15 +208,14 @@ function play(gameId: string, promptId: string) {
     console.debug('[TTS] fetching', key);
     const audio = new Audio(`/user/games/${gameId}/tts/${promptId}`);
     audio.preload = 'auto';
+    configureAudioElement(audio);
     applyAudioSettings(audio);
     attachListeners(audio, key);
     audioCache.set(key, audio);
     currentAudio = audio;
     activeKey.value = key;
     audio.play().catch((err) => {
-        console.warn('[TTS] play() rejected (new)', key, err);
-        isPlaying.value = false;
-        isLoading.value = false;
+        handlePlayRejected(key, err, gameId, promptId);
     });
 }
 
@@ -180,9 +245,9 @@ function resume() {
     if (currentAudio && currentAudio.paused && !currentAudio.ended) {
         isLoading.value = true;
         currentAudio.play().catch((err) => {
-            console.warn('[TTS] play() rejected (togglePause resume)', activeKey.value, err);
-            isPlaying.value = false;
-            isLoading.value = false;
+            const key = activeKey.value ?? 'unknown';
+            const [gameId = '', promptId = ''] = key.split(':');
+            handlePlayRejected(key, err, gameId, promptId);
         });
     }
 }
@@ -191,11 +256,13 @@ function togglePause() {
     if (isPlaying.value) {
         pause();
     } else {
+        primeAudio();
         resume();
     }
 }
 
 function toggle(gameId: string, promptId: string) {
+    primeAudio();
     const key = `${gameId}:${promptId}`;
     if (isPlaying.value && activeKey.value === key) {
         pause();
@@ -306,6 +373,7 @@ export function useTextToSpeech() {
         toggleLoop,
         seekTo,
         seekBy,
+        primeAudio,
         hasPlayed: (gameId: string, promptId: string) => playedKeys.has(`${gameId}:${promptId}`),
     };
 }
