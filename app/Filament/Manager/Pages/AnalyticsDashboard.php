@@ -42,18 +42,26 @@ final class AnalyticsDashboard extends Page
     }
 
     /**
-     * Funnel steps: Visits → Signups → Starts → Ch.1 Done → Completions → Replays.
-     * Each step carries a conversion % relative to the previous step and to Visits.
+     * Platform acquisition metrics — Visits and Signups.
      *
-     * @return array<int, array{label: string, value: int, conv_prev: string|null, conv_top: string|null, color: string}>
+     * These are INDEPENDENT counts, NOT a linear conversion funnel.
+     *
+     * - Visits: unique sessions on tracked public pages (/, /stories/*, /creators/*).
+     *   Registration page is not tracked, so users can sign up without creating a visit.
+     * - Signups: all new user accounts since the baseline, from any route.
+     *
+     * Because the populations don't nest, no cross-conversion % is shown.
+     * Bar widths are relative to the larger of the two.
+     *
+     * @return array<int, array{label: string, value: int, bar_width: int, color: string, note: string}>
      */
-    public function getFunnelData(): array
+    public function getAcquisitionMetrics(): array
     {
         try {
             $from = Analytics::baseline();
             $to   = Carbon::now()->endOfDay();
 
-            $visits = DB::table('page_views')
+            $visits  = DB::table('page_views')
                 ->where('view_date', '>=', $from->toDateString())
                 ->where('view_date', '<=', $to->toDateString())
                 ->distinct('session_id')
@@ -64,12 +72,60 @@ final class AnalyticsDashboard extends Page
                 ->where('created_at', '<=', $to)
                 ->count();
 
+            $max = max($visits, $signups, 1);
+
+            return [
+                [
+                    'label'     => 'Visits',
+                    'value'     => $visits,
+                    'bar_width' => max(4, (int) round($visits / $max * 100)),
+                    'color'     => '#6366f1',
+                    'note'      => 'Unique browser sessions on /, /stories/*, /creators/*',
+                ],
+                [
+                    'label'     => 'Signups',
+                    'value'     => $signups,
+                    'bar_width' => max(4, (int) round($signups / $max * 100)),
+                    'color'     => '#8b5cf6',
+                    'note'      => 'New registered accounts (includes direct /register arrivals)',
+                ],
+            ];
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * Engagement funnel — strictly nested steps anchored on Story Starts.
+     *
+     * Every step is a provable subset of Story Starts:
+     *   Ch.1 Completed ⊆ Starts
+     *   Story Completions ⊆ Starts
+     *   Replays ⊆ Completions
+     *
+     * Conversion percentages are calculated against Story Starts (the funnel anchor)
+     * for Ch.1 Completed, Story Completions, and against unique completions for Replays.
+     * Bar widths are relative to Story Starts (= 100%).
+     *
+     * NOTE: Story Starts counts all non-preview games since the baseline, including games
+     * by users who registered before the baseline. This is intentional per the spec —
+     * Story Starts is a platform-wide metric, not a cohort of the Signups above.
+     *
+     * @return array<int, array{label: string, value: int, bar_width: int, pct_starts: float|null, pct_prev: float|null, color: string, note: string}>
+     */
+    public function getEngagementFunnel(): array
+    {
+        try {
+            $from = Analytics::baseline();
+            $to   = Carbon::now()->endOfDay();
+
             $starts = DB::table('games')
                 ->where('is_preview', false)
                 ->where('created_at', '>=', $from)
                 ->where('created_at', '<=', $to)
                 ->count();
 
+            // Ch.1 Completed: session_number=1 with a completed_at
             $ch1done = GameSessionCompletion::query()
                 ->where('session_number', 1)
                 ->whereNotNull('completed_at')
@@ -77,35 +133,61 @@ final class AnalyticsDashboard extends Page
                 ->where('completed_at', '<=', $to)
                 ->count();
 
-            $completions = (int) GameCompletion::query()
+            // Unique games that completed at least once (completion rate denominator)
+            $uniqueCompleted = (int) GameCompletion::query()
                 ->where('completed_at', '>=', $from)
                 ->where('completed_at', '<=', $to)
                 ->distinct('game_id')
                 ->count('game_id');
 
+            // Replays = resets after a prior completion (had_prior_completion=true)
             $replays = GameReset::query()
                 ->where('had_prior_completion', true)
                 ->where('created_at', '>=', $from)
                 ->where('created_at', '<=', $to)
                 ->count();
 
-            $steps = [
-                ['label' => 'Visits',           'value' => $visits,      'color' => '#6366f1'],
-                ['label' => 'Signups',           'value' => $signups,     'color' => '#8b5cf6'],
-                ['label' => 'Story Starts',      'value' => $starts,      'color' => '#3b82f6'],
-                ['label' => 'Ch. 1 Completed',   'value' => $ch1done,     'color' => '#f59e0b'],
-                ['label' => 'Story Completions', 'value' => $completions, 'color' => '#22c55e'],
-                ['label' => 'Replays',           'value' => $replays,     'color' => '#ec4899'],
-            ];
+            $safeStarts    = max($starts, 1);
+            $safeCompleted = max($uniqueCompleted, 1);
 
-            $top = max($visits, 1);
-            foreach ($steps as $i => &$step) {
-                $prev              = $i > 0 ? $steps[$i - 1]['value'] : null;
-                $step['pct_top']   = $top > 0 ? round($step['value'] / $top * 100, 1) : 0.0;
-                $step['pct_prev']  = ($prev !== null && $prev > 0) ? round($step['value'] / $prev * 100, 1) : null;
-                $step['bar_width'] = max(4, (int) round($step['pct_top']));
-            }
-            unset($step);
+            $steps = [
+                [
+                    'label'       => 'Story Starts',
+                    'value'       => $starts,
+                    'bar_width'   => 100,
+                    'pct_starts'  => null,
+                    'pct_prev'    => null,
+                    'color'       => '#3b82f6',
+                    'note'        => 'Non-preview games created since baseline (includes pre-baseline users)',
+                ],
+                [
+                    'label'       => 'Ch. 1 Completed',
+                    'value'       => $ch1done,
+                    'bar_width'   => max(0, (int) round($ch1done / $safeStarts * 100)),
+                    'pct_starts'  => round($ch1done / $safeStarts * 100, 1),
+                    'pct_prev'    => round($ch1done / $safeStarts * 100, 1),
+                    'color'       => '#f59e0b',
+                    'note'        => 'Games where player advanced past Session 1',
+                ],
+                [
+                    'label'       => 'Story Completions',
+                    'value'       => $uniqueCompleted,
+                    'bar_width'   => max(0, (int) round($uniqueCompleted / $safeStarts * 100)),
+                    'pct_starts'  => round($uniqueCompleted / $safeStarts * 100, 1),
+                    'pct_prev'    => ($ch1done > 0) ? round($uniqueCompleted / max($ch1done, 1) * 100, 1) : null,
+                    'color'       => '#22c55e',
+                    'note'        => 'Distinct games that reached the story end state (game_completions)',
+                ],
+                [
+                    'label'       => 'Replays',
+                    'value'       => $replays,
+                    'bar_width'   => max(0, (int) round($replays / $safeStarts * 100)),
+                    'pct_starts'  => round($replays / $safeStarts * 100, 1),
+                    'pct_prev'    => round($replays / $safeCompleted * 100, 1),
+                    'color'       => '#ec4899',
+                    'note'        => 'Resets after a prior completion (had_prior_completion=true)',
+                ],
+            ];
 
             return $steps;
         } catch (\Throwable) {
