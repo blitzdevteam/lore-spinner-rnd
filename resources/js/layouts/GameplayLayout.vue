@@ -59,6 +59,8 @@ const activePanel = ref<Panel>(null);
 const journalTab = ref<'journals' | 'characters'>('journals');
 const journalSheetTab = ref<'timeline' | 'characters'>('timeline');
 const isMobile = ref(false);
+const isIos = ref(false);
+const inputFocused = ref(false);
 
 const MOBILE_MQ = '(max-width: 767px)';
 
@@ -74,6 +76,7 @@ function syncMobile() {
 onMounted(() => {
     syncMobile();
     window.matchMedia(MOBILE_MQ).addEventListener('change', syncMobile);
+    isIos.value = /iPad|iPhone|iPod/.test(navigator.userAgent);
 });
 
 onUnmounted(() => {
@@ -88,12 +91,9 @@ watch(isMobile, (mobile) => {
     audioSheetOpen.value = mobile && activePanel.value === 'audio';
 });
 
-watch(
-    [isMobile, activePanel],
-    ([mobile, panel]) => {
-        audioSheetOpen.value = mobile && panel === 'audio';
-    },
-);
+watch([isMobile, activePanel], ([mobile, panel]) => {
+    audioSheetOpen.value = mobile && panel === 'audio';
+});
 
 const toggleJournal = () => {
     activePanel.value = activePanel.value === 'journal' ? null : 'journal';
@@ -200,7 +200,7 @@ const handleInputSubmit = (prompt: string) => {
                             >
                                 <LucideZap
                                     class="size-5 transition-colors"
-                                    :class="settings.autoplay ? 'text-primary fill-primary' : 'text-gray-300'"
+                                    :class="settings.autoplay ? 'fill-primary text-primary' : 'text-gray-300'"
                                 />
                             </GameplayCapsuleButton>
                             <GameplayCapsuleButton
@@ -237,14 +237,10 @@ const handleInputSubmit = (prompt: string) => {
                                 <LucideX v-if="activePanel === 'settings'" class="size-5 text-secondary-300" />
                                 <LucideSettings v-else class="size-5 text-gray-300" />
                             </button>
-                            <button
-                                class="mobile-pill__btn"
-                                :title="settings.autoplay ? 'Autoplay on' : 'Autoplay off'"
-                                @click="toggleAutoplay"
-                            >
+                            <button class="mobile-pill__btn" :title="settings.autoplay ? 'Autoplay on' : 'Autoplay off'" @click="toggleAutoplay">
                                 <LucideZap
                                     class="size-5 transition-colors"
-                                    :class="settings.autoplay ? 'text-primary fill-primary' : 'text-gray-300'"
+                                    :class="settings.autoplay ? 'fill-primary text-primary' : 'text-gray-300'"
                                 />
                             </button>
                             <button
@@ -254,11 +250,7 @@ const handleInputSubmit = (prompt: string) => {
                                 @click="toggleMedia"
                             >
                                 <LucideX v-if="activePanel === 'audio'" class="size-5 text-secondary-300" />
-                                <LucideAudioLines
-                                    v-else
-                                    class="size-5"
-                                    :class="tts.isActive.value ? 'text-primary' : 'text-gray-300'"
-                                />
+                                <LucideAudioLines v-else class="size-5" :class="tts.isActive.value ? 'text-primary' : 'text-gray-300'" />
                             </button>
                             <button
                                 class="mobile-pill__btn"
@@ -275,33 +267,30 @@ const handleInputSubmit = (prompt: string) => {
 
                 <!-- ── Story content + input (single flow — input sits under choices) ── -->
                 <div
-                    class="z-5 mx-auto flex w-full max-w-3xl flex-col p-4 transition-colors duration-300"
+                    class="z-5 mx-auto flex w-full flex-col transition-colors duration-300"
                     :style="{ fontSize: settings.fontSize + 'px', color: settings.fontColor }"
                 >
-                    <div class="mb-2">
+                    <div class="p-3">
                         <slot name="header" />
                     </div>
-                    <div class="flex flex-col gap-8">
+                    <div class="mx-auto flex max-w-3xl flex-col gap-8 p-3">
                         <slot name="game" />
                     </div>
-
                     <div
-                        class="z-20 mt-4 w-full bg-linear-to-t from-gray-950 from-15% via-gray-950/90 to-transparent pb-5 pt-4 md:mt-5 md:pb-6 md:pt-5"
+                        class="sticky right-0 bottom-0 left-0 z-20 w-full px-3 py-6 md:p-6"
+                        :class="{ 'bg-linear-to-t from-black via-black/95 to-transparent': !(isIos && isMobile && inputFocused) }"
                     >
-                        <div
-                            class="flex flex-col items-center gap-3 px-0"
-                        >
-                            <div class="flex min-h-[3.25rem] w-full items-center justify-start md:hidden">
-                                <GameplayMediaPlayer
-                                    :collapsed="tts.mediaCollapsed.value"
-                                    @open-audio-settings="openAudioSettings"
-                                />
+                        <div class="flex flex-col items-center gap-3 px-0">
+                            <div class="flex w-full items-center justify-start md:hidden">
+                                <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" @open-audio-settings="openAudioSettings" />
                             </div>
                             <GameplayInput
                                 :disabled="props.inputDisabled"
                                 :glow-variant="inputGlowVariant"
                                 @submit="handleInputSubmit"
                                 @ready-to-type="onInputReadyToType"
+                                @focus="inputFocused = true"
+                                @blur="inputFocused = false"
                             />
                         </div>
                     </div>

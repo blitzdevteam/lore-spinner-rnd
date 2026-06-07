@@ -17,6 +17,8 @@ const emit = defineEmits<{
     submit: [prompt: string];
     /** User focused the bar or started typing — parent may show the sweep glow. */
     readyToType: [];
+    focus: [];
+    blur: [];
 }>();
 
 const inputText = ref('');
@@ -103,7 +105,7 @@ onUnmounted(() => {
         <!-- Gradient border pill -->
         <div
             :class="[
-                'flex h-14 items-center rounded-[32px] border border-[#373737] p-2 sm:h-[70px] sm:rounded-[39px] sm:p-2.5',
+                'flex h-14 items-center rounded-[32px] border border-[#373737] p-2 backdrop-blur-lg sm:h-[70px] sm:rounded-[39px] sm:p-2.5',
                 !displayedVariant && 'gp-pill--breathe',
                 displayedVariant === 'sweep' && 'gp-pill--sweep',
                 displayedVariant === 'orbit' && 'gp-pill--orbit',
@@ -130,7 +132,8 @@ onUnmounted(() => {
                     spellcheck="false"
                     name="story_input"
                     @keydown="handleKeydown"
-                    @focus="signalReadyToType"
+                    @focus="signalReadyToType(); emit('focus')"
+                    @blur="emit('blur')"
                     @input="signalReadyToType"
                 />
 

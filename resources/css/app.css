@@ -85,7 +85,6 @@ body {
     font-family: 'Source Sans 3', Inter, sans-serif;
     direction: ltr;
     text-align: left;
-    background-color: var(--color-background);
 }
 
 .container {
