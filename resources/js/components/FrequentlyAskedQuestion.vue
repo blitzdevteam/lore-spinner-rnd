@@ -13,33 +13,33 @@ interface FaqEntry {
 const faqs: FaqEntry[] = [
     {
         id: '1',
-        question: 'What is Lorespinner and how does it work?',
+        question: 'What is LoreSpinner and how does it work?',
         answer:
-            'Lorespinner is a curated storytelling platform where readers explore original stories written by verified authors. Users can follow story paths, unlock chapters, and engage with unique worlds created by professional writers.',
+            'LoreSpinner is an interactive storytelling platform where you step inside authored story worlds and help shape what happens next. Each experience begins with a story created by human writers. From there, your choices and imagination guide the journey. You can choose a path, make decisions, or tell the story what you want to do, and the world responds in real time.',
     },
     {
         id: '2',
         question: 'Can readers edit or change characters in a story?',
         answer:
-            'Readers explore branching paths the author designed. You cannot alter canonical characters or rewrite another creator’s story, but your choices can unlock different scenes and endings where those exist.',
+            'No. LoreSpinner is not a free-for-all story editor. You can make choices, explore different paths, and influence how the experience unfolds, but the core characters, world, and story integrity remain protected. Think of it as stepping inside a story, not rewriting someone else\'s book.',
     },
     {
         id: '3',
-        question: 'How do I become a writer on Lorespinner?',
+        question: 'How do I become a writer on LoreSpinner?',
         answer:
-            'Create an account, complete writer onboarding, and submit your story or pitch through the creator dashboard. Our team reviews submissions to keep quality and rights handling clear for every title.',
+            'LoreSpinner works with selected writers, creators, and story partners. If you are interested in creating with us, you can reach out through our community or contact channels. As we grow, we plan to open more ways for writers to bring stories into LoreSpinner.',
     },
     {
         id: '4',
         question: 'Can users generate images or artwork on the platform?',
         answer:
-            'Any artwork must follow our content and attribution rules. Generative or third-party assets you upload need the right license; check the creator guidelines for allowed sources and disclosure.',
+            'Not in Alpha. LoreSpinner is focused on story, choice, and immersive narrative experiences. Visuals may appear as part of the world, memory, or journey, but the platform is not designed as an image-generation tool.',
     },
     {
         id: '5',
-        question: 'Are my reading choices private?',
+        question: 'Are my reading choices saved?',
         answer:
-            'Your account and reading progress are protected as described in our privacy policy. We use this data to improve recommendations and sync your library, not to sell personal reading history.',
+            'Yes. LoreSpinner remembers key moments from your journey so the story can reflect where you have been, what you chose, and how your path unfolded. Your choices help shape the experience and may influence what you see when you return.',
     },
 ];
 
