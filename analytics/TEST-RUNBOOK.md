@@ -33,36 +33,57 @@ Each test:
 
 ## Prerequisites
 
-- PHP 8.4+
-- Composer dependencies installed
-- PostgreSQL test database configured
+### 1. Install dependencies
 
-### Database
+`vendor/bin/pest` only exists after `composer install`. If you get
+`Could not open input file: vendor/bin/pest`, run this first:
 
-`phpunit.xml` sets `DB_DATABASE=testing`. Ensure that database exists and is reachable.
+```bash
+composer install
+```
 
-**With Laravel Sail:**
+### 2. PHP 8.4+
+
+```bash
+php --version
+```
+
+### 3. PostgreSQL test database
+
+`phpunit.xml` sets `DB_DATABASE=testing`. The database must exist and be reachable.
+
+**Option A — Laravel Sail (recommended):**
 
 ```bash
 ./vendor/bin/sail up -d
-./vendor/bin/sail artisan migrate --database=pgsql --env=testing
+./vendor/bin/sail artisan migrate --env=testing
 ```
 
-Or let `RefreshDatabase` migrate automatically on first test run.
+**Option B — local PostgreSQL:**
 
-**Without Sail** — match your `.env.testing` or export:
+Set these in `.env.testing` (or export them) so the test runner can connect:
 
 ```bash
 export DB_CONNECTION=pgsql
+export DB_HOST=127.0.0.1
 export DB_DATABASE=testing
+export DB_USERNAME=your_user
+export DB_PASSWORD=your_password
+```
+
+Then run migrations once:
+
+```bash
+php artisan migrate --env=testing
 ```
 
 ---
 
 ## Run commands
 
-> **Note:** This project uses Pest directly. `php artisan test` is **not** registered in
-> this app — use `php vendor/bin/pest`.
+> **Note:** This project uses Pest 4. `php artisan test` is **not** registered.
+> Use `php vendor/bin/pest` (it is a PHP file, not a shell script).
+> Run all commands from the project root.
 
 ### All analytics tests
 
