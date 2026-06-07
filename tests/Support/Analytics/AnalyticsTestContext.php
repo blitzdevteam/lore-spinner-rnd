@@ -82,7 +82,9 @@ final class AnalyticsTestContext
 
     public function createGame(User $user, Story $story, array $attributes = []): Game
     {
-        $game = Game::query()->create(array_merge([
+        // forceCreate bypasses $guarded so explicitly-provided created_at / updated_at
+        // are persisted as-is — essential for backdating abandoned-game fixtures.
+        $game = Game::forceCreate(array_merge([
             'story_id'                     => $story->id,
             'user_id'                      => $user->id,
             'current_session_number'       => 1,

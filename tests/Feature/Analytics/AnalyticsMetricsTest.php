@@ -183,8 +183,10 @@ describe('retention cohort anchor', function () {
         ]);
         $this->ctx->startSession($played, startedAt: Carbon::parse('2026-06-04 09:00:00'));
 
+        // Count distinct game rows (not distinct users) to show that naive
+        // "games created" overcounts vs "sessions actually started".
         $cohortFromGames = DB::selectOne("
-            SELECT COUNT(DISTINCT user_id) AS cnt
+            SELECT COUNT(DISTINCT id) AS cnt
             FROM games
             WHERE is_preview = false AND created_at >= ?
         ", [Analytics::baselineDateTimeString()])->cnt;
