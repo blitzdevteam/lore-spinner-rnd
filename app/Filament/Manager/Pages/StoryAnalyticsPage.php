@@ -37,8 +37,6 @@ final class StoryAnalyticsPage extends Page
 
     protected static ?string $title = 'Story Analytics';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Analytics';
-
     protected static ?int $navigationSort = 2;
 
     protected string $view = 'filament.manager.pages.story-analytics';

@@ -39,6 +39,19 @@ final class AnalyticsKpiWidget extends StatsOverviewWidget
 
     protected function getStats(): array
     {
+        try {
+            return $this->buildStats();
+        } catch (\Throwable) {
+            return [
+                Stat::make('Analytics unavailable', 'Run migrations')
+                    ->description('One or more analytics tables are missing. Run: php artisan migrate')
+                    ->color('warning'),
+            ];
+        }
+    }
+
+    private function buildStats(): array
+    {
         [$from, $to] = $this->dateRange();
 
         $visits     = $this->visits($from, $to);
