@@ -60,12 +60,18 @@
     --mood-banner-card-width: min(28.125rem, 78vw);
     --mood-banner-cover-height: calc(var(--mood-banner-card-width) * 262 / 450);
     --story-slider-cover-height: var(--mood-banner-cover-height);
+    --story-slider-card-height: calc(
+        var(--story-slider-cover-height) + var(--story-card-rest-body-height)
+    );
 }
 
 @media (min-width: 768px) {
     .mood-page-flow .story-slider-viewport {
         --mood-banner-card-width: 28.125rem;
         --mood-banner-cover-height: 16.375rem;
+        --story-slider-card-height: calc(
+            var(--story-slider-cover-height) + var(--story-card-rest-body-height)
+        );
     }
 }
 

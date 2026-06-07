@@ -1,7 +1,7 @@
 /**
  * Shared home story carousel — track layout + arrow alignment.
  * Track stays flush with section headers; arrows sit on the viewport edges
- * (half outside) and align to the vertical center of the story cover image.
+ * (half outside) and align to the vertical center of the whole story card.
  */
 .story-slider-viewport {
     --story-track-pad-top: 0.75rem;
@@ -23,6 +23,9 @@
     --story-portrait-card-width: min(13.5rem, 75vw);
     --story-slider-track-gap: 0.875rem;
     --story-slider-cover-height: calc(var(--story-portrait-card-width) * 3 / 2);
+    --story-slider-card-height: calc(
+        var(--story-slider-cover-height) + var(--story-card-rest-body-height)
+    );
 }
 
 @media (min-width: 768px) {
@@ -41,12 +44,18 @@
 .story-slider-viewport--banner {
     --story-banner-card-width: min(28.125rem, 78vw);
     --story-slider-cover-height: calc(var(--story-banner-card-width) * 9 / 16);
+    --story-slider-card-height: calc(
+        var(--story-slider-cover-height) + var(--story-card-rest-body-height)
+    );
 }
 
 @media (min-width: 768px) {
     .story-slider-viewport--banner {
         --story-banner-card-width: 28.125rem;
         --story-slider-cover-height: calc(28.125rem * 9 / 16);
+        --story-slider-card-height: calc(
+            var(--story-slider-cover-height) + var(--story-card-rest-body-height)
+        );
     }
 }
 
@@ -127,7 +136,11 @@
 
 .story-slider-arrow {
     position: absolute;
-    top: 0;
+    /* Measured from the first story card via useSliderEdgeShadows; CSS fallback until mount. */
+    top: var(
+        --story-slider-arrow-top,
+        calc(var(--story-track-pad-top) + (var(--story-slider-card-height) / 2))
+    );
     z-index: 10;
     display: none;
     width: var(--story-slider-arrow-size);
@@ -138,20 +151,17 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.08);
     transition: background 0.2s;
-    margin-top: calc(
-        var(--story-track-pad-top) + var(--story-slider-cover-height) / 2 -
-            var(--story-slider-arrow-size) / 2
-    );
+    margin-top: 0;
 }
 
 .story-slider-row > .story-slider-arrow:first-child {
     left: 0;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
 }
 
 .story-slider-row > .story-slider-arrow:last-child {
     right: 0;
-    transform: translateX(50%);
+    transform: translate(50%, -50%);
 }
 
 @media (min-width: 768px) {

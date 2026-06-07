@@ -9,12 +9,28 @@ export function useSliderEdgeShadows(
     const leftShadowVisible = ref(false);
     const rightShadowVisible = ref(true);
 
+    function alignArrowsToCard() {
+        const el = sliderEl.value;
+        if (!el) return;
+
+        const viewport = el.closest('.story-slider-viewport') as HTMLElement | null;
+        const row = viewport?.querySelector('.story-slider-row') as HTMLElement | null;
+        const card = el.querySelector<HTMLElement>('.story-card-slot');
+        if (!viewport || !row || !card) return;
+
+        const rowRect = row.getBoundingClientRect();
+        const cardRect = card.getBoundingClientRect();
+        const centerY = cardRect.top - rowRect.top + cardRect.height / 2;
+        viewport.style.setProperty('--story-slider-arrow-top', `${centerY}px`);
+    }
+
     function updateShadows() {
         const el = sliderEl.value;
         if (!el) return;
         leftShadowVisible.value = el.scrollLeft > SLIDER_SHADOW_THRESHOLD;
         rightShadowVisible.value =
             el.scrollLeft + el.clientWidth < el.scrollWidth - SLIDER_SHADOW_THRESHOLD;
+        alignArrowsToCard();
     }
 
     let resizeObserver: ResizeObserver | null = null;
@@ -28,6 +44,17 @@ export function useSliderEdgeShadows(
         if (track instanceof HTMLElement) {
             resizeObserver.observe(track);
         }
+
+        const card = el.querySelector('.story-card-slot');
+        if (card instanceof HTMLElement) {
+            resizeObserver.observe(card);
+        }
+
+        el.querySelectorAll('.story-card-slot img').forEach((img) => {
+            if (!img.complete) {
+                img.addEventListener('load', updateShadows, { once: true });
+            }
+        });
     }
 
     function attach() {
