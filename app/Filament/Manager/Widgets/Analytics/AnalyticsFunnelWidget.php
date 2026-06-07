@@ -98,7 +98,7 @@ final class AnalyticsFunnelWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Players',
+                    'label' => 'Users',
                     'data'  => array_values($steps),
                     'backgroundColor' => [
                         'rgba(107, 114, 128, 0.8)',

@@ -28,20 +28,40 @@
     </div>
 
     {{-- Glossary --}}
-    <x-filament::section>
-        <x-slot name="heading">Metric Definitions</x-slot>
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:8px 32px; font-size:13px; color:#4b5563;">
-            <p><strong style="color:#1f2937;">Visits</strong>: Unique browsing windows on public pages, tracked by an anonymous cookie. Not the same as story chapters.</p>
-            <p><strong style="color:#1f2937;">Signups</strong>: New user accounts created since the baseline.</p>
-            <p><strong style="color:#1f2937;">Story Starts</strong>: Total individual game plays created (one per play-through). A single user may have multiple.</p>
-            <p><strong style="color:#1f2937;">Session 1 Completions</strong>: Users who finished Chapter 1 and advanced to Chapter 2. The first major drop-off point.</p>
-            <p><strong style="color:#1f2937;">Story Completions</strong>: Total full-story completions. One per story cycle per game. Replays count separately. Rate = unique completed / starts.</p>
-            <p><strong style="color:#1f2937;">Incomplete</strong>: Games with no completion yet. The user may still be actively reading.</p>
-            <p><strong style="color:#1f2937;">Abandoned</strong>: Subset of Incomplete with no gameplay activity for 14+ days.</p>
-            <p><strong style="color:#1f2937;">Returning Users</strong>: Users active in this period who also had prior activity before it.</p>
-            <p><strong style="color:#1f2937;">Replay Events</strong>: Resets triggered after a story was completed. Each reset starts a new story cycle.</p>
-            <p><strong style="color:#1f2937;">D1 / D7 / D30 Retention</strong>: % of users who returned on day 1, within 7 days, or within 30 days of their first session.</p>
-            <p><strong style="color:#1f2937;">Return Rate</strong>: % of users with more than one distinct active day since the baseline.</p>
+    <div style="border:1px solid #e5e7eb; border-radius:12px; background:#fff; overflow:hidden;">
+        <div style="padding:14px 20px; border-bottom:1px solid #f3f4f6; background:#f9fafb;">
+            <span style="font-weight:600; font-size:14px; color:#111827;">Metric Definitions</span>
         </div>
-    </x-filament::section>
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+            @php
+                $defs = [
+                    ['Visits',               'Unique browsing windows on public pages, tracked by an anonymous cookie. Not the same as story chapters (those are called Sessions).'],
+                    ['Signups',              'New user accounts created since the baseline.'],
+                    ['Story Starts',         'Total individual game plays created (one per play-through). A single user may have multiple starts across stories or replays.'],
+                    ['Session 1 Completions','Users who finished Chapter 1 and advanced to Chapter 2. The first major drop-off point in the funnel.'],
+                    ['Story Completions',    'Total full-story completions recorded. One per story cycle per game. Replays after reset count separately. Rate = unique completed / starts.'],
+                    ['Incomplete',           'Games with no completion on record yet. The user may still be actively reading. This is not a label of failure.'],
+                    ['Abandoned',            'Subset of Incomplete with no gameplay activity (prompts, sessions, resets) for 14+ days.'],
+                    ['Returning Users',      'Users who were active in the selected period and also had prior activity before it. Measures whether users come back over time.'],
+                    ['Replay Events',        'Resets triggered after a story was already completed. Each reset starts a new story cycle and counts as a replay event.'],
+                    ['D1 / D7 / D30',        '% of users who returned on day 1, within 7 days, or within 30 days of their first playable session.'],
+                    ['Return Rate',          '% of users with more than one distinct active day recorded since the baseline.'],
+                ];
+                $pairs = array_chunk($defs, 2);
+            @endphp
+            @foreach ($pairs as $i => $pair)
+                <tr style="{{ $i > 0 ? 'border-top:1px solid #f3f4f6;' : '' }}">
+                    @foreach ($pair as $def)
+                        <td style="padding:10px 20px; vertical-align:top; width:50%;">
+                            <span style="font-weight:600; color:#111827;">{{ $def[0] }}</span>
+                            <span style="color:#6b7280; margin-left:4px;">{{ $def[1] }}</span>
+                        </td>
+                    @endforeach
+                    @if (count($pair) === 1)
+                        <td style="width:50%;"></td>
+                    @endif
+                </tr>
+            @endforeach
+        </table>
+    </div>
 </x-filament-panels::page>

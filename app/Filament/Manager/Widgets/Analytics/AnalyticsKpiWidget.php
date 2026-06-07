@@ -185,7 +185,7 @@ final class AnalyticsKpiWidget extends StatsOverviewWidget
 
     /**
      * Games created since the baseline (within the period) that are still
-     * incomplete. A player may still be actively playing — this is current
+     * incomplete. A user may still be actively playing — this is current
      * state, not a permanent label.
      */
     private function incompleteStories(Carbon $from, Carbon $to): int
@@ -262,7 +262,7 @@ final class AnalyticsKpiWidget extends StatsOverviewWidget
             ->count();
     }
 
-    /** Distinct players who replayed at least once in the period. */
+    /** Distinct users who replayed at least once in the period. */
     private function uniqueReplayers(Carbon $from, Carbon $to): int
     {
         return (int) GameReset::query()

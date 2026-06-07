@@ -13,13 +13,13 @@ use Illuminate\Support\Facades\DB;
  * Retention KPI cards.
  *
  * Cohort anchor: first playable experience — MIN(game_session_completions.started_at)
- * per user, on or after the analytics baseline. Excludes players who created a
+ * per user, on or after the analytics baseline. Excludes users who created a
  * game but never received narration.
  *
  * D1: returned the next calendar day after first playable session.
  * D7: returned any day within 7 days of first playable session.
  * D30: returned any day within 30 days of first playable session.
- * Return Rate: % of players with more than one distinct activity day.
+ * Return Rate: % of users with more than one distinct activity day.
  */
 final class AnalyticsRetentionWidget extends StatsOverviewWidget
 {
@@ -110,14 +110,14 @@ final class AnalyticsRetentionWidget extends StatsOverviewWidget
     }
 
     /**
-     * Return Rate: % of cohort players with more than one distinct activity day.
-     * Cohort = players with at least one started session on or after baseline.
+     * Return Rate: % of cohort users with more than one distinct activity day.
+     * Cohort = users with at least one started session on or after baseline.
      */
     private function returnRate(): string
     {
         $row = DB::select("
             SELECT
-                COUNT(DISTINCT c.user_id) AS total_players,
+                COUNT(DISTINCT c.user_id) AS total_users,
                 COUNT(DISTINCT CASE WHEN a.day_count > 1 THEN c.user_id END) AS returners
             FROM (
                 SELECT gsc.user_id
@@ -137,10 +137,10 @@ final class AnalyticsRetentionWidget extends StatsOverviewWidget
 
         $data = $row[0] ?? null;
 
-        if (! $data || (int) $data->total_players === 0) {
+        if (! $data || (int) $data->total_users === 0) {
             return 'N/A';
         }
 
-        return round((int) $data->returners / (int) $data->total_players * 100, 1) . '%';
+        return round((int) $data->returners / (int) $data->total_users * 100, 1) . '%';
     }
 }
