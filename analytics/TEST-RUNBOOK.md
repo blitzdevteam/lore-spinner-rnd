@@ -27,13 +27,11 @@ Each test:
 3. **Logs** a JSON snapshot to `storage/logs/analytics-tests.log` (persists after cleanup).
 4. **Deletes** only tracked fixture IDs in `afterEach()` — child tables first, then games, stories, users.
 
-`RefreshDatabase` also runs for all Feature tests (full migrate per test class), so the test DB is always clean. Explicit cleanup is belt-and-suspenders and supports reviewing what was removed.
+Each test creates its own fixture records and deletes them by ID in `afterEach()` — no separate test database needed. The real database is used and left exactly as it was found.
 
 ---
 
 ## Prerequisites
-
-### 1. Install dependencies
 
 `vendor/bin/pest` only exists after `composer install`. If you get
 `Could not open input file: vendor/bin/pest`, run this first:
@@ -42,48 +40,13 @@ Each test:
 composer install
 ```
 
-### 2. PHP 8.4+
-
-```bash
-php --version
-```
-
-### 3. PostgreSQL test database
-
-`phpunit.xml` sets `DB_DATABASE=testing`. The database must exist and be reachable.
-
-**Option A — Laravel Sail (recommended):**
-
-```bash
-./vendor/bin/sail up -d
-./vendor/bin/sail artisan migrate --env=testing
-```
-
-**Option B — local PostgreSQL:**
-
-Set these in `.env.testing` (or export them) so the test runner can connect:
-
-```bash
-export DB_CONNECTION=pgsql
-export DB_HOST=127.0.0.1
-export DB_DATABASE=testing
-export DB_USERNAME=your_user
-export DB_PASSWORD=your_password
-```
-
-Then run migrations once:
-
-```bash
-php artisan migrate --env=testing
-```
+That's it. No separate test database. No migrations. Just have the normal app database running (Sail or local Postgres).
 
 ---
 
 ## Run commands
 
-> **Note:** This project uses Pest 4. `php artisan test` is **not** registered.
-> Use `php vendor/bin/pest` (it is a PHP file, not a shell script).
-> Run all commands from the project root.
+> Run all commands from the project root. `php artisan test` is **not** registered — use `php vendor/bin/pest`.
 
 ### All analytics tests
 
