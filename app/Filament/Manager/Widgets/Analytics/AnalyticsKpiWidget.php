@@ -35,20 +35,6 @@ final class AnalyticsKpiWidget extends StatsOverviewWidget
 
     protected ?string $heading = 'Platform Metrics';
 
-    /**
-     * Analytics data collection start date.
-     * No dashboard query returns data before this date.
-     */
-    protected function getFilters(): ?array
-    {
-        return [
-            '7'   => 'Last 7 days',
-            '30'  => 'Last 30 days',
-            '90'  => 'Last 90 days',
-            'all' => 'All time (since Jun 1)',
-        ];
-    }
-
     protected function getStats(): array
     {
         [$from, $to] = $this->dateRange();
@@ -113,27 +99,14 @@ final class AnalyticsKpiWidget extends StatsOverviewWidget
     }
 
     /**
-     * Returns [from, to] where from is always >= BASELINE.
+     * Returns [baseline, now] — StatsOverviewWidget does not support getFilters()
+     * in Filament 4, so this widget always shows all-time data since the baseline.
      *
      * @return array{Carbon, Carbon}
      */
     private function dateRange(): array
     {
-        $baseline = Analytics::baseline();
-        $to       = Carbon::now()->endOfDay();
-
-        $days = match ($this->filter) {
-            '7'   => 7,
-            '90'  => 90,
-            'all' => null,
-            default => 30,
-        };
-
-        $from = $days !== null
-            ? Carbon::now()->subDays($days)->startOfDay()->max($baseline)
-            : $baseline;
-
-        return [$from, $to];
+        return [Analytics::baseline(), Carbon::now()->endOfDay()];
     }
 
     private function visits(Carbon $from, Carbon $to): int
