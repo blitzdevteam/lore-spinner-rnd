@@ -62,36 +62,30 @@ export DB_DATABASE=testing
 ## Run commands
 
 > **Note:** This project uses Pest directly. `php artisan test` is **not** registered in
-> this app — use `./vendor/bin/pest` (or `sail php vendor/bin/pest` with Sail).
+> this app — use `php vendor/bin/pest`.
 
 ### All analytics tests
 
 ```bash
-./vendor/bin/pest tests/Feature/Analytics
-```
-
-**Sail:**
-
-```bash
-./vendor/bin/sail php vendor/bin/pest tests/Feature/Analytics
+php vendor/bin/pest tests/Feature/Analytics
 ```
 
 ### Single file
 
 ```bash
-./vendor/bin/pest tests/Feature/Analytics/AnalyticsMetricsTest.php
+php vendor/bin/pest tests/Feature/Analytics/AnalyticsMetricsTest.php
 ```
 
 ### Single test by name
 
 ```bash
-./vendor/bin/pest --filter="counts active incomplete games separately from abandoned games"
+php vendor/bin/pest --filter="counts active incomplete games separately from abandoned games"
 ```
 
 ### With verbose output
 
 ```bash
-./vendor/bin/pest tests/Feature/Analytics --verbose
+php vendor/bin/pest tests/Feature/Analytics --verbose
 ```
 
 ---
