@@ -9,19 +9,30 @@ export function useSliderEdgeShadows(
     const leftShadowVisible = ref(false);
     const rightShadowVisible = ref(true);
 
-    function alignArrowsToCard() {
+    let arrowTopLocked = false;
+
+    function alignArrowsToCard(force = false) {
+        if (arrowTopLocked && !force) return;
+
         const el = sliderEl.value;
         if (!el) return;
 
         const viewport = el.closest('.story-slider-viewport') as HTMLElement | null;
         const row = viewport?.querySelector('.story-slider-row') as HTMLElement | null;
-        const card = el.querySelector<HTMLElement>('.story-card-slot');
-        if (!viewport || !row || !card) return;
+        if (!viewport || !row) return;
+
+        // Prefer a resting (non-hovered) card so hover expand / lift does not shift arrows.
+        const cards = el.querySelectorAll<HTMLElement>('.story-card-slot');
+        const card =
+            [...cards].find((slot) => !slot.classList.contains('story-card-slot--focused')) ??
+            cards[0];
+        if (!card) return;
 
         const rowRect = row.getBoundingClientRect();
         const cardRect = card.getBoundingClientRect();
         const centerY = cardRect.top - rowRect.top + cardRect.height / 2;
         viewport.style.setProperty('--story-slider-arrow-top', `${centerY}px`);
+        arrowTopLocked = true;
     }
 
     function updateShadows() {
@@ -30,7 +41,6 @@ export function useSliderEdgeShadows(
         leftShadowVisible.value = el.scrollLeft > SLIDER_SHADOW_THRESHOLD;
         rightShadowVisible.value =
             el.scrollLeft + el.clientWidth < el.scrollWidth - SLIDER_SHADOW_THRESHOLD;
-        alignArrowsToCard();
     }
 
     let resizeObserver: ResizeObserver | null = null;
@@ -45,16 +55,17 @@ export function useSliderEdgeShadows(
             resizeObserver.observe(track);
         }
 
-        const card = el.querySelector('.story-card-slot');
-        if (card instanceof HTMLElement) {
-            resizeObserver.observe(card);
-        }
-
         el.querySelectorAll('.story-card-slot img').forEach((img) => {
             if (!img.complete) {
-                img.addEventListener('load', updateShadows, { once: true });
+                img.addEventListener('load', () => alignArrowsToCard(true), { once: true });
             }
         });
+    }
+
+    function onWindowResize() {
+        updateShadows();
+        arrowTopLocked = false;
+        alignArrowsToCard(true);
     }
 
     function attach() {
@@ -62,16 +73,20 @@ export function useSliderEdgeShadows(
         if (!el) return;
 
         updateShadows();
+        alignArrowsToCard(true);
         el.addEventListener('scroll', updateShadows, { passive: true });
         el.addEventListener('scrollend', updateShadows, { passive: true });
-        window.addEventListener('resize', updateShadows, { passive: true });
+        window.addEventListener('resize', onWindowResize, { passive: true });
 
         observeScrollTargets(el);
 
         intersectionObserver = new IntersectionObserver(
             (entries) => {
                 if (entries.some((entry) => entry.isIntersecting)) {
-                    requestAnimationFrame(updateShadows);
+                    requestAnimationFrame(() => {
+                        updateShadows();
+                        alignArrowsToCard();
+                    });
                 }
             },
             { threshold: 0.01 },
@@ -89,14 +104,19 @@ export function useSliderEdgeShadows(
         resizeObserver = null;
         intersectionObserver?.disconnect();
         intersectionObserver = null;
-        window.removeEventListener('resize', updateShadows);
+        window.removeEventListener('resize', onWindowResize);
+        arrowTopLocked = false;
     }
 
     async function attachWhenReady() {
         await nextTick();
         requestAnimationFrame(() => {
             updateShadows();
-            requestAnimationFrame(updateShadows);
+            alignArrowsToCard(true);
+            requestAnimationFrame(() => {
+                updateShadows();
+                alignArrowsToCard(true);
+            });
         });
         attach();
     }
