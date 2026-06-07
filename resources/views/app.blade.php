@@ -15,6 +15,15 @@
         <!-- Google Search Console verification -->
         <meta name="google-site-verification" content="google3e64d38c504450d9">
 
+        <!-- Microsoft Clarity -->
+        <script type="text/javascript">
+            (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "x2x3tavro1");
+        </script>
+
         <!-- SEO / Open Graph -->
         <meta name="application-name" content="LoreSpinner">
         <meta property="og:site_name" content="LoreSpinner">

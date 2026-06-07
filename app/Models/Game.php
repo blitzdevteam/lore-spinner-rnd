@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  * @property int $story_id
  * @property int $user_id
  * @property int|null $current_session_number
+ * @property int $current_story_cycle_number
  * @property string $model
  * @property array<string, mixed>|null $world_state
  * @property string|null $symbolic_memory
@@ -25,11 +26,15 @@ use Illuminate\Support\Carbon;
  * @property bool $is_climactic_choice
  * @property bool $current_session_complete
  * @property bool $is_preview
+ * @property Carbon|null $completed_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Story $story
  * @property-read User $user
  * @property-read Collection<int, Prompt> $prompts
+ * @property-read Collection<int, GameSessionCompletion> $sessionCompletions
+ * @property-read Collection<int, GameReset> $resets
+ * @property-read Collection<int, GameCompletion> $completionHistory
  */
 final class Game extends Model
 {
@@ -48,6 +53,7 @@ final class Game extends Model
             'is_climactic_choice'      => 'boolean',
             'current_session_complete' => 'boolean',
             'is_preview'               => 'boolean',
+            'completed_at'             => 'datetime',
         ];
     }
 
@@ -77,5 +83,32 @@ final class Game extends Model
     public function prompts(): HasMany
     {
         return $this->hasMany(Prompt::class);
+    }
+
+    /**
+     * @return HasMany<GameSessionCompletion, $this>
+     */
+    public function sessionCompletions(): HasMany
+    {
+        return $this->hasMany(GameSessionCompletion::class);
+    }
+
+    /**
+     * @return HasMany<GameReset, $this>
+     */
+    public function resets(): HasMany
+    {
+        return $this->hasMany(GameReset::class);
+    }
+
+    /**
+     * Immutable completion history — one row per completed story cycle.
+     * Use this for analytics; games.completed_at is current/mutable state.
+     *
+     * @return HasMany<GameCompletion, $this>
+     */
+    public function completionHistory(): HasMany
+    {
+        return $this->hasMany(GameCompletion::class);
     }
 }

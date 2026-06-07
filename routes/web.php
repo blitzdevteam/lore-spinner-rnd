@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers;
+use App\Http\Middleware\RecordPageView;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/routes/user.php';
@@ -13,24 +14,23 @@ Route::middleware(['auth:manager'])
     ->get('manager/writers/{writer}/login-as', App\Http\Controllers\Manager\LoginAsWriterController::class)
     ->name('manager.login-as-writer');
 
-Route::get('/', Controllers\IndexController::class)->name('index');
+// ─── Public marketing surfaces — page views tracked for Visits metric ────────
+Route::middleware(RecordPageView::class)->group(function (): void {
+    Route::get('/', Controllers\IndexController::class)->name('index');
+
+    Route::resource('creators', Controllers\CreatorController::class)
+        ->scoped(['creator' => 'username'])
+        ->only(['index', 'show']);
+
+    Route::resource('stories', Controllers\StoryController::class)
+        ->scoped(['story' => 'slug'])
+        ->only(['index', 'show']);
+});
 
 Route::get('old-homepage', Controllers\OldHomepageController::class)->name('old-homepage');
 
 Route::get('design-rnd', fn () => inertia('DesignRnd'))->name('design-rnd');
 Route::get('bg-rnd', fn () => inertia('BgRnd'))->name('bg-rnd');
-
-Route::resource('creators', Controllers\CreatorController::class)
-    ->scoped([
-        'creator' => 'username',
-    ])
-    ->only(['index', 'show']);
-
-Route::resource('stories', Controllers\StoryController::class)
-    ->scoped([
-        'story' => 'slug',
-    ])
-    ->only(['index', 'show']);
 
 Route::post('feedback', [Controllers\FeedbackController::class, 'store'])->name('feedback.store');
 Route::get('feedback/screenshot/{path}', [Controllers\FeedbackController::class, 'screenshot'])

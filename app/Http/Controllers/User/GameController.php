@@ -8,8 +8,12 @@ use App\Actions\Game\CreateGameAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Game\StoreGameRequest;
 use App\Models\Game;
+use App\Models\GameCompletion;
+use App\Models\GameReset;
+use App\Models\GameSessionCompletion;
 use App\Models\Story;
 use App\Models\User;
+use App\Models\UserActivityDay;
 use App\Services\ChaosEngineService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
@@ -140,6 +144,22 @@ final class GameController extends Controller
                 'choices' => $result['choices'],
             ]);
 
+            GameSessionCompletion::updateOrCreate(
+                [
+                    'game_id'            => $game->id,
+                    'story_cycle_number' => $game->current_story_cycle_number,
+                    'session_number'     => 1,
+                ],
+                [
+                    'story_id'     => $story->id,
+                    'user_id'      => $game->user_id,
+                    'started_at'   => now(),
+                    'completed_at' => null,
+                ],
+            );
+
+            UserActivityDay::record($game->user_id);
+
             Log::channel('narration')->info('game.begin', [
                 'game_id' => $game->id,
                 'story_id' => $story->id,
@@ -175,10 +195,34 @@ final class GameController extends Controller
 
         $story = $game->story()->with(['adaptation', 'adaptation.sessionAdaptations'])->first();
 
-        $nextSessionNumber = (int) $game->current_session_number + 1;
-        $totalSessions = (int) ($story->adaptation?->sessionAdaptations?->count() ?? 0);
+        $currentSessionNumber = (int) $game->current_session_number;
+        $nextSessionNumber    = $currentSessionNumber + 1;
+        $totalSessions        = (int) ($story->adaptation?->sessionAdaptations?->count() ?? 0);
 
         if ($nextSessionNumber > $totalSessions) {
+            $now = now();
+
+            GameSessionCompletion::where('game_id', $game->id)
+                ->where('story_cycle_number', $game->current_story_cycle_number)
+                ->where('session_number', $currentSessionNumber)
+                ->update(['completed_at' => $now]);
+
+            $game->update(['completed_at' => $now]);
+
+            GameCompletion::updateOrCreate(
+                [
+                    'game_id'            => $game->id,
+                    'story_cycle_number' => $game->current_story_cycle_number,
+                ],
+                [
+                    'user_id'      => $game->user_id,
+                    'story_id'     => $game->story_id,
+                    'completed_at' => $now,
+                ],
+            );
+
+            UserActivityDay::record($game->user_id);
+
             return to_route('user.games.show', $game)
                 ->with('story_complete', true);
         }
@@ -243,6 +287,27 @@ final class GameController extends Controller
                 'choices' => $result['choices'],
             ]);
 
+            GameSessionCompletion::where('game_id', $game->id)
+                ->where('story_cycle_number', $game->current_story_cycle_number)
+                ->where('session_number', $currentSessionNumber)
+                ->update(['completed_at' => now()]);
+
+            GameSessionCompletion::updateOrCreate(
+                [
+                    'game_id'            => $game->id,
+                    'story_cycle_number' => $game->current_story_cycle_number,
+                    'session_number'     => $nextSessionNumber,
+                ],
+                [
+                    'story_id'     => $story->id,
+                    'user_id'      => $game->user_id,
+                    'started_at'   => now(),
+                    'completed_at' => null,
+                ],
+            );
+
+            UserActivityDay::record($game->user_id);
+
             Log::channel('narration')->info('game.next_session', [
                 'game_id' => $game->id,
                 'story_id' => $story->id,
@@ -268,18 +333,28 @@ final class GameController extends Controller
 
     public function reset(Game $game): RedirectResponse
     {
+        GameReset::create([
+            'game_id'              => $game->id,
+            'user_id'              => $game->user_id,
+            'story_id'             => $game->story_id,
+            'had_prior_completion' => $game->completed_at !== null,
+        ]);
+
         $game->prompts()->delete();
 
         $game->update([
-            'current_session_number' => 1,
-            'current_session_complete' => false,
-            'world_state' => null,
-            'symbolic_memory' => null,
-            'alignment_scaffold' => ['chaotic' => 0, 'lawful' => 0, 'neutral' => 0],
-            'defining_choice_id' => null,
-            'defining_choice_line' => null,
-            'is_climactic_choice' => false,
+            'current_session_number'      => 1,
+            'current_story_cycle_number'  => $game->current_story_cycle_number + 1,
+            'current_session_complete'    => false,
+            'world_state'                 => null,
+            'symbolic_memory'             => null,
+            'alignment_scaffold'          => ['chaotic' => 0, 'lawful' => 0, 'neutral' => 0],
+            'defining_choice_id'          => null,
+            'defining_choice_line'        => null,
+            'is_climactic_choice'         => false,
         ]);
+
+        UserActivityDay::record($game->user_id);
 
         return to_route('user.games.show', $game);
     }

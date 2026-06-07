@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Game\Prompt\StorePromptRequest;
 use App\Models\Game;
 use App\Models\User;
+use App\Models\UserActivityDay;
 use App\Services\ChaosEngineService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
@@ -98,6 +99,8 @@ final class PromptController extends Controller
                 'choices'        => $result['choices'],
             ]);
 
+            UserActivityDay::record($user->id);
+
             Log::channel('narration')->info('game.turn', [
                 'game_id'          => $game->id,
                 'story_id'         => $story->id,
@@ -108,9 +111,9 @@ final class PromptController extends Controller
                 'session_complete' => $result['session_complete'],
                 'player_input'     => mb_substr($playerAction, 0, 120),
                 'response_bytes'   => strlen($result['response']),
-        ]);
+            ]);
 
-        return back();
+            return back();
         } catch (Throwable $e) {
             Log::channel('narration')->error('game.turn_failed', [
                 'game_id'      => $game->id,
