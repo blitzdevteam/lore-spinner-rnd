@@ -34,6 +34,12 @@ let unlockAudio: HTMLAudioElement | null = null;
 let audioUnlocked = false;
 let pendingAutoplay: { gameId: string; promptId: string } | null = null;
 
+// iOS Safari only allows HTMLAudioElement.play() on elements that were previously
+// activated during a user gesture — even if the AudioContext is already running.
+// We pre-claim a fresh element on every user gesture so the subsequent async
+// autoplay call can reuse it (src-swap preserves iOS activation).
+let primedAudio: HTMLAudioElement | null = null;
+
 // ── Web Audio API unlock ──────────────────────────────────────────────────────
 // On iOS Safari, audio playback permission is per-page once ANY audio element
 // plays during a user gesture. Routing all HTMLAudioElements through a shared
@@ -160,7 +166,16 @@ function primeAudio() {
         audioUnlocked = true;
     }
 
-    // 4. Flush any queued play() synchronously while still inside gesture scope.
+    // 4. Pre-claim a fresh HTMLAudioElement within this gesture context.
+    //    iOS Safari permits async .play() on the SAME instance later (even after
+    //    src is changed), because the activation is tied to the element object.
+    //    A new element created outside a gesture is always rejected on iOS.
+    primedAudio = new Audio(SILENT_WAV);
+    primedAudio.volume = 0;
+    configureAudioElement(primedAudio);
+    primedAudio.play().catch(() => {});
+
+    // 5. Flush any queued play() synchronously while still inside gesture scope.
     flushPendingAutoplay();
 }
 
@@ -293,8 +308,23 @@ function play(gameId: string, promptId: string) {
 
     isLoading.value = true;
     console.debug('[TTS] fetching', key);
-    const audio = new Audio(`/user/games/${gameId}/tts/${promptId}`);
-    audio.preload = 'auto';
+
+    const url = `/user/games/${gameId}/tts/${promptId}`;
+    let audio: HTMLAudioElement;
+
+    if (primedAudio) {
+        // Reuse the element pre-activated during the last user gesture.
+        // iOS Safari preserves the activation after a src-swap + load(), so the
+        // subsequent play() call is permitted even outside the gesture stack.
+        audio = primedAudio;
+        primedAudio = null;
+        audio.src = url;
+        audio.load();
+    } else {
+        audio = new Audio(url);
+        audio.preload = 'auto';
+    }
+
     configureAudioElement(audio);
     applyAudioSettings(audio);
     attachListeners(audio, key);
