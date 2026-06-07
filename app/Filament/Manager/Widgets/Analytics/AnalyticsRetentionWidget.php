@@ -29,7 +29,7 @@ final class AnalyticsRetentionWidget extends StatsOverviewWidget
 
     protected ?string $heading = 'Retention';
 
-    protected ?string $description = 'Cohort: players whose first playable session is on or after Jun 1, 2026';
+    protected ?string $description = 'Cohort: users whose first playable session (Chapter 1 start) is on or after Jun 1, 2026. D1/D7/D30 = returned within that many days of first play.';
 
     protected function getStats(): array
     {
@@ -37,7 +37,7 @@ final class AnalyticsRetentionWidget extends StatsOverviewWidget
         $returnRate = $this->returnRate();
 
         $cohortSize  = (int) ($retention->cohort_size ?? 0);
-        $cohortLabel = 'Cohort: ' . number_format($cohortSize) . ' players (since Jun 1)';
+        $cohortLabel = 'Cohort: ' . number_format($cohortSize) . ' users (since Jun 1)';
 
         $fmt = static function (int $cohort, int $retained): string {
             if ($cohort === 0) {
@@ -61,7 +61,7 @@ final class AnalyticsRetentionWidget extends StatsOverviewWidget
                 ->color('warning'),
 
             Stat::make('Return Rate', $returnRate)
-                ->description('Players with more than one active day (since Jun 1)')
+                ->description('Users with more than one distinct active day (since Jun 1)')
                 ->color('success'),
         ];
     }

@@ -33,7 +33,9 @@ final class AnalyticsKpiWidget extends StatsOverviewWidget
 
     protected int | string | array $columnSpan = 'full';
 
-    protected ?string $heading = 'Platform Metrics';
+    protected ?string $heading = 'Platform KPIs — All time since Jun 1, 2026';
+
+    protected ?string $description = 'All metrics are capped at the Jun 1 baseline. No data before this date is included.';
 
     protected function getStats(): array
     {
@@ -59,42 +61,46 @@ final class AnalyticsKpiWidget extends StatsOverviewWidget
             ? number_format(($abandoned / $starts) * 100, 1)
             : '0.0';
 
+        $completionRate = $starts > 0
+            ? number_format(($uniqueCompleted / $starts) * 100, 1)
+            : '0.0';
+
         return [
             Stat::make('Visits', number_format($visits))
-                ->description('Unique sessions on public pages')
+                ->description('Unique browsing windows on public pages — tracked by anonymous cookie, not account')
                 ->color('gray'),
 
             Stat::make('Signups', number_format($signups))
-                ->description('New accounts created')
+                ->description('New user accounts created')
                 ->color('primary'),
 
             Stat::make('Story Starts', number_format($starts))
-                ->description('New games created (excl. previews)')
+                ->description('Total game plays created (one per play-through, excl. previews) — a user may have multiple')
                 ->color('info'),
 
             Stat::make('Session 1 Completions', number_format($s1))
-                ->description('Players who finished and advanced past Session 1')
+                ->description('Users who finished Chapter 1 and unlocked Chapter 2')
                 ->color('warning'),
 
-            Stat::make('Completion Events', number_format($completionEvents))
-                ->description(number_format($uniqueCompleted) . ' unique games completed')
+            Stat::make('Story Completions', number_format($completionEvents))
+                ->description("{$completionRate}% completion rate · {$uniqueCompleted} unique games completed · replays counted separately")
                 ->color('success'),
 
             Stat::make('Incomplete Stories', number_format($incomplete))
-                ->description("Started but not yet completed — {$incompletePct}% of starts")
+                ->description("Games with no completion yet — {$incompletePct}% of starts · user may still be actively reading")
                 ->color('warning'),
 
             Stat::make('Abandoned Stories', number_format($abandoned))
-                ->description("Incomplete with no activity for 14+ days — {$abandonedPct}% of starts")
+                ->description("Incomplete with no gameplay activity for 14+ days — {$abandonedPct}% of starts")
                 ->color('danger'),
 
-            Stat::make('Returns', number_format($returns))
-                ->description('Active players returning after a prior session')
+            Stat::make('Returning Users', number_format($returns))
+                ->description('Distinct users who were active in this period AND had prior activity before it')
                 ->color('primary'),
 
             Stat::make('Replay Events', number_format($replayEvents))
-                ->description(number_format($uniqueReplayers) . ' unique players replayed')
-                ->color('danger'),
+                ->description(number_format($uniqueReplayers) . ' unique users replayed — reset after completing a story')
+                ->color('info'),
         ];
     }
 

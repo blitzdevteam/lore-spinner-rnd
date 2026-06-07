@@ -27,7 +27,7 @@ final class AnalyticsFunnelWidget extends ChartWidget
 
     protected ?string $heading = 'Conversion Funnel';
 
-    protected ?string $description = 'Step-by-step player progression from first visit to replay';
+    protected ?string $description = 'Step-by-step user progression from first visit to story replay. All steps capped at Jun 1, 2026 baseline.';
 
     protected ?string $maxHeight = '340px';
 

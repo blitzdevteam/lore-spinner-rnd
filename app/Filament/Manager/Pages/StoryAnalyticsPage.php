@@ -243,34 +243,58 @@ final class StoryAnalyticsPage extends Page
     {
         $baseline = Analytics::baselineDateTimeString();
 
+        // FILTER on aggregates is avoided for broad PostgreSQL compatibility.
+        // CTEs split reached/avg from median (PERCENTILE_CONT rejects FILTER on
+        // ordered-set aggregates, and casts must not be placed before FILTER).
         $rows = collect(DB::select("
+            WITH session_stats AS (
+                SELECT
+                    gsc.story_id,
+                    gsc.session_number,
+                    COUNT(*)                AS reached,
+                    COUNT(gsc.completed_at) AS completed_cnt,
+                    ROUND(
+                        AVG(
+                            CASE WHEN gsc.completed_at IS NOT NULL
+                                 THEN EXTRACT(EPOCH FROM (gsc.completed_at - gsc.started_at)) / 60
+                            END
+                        )::numeric, 1
+                    ) AS avg_minutes
+                FROM game_session_completions gsc
+                WHERE gsc.started_at IS NOT NULL
+                  AND gsc.started_at >= ?
+                GROUP BY gsc.story_id, gsc.session_number
+            ),
+            session_medians AS (
+                SELECT
+                    gsc.story_id,
+                    gsc.session_number,
+                    ROUND(
+                        (PERCENTILE_CONT(0.5) WITHIN GROUP (
+                            ORDER BY EXTRACT(EPOCH FROM (gsc.completed_at - gsc.started_at)) / 60
+                        ))::numeric, 1
+                    ) AS median_minutes
+                FROM game_session_completions gsc
+                WHERE gsc.started_at IS NOT NULL
+                  AND gsc.completed_at IS NOT NULL
+                  AND gsc.started_at >= ?
+                GROUP BY gsc.story_id, gsc.session_number
+            )
             SELECT
-                s.id                AS story_id,
-                s.title             AS story_title,
-                gsc.session_number,
-                COUNT(*) FILTER (WHERE gsc.started_at IS NOT NULL)   AS reached,
-                COUNT(*) FILTER (WHERE gsc.completed_at IS NOT NULL) AS completed_cnt,
-                ROUND(
-                    AVG(
-                        EXTRACT(EPOCH FROM (gsc.completed_at - gsc.started_at)) / 60
-                    )::numeric
-                    FILTER (WHERE gsc.started_at IS NOT NULL AND gsc.completed_at IS NOT NULL),
-                    1
-                ) AS avg_minutes,
-                ROUND(
-                    (PERCENTILE_CONT(0.5) WITHIN GROUP (
-                        ORDER BY EXTRACT(EPOCH FROM (gsc.completed_at - gsc.started_at)) / 60
-                    ))::numeric
-                    FILTER (WHERE gsc.started_at IS NOT NULL AND gsc.completed_at IS NOT NULL),
-                    1
-                ) AS median_minutes
+                s.id         AS story_id,
+                s.title      AS story_title,
+                ss.session_number,
+                ss.reached,
+                ss.completed_cnt,
+                ss.avg_minutes,
+                sm.median_minutes
             FROM stories s
-            INNER JOIN game_session_completions gsc ON gsc.story_id = s.id
-            WHERE gsc.started_at IS NOT NULL
-              AND gsc.started_at >= ?
-            GROUP BY s.id, s.title, gsc.session_number
-            ORDER BY s.id, gsc.session_number
-        ", [$baseline]));
+            JOIN session_stats ss ON ss.story_id = s.id
+            LEFT JOIN session_medians sm
+                ON  sm.story_id       = ss.story_id
+                AND sm.session_number = ss.session_number
+            ORDER BY s.id, ss.session_number
+        ", [$baseline, $baseline]));
 
         return $rows
             ->groupBy('story_id')
@@ -301,10 +325,9 @@ final class StoryAnalyticsPage extends Page
                 SELECT
                     story_id,
                     session_number,
-                    COUNT(*) FILTER (WHERE started_at IS NOT NULL)                   AS reached,
-                    COUNT(*) FILTER (WHERE completed_at IS NOT NULL)                 AS completed_count,
-                    COUNT(*) FILTER (WHERE started_at IS NOT NULL)
-                        - COUNT(*) FILTER (WHERE completed_at IS NOT NULL)           AS dropped
+                    COUNT(*)                       AS reached,
+                    COUNT(completed_at)            AS completed_count,
+                    COUNT(*) - COUNT(completed_at) AS dropped
                 FROM game_session_completions
                 WHERE started_at IS NOT NULL
                   AND started_at >= ?
