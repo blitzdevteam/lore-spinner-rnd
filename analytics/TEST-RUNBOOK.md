@@ -31,22 +31,15 @@ Each test creates its own fixture records and deletes them by ID in `afterEach()
 
 ---
 
-## Prerequisites
+## How to run (Laravel Cloud UI)
 
-`vendor/bin/pest` only exists after `composer install`. If you get
-`Could not open input file: vendor/bin/pest`, run this first:
-
-```bash
-composer install
-```
-
-That's it. No separate test database. No migrations. Just have the normal app database running (Sail or local Postgres).
+Open your deployment in **Laravel Cloud**, go to the **Shell** tab, and run the commands below. The database is already connected — no setup needed. Tests create their own fixture rows and delete them when done, so the live database is left untouched.
 
 ---
 
 ## Run commands
 
-> Run all commands from the project root. `php artisan test` is **not** registered — use `php vendor/bin/pest`.
+> `php artisan test` is **not** registered in this app — use `php vendor/bin/pest`.
 
 ### All analytics tests
 
