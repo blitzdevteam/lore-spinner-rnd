@@ -32,27 +32,27 @@
         <p class="font-semibold text-gray-800 dark:text-gray-100 text-base">Metric definitions</p>
         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-gray-600 dark:text-gray-300">
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Visits</dt>
-                <dd class="inline"> — Unique browsing windows on public pages, tracked by an anonymous cookie. Not the same as story chapters (those are called Sessions).</dd></div>
+                <dd class="inline">: Unique browsing windows on public pages, tracked by an anonymous cookie. Not the same as story chapters (those are called Sessions).</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Signups</dt>
-                <dd class="inline"> — New user accounts created since the baseline.</dd></div>
+                <dd class="inline">: New user accounts created since the baseline.</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Story Starts</dt>
-                <dd class="inline"> — Total individual game plays created (one per play-through). A single user may have multiple starts across stories or replays.</dd></div>
+                <dd class="inline">: Total individual game plays created (one per play-through). A single user may have multiple starts across stories or replays.</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Session 1 Completions</dt>
-                <dd class="inline"> — Users who finished Chapter 1 and advanced to Chapter 2. The first major drop-off point in the funnel.</dd></div>
+                <dd class="inline">: Users who finished Chapter 1 and advanced to Chapter 2. The first major drop-off point in the funnel.</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Story Completions</dt>
-                <dd class="inline"> — Total full-story completions recorded. One per story cycle per game. Replays after reset count as new completion events. Rate = unique completed ÷ starts.</dd></div>
+                <dd class="inline">: Total full-story completions recorded. One per story cycle per game. Replays after reset count as new completion events. Rate = unique completed / starts.</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Incomplete</dt>
-                <dd class="inline"> — Games with no completion on record yet. The user may still be actively reading — this is not a label of failure.</dd></div>
+                <dd class="inline">: Games with no completion on record yet. The user may still be actively reading. This is not a label of failure.</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Abandoned</dt>
-                <dd class="inline"> — Subset of Incomplete: no gameplay activity (prompts, sessions, resets) for 14+ days. Does not include page views.</dd></div>
+                <dd class="inline">: Subset of Incomplete with no gameplay activity (prompts, sessions, resets) for 14+ days. Does not include page views.</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Returning Users</dt>
-                <dd class="inline"> — Users who were active in the selected period and also had prior activity before it. Measures whether users come back over time.</dd></div>
+                <dd class="inline">: Users who were active in the selected period and also had prior activity before it. Measures whether users come back over time.</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Replay Events</dt>
-                <dd class="inline"> — Resets triggered after a story was already completed. Each reset starts a new story cycle and counts as a replay event.</dd></div>
+                <dd class="inline">: Resets triggered after a story was already completed. Each reset starts a new story cycle and counts as a replay event.</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">D1 / D7 / D30 Retention</dt>
-                <dd class="inline"> — % of users who returned on day 1, within 7 days, or within 30 days of their first playable session.</dd></div>
+                <dd class="inline">: % of users who returned on day 1, within 7 days, or within 30 days of their first playable session.</dd></div>
             <div><dt class="font-medium text-gray-800 dark:text-gray-100 inline">Return Rate</dt>
-                <dd class="inline"> — % of users with more than one distinct active day recorded since the baseline.</dd></div>
+                <dd class="inline">: % of users with more than one distinct active day recorded since the baseline.</dd></div>
         </dl>
     </div>
 </x-filament-panels::page>
