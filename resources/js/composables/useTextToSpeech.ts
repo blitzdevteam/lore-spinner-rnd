@@ -6,8 +6,6 @@ const SPEED_OPTIONS = [1, 1.25, 1.5, 1.75, 2] as const;
 const SILENT_WAV =
     'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
 
-const IOS = typeof navigator !== 'undefined' && /iP(hone|od|ad)/.test(navigator.userAgent);
-
 const audioCache = new Map<string, HTMLAudioElement>();
 
 const isPlaying = ref(false);
@@ -36,11 +34,88 @@ let unlockAudio: HTMLAudioElement | null = null;
 let audioUnlocked = false;
 let pendingAutoplay: { gameId: string; promptId: string } | null = null;
 
+// ── Web Audio API unlock ──────────────────────────────────────────────────────
+// On iOS Safari, audio playback permission is per-page once ANY audio element
+// plays during a user gesture. Routing all HTMLAudioElements through a shared
+// AudioContext is the most reliable cross-version strategy:
+//   • The AudioContext is unlocked (resumed) during a user gesture.
+//   • All elements connected via createMediaElementSource inherit that unlock,
+//     so async play() calls (e.g. from watches after a POST) succeed.
+//   • If AudioContext is still suspended we proactively queue instead of letting
+//     audio play silently (suspended context → play() resolves but no sound).
+
+let audioCtx: AudioContext | null = null;
+const ctxConnected = new WeakSet<HTMLAudioElement>();
+
+function getOrCreateAudioCtx(): AudioContext | null {
+    if (typeof window === 'undefined') return null;
+    try {
+        const ACtx = window.AudioContext ?? (window as any).webkitAudioContext;
+        if (!ACtx) return null;
+        if (!audioCtx) {
+            audioCtx = new ACtx() as AudioContext;
+            // When AudioContext resumes after a gesture (async resume() resolved),
+            // flush any play that was queued while it was still suspended.
+            audioCtx.addEventListener('statechange', () => {
+                if (audioCtx?.state === 'running' && audioUnlocked) {
+                    flushPendingAutoplay();
+                }
+            });
+        }
+        return audioCtx;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Connect an HTMLAudioElement to the shared AudioContext graph.
+ * Called once per element; repeated calls are no-ops.
+ * After connection the element's audio ONLY flows through the AudioContext —
+ * meaning it will be silent while the context is suspended and audible once running.
+ */
+function connectToAudioCtx(audio: HTMLAudioElement): void {
+    if (ctxConnected.has(audio)) return;
+    const ctx = getOrCreateAudioCtx();
+    if (!ctx) return;
+    try {
+        const source = ctx.createMediaElementSource(audio);
+        source.connect(ctx.destination);
+        ctxConnected.add(audio);
+    } catch {
+        // Already connected or unsupported — fall through to browser-default behaviour
+    }
+}
+
+/**
+ * Must be called synchronously inside a user-gesture handler.
+ * Resumes the AudioContext and plays 1 frame of silence to fully activate it on iOS.
+ */
+function unlockAudioCtx(): void {
+    const ctx = getOrCreateAudioCtx();
+    if (!ctx) return;
+    const playOneSample = () => {
+        try {
+            const buf = ctx.createBuffer(1, 1, ctx.sampleRate);
+            const src = ctx.createBufferSource();
+            src.buffer = buf;
+            src.connect(ctx.destination);
+            src.start(0);
+        } catch {}
+    };
+    if (ctx.state === 'suspended') {
+        ctx.resume().then(playOneSample).catch(() => {});
+    } else {
+        playOneSample();
+    }
+}
+
 function configureAudioElement(audio: HTMLAudioElement) {
     audio.setAttribute('playsinline', 'true');
-    if (IOS) {
-        audio.crossOrigin = 'anonymous';
-    }
+    // Route through AudioContext so the gesture-unlock propagates to this element.
+    // crossOrigin is intentionally omitted: same-origin TTS endpoint; adding it
+    // requires CORS headers on the server and breaks playback on iOS without them.
+    connectToAudioCtx(audio);
 }
 
 function isAutoplayBlocked(err: unknown): boolean {
@@ -49,6 +124,11 @@ function isAutoplayBlocked(err: unknown): boolean {
 
 function queuePendingAutoplay(gameId: string, promptId: string) {
     pendingAutoplay = { gameId, promptId };
+    // Show a pending-play indicator on the relevant card while we wait for the
+    // AudioContext to be unlocked via a user gesture.
+    revealMediaPlayer();
+    activeKey.value = `${gameId}:${promptId}`;
+    isLoading.value = true;
 }
 
 function flushPendingAutoplay() {
@@ -62,39 +142,38 @@ function flushPendingAutoplay() {
 function primeAudio() {
     if (typeof window === 'undefined') return;
 
-    if (audioUnlocked) {
-        flushPendingAutoplay();
-        return;
+    // 1. Resume the AudioContext — this is the primary iOS unlock signal.
+    unlockAudioCtx();
+
+    if (!audioUnlocked) {
+        // 2. Also play a silent HTML Audio element as a belt-and-suspenders unlock
+        //    for browsers that gate on HTMLAudioElement rather than AudioContext.
+        if (!unlockAudio) {
+            unlockAudio = new Audio(SILENT_WAV);
+            unlockAudio.volume = 0;
+            configureAudioElement(unlockAudio);
+        }
+        unlockAudio.play().catch(() => {});
+
+        // 3. Mark unlocked immediately — we ARE inside a user-gesture call stack.
+        //    Deferring to .then() risks losing gesture propagation on iOS Safari.
+        audioUnlocked = true;
     }
 
-    if (!unlockAudio) {
-        unlockAudio = new Audio(SILENT_WAV);
-        unlockAudio.volume = 0.001;
-        configureAudioElement(unlockAudio);
-    }
-
-    const attempt = unlockAudio.play();
-    if (!attempt) return;
-
-    attempt
-        .then(() => {
-            unlockAudio?.pause();
-            if (unlockAudio) unlockAudio.currentTime = 0;
-            audioUnlocked = true;
-            flushPendingAutoplay();
-        })
-        .catch(() => {
-            // Gesture may have expired; a later interaction will retry.
-        });
+    // 4. Flush any queued play() synchronously while still inside gesture scope.
+    flushPendingAutoplay();
 }
 
 function handlePlayRejected(key: string, err: unknown, gameId: string, promptId: string) {
-    if (isAutoplayBlocked(err)) {
-        queuePendingAutoplay(gameId, promptId);
-    }
     console.warn('[TTS] play() rejected', key, err);
     isPlaying.value = false;
-    isLoading.value = false;
+    if (isAutoplayBlocked(err)) {
+        // Queue the play — queuePendingAutoplay keeps isLoading = true so the
+        // spinner stays visible while we wait for a user gesture to unlock audio.
+        queuePendingAutoplay(gameId, promptId);
+    } else {
+        isLoading.value = false;
+    }
 }
 
 function updateTime() {
@@ -177,6 +256,14 @@ function applyAudioSettings(audio: HTMLAudioElement) {
 
 function play(gameId: string, promptId: string) {
     const key = `${gameId}:${promptId}`;
+
+    // Guard: AudioContext exists but is still suspended — audio would play silently
+    // (context suppresses output). Queue and show the spinner; the statechange
+    // listener will flush once the context resumes during a user gesture.
+    if (audioCtx && audioCtx.state !== 'running') {
+        queuePendingAutoplay(gameId, promptId); // sets activeKey + isLoading for the UI
+        return;
+    }
 
     if (currentAudio && activeKey.value === key && !currentAudio.ended) {
         if (currentAudio.paused) {

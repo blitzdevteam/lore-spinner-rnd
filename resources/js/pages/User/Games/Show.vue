@@ -92,22 +92,8 @@ watch(
     },
 );
 
-// Autoplay: when a new response arrives on the latest prompt, play it automatically
-watch(
-    () => {
-        const latest = prompts.value[prompts.value.length - 1];
-        return latest ? `${latest.id}:${latest.response ?? ''}` : null;
-    },
-    (key, prevKey) => {
-        if (!gameplaySettings.autoplay) return;
-        if (!key || key === prevKey) return;
-        const latest = prompts.value[prompts.value.length - 1];
-        if (!latest?.response) return;
-        // Skip the very first prompt that came from the cinematic (already handled above)
-        if (cameFromCinematic.value) return;
-        tts.play(String(props.game.id), String(latest.id));
-    },
-);
+// Subsequent-prompt autoplay is owned by the typewriter-completion watcher in
+// GameplayChatCard.vue — it fires once text is fully generated, same on all platforms.
 
 const canSubmitInput = computed(() => {
     if (isSubmitting.value) return false;
