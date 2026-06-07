@@ -132,6 +132,19 @@ watch(
         }
     },
 );
+
+// Autoplay: once the typewriter finishes, play the narration.
+// Works the same on desktop and mobile — text must be fully generated first.
+// skipToEnd() also triggers this (cancel() sets isTyping → false).
+watch(
+    () => typewriter.isTyping.value,
+    (isTyping, wasTyping) => {
+        if (isTyping || !wasTyping) return; // only on true → false transition
+        if (!props.isLatest || !props.animate) return;
+        if (!gameplaySettings.autoplay) return;
+        tts.play(props.gameId, props.prompt.id);
+    },
+);
 </script>
 
 <template>

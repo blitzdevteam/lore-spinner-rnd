@@ -124,6 +124,11 @@ function isAutoplayBlocked(err: unknown): boolean {
 
 function queuePendingAutoplay(gameId: string, promptId: string) {
     pendingAutoplay = { gameId, promptId };
+    // Show a pending-play indicator on the relevant card while we wait for the
+    // AudioContext to be unlocked via a user gesture.
+    revealMediaPlayer();
+    activeKey.value = `${gameId}:${promptId}`;
+    isLoading.value = true;
 }
 
 function flushPendingAutoplay() {
@@ -160,12 +165,15 @@ function primeAudio() {
 }
 
 function handlePlayRejected(key: string, err: unknown, gameId: string, promptId: string) {
-    if (isAutoplayBlocked(err)) {
-        queuePendingAutoplay(gameId, promptId);
-    }
     console.warn('[TTS] play() rejected', key, err);
     isPlaying.value = false;
-    isLoading.value = false;
+    if (isAutoplayBlocked(err)) {
+        // Queue the play — queuePendingAutoplay keeps isLoading = true so the
+        // spinner stays visible while we wait for a user gesture to unlock audio.
+        queuePendingAutoplay(gameId, promptId);
+    } else {
+        isLoading.value = false;
+    }
 }
 
 function updateTime() {
@@ -249,11 +257,11 @@ function applyAudioSettings(audio: HTMLAudioElement) {
 function play(gameId: string, promptId: string) {
     const key = `${gameId}:${promptId}`;
 
-    // Guard: if elements are routed through AudioContext but the context is still
-    // suspended, play() would resolve silently (no sound, but fired events).
-    // Queue instead and let the statechange listener flush when context resumes.
+    // Guard: AudioContext exists but is still suspended — audio would play silently
+    // (context suppresses output). Queue and show the spinner; the statechange
+    // listener will flush once the context resumes during a user gesture.
     if (audioCtx && audioCtx.state !== 'running') {
-        queuePendingAutoplay(gameId, promptId);
+        queuePendingAutoplay(gameId, promptId); // sets activeKey + isLoading for the UI
         return;
     }
 
