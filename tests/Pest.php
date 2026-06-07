@@ -16,8 +16,10 @@ declare(strict_types=1);
 pest()->extend(Tests\TestCase::class)
     ->in('Feature', 'Unit');
 
-pest()->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+// IMPORTANT: RefreshDatabase runs migrate:fresh and wipes the entire database.
+// It must NEVER apply to Feature tests that run against a real/production database.
+// Analytics tests use AnalyticsTestContext which creates and deletes fixtures by ID.
+// pest()->use(Illuminate\Foundation\Testing\RefreshDatabase::class)->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
