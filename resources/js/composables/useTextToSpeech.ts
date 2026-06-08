@@ -348,6 +348,7 @@ function stop() {
 }
 
 function dismiss() {
+    pendingAutoplay = null;
     stop();
     activeKey.value = null;
 }

@@ -10,7 +10,7 @@ import { GameInterface } from '@/types';
 import { store as storePrompt } from '@/wayfinder/actions/App/Http/Controllers/User/Game/PromptController';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { router, usePage } from '@inertiajs/vue3';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const CONTINUE_MARKER = '__continue__';
 
@@ -19,6 +19,7 @@ const props = defineProps<{
 }>();
 
 const handleBack = () => {
+    tts.dismiss();
     if (window.history.length > 1) {
         window.history.back();
     } else {
@@ -216,6 +217,10 @@ onMounted(() => {
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         });
     }
+});
+
+onUnmounted(() => {
+    tts.dismiss();
 });
 </script>
 
