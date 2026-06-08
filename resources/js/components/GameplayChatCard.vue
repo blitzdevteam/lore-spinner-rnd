@@ -133,6 +133,14 @@ watch(
     },
 );
 
+watch(
+    () => props.animate,
+    (animate, wasAnimate) => {
+        if (!animate || wasAnimate || !props.isLatest || !props.prompt.response) return;
+        typewriter.start(props.prompt.response);
+    },
+);
+
 // Autoplay: once the typewriter finishes, play the narration.
 // Works the same on desktop and mobile — text must be fully generated first.
 // skipToEnd() also triggers this (cancel() sets isTyping → false).
