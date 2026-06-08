@@ -37,6 +37,7 @@ const handleResetGame = () => {
     if (!confirmed) return;
 
     isResetting.value = true;
+    tts.resetForNewStory();
     router.post(
         `/user/games/${props.gameId}/reset`,
         {},

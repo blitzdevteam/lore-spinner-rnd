@@ -211,6 +211,10 @@ const handleCinematicDone = () => {
 };
 
 onMounted(() => {
+    if (!hasPrompts.value) {
+        tts.resetForNewStory();
+    }
+
     if (hasPrompts.value) {
         showCinematic.value = false;
         nextTick(() => {
