@@ -264,11 +264,11 @@ const handleInputSubmit = (prompt: string) => {
                     <div class="p-3">
                         <slot name="header" />
                     </div>
-                    <div class="mx-auto flex max-w-3xl flex-col gap-8 p-3">
+                    <div class="mx-auto flex max-w-3xl flex-col gap-8 p-3 pb-32">
                         <slot name="game" />
                     </div>
                     <div
-                        class="sticky right-0 bottom-0 left-0 z-20 w-full px-3 py-6 md:p-6"
+                        class="fixed right-0 bottom-0 left-0 z-20 w-full px-3 py-6 md:p-6"
                         :class="{ 'bg-linear-to-t from-black via-black/95 to-transparent': !(isIos && isMobile && inputFocused) }"
                     >
                         <div class="flex flex-col items-center gap-3 px-0">
