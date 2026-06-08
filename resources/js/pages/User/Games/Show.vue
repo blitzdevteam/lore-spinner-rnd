@@ -10,7 +10,7 @@ import { GameInterface } from '@/types';
 import { store as storePrompt } from '@/wayfinder/actions/App/Http/Controllers/User/Game/PromptController';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
 import { router, usePage } from '@inertiajs/vue3';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const CONTINUE_MARKER = '__continue__';
 
@@ -18,13 +18,24 @@ const props = defineProps<{
     game: GameInterface;
 }>();
 
+const tts = useTextToSpeech();
+const { settings: gameplaySettings } = useGameplaySettings();
+
 const handleBack = () => {
+    tts.dismiss();
     if (window.history.length > 1) {
         window.history.back();
     } else {
         router.visit('/');
     }
 };
+
+function visitLeavesThisGame(url: string): boolean {
+    const path = url.split('?')[0];
+    return !path.startsWith(`/user/games/${props.game.id}`);
+}
+
+let removeNavigationListener: (() => void) | undefined;
 
 const isSubmitting = ref(false);
 const isAutoBeginning = ref(false);
@@ -71,23 +82,36 @@ function excerpt(text: string, max = 120): string {
 const page = usePage();
 const showOutro = computed(() => (page.props.flash as Record<string, unknown>)?.story_complete === true);
 const handleOutroDone = () => {
+    tts.dismiss();
     router.visit(storiesIndex().url, { replace: true });
 };
 
 // Cinematic opening: shown on first visit (no prompts yet); hidden once begin fires
 const showCinematic = ref(!hasPrompts.value && !showOutro.value);
 const cameFromCinematic = ref(!hasPrompts.value);
+const openingNarrationPlayed = ref(false);
 
-const tts = useTextToSpeech();
-const { settings: gameplaySettings } = useGameplaySettings();
-// Auto-play the first narration while the showcard is still visible
+// Auto-play the first narration while the showcard is still visible (or when begin finishes).
 watch(
-    () => prompts.value[0]?.response,
-    (response) => {
-        if (!response || !cameFromCinematic.value) return;
+    [() => prompts.value[0]?.response, shouldAnimate],
+    () => {
+        if (openingNarrationPlayed.value) return;
+
+        const response = prompts.value[0]?.response;
+        if (!response) return;
+
+        const isOpeningTurn = prompts.value.length === 1;
+        const shouldPlayFirst = cameFromCinematic.value || (shouldAnimate.value && isOpeningTurn);
+        if (!shouldPlayFirst) return;
+        if (!gameplaySettings.autoplay) {
+            cameFromCinematic.value = false;
+            return;
+        }
+
         const first = prompts.value[0];
         if (!first) return;
         cameFromCinematic.value = false;
+        openingNarrationPlayed.value = true;
         tts.play(String(props.game.id), String(first.id));
     },
 );
@@ -210,12 +234,22 @@ const handleCinematicDone = () => {
 };
 
 onMounted(() => {
+    removeNavigationListener = router.on('before', (event) => {
+        if (visitLeavesThisGame(event.detail.visit.url)) {
+            tts.dismiss();
+        }
+    });
+
     if (hasPrompts.value) {
         showCinematic.value = false;
         nextTick(() => {
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         });
     }
+});
+
+onUnmounted(() => {
+    removeNavigationListener?.();
 });
 </script>
 

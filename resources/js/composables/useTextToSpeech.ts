@@ -348,8 +348,25 @@ function stop() {
 }
 
 function dismiss() {
+    pendingAutoplay = null;
     stop();
     activeKey.value = null;
+}
+
+/** Stop playback and discard cached narrations (e.g. after resetting the story). */
+function resetForNewStory() {
+    dismiss();
+    currentAudio = null;
+    for (const audio of audioCache.values()) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.removeAttribute('src');
+        audio.load();
+    }
+    audioCache.clear();
+    playedKeys.clear();
+    duration.value = 0;
+    mediaCollapsed.value = false;
 }
 
 function pause() {
@@ -479,6 +496,7 @@ export function useTextToSpeech() {
         play,
         stop,
         dismiss,
+        resetForNewStory,
         pause,
         resume,
         toggle,
