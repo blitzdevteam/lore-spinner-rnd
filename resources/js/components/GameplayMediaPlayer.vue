@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
-import { LucideAudioLines, LucideLoader, LucidePause, LucidePlay, LucideRotateCcw, LucideRotateCw, LucideVolume2, LucideVolumeX, LucideX } from 'lucide-vue-next';
+import { LucideAudioLines, LucideLoader, LucidePause, LucidePlay, LucideRotateCcw, LucideRotateCw, LucideSettings, LucideVolume2, LucideVolumeX, LucideX } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = withDefaults(defineProps<{ collapsed?: boolean }>(), { collapsed: false });
 
 const emit = defineEmits<{
-    'open-audio-settings': [];
+    'open-settings': [];
 }>();
 
 const tts = useTextToSpeech();
@@ -69,14 +69,14 @@ const onVolumeInput = (event: Event) => {
                 <LucideVolume2 v-else class="player-btn-icon" :stroke-width="1.75" />
             </button>
 
-            <!-- Audio settings (mobile) -->
+            <!-- Settings (mobile) -->
             <button
                 class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95 md:hidden"
-                title="Audio settings"
-                aria-label="Audio settings"
-                @click.stop="emit('open-audio-settings')"
+                title="Settings"
+                aria-label="Settings"
+                @click.stop="emit('open-settings')"
             >
-                <LucideAudioLines class="player-btn-icon" :stroke-width="1.75" />
+                <LucideSettings class="player-btn-icon" :stroke-width="1.75" />
             </button>
 
             <!-- Mute + volume slider (desktop) -->

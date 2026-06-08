@@ -109,14 +109,6 @@ const toggleAutoplay = () => {
 };
 
 const toggleMedia = () => {
-    if (isMobile.value) {
-        if (activePanel.value === 'audio') {
-            closeMobilePanel();
-            return;
-        }
-        openAudioSettings();
-        return;
-    }
     tts.mediaCollapsed.value = !tts.mediaCollapsed.value;
 };
 
@@ -245,12 +237,11 @@ const handleInputSubmit = (prompt: string) => {
                             </button>
                             <button
                                 class="mobile-pill__btn"
-                                :class="{ 'mobile-pill__btn--active': activePanel === 'audio' }"
-                                :title="activePanel === 'audio' ? 'Close audio' : 'Audio controls'"
+                                :class="{ 'mobile-pill__btn--active': tts.isActive.value && !tts.mediaCollapsed.value }"
+                                :title="tts.mediaCollapsed.value ? 'Show audio player' : 'Hide audio player'"
                                 @click="toggleMedia"
                             >
-                                <LucideX v-if="activePanel === 'audio'" class="size-5 text-secondary-300" />
-                                <LucideAudioLines v-else class="size-5" :class="tts.isActive.value ? 'text-primary' : 'text-gray-300'" />
+                                <LucideAudioLines class="size-5" :class="tts.isActive.value ? 'text-primary' : 'text-gray-300'" />
                             </button>
                             <button
                                 class="mobile-pill__btn"
@@ -282,7 +273,7 @@ const handleInputSubmit = (prompt: string) => {
                     >
                         <div class="flex flex-col items-center gap-3 px-0">
                             <div class="flex w-full items-center justify-start md:hidden">
-                                <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" @open-audio-settings="openAudioSettings" />
+                                <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" @open-settings="toggleSettings" />
                             </div>
                             <GameplayInput
                                 :disabled="props.inputDisabled"
