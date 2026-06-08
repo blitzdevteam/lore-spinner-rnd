@@ -6,7 +6,7 @@ import { computed } from 'vue';
 const props = withDefaults(defineProps<{ collapsed?: boolean }>(), { collapsed: false });
 
 const emit = defineEmits<{
-    'open-settings': [];
+    'open-audio-settings': [];
 }>();
 
 const tts = useTextToSpeech();
@@ -74,7 +74,7 @@ const onVolumeInput = (event: Event) => {
                 class="player-btn grid shrink-0 place-items-center rounded-full bg-white/5 text-gray-300 transition-[transform,color,background-color] hover:scale-105 hover:bg-white/10 hover:text-primary-600 active:scale-95 md:hidden"
                 title="Settings"
                 aria-label="Settings"
-                @click.stop="emit('open-settings')"
+                @click.stop="emit('open-audio-settings')"
             >
                 <LucideSettings class="player-btn-icon" :stroke-width="1.75" />
             </button>

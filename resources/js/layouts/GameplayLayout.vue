@@ -273,7 +273,7 @@ const handleInputSubmit = (prompt: string) => {
                     >
                         <div class="flex flex-col items-center gap-3 px-0">
                             <div class="flex w-full items-center justify-start md:hidden">
-                                <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" @open-settings="toggleSettings" />
+                                <GameplayMediaPlayer :collapsed="tts.mediaCollapsed.value" @open-audio-settings="openAudioSettings" />
                             </div>
                             <GameplayInput
                                 :disabled="props.inputDisabled"
