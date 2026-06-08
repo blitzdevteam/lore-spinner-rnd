@@ -4,6 +4,7 @@ import iconYouChoose from '@/assets/story/left.svg';
 import iconStoryResponds from '@/assets/story/center.svg';
 import iconXen from '@/assets/story/right .svg';
 import storyChangesBg from '@/assets/story/story-changes.png';
+import tryTellingBanner from '@/assets/banner-nex.png';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 
@@ -127,6 +128,16 @@ const storyItems = [
                             </div>
                         </SwiperSlide>
                     </Swiper>
+                </div>
+
+                <div
+                    class="relative w-full overflow-hidden rounded-[0.875rem] border border-solid border-white/15"
+                >
+                    <img
+                        :src="tryTellingBanner"
+                        alt="Try telling the story: Inspect the clue, Climb the tower, or MAKE THE TIN MAN BREAKDANCE. The story responds in real time."
+                        class="block w-full h-auto"
+                    />
                 </div>
             </div>
         </div>
