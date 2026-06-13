@@ -88,6 +88,12 @@ class ConsequenceMappingAgent implements Agent, HasStructuredOutput
             'next_session_opening' => $schema->string()->required()->title('Next Session Opening')->description('SESSION_END_HOOK only — tone, first image, first character, immediate stakes. Empty string otherwise.'),
             'later_session_legacy' => $schema->string()->required()->title('Later Session Legacy')->description('Specific or N/A.'),
             'defining_line_captured' => $schema->string()->required()->title('Defining Line Captured')->description('Mirror the Phase 5 Task 8 defining_line for this path.'),
+            'consequence_visibility' => $schema->object([
+                'what_changes' => $schema->string()->required()->title('What Changes')->description('Concrete visible change the player can perceive.'),
+                'when_visible_target_responses' => $schema->number()->required()->title('When Visible Target Responses')->description('Target: 2 responses.'),
+                'when_visible_max_responses' => $schema->number()->required()->title('When Visible Max Responses')->description('Hard maximum: 3 responses.'),
+                'how_player_sees_it' => $schema->string()->required()->title('How Player Sees It')->description('Dialogue shift, NPC behavior, environmental detail, etc.'),
+            ])->required()->withoutAdditionalProperties()->title('Consequence Visibility'),
             'world_state_delta' => (clone $worldStateDeltaSchema)->title('World State Delta'),
             'reactivity_triggers' => $schema->array()->required()->title('Reactivity Triggers')->items($schema->string()->required()),
             'cross_episode_propagation' => (clone $crossEpisodePropagationSchema)->title('Cross-Episode Propagation'),

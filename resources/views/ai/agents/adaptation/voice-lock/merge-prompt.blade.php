@@ -3,12 +3,12 @@ SOURCE IP: {{ $title }}, {{ $author }}, {{ $year }}, {{ $format }}
 FORMAT DETECTION:
 {{ json_encode($formatDetection, JSON_PRETTY_PRINT) }}
 
-IP AUDIT (for context):
+PHASE 1 AUDIT (scorecard — constitutional input):
 {{ json_encode($ipAudit, JSON_PRETTY_PRINT) }}
 
 ---
 
-You are synthesizing the complete Author Voice DNA Profile from per-chapter observation fragments. Each chapter was analysed independently for voice characteristics. Your job is to produce ONE complete, unified Voice DNA Profile covering the full source.
+You are synthesizing the complete Voice DNA Profile from per-chapter observation fragments. Each chapter was analysed independently. Produce ONE unified profile matching Deliverable 1A (NOVEL) or 1B (SCREENPLAY) based on detected_format.
 
 Total chapters processed: {{ $totalChapters }}
 
@@ -24,20 +24,30 @@ PER-CHAPTER VOICE OBSERVATION FRAGMENTS (in chapter order):
 
 SYNTHESIS INSTRUCTIONS:
 
-1. SIGNATURE WRITING TECHNIQUES (8-12 total): From the per-chapter observations, identify the 8-12 most distinctive and consistent techniques. Prefer techniques that appear across multiple chapters. For each, select the most compelling direct quote from the fragments as evidence.
+1. Set profile_type to NOVELIST or SCREENWRITER based on format detection.
 
-2. SENTENCE-LEVEL PATTERNS: Synthesize a coherent picture of the author's sentence rhythm from all chapter observations. Use the demonstrative quotes from fragments as evidence.
+2. SIGNATURE WRITING TECHNIQUES (8-12): merge across chapters; prefer techniques appearing in multiple chapters; include frequency.
 
-3. DICTION FINGERPRINT: Synthesize vocabulary clusters, register, and word frequency patterns from all chapters. Select 5-6 of the most distinctive diction examples from the fragments.
+3. SENTENCE-LEVEL PATTERNS / ACTION LINE METRICS: synthesize coherent metrics from all fragments.
 
-4. DIALOGUE FINGERPRINT PER MAJOR CHARACTER: For each character who appeared across multiple chapters, merge their dialogue observations into a single entry. If a character only appeared in one chapter, use that chapter's observation directly.
+4. DICTION FINGERPRINT: merge vocabulary clusters and distinctive quotes.
 
-5. EMOTIONAL RANGE MAP: Synthesize across all chapters. For each register (TENSION, HUMOR, GRIEF, WONDER, FEAR, VIOLENCE, INTIMACY): use the strongest quote from any chapter's fragment. If a register is ABSENT across all chapters, mark it ABSENT.
+5. NOVELIST ONLY: narrator_perspective, paragraph_architecture, dialogue_tag_patterns.
 
-6. PARAGRAPH ARCHITECTURE: Synthesize across all chapters.
+6. SCREENWRITER ONLY: action_line_metrics, screenplay_structure_metrics, emotional_vocabulary_hierarchy, screenplay_to_prose_protocol.
 
-7. MASTER RULE 1 — HARD BANS: Set universal_bans_acknowledged to true. For IP-specific bans: collect all ban candidates from all chapter fragments, deduplicate, select the strongest 6-10.
+7. DIALOGUE FINGERPRINT PER MAJOR CHARACTER: merge cross-chapter observations; require 3+ distinguishing markers per character.
 
-8. 14-POINT AUDIT PROTOCOL: Produce all 14 audit points specific to this IP, informed by the voice observations across all chapters.
+8. EMOTIONAL RANGE MAP: strongest quote per register across all chapters.
+
+9. COLLOCATION FINGERPRINT: deduplicate and expand to 15-20 pairs from chapter collocation_candidates.
+
+10. NEGATIVE SPACE MAP: deduplicate to minimum 5 entries from chapter negative_space_candidates.
+
+11. SHOW/EXPLAIN RATIO and COMPARATIVE EXCLUSION (2-3 neighbors): synthesize from full fragment set.
+
+12. MASTER RULE 1: universal_bans_acknowledged true; 6-10 IP-specific bans from ban candidates.
+
+13. 14-POINT AUDIT PROTOCOL: exactly 14 IP-specific runtime audit points.
 
 Return the complete voice profile matching the full required schema.

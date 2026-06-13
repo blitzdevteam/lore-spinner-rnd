@@ -11,6 +11,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Throwable;
 
+/**
+ * Pipeline Upgrade V2.2 — Format detection runs after IP trim merge and before IP Audit.
+ * Routes Voice Lock to Deliverable 1A (NOVEL) or 1B (SCREENPLAY).
+ */
 final class FormatDetectionJob implements ShouldQueue
 {
     use Queueable;
@@ -39,9 +43,6 @@ final class FormatDetectionJob implements ShouldQueue
                 'adaptation_status' => AdaptationStatusEnum::FORMAT_DETECTION,
             ]);
 
-            // Prefer the ip_trimming trimmed source when available — it is smaller
-            // and already has redundant description stripped, making format detection
-            // more signal-dense for the same token budget.
             $ipTrimming = $adaptation->ip_trimming ?? [];
             $source = ! empty($ipTrimming['trimmed_source_text']['text'])
                 ? $ipTrimming['trimmed_source_text']['text']
@@ -57,6 +58,8 @@ final class FormatDetectionJob implements ShouldQueue
             $adaptation->update([
                 'format_detection' => $response->toArray(),
             ]);
+
+            IpAuditJob::dispatch($this->story)->onQueue('adaptation');
         } catch (Throwable $throwable) {
             $adaptation->update([
                 'adaptation_status' => AdaptationStatusEnum::FAILED,

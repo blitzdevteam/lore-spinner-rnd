@@ -15,39 +15,40 @@ use Stringable;
 use Throwable;
 
 /**
- * Pipeline Upgrade V2 — Voice Lock (synthesis / merge pass).
- *
- * Receives all per-chapter voice observation fragments and synthesizes the
- * complete Author Voice DNA Profile matching the full Deliverable 1 schema.
- *
- * This agent produces the same structured output as the original VoiceLockAgent
- * but operates over compact per-chapter fragments rather than the full source
- * text, avoiding the 600s timeout that killed the monolithic approach.
- *
- * gpt-5.4 (full model): synthesis of voice DNA requires high judgment quality
- * — this output is constitutional law for all narrator prose.
+ * Pipeline Upgrade V2.2 — Voice Lock merge synthesis (Deliverable 1A or 1B).
  */
 #[Model('gpt-5.4')]
 #[Temperature(0.2)]
-#[Timeout(300)]
+#[Timeout(420)]
 class VoiceLockMergeAgent implements Agent, HasStructuredOutput
 {
     use Promptable;
+
+    public function __construct(
+        private ?string $detectedFormat = null,
+        private array $formatDetection = [],
+        private array $ipAudit = [],
+    ) {}
 
     /**
      * @throws Throwable
      */
     public function instructions(): Stringable|string
     {
-        return view('ai.agents.adaptation.voice-lock.system-prompt', [
-            'formatDetection' => [],
-            'formatDetectionOutput' => '',
-            'currentPhase' => 'Voice Lock Phase — Merge Synthesis',
+        $view = VoiceLockSchema::isScreenwriter($this->detectedFormat)
+            ? 'ai.agents.adaptation.voice-lock.system-prompt-screenwriter'
+            : 'ai.agents.adaptation.voice-lock.system-prompt-novelist';
+
+        return view($view, [
+            'formatDetection' => $this->formatDetection,
+            'formatDetectionOutput' => json_encode($this->formatDetection, JSON_PRETTY_PRINT),
+            'ipAudit' => $this->ipAudit,
+            'currentPhase' => 'Voice Lock Phase — Merge Synthesis (V2.2)',
         ])->render();
     }
 
     public function schema(JsonSchema $schema): array
     {
-        return (new VoiceLockAgent)->schema($schema);
+        return VoiceLockSchema::mergeSchema($schema, $this->detectedFormat);
     }
 }

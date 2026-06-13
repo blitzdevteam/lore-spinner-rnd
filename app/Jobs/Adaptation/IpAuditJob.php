@@ -9,8 +9,13 @@ use App\Enums\Adaptation\AdaptationStatusEnum;
 use App\Models\Story;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Bus;
 use Throwable;
 
+/**
+ * Pipeline Upgrade V2.2 — IP Audit runs after Format Detection and before Voice Lock.
+ * Voice Lock merge prompt requires the Phase 1 scorecard from this job.
+ */
 final class IpAuditJob implements ShouldQueue
 {
     use Queueable;
@@ -39,8 +44,6 @@ final class IpAuditJob implements ShouldQueue
                 'adaptation_status' => AdaptationStatusEnum::IP_AUDIT,
             ]);
 
-            // Prefer the ip_trimming trimmed source — smaller payload for the same
-            // audit coverage. Three 8k windows still sample the full arc of the text.
             $ipTrimming = $adaptation->ip_trimming ?? [];
             $source = ! empty($ipTrimming['trimmed_source_text']['text'])
                 ? $ipTrimming['trimmed_source_text']['text']
@@ -71,6 +74,8 @@ final class IpAuditJob implements ShouldQueue
             $adaptation->update([
                 'ip_audit' => $response->toArray(),
             ]);
+
+            $this->dispatchVoiceLockChapterBatch();
         } catch (Throwable $throwable) {
             $adaptation->update([
                 'adaptation_status' => AdaptationStatusEnum::FAILED,
@@ -78,5 +83,26 @@ final class IpAuditJob implements ShouldQueue
 
             throw $throwable;
         }
+    }
+
+    private function dispatchVoiceLockChapterBatch(): void
+    {
+        $chapters = $this->story->chapters()->orderBy('position')->get();
+        $storyId = $this->story->id;
+
+        if ($chapters->isEmpty()) {
+            VoiceLockMergeJob::dispatch($this->story)->onQueue('adaptation');
+
+            return;
+        }
+
+        Bus::batch(
+            $chapters->map(fn ($ch) => new VoiceLockChapterJob($this->story, $ch))->all()
+        )->onQueue('adaptation')
+            ->finally(function () use ($storyId): void {
+                $story = Story::findOrFail($storyId);
+                VoiceLockMergeJob::dispatch($story)->onQueue('adaptation');
+            })
+            ->dispatch();
     }
 }

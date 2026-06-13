@@ -468,6 +468,16 @@ final class RuntimeNarratorTemplateBuilder
             $dna['emotional_range_map'][$key]['quote'] = '';
         }
 
+        foreach ((array) ($dna['collocation_fingerprint'] ?? []) as $i => $col) {
+            $dna['collocation_fingerprint'][$i]['quotes'] = [];
+        }
+        foreach ((array) ($dna['comparative_exclusion'] ?? []) as $i => $ex) {
+            $dna['comparative_exclusion'][$i]['differentiating_techniques'] = array_map(
+                fn ($t) => is_string($t) ? strtok($t, '—') ?: $t : $t,
+                (array) ($ex['differentiating_techniques'] ?? [])
+            );
+        }
+
         $voice['author_voice_dna_profile'] = $dna;
         return $voice;
     }

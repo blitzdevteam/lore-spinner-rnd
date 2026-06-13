@@ -91,3 +91,11 @@ Using the Story Session Map, confirm:
 Return all six tasks as structured JSON matching the required schema.
 
 STOP GATE: Are there exactly 4 BRANCHING slots? Is there 1 BREATH beat between minutes 8-10? Are there 4-6 EMOTIONAL slots and 6-10 POSTURE slots? Does the content budget honestly fit 20-25 minutes? If any answer is no, revise before returning.
+
+---
+
+PAUL REVIEW — BEAT ARCHITECTURE RULES (Deliverable 3 Addition 2)
+
+BEAT ENDING RULES — Every beat in the session beat map must end on forward pull: question, discovery, complication, decision, escalation, or character shift. BANNED beat endings: pure atmosphere, summary, or continuation with no dramatic movement.
+
+FIRST-3-MINUTES RULE — The opening sequence must prove participation within 3 minutes of play: first branching choice within 90 seconds (~300 words of narration), first visible consequence within 120 seconds. Design the SETUP beat and Branching Choice #1 slot accordingly.

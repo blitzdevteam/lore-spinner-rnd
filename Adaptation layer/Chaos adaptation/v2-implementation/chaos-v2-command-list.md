@@ -78,6 +78,14 @@ Blade render probe:
 php "Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runner.php" step3
 ```
 
+V2.2 integration probe (pipeline order, 1A/1B blades, Paul Review markers):
+
+```bash
+php "Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runner.php" step_v22
+```
+
+Full V2.2 Cloud validation guide: [pipeline-upgrade-v2-2-validation-runbook.md](validation/pipeline-upgrade-v2-2-validation-runbook.md)
+
 Runtime template token render:
 
 ```bash

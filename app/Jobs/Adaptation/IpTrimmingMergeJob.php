@@ -28,8 +28,7 @@ use Throwable;
  *   2. Makes one small synthesis API call (IpTrimmingMergeAgent) over the
  *      collected story_spine_fragments to produce the unified story_spine.
  *   3. Writes the final Deliverable 7 package to story_adaptations.ip_trimming.
- *   4. Dispatches the VoiceLock chapter batch, whose ->finally() will continue
- *      the adaptation chain.
+ *   4. Dispatches FormatDetectionJob, which chains IpAuditJob → VoiceLock batch.
  */
 final class IpTrimmingMergeJob implements ShouldQueue
 {
@@ -194,16 +193,7 @@ final class IpTrimmingMergeJob implements ShouldQueue
             'chapter_segments' => count($chapterSegments),
         ]);
 
-        // --- Continue pipeline: dispatch VoiceLock chapter batch ---
-        $storyId = $this->story->id;
-
-        Bus::batch(
-            $chapters->map(fn ($ch) => new VoiceLockChapterJob($this->story, $ch))->all()
-        )->onQueue('adaptation')
-            ->finally(function () use ($storyId): void {
-                $story = Story::findOrFail($storyId);
-                VoiceLockMergeJob::dispatch($story)->onQueue('adaptation');
-            })
-            ->dispatch();
+        // --- Continue pipeline: FormatDetection → IpAudit → VoiceLock (V2.2 order) ---
+        FormatDetectionJob::dispatch($this->story)->onQueue('adaptation');
     }
 }

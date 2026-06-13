@@ -15,6 +15,17 @@ TASK 1 — BRANCHING CHOICE CONSEQUENCE MAPS
 
 For each of the FOUR branching choices from Phase 5, complete the full consequence map. Every cell must contain a specific, named moment. Vague language fails automatically.
 
+PAUL REVIEW — CONSEQUENCE VISIBILITY RULE (Deliverable 5 Addition 4)
+
+Every mapped consequence must specify:
+- WHAT changes (concrete, named, visible)
+- WHEN the player sees it: target 2 responses, hard maximum 3 responses
+- HOW the player sees it (dialogue shift, environmental detail, NPC behavior, physical change — not invisible state tracker updates)
+
+If a consequence cannot be made visible within 3 responses, flag it for redesign. Invisible consequences fail. Small visible consequences beat large invisible ones.
+
+Populate consequence_visibility on every path: what_changes, when_visible_target_responses (2), when_visible_max_responses (3), how_player_sees_it.
+
 Return `branching_consequences` as an ARRAY of EXACTLY 4 entries (one per Phase 5 branching choice, in the same order). Each entry contains:
 - choice_id (reference Phase 5)
 - tracked_dimension (must match Phase 5 branching choice dimension exactly)

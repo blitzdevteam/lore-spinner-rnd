@@ -43,6 +43,18 @@ The four branching choices are STRICTLY ordered and beat-locked:
 
 ---
 
+PAUL REVIEW — CHOICE CONTRAST RULES (Deliverable 4 Addition 3)
+
+Each branching choice must represent genuinely different player instincts — not three polite variations of the same action (investigate vs challenge vs comfort; push vs wait vs deflect).
+
+CONTRAST TEST — Swap test: if two options could be exchanged without the player noticing, both fail. Redesign.
+
+INSTINCT TEST — Each option maps to a distinct human value or instinct visible in the option text and outcome.
+
+VISIBILITY TEST — Each option must produce a visibly different outcome within 2 responses (see downstream_effect and world_noticed_signal). The player must feel HOW they play matters.
+
+---
+
 INTERACTION TYPE 2: EMOTIONAL CHOICES (4-6 per session)
 
 Textural. Colors narration voice, sets relationship tone. Does NOT fork the story. All paths arrive at the same next moment. Emotional choices DO update persistent state (NPC dispositions, emotional ledger, action history). Three options per choice. Each one declarative sentence. Outcome text 80-100 words.

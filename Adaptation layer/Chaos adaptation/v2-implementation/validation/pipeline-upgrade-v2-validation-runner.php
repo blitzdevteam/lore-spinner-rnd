@@ -31,6 +31,7 @@
  *   step12  Tiered state loader probe (assert Tier 3 fires on climactic turn).
  *   step13  Un-adapted story 422 probe (no legacy fallback — endpoint returns 422).
  *   step14  Reconciliation probe (status transitions correctly on COMPLETE).
+ *   step_v22 V2.2 probe — voice-lock 1A/1B blades, Paul Review markers, pipeline order comments.
  */
 
 declare(strict_types=1);
@@ -49,7 +50,9 @@ if (! $step) {
     exit(64);
 }
 
-$method = 'step_' . ltrim($step, 'step');
+$method = str_starts_with($step, 'step_')
+    ? $step
+    : 'step_' . ltrim($step, 'step');
 if (! function_exists($method)) {
     echo "Unknown step: {$step}\n";
     exit(64);
@@ -145,6 +148,20 @@ function step_3(string $slug): void
             'chapterId' => 1, 'chapterPosition' => 1, 'chapterTitle' => 'Ch 1', 'totalChapters' => 3,
             'chapterContent' => 'Sample chapter content.',
         ],
+        'ai.agents.adaptation.voice-lock.chapter-system-prompt-novelist' => [],
+        'ai.agents.adaptation.voice-lock.chapter-system-prompt-screenwriter' => [],
+        'ai.agents.adaptation.voice-lock.system-prompt-novelist' => [
+            'formatDetection' => ['detected_format' => 'NOVEL'],
+            'formatDetectionOutput' => '{"detected_format":"NOVEL"}',
+            'ipAudit' => ['scorecard' => 'stub'],
+            'currentPhase' => 'Voice Lock 1A',
+        ],
+        'ai.agents.adaptation.voice-lock.system-prompt-screenwriter' => [
+            'formatDetection' => ['detected_format' => 'SCREENPLAY'],
+            'formatDetectionOutput' => '{"detected_format":"SCREENPLAY"}',
+            'ipAudit' => ['scorecard' => 'stub'],
+            'currentPhase' => 'Voice Lock 1B',
+        ],
         'ai.agents.adaptation.voice-lock.merge-prompt' => [
             'title' => 'X', 'author' => 'A', 'year' => '2026', 'format' => 'NOVEL',
             'formatDetection' => [], 'ipAudit' => [],
@@ -190,6 +207,15 @@ function step_4(string $slug): void
             '[WORLD_STATE_TIERED_INJECTION_POINT]',
         ] as $token) {
             echo (strpos($rendered, $token) !== false ? 'ok   ' : 'miss ') . $token . "\n";
+        }
+        foreach ([
+            'PAUL REVIEW — RUNTIME CADENCE RULES',
+            '300–350 words',
+            'CUSTOM INPUT PROTOCOL',
+            'COLLLOCATION FINGERPRINT',
+            'Profile type:',
+        ] as $marker) {
+            echo (str_contains($rendered, $marker) ? 'ok   ' : 'miss ') . "marker: {$marker}\n";
         }
     } catch (\Throwable $e) {
         echo "FAIL " . $e->getMessage() . "\n";
@@ -429,6 +455,58 @@ function step_14(string $slug): void
     echo "sessions missing runtime_narrator_prompt: " . ($missing === [] ? 'none' : implode(', ', $missing)) . "\n";
 }
 
+function step_v22(string $slug): void
+{
+    echo "V2.2 integration probe.\n\n";
+
+    $jobFiles = [
+        'IpTrimmingMergeJob.php' => 'FormatDetectionJob::dispatch',
+        'FormatDetectionJob.php' => 'IpAuditJob::dispatch',
+        'IpAuditJob.php' => 'VoiceLockChapterJob',
+        'VoiceLockMergeJob.php' => 'StorySessionMapJob::dispatch',
+    ];
+
+    foreach ($jobFiles as $file => $needle) {
+        $path = app_path('Jobs/Adaptation/' . $file);
+        $content = is_file($path) ? file_get_contents($path) : '';
+        echo (str_contains($content, $needle) ? 'ok   ' : 'FAIL ') . "{$file} contains {$needle}\n";
+    }
+
+    echo "\nVoiceLockSchema class: " . (class_exists(\App\Ai\Agents\Adaptation\VoiceLockSchema::class) ? 'ok' : 'MISSING') . "\n";
+
+    $story = null;
+    try {
+        $story = \App\Models\Story::query()->where('slug', $slug)->with('adaptation')->first();
+    } catch (\Throwable $e) {
+        echo "\n(DB unavailable — skipping voice_profile probe: {$e->getMessage()})\n";
+    }
+
+    if ($story?->adaptation?->voice_profile) {
+        $vp = $story->adaptation->voice_profile;
+        echo "\nVoice profile for {$slug}:\n";
+        echo '  profile_type: ' . ($vp['profile_type'] ?? 'MISSING (re-adapt required)') . "\n";
+        $dna = $vp['author_voice_dna_profile'] ?? [];
+        echo '  collocations: ' . count($dna['collocation_fingerprint'] ?? []) . "\n";
+        echo '  negative_space: ' . count($dna['negative_space_map'] ?? []) . "\n";
+        echo '  comparative_exclusion: ' . count($dna['comparative_exclusion'] ?? []) . "\n";
+        echo '  audit_points: ' . count($vp['fourteen_point_audit_protocol'] ?? []) . "\n";
+    } else {
+        echo "\n(no voice_profile for {$slug} — run pipeline on Cloud after deploy)\n";
+    }
+
+    echo "\nPaul Review markers in pipeline blades:\n";
+    $markers = [
+        'session-architecture/system-prompt.blade.php' => 'FIRST-3-MINUTES RULE',
+        'choice-design/system-prompt.blade.php' => 'CHOICE CONTRAST RULES',
+        'consequence-mapping/system-prompt.blade.php' => 'CONSEQUENCE VISIBILITY RULE',
+    ];
+    foreach ($markers as $rel => $marker) {
+        $path = resource_path('views/ai/agents/adaptation/' . $rel);
+        $content = is_file($path) ? file_get_contents($path) : '';
+        echo (str_contains($content, $marker) ? 'ok   ' : 'FAIL ') . "{$rel}\n";
+    }
+}
+
 // -----------------------------------------------------------------------------
 
 function stub_runtime_template_data(): array
@@ -466,25 +544,60 @@ function stub_runtime_template_data(): array
             'thematic_constraints_for_session' => [],
         ],
         'voice' => [
+            'profile_type' => 'NOVELIST',
             'author_voice_dna_profile' => [
-                'signature_writing_techniques' => [],
+                'signature_writing_techniques' => [
+                    ['name' => 'Stub Technique', 'why_this_author' => 'test', 'frequency' => 'every scene'],
+                ],
                 'sentence_level_patterns' => [
                     'average_sentence_length' => '14',
                     'cadence_variation' => 'oscillating',
                     'clause_structure_preference' => 'compound-complex',
+                    'punctuation_habits' => 'moderate commas',
                 ],
                 'diction_fingerprint' => [
                     'register_and_formality' => 'Victorian',
                     'word_frequency_patterns' => 'avoids modern slang',
                 ],
+                'narrator_perspective' => [
+                    'point_of_view' => 'third omniscient',
+                    'reliability' => 'reliable',
+                    'distance' => 'close',
+                    'commentary' => 'warm',
+                    'tense' => 'past',
+                    'interior_monologue' => 'indirect',
+                ],
                 'dialogue_fingerprint_per_character' => [],
                 'paragraph_architecture' => [
                     'pattern' => 'mixed',
                     'transition_method' => 'comma splice into next image',
+                    'chapter_opening_style' => 'in medias res',
+                    'chapter_closing_style' => 'image',
+                ],
+                'dialogue_tag_patterns' => [
+                    'said_percentage' => '56%',
+                    'action_beats_frequency' => 'moderate',
+                    'banned_tags' => ['opined'],
+                ],
+                'collocation_fingerprint' => [
+                    ['pair' => 'clay pipe', 'ai_substitution' => 'smoking pipe', 'category' => 'physical'],
+                ],
+                'negative_space_map' => [
+                    ['technique' => 'interior monologue', 'absence_evidence' => 'never used'],
+                ],
+                'show_explain_ratio' => [
+                    'approximate_balance' => '70% show',
+                    'enforcement_note' => 'stay external',
+                ],
+                'comparative_exclusion' => [
+                    ['neighbor_author' => 'Dickens', 'differentiating_techniques' => ['shorter sentences']],
                 ],
             ],
             'master_rule_1_hard_bans' => [
                 'ip_specific_bans' => [],
+            ],
+            'fourteen_point_audit_protocol' => [
+                ['point_number' => 1, 'point_name' => 'Hard Ban Scan', 'pass_fail_definition' => 'zero bans'],
             ],
         ],
         'persistentState' => [

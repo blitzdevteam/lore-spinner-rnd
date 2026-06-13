@@ -21,11 +21,9 @@ use Throwable;
  * voice fragments from the Laravel cache and makes a single synthesis API
  * call to produce the complete Author Voice DNA Profile (Deliverable 1 schema).
  *
- * After writing voice_profile, dispatches the remainder of the pipeline:
- *   FormatDetectionJob → IpAuditJob → StorySessionMapJob
+ * After writing voice_profile, dispatches StorySessionMapJob.
  *
- * (FormatDetection is positioned after VoiceLock because it is lightweight and
- * benefits from ip_trimming being fully populated before it runs.)
+ * V2.2 order: FormatDetection → IpAudit → VoiceLock (this job) → StorySessionMap.
  */
 final class VoiceLockMergeJob implements ShouldQueue
 {
@@ -81,7 +79,11 @@ final class VoiceLockMergeJob implements ShouldQueue
         $formatDetection = $adaptation->format_detection ?? [];
         $ipAudit = $adaptation->ip_audit ?? [];
 
-        $response = (new VoiceLockMergeAgent)->prompt(
+        $response = (new VoiceLockMergeAgent(
+            detectedFormat: $formatDetection['detected_format'] ?? null,
+            formatDetection: $formatDetection,
+            ipAudit: $ipAudit,
+        ))->prompt(
             view('ai.agents.adaptation.voice-lock.merge-prompt', [
                 'title' => $this->story->title,
                 'author' => $this->story->creator?->name ?? 'Unknown Author',
@@ -100,15 +102,12 @@ final class VoiceLockMergeJob implements ShouldQueue
 
         Log::info('voice_lock.merge_complete', [
             'story_id' => $this->story->id,
+            'profile_type' => $response->toArray()['profile_type'] ?? 'UNKNOWN',
             'techniques' => count($response->toArray()['author_voice_dna_profile']['signature_writing_techniques'] ?? []),
             'ip_specific_bans' => count($response->toArray()['master_rule_1_hard_bans']['ip_specific_bans'] ?? []),
         ]);
 
-        // Continue the adaptation pipeline.
-        Bus::chain([
-            new FormatDetectionJob($this->story),
-            new IpAuditJob($this->story),
-            new StorySessionMapJob($this->story),
-        ])->onQueue('adaptation')->dispatch();
+        // Continue the adaptation pipeline (V2.2: VoiceLock follows FormatDetection + IpAudit).
+        StorySessionMapJob::dispatch($this->story)->onQueue('adaptation');
     }
 }

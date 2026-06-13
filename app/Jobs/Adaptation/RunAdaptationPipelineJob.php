@@ -61,20 +61,18 @@ final class RunAdaptationPipelineJob implements ShouldQueue
             ]);
         }
 
-        // Pipeline Upgrade V2 — map/merge architecture:
+        // Pipeline Upgrade V2.2 — map/merge architecture:
         //
         //  [IpTrimmingChapterJob × N chapters]   (parallel batch, gpt-5.4-mini per chapter)
         //    → IpTrimmingMergeJob                 (PHP merge + small spine synthesis call)
-        //      → [VoiceLockChapterJob × N]        (parallel batch, gpt-5.4 per chapter)
-        //        → VoiceLockMergeJob              (full synthesis call, gpt-5.4)
-        //          → Bus::chain([
-        //              FormatDetectionJob,
-        //              IpAuditJob,
-        //              StorySessionMapJob,          (kicks off per-session batch internally)
-        //            ])
+        //      → FormatDetectionJob
+        //        → IpAuditJob
+        //          → [VoiceLockChapterJob × N]    (parallel batch, 1A or 1B per chapter)
+        //            → VoiceLockMergeJob          (full synthesis call, gpt-5.4)
+        //              → StorySessionMapJob       (kicks off per-session batch internally)
         //
-        // Each batch step flows to the next via ->finally(). The per-session
-        // adaptation jobs (entry-point, architecture, choices, consequences,
+        // Each batch step flows to the next via ->finally() or explicit dispatch.
+        // The per-session adaptation jobs (entry-point, architecture, choices, consequences,
         // editorial) are dispatched by StorySessionMapJob as a separate batch.
 
         $chapters = $this->story->chapters()->orderBy('position')->get();
