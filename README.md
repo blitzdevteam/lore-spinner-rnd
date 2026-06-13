@@ -4,7 +4,9 @@ AI-powered interactive fiction platform that transforms screenplay scripts into 
 
 ## About
 
-This is the **Staging** version of LoreSpinner, built for demonstration and testing of the Beta release.
+This is the **R&D** version of LoreSpinner — the research and development branch used to test ideas, prototype features, and validate pipeline changes before they move to Stage or production.
+
+**Repository:** [blitzdevteam/lore-spinner-rnd](https://github.com/blitzdevteam/lore-spinner-rnd)
 
 ## Stack
 
