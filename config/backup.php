@@ -56,7 +56,7 @@ return [
             'compression_method' => ZipArchive::CM_DEFAULT,
             'compression_level' => 9,
             'filename_prefix' => '',
-            'disks' => $backupDestinationDisks,
+            'disks' => ['s3'],
             'continue_on_failure' => false,
         ],
 
