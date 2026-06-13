@@ -17,6 +17,7 @@
         "laravel/wayfinder": "^0.1.13",
         "league/flysystem-aws-s3-v3": "^3.31.0",
         "prism-php/prism": "^0.99.19",
+        "spatie/laravel-backup": "^10.3",
         "spatie/laravel-medialibrary": "^11.21.0"
     },
     "require-dev": {

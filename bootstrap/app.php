@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\HandleInertiaRequests;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -54,7 +55,7 @@ return Application::configure(basePath: dirname(__DIR__))
          */
         $middleware->redirectUsersTo(function (Request $request): string {
             if ($request->user('user')) {
-                /** @var \App\Models\User $user */
+                /** @var App\Models\User $user */
                 $user = $request->user('user');
 
                 return $user->is_profile_completed
@@ -68,6 +69,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return route('index');
         });
+    })
+    ->withSchedule(function (Schedule $schedule): void {
+        $schedule->command('backup:clean')->daily()->at('01:00');
+        $schedule->command('backup:run')->daily()->at('01:30');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
