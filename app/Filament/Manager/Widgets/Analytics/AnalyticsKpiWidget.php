@@ -92,7 +92,7 @@ final class AnalyticsKpiWidget extends StatsOverviewWidget
                 ->color('info'),
 
             Stat::make('Session 1 Completions', number_format($s1))
-                ->description('Users who finished Chapter 1 and unlocked Chapter 2')
+                ->description('Games where the player finished Session 1 and advanced to Session 2')
                 ->color('warning'),
 
             Stat::make('Story Completions', number_format($completionEvents))

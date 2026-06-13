@@ -99,12 +99,12 @@ final class AnalyticsDashboard extends Page
      * Engagement funnel — strictly nested steps anchored on Story Starts.
      *
      * Every step is a provable subset of Story Starts:
-     *   Ch.1 Completed ⊆ Starts
+     *   Session 1 Completed ⊆ Starts
      *   Story Completions ⊆ Starts
      *   Replays ⊆ Completions
      *
      * Conversion percentages are calculated against Story Starts (the funnel anchor)
-     * for Ch.1 Completed, Story Completions, and against unique completions for Replays.
+     * for Session 1 Completed, Story Completions, and against unique completions for Replays.
      * Bar widths are relative to Story Starts (= 100%).
      *
      * NOTE: Story Starts counts all non-preview games since the baseline, including games
@@ -125,8 +125,8 @@ final class AnalyticsDashboard extends Page
                 ->where('created_at', '<=', $to)
                 ->count();
 
-            // Ch.1 Completed: session_number=1 with a completed_at
-            $ch1done = GameSessionCompletion::query()
+            // Session 1 completed: session_number=1 with a completed_at
+            $session1Completed = GameSessionCompletion::query()
                 ->where('session_number', 1)
                 ->whereNotNull('completed_at')
                 ->where('completed_at', '>=', $from)
@@ -161,20 +161,20 @@ final class AnalyticsDashboard extends Page
                     'note'        => 'Non-preview games created since baseline (includes pre-baseline users)',
                 ],
                 [
-                    'label'       => 'Ch. 1 Completed',
-                    'value'       => $ch1done,
-                    'bar_width'   => max(0, (int) round($ch1done / $safeStarts * 100)),
-                    'pct_starts'  => round($ch1done / $safeStarts * 100, 1),
-                    'pct_prev'    => round($ch1done / $safeStarts * 100, 1),
+                    'label'       => 'Session 1 Completed',
+                    'value'       => $session1Completed,
+                    'bar_width'   => max(0, (int) round($session1Completed / $safeStarts * 100)),
+                    'pct_starts'  => round($session1Completed / $safeStarts * 100, 1),
+                    'pct_prev'    => round($session1Completed / $safeStarts * 100, 1),
                     'color'       => '#f59e0b',
-                    'note'        => 'Games where player advanced past Session 1',
+                    'note'        => 'Games where the player finished Session 1 and advanced to Session 2',
                 ],
                 [
                     'label'       => 'Story Completions',
                     'value'       => $uniqueCompleted,
                     'bar_width'   => max(0, (int) round($uniqueCompleted / $safeStarts * 100)),
                     'pct_starts'  => round($uniqueCompleted / $safeStarts * 100, 1),
-                    'pct_prev'    => ($ch1done > 0) ? round($uniqueCompleted / max($ch1done, 1) * 100, 1) : null,
+                    'pct_prev'    => ($session1Completed > 0) ? round($uniqueCompleted / max($session1Completed, 1) * 100, 1) : null,
                     'color'       => '#22c55e',
                     'note'        => 'Distinct games that reached the story end state (game_completions)',
                 ],

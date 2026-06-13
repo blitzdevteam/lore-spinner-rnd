@@ -7,11 +7,11 @@
         $keyInsights = $this->getKeyInsights();
 
         $defs = [
-            ['Unique Visits',       'A distinct browser session that loaded /, /stories/*, or /creators/*. Direct /register arrivals are NOT counted here — only users who hit a tracked public page.'],
+            ['Unique Visits',       'A distinct visitor cookie session that loaded a tracked public page. This is NOT a gameplay session. Direct /register arrivals are not counted here.'],
             ['Signups',             'New registered accounts created in the period, from any entry point including direct registration.'],
             ['Story Starts',        'Non-preview game instances created since the baseline. One row per user per story. Includes games from users who registered before the baseline.'],
-            ['Ch. 1 Completed',     'Games where the player successfully advanced past Session 1 (engine wrote a completed_at on the session 1 row).'],
-            ['Story Completions',   'Distinct games that reached the final chapter and generated a game_completions record. One game counted once regardless of how many times it was completed.'],
+            ['Session 1 Completed', 'Games where the player finished Session 1 and advanced to Session 2 (completed_at set on session_number = 1 in game_session_completions).'],
+            ['Story Completions',   'Distinct games that reached the story end state and generated a game_completions record. One game counted once regardless of how many times it was completed.'],
             ['Replays',             'Game resets where the player had already completed the story at least once (game_resets.had_prior_completion = true).'],
             ['Abandoned',           'Incomplete games with no gameplay activity (prompts, session advances, or resets) for 14+ consecutive days.'],
             ['Return Users',        'Registered users active in the period who also had activity on a different calendar day before the period start.'],

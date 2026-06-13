@@ -27,10 +27,10 @@
                             ['Replay %',            'Unique replayers ÷ unique completed games.'],
                             ['Incomplete',          'Started and not yet completed. User may still be actively reading.'],
                             ['Abandoned',           'Incomplete with no gameplay activity for 14+ days.'],
-                            ['Content Progression', 'Started → Reached Chapter 2 → … → Completed (distinct games per step).'],
-                            ['Avg / Median Session','Mean and median of (completed_at − started_at) per chapter.'],
-                            ['Avg Completion',      'Mean time from Chapter 1 start to story completion, per story cycle.'],
-                            ['Drop-off Chapter',    'Chapter with the highest absolute user loss (reached minus completed).'],
+                            ['Content Progression', 'Started → Reached S2 → … → Completed (distinct games per gameplay session step).'],
+                            ['Avg / Median Session','Mean and median of (completed_at − started_at) per gameplay session.'],
+                            ['Avg Completion',      'Mean time from Session 1 start to story completion, per story cycle.'],
+                            ['Drop-off Session',    'Gameplay session with the highest absolute user loss (reached minus completed).'],
                         ];
                     @endphp
                     @foreach ($glossary as $item)
@@ -72,7 +72,7 @@
                                 <th style="padding:12px 16px; text-align:right; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap;">Replay %</th>
                                 <th style="padding:12px 16px; text-align:right; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap;">Avg Session</th>
                                 <th style="padding:12px 16px; text-align:right; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap;">Avg Completion</th>
-                                <th style="padding:12px 16px; text-align:right; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap;">Drop-off</th>
+                                <th style="padding:12px 16px; text-align:right; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap;">Drop-off Session</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -130,7 +130,7 @@
                                     </td>
                                     <td style="padding:14px 16px; text-align:right;">
                                         @if ($story->drop_off_session !== null)
-                                            <span style="display:inline-block; border-radius:6px; padding:2px 10px; font-size:11px; font-weight:700; background:#fee2e2; color:#b91c1c;">Ch. {{ $story->drop_off_session }}</span>
+                                            <span style="display:inline-block; border-radius:6px; padding:2px 10px; font-size:11px; font-weight:700; background:#fee2e2; color:#b91c1c;">Session {{ $story->drop_off_session }}</span>
                                         @else
                                             <span style="color:#d1d5db;">—</span>
                                         @endif
@@ -175,7 +175,7 @@
                 <div style="border:1px solid #e5e7eb; border-radius:12px; background:#fff; overflow:hidden;">
                     <div style="padding:16px 24px; border-bottom:1px solid #f3f4f6;">
                         <p style="font-weight:600; font-size:15px; color:#111827; margin:0 0 2px;">Content Progression</p>
-                        <p style="font-size:13px; color:#9ca3af; margin:0;">How many distinct games reach each chapter. Shows where stories lose users.</p>
+                        <p style="font-size:13px; color:#9ca3af; margin:0;">How many distinct games reach each gameplay session. Shows where stories lose users.</p>
                     </div>
                     <div style="padding:16px 24px; display:flex; flex-direction:column; gap:12px;">
                         @foreach ($progression as $prog)
@@ -189,7 +189,7 @@
                                     <span style="font-weight:700; color:#111827; margin:0 16px 0 8px;">{{ number_format($starts) }}</span>
                                     @foreach ($prog->reached as $sessionNum => $reached)
                                         @php $pct = $starts > 0 ? round($reached / $starts * 100, 1) : null; @endphp
-                                        <span style="color:#6b7280;">Ch. {{ $sessionNum }}</span>
+                                        <span style="color:#6b7280;">Reached S{{ $sessionNum }}</span>
                                         <span style="font-weight:700; color:#374151; margin:0 4px 0 8px;">{{ number_format($reached) }}</span>
                                         @if ($pct !== null)
                                             <span style="color:#9ca3af; font-size:12px; margin-right:16px;">({{ $pct }}%)</span>
@@ -208,12 +208,12 @@
                 </div>
             @endif
 
-            {{-- Chapter Funnel --}}
+            {{-- Session Funnel --}}
             @if ($funnels->isNotEmpty())
                 <div style="border:1px solid #e5e7eb; border-radius:12px; background:#fff; overflow:hidden;">
                     <div style="padding:16px 24px; border-bottom:1px solid #f3f4f6;">
-                        <p style="font-weight:600; font-size:15px; color:#111827; margin:0 0 2px;">Chapter Funnel</p>
-                        <p style="font-size:13px; color:#9ca3af; margin:0;">Aggregated across all story cycles. Each row is unique to a (game, story cycle, chapter) tuple.</p>
+                        <p style="font-weight:600; font-size:15px; color:#111827; margin:0 0 2px;">Session Funnel</p>
+                        <p style="font-size:13px; color:#9ca3af; margin:0;">Aggregated across all story cycles. Each row is one gameplay session (game, story cycle, session_number).</p>
                     </div>
                     <div style="padding:16px 24px; display:flex; flex-direction:column; gap:16px;">
                         @foreach ($stories as $story)
@@ -231,13 +231,13 @@
                                             @endif
                                         </div>
                                         @if ($dropOff !== null)
-                                            <span style="font-size:12px; font-weight:600; color:#dc2626; background:#fee2e2; padding:2px 10px; border-radius:6px;">Biggest drop: Ch. {{ $dropOff }}</span>
+                                            <span style="font-size:12px; font-weight:600; color:#dc2626; background:#fee2e2; padding:2px 10px; border-radius:6px;">Biggest drop: Session {{ $dropOff }}</span>
                                         @endif
                                     </div>
                                     <table style="min-width:100%; border-collapse:collapse; font-size:13px;">
                                         <thead>
                                             <tr style="background:#f9fafb; border-bottom:1px solid #f3f4f6;">
-                                                <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap; width:140px;">Chapter</th>
+                                                <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap; width:140px;">Session</th>
                                                 <th style="padding:10px 16px; text-align:right; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap;">Reached</th>
                                                 <th style="padding:10px 16px; text-align:right; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap;">Completed</th>
                                                 <th style="padding:10px 16px; text-align:right; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af; white-space:nowrap;">Dropped</th>
@@ -261,7 +261,7 @@
                                                 @endphp
                                                 <tr style="border-top:1px solid #f3f4f6; {{ $isDropOff ? 'background:#fff5f5;' : '' }}">
                                                     <td style="padding:12px 16px; font-weight:500; color:#374151;">
-                                                        Chapter {{ $session->session_number }}
+                                                        Session {{ $session->session_number }}
                                                         @if ($isDropOff)
                                                             <span style="margin-left:6px; font-size:11px; font-weight:700; color:#ef4444;">drop-off</span>
                                                         @endif

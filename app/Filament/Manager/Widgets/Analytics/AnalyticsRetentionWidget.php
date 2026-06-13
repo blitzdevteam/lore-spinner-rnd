@@ -29,7 +29,7 @@ final class AnalyticsRetentionWidget extends StatsOverviewWidget
 
     protected ?string $heading = 'Retention';
 
-    protected ?string $description = 'Cohort: users whose first playable session (Chapter 1 start) is on or after Jun 1, 2026. D1/D7/D30 = returned within that many days of first play.';
+    protected ?string $description = 'Cohort: users whose first gameplay session (Session 1 narration delivered) is on or after Jun 1, 2026. D1/D7/D30 = returned within that many days of first play.';
 
     protected function getStats(): array
     {
