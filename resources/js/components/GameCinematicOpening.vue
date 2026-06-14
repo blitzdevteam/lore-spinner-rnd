@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import spinnerImg from '@/assets/intro/spinner.jpg';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 const tts = useTextToSpeech();
+
+const props = defineProps<{
+    /** Parent sets true once the /begin call has settled — hold showcard until then. */
+    canExit?: boolean;
+}>();
 
 const emit = defineEmits<{
     // Fired when the showcard appears → parent should start the game API call in background
@@ -18,6 +23,10 @@ const showShape      = ref(false);
 const showCard       = ref(false);
 const atCardPhase    = ref(false);
 const fadingOut      = ref(false);
+const minDwellReached = ref(false);
+const exitStarted    = ref(false);
+
+const SHOWCARD_MIN_MS = 5200;
 
 const timers: ReturnType<typeof setTimeout>[] = [];
 let prepareEmitted = false;
@@ -60,13 +69,22 @@ function revealCardWhenReady() {
     }
 }
 
+function tryBeginFadeOut() {
+    if (exitStarted.value || !atCardPhase.value) return;
+    if (!minDwellReached.value || !props.canExit) return;
+    exitStarted.value = true;
+    beginFadeOut();
+}
+
 function doRevealCard() {
     atCardPhase.value = true;
     showCard.value    = true;
     emitPrepare(); // kick off game API while card is still visible
 
-    // After 5s of showcard visible, fade the whole screen to black then signal done
-    schedule(() => beginFadeOut(), 5200);
+    schedule(() => {
+        minDwellReached.value = true;
+        tryBeginFadeOut();
+    }, SHOWCARD_MIN_MS);
 }
 
 function beginFadeOut() {
@@ -90,6 +108,13 @@ function skipToCard() {
     // Tiny pause so current opacity transitions settle cleanly
     timers.push(setTimeout(() => revealCardWhenReady(), 250));
 }
+
+watch(
+    () => props.canExit,
+    (ready) => {
+        if (ready) tryBeginFadeOut();
+    },
+);
 
 onMounted(() => {
     preloadCard(); // start loading immediately, in parallel with text phases

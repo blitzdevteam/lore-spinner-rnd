@@ -121,7 +121,7 @@ final class GameController extends Controller
                 conversationHistory: [],
                 playerAction: null,
                 protagonist: $protagonist,
-                temperature: $this->engine->defaultTemperatureFor($game->model),
+                temperature: $this->engine->gameTemperatureFor($game->model),
             );
 
             $worldState = $this->engine->mergeStateDelta($emptyWorldState, $result['state_delta']);
@@ -263,7 +263,7 @@ final class GameController extends Controller
                 conversationHistory: [],
                 playerAction: null,
                 protagonist: $protagonist,
-                temperature: $this->engine->defaultTemperatureFor($game->model),
+                temperature: $this->engine->gameTemperatureFor($game->model),
             );
 
             $worldState = $this->engine->mergeStateDelta($carriedWorldState, $result['state_delta']);

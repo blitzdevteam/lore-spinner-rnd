@@ -52,6 +52,9 @@ final class ChaosEngineService
 
     public const DEFAULT_MODEL = 'claude-haiku-4-5';
 
+    /** Production /user/games narration — tighter than chaos-mode lab defaults. */
+    public const GAME_TEMPERATURE = 0.4;
+
     // -------------------------------------------------------------------------
     // Public API
     // -------------------------------------------------------------------------
@@ -67,6 +70,11 @@ final class ChaosEngineService
     public function defaultTemperatureFor(string $model): float
     {
         return (float) (self::MODEL_CONFIG[$model]['temperature'] ?? 1.0);
+    }
+
+    public function gameTemperatureFor(string $model): float
+    {
+        return self::GAME_TEMPERATURE;
     }
 
     /**

@@ -38,8 +38,8 @@ function visitLeavesThisGame(url: string): boolean {
 let removeNavigationListener: (() => void) | undefined;
 
 const isSubmitting = ref(false);
-const isAutoBeginning = ref(false);
 const beginSettled = ref(false);
+const isRetryingBegin = ref(false);
 const isStartingNextSession = ref(false);
 const pendingSelection = ref<Record<string, string>>({});
 const shouldAnimate = ref(false);
@@ -137,7 +137,7 @@ const handleBegin = () => {
             },
             onFinish: () => {
                 beginSettled.value = true;
-                isAutoBeginning.value = false;
+                isRetryingBegin.value = false;
                 nextTick(() => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
@@ -222,15 +222,12 @@ const handleCinemaPrepare = () => {
 const handleRetryBegin = () => {
     tts.primeAudio();
     beginSettled.value = false;
-    isAutoBeginning.value = true;
+    isRetryingBegin.value = true;
     handleBegin();
 };
 
 const handleCinematicDone = () => {
     showCinematic.value = false;
-    if (!hasPrompts.value && !beginSettled.value) {
-        isAutoBeginning.value = true;
-    }
 };
 
 onMounted(() => {
@@ -258,25 +255,27 @@ onUnmounted(() => {
     <GameCinematicOutro v-if="showOutro" :outro-poster="props.game.story?.outro_poster ?? null" @done="handleOutroDone" />
 
     <!-- ── Cinematic opening sequence (new games only) ── -->
-    <GameCinematicOpening v-else-if="showCinematic" @prepare="handleCinemaPrepare" @done="handleCinematicDone" />
-
-    <!-- Loading state while begin POST is in-flight -->
-    <div v-else-if="isAutoBeginning" class="grid h-svh place-items-center bg-gray-950">
-        <div class="flex flex-col items-center gap-4">
-            <div class="size-8 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
-            <p class="text-sm text-gray-400">Preparing your adventure…</p>
-        </div>
-    </div>
+    <GameCinematicOpening
+        v-else-if="showCinematic"
+        :can-exit="beginSettled"
+        @prepare="handleCinemaPrepare"
+        @done="handleCinematicDone"
+    />
 
     <!-- Begin failed — show retry -->
     <div v-else-if="beginSettled && !hasPrompts" class="grid h-svh place-items-center bg-gray-950">
         <div class="flex flex-col items-center gap-6 text-center">
             <p class="text-sm text-gray-400">Opening narration hiccuped — please retry.</p>
             <button
-                class="rounded-full border border-primary-400/60 bg-primary-400/10 px-8 py-3 text-sm font-medium text-primary-300 transition hover:bg-primary-400/20 hover:text-primary-200"
+                class="rounded-full border border-primary-400/60 bg-primary-400/10 px-8 py-3 text-sm font-medium text-primary-300 transition hover:bg-primary-400/20 hover:text-primary-200 disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="isRetryingBegin"
                 @click="handleRetryBegin"
             >
-                Retry
+                <span v-if="isRetryingBegin" class="flex items-center justify-center gap-2">
+                    <span class="size-4 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
+                    Retrying…
+                </span>
+                <span v-else>Retry</span>
             </button>
         </div>
     </div>

@@ -76,7 +76,7 @@ final class PromptController extends Controller
                 conversationHistory: array_slice($history, -12),
                 playerAction:        $playerAction,
                 protagonist:         $protagonist,
-                temperature:         $this->engine->defaultTemperatureFor($game->model),
+                temperature:         $this->engine->gameTemperatureFor($game->model),
             );
 
             $newWorldState   = $this->engine->mergeStateDelta($worldState, $result['state_delta']);
