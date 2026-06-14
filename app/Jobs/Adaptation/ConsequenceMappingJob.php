@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs\Adaptation;
 
+use App\Ai\Adaptation\VoiceProfilePromptSlice;
 use App\Ai\Agents\Adaptation\ConsequenceMappingAgent;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Models\Story;
@@ -33,6 +34,12 @@ final class ConsequenceMappingJob implements ShouldQueue
         $adaptation = $this->story->adaptation;
         $session = $adaptation->sessionAdaptations()->where('session_number', $this->sessionNumber)->firstOrFail();
 
+        if (empty($adaptation->voice_profile)) {
+            throw new \RuntimeException(
+                'voice_profile missing — Voice Lock must complete before Phase 6 (ConsequenceMapping)'
+            );
+        }
+
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::CONSEQUENCE_MAPPING]);
 
@@ -49,6 +56,7 @@ final class ConsequenceMappingJob implements ShouldQueue
                     'worldReactivityRules' => $adaptation->story_session_map['world_reactivity_rules'] ?? [],
                     'protagonistCoreTrait' => $adaptation->ip_audit['bounded_agency']['evidence'] ?? '',
                     'sessionNumber' => $this->sessionNumber,
+                    'voiceProfile' => VoiceProfilePromptSlice::dnaAndBans((array) ($adaptation->voice_profile ?? [])),
                 ])->render()
             );
 

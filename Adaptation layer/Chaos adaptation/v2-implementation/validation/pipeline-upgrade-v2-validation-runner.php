@@ -173,12 +173,47 @@ function step_3(string $slug): void
         'ai.agents.adaptation.choice-design.system-prompt' => ['formatDetection' => '', 'formatDetectionOutput' => '', 'currentPhase' => 'Phase 5'],
         'ai.agents.adaptation.consequence-mapping.system-prompt' => ['formatDetection' => '', 'formatDetectionOutput' => '', 'currentPhase' => 'Phase 6'],
         'ai.agents.adaptation.editorial-verification.system-prompt' => ['formatDetection' => '', 'formatDetectionOutput' => '', 'currentPhase' => 'Phase 8'],
+        // --- Phase 2-8 user prompt blades — all now require voiceProfile ---
+        'ai.agents.adaptation.story-session-map.prompt' => [
+            'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => []],
+            'voiceProfileLabel' => 'stub',
+            'ipAudit' => [], 'formatDetection' => '{}', 'estimatedSessionCount' => 1,
+            'chapters' => [], 'events' => [], 'totalEvents' => 0,
+            'ipTrimmingWorldRules' => null, 'ipTrimmingConversionNotes' => null,
+        ],
+        'ai.agents.adaptation.entry-point-diagnosis.prompt' => [
+            'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => [], 'master_rule_1_hard_bans' => []],
+            'voiceProfileLabel' => 'stub',
+            'storySessionMap' => [], 'ipAudit' => [], 'sessionNumber' => 1,
+            'sessionSourcePages' => 'stub pages', 'sessionEvents' => [],
+        ],
+        'ai.agents.adaptation.session-architecture.prompt' => [
+            'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => []],
+            'voiceProfileLabel' => 'stub',
+            'storySessionMap' => [], 'entryPointDiagnosis' => [], 'sessionNumber' => 1,
+            'sessionSourcePages' => 'stub pages',
+        ],
+        'ai.agents.adaptation.choice-design.prompt' => [
+            'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => [], 'master_rule_1_hard_bans' => []],
+            'voiceProfileLabel' => 'stub',
+            'beatMap' => [], 'storySessionMap' => [], 'protagonistCoreTrait' => 'x',
+            'emotionalPromise' => 'stub', 'sessionNumber' => 1, 'choiceMomentPages' => 'stub pages',
+        ],
         'ai.agents.adaptation.consequence-mapping.prompt' => [
+            'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => [], 'master_rule_1_hard_bans' => []],
+            'voiceProfileLabel' => 'stub',
             'branchingChoices' => [], 'persistentStateSchema' => [], 'worldReactivityRules' => [],
             'storySessionMap' => [], 'protagonistCoreTrait' => 'x', 'sessionNumber' => 1,
         ],
+        'ai.agents.adaptation.session-close.prompt' => [
+            'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => [], 'master_rule_1_hard_bans' => []],
+            'voiceProfileLabel' => 'stub',
+            'branchingChoice3Design' => [], 'choice3ConsequenceMap' => [], 'sessionPrimaryGoal' => 'stub',
+            'sessionNumber' => 1, 'sessionEvents' => [], 'resolutionSourcePages' => 'stub pages',
+        ],
         'ai.agents.adaptation.editorial-verification.prompt' => [
-            'completeSessionDesign' => [], 'voiceProfile' => [], 'storyGuardCanon' => [],
+            'voiceProfile' => [], 'voiceProfileLabel' => 'stub',
+            'completeSessionDesign' => [], 'storyGuardCanon' => [],
             'persistentStateSchema' => [], 'worldReactivityRules' => [], 'storySessionMap' => [], 'sessionNumber' => 1,
         ],
     ];

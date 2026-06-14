@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs\Adaptation;
 
+use App\Ai\Adaptation\VoiceProfilePromptSlice;
 use App\Ai\Agents\Adaptation\EntryPointDiagnosisAgent;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Models\Event;
@@ -37,6 +38,12 @@ final class EntryPointDiagnosisJob implements ShouldQueue
         $adaptation = $this->story->adaptation;
         $session = $adaptation->sessionAdaptations()->where('session_number', $this->sessionNumber)->firstOrFail();
 
+        if (empty($adaptation->voice_profile)) {
+            throw new RuntimeException(
+                'voice_profile missing — Voice Lock must complete before Phase 3 (EntryPointDiagnosis)'
+            );
+        }
+
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::ENTRY_POINT_DIAGNOSIS]);
 
@@ -65,6 +72,7 @@ final class EntryPointDiagnosisJob implements ShouldQueue
                         'title' => $ev->title,
                         'objectives' => $ev->objectives,
                     ])->all(),
+                    'voiceProfile' => VoiceProfilePromptSlice::dnaAndBans((array) ($adaptation->voice_profile ?? [])),
                 ])->render()
             );
 

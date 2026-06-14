@@ -33,6 +33,12 @@ final class EditorialVerificationJob implements ShouldQueue
         $adaptation = $this->story->adaptation;
         $session = $adaptation->sessionAdaptations()->where('session_number', $this->sessionNumber)->firstOrFail();
 
+        if (empty($adaptation->voice_profile)) {
+            throw new \RuntimeException(
+                'voice_profile missing — Voice Lock must complete before Phase 8 (EditorialVerification)'
+            );
+        }
+
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::EDITORIAL_VERIFICATION]);
 

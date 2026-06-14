@@ -1,8 +1,10 @@
 COMPLETE SESSION DESIGN (Phases 3-7 outputs in order):
 {{ json_encode($completeSessionDesign, JSON_PRETTY_PRINT) }}
 
-VOICE PROFILE (Voice Lock Phase output — feed the 14-Point Audit Protocol from this for Q11-Q17):
-{{ json_encode($voiceProfile, JSON_PRETTY_PRINT) }}
+@include('ai.agents.adaptation._voice-profile-context', [
+    'voiceProfile' => $voiceProfile,
+    'voiceProfileLabel' => 'All three sections — Voice DNA + Master Rule 1 bans + 14-Point Audit Protocol (feed Q11–Q17)',
+])
 
 STORYGUARD CANON (Phase 2 Task 8 — use for Q18-Q21):
 {{ json_encode($storyGuardCanon, JSON_PRETTY_PRINT) }}

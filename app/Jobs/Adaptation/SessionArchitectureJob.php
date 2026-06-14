@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs\Adaptation;
 
+use App\Ai\Adaptation\VoiceProfilePromptSlice;
 use App\Ai\Agents\Adaptation\SessionArchitectureAgent;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Models\Story;
@@ -33,6 +34,12 @@ final class SessionArchitectureJob implements ShouldQueue
         $adaptation = $this->story->adaptation;
         $session = $adaptation->sessionAdaptations()->where('session_number', $this->sessionNumber)->firstOrFail();
 
+        if (empty($adaptation->voice_profile)) {
+            throw new \RuntimeException(
+                'voice_profile missing — Voice Lock must complete before Phase 4 (SessionArchitecture)'
+            );
+        }
+
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::SESSION_ARCHITECTURE]);
 
@@ -46,6 +53,7 @@ final class SessionArchitectureJob implements ShouldQueue
                     'entryPointDiagnosis' => $session->entry_point_diagnosis,
                     'sessionNumber' => $this->sessionNumber,
                     'sessionSourcePages' => $sessionSourcePages,
+                    'voiceProfile' => VoiceProfilePromptSlice::dna((array) ($adaptation->voice_profile ?? [])),
                 ])->render()
             );
 

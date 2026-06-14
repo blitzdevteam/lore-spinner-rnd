@@ -1,3 +1,8 @@
+@include('ai.agents.adaptation._voice-profile-context', [
+    'voiceProfile' => $voiceProfile,
+    'voiceProfileLabel' => 'Alignment context subset — diction, dialogue fingerprints, comparative exclusion, negative space (ground alignment voice_signature and NPC tonal registers in the real author voice)',
+])
+
 PHASE 1 AUDIT:
 {{ json_encode($ipAudit, JSON_PRETTY_PRINT) }}
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs\Adaptation;
 
+use App\Ai\Adaptation\VoiceProfilePromptSlice;
 use App\Ai\Agents\Adaptation\SessionCloseAgent;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Models\Event;
@@ -35,6 +36,12 @@ final class SessionCloseJob implements ShouldQueue
     {
         $adaptation = $this->story->adaptation;
         $session = $adaptation->sessionAdaptations()->where('session_number', $this->sessionNumber)->firstOrFail();
+
+        if (empty($adaptation->voice_profile)) {
+            throw new \RuntimeException(
+                'voice_profile missing — Voice Lock must complete before Phase 7 (SessionClose)'
+            );
+        }
 
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::SESSION_CLOSE]);
@@ -81,6 +88,7 @@ final class SessionCloseJob implements ShouldQueue
                         'objectives' => $ev->objectives,
                     ])->all(),
                     'resolutionSourcePages' => $resolutionSourcePages,
+                    'voiceProfile' => VoiceProfilePromptSlice::dnaAndBans((array) ($adaptation->voice_profile ?? [])),
                 ])->render()
             );
 

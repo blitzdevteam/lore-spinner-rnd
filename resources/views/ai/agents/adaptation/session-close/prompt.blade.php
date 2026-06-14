@@ -1,3 +1,8 @@
+@include('ai.agents.adaptation._voice-profile-context', [
+    'voiceProfile' => $voiceProfile,
+    'voiceProfileLabel' => 'Sections 1+2 — Voice DNA + Master Rule 1 bans (resolution_prose must embody this profile)',
+])
+
 PHASE 5 — BRANCHING CHOICE #3 DESIGN:
 {{ json_encode($branchingChoice3Design, JSON_PRETTY_PRINT) }}
 

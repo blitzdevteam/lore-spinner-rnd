@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs\Adaptation;
 
+use App\Ai\Adaptation\VoiceProfilePromptSlice;
 use App\Ai\Agents\Adaptation\ChoiceDesignAgent;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Models\Story;
@@ -34,6 +35,12 @@ final class ChoiceDesignJob implements ShouldQueue
         $adaptation = $this->story->adaptation;
         $session = $adaptation->sessionAdaptations()->where('session_number', $this->sessionNumber)->firstOrFail();
 
+        if (empty($adaptation->voice_profile)) {
+            throw new \RuntimeException(
+                'voice_profile missing — Voice Lock must complete before Phase 5 (ChoiceDesign)'
+            );
+        }
+
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::CHOICE_DESIGN]);
 
@@ -50,6 +57,7 @@ final class ChoiceDesignJob implements ShouldQueue
                     'emotionalPromise' => $session->entry_point_diagnosis['emotional_promise'] ?? '',
                     'sessionNumber' => $this->sessionNumber,
                     'choiceMomentPages' => $choiceMomentPages,
+                    'voiceProfile' => VoiceProfilePromptSlice::dnaAndBans((array) ($adaptation->voice_profile ?? [])),
                 ])->render()
             );
 

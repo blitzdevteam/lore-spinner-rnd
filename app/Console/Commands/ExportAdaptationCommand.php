@@ -86,12 +86,14 @@ final class ExportAdaptationCommand extends Command
             'story_status',
             'format_detection',
             'ip_audit',
+            'voice_profile',
             'story_session_map',
         ]);
         fputcsv($handle, [
             $adaptation->adaptation_status->value,
             $adaptation->format_detection ? 'done' : 'pending',
             $adaptation->ip_audit ? 'done' : 'pending',
+            $adaptation->voice_profile ? 'done' : 'pending',
             $adaptation->story_session_map ? 'done' : 'pending',
         ]);
 
@@ -139,6 +141,7 @@ final class ExportAdaptationCommand extends Command
             'story_wide' => [
                 'format_detection' => $adaptation->format_detection,
                 'ip_audit' => $adaptation->ip_audit,
+                'voice_profile' => $adaptation->voice_profile,
                 'story_session_map' => $adaptation->story_session_map,
             ],
             'sessions' => $adaptation->sessionAdaptations

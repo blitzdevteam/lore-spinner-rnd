@@ -1,3 +1,8 @@
+@include('ai.agents.adaptation._voice-profile-context', [
+    'voiceProfile' => $voiceProfile,
+    'voiceProfileLabel' => 'Sections 1+2 — Voice DNA + Master Rule 1 bans (the cold open you write must embody this profile)',
+])
+
 STORY SESSION MAP (this session's allocation):
 {{ json_encode($storySessionMap, JSON_PRETTY_PRINT) }}
 

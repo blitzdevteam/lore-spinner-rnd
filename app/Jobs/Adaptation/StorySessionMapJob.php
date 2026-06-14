@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs\Adaptation;
 
+use App\Ai\Adaptation\VoiceProfilePromptSlice;
 use App\Ai\Agents\Adaptation\StorySessionMapAgent;
 use App\Enums\Adaptation\AdaptationStatusEnum;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
@@ -39,6 +40,12 @@ final class StorySessionMapJob implements ShouldQueue
     public function handle(): void
     {
         $adaptation = $this->story->adaptation;
+
+        if (empty($adaptation->voice_profile)) {
+            throw new \RuntimeException(
+                'voice_profile missing — Voice Lock must complete before Phase 2 (StorySessionMap)'
+            );
+        }
 
         try {
             $adaptation->update([
@@ -85,6 +92,7 @@ final class StorySessionMapJob implements ShouldQueue
                     'totalEvents' => $totalEvents,
                     'ipTrimmingWorldRules' => $ipTrimming['world_rules'] ?? null,
                     'ipTrimmingConversionNotes' => $ipTrimming['interactive_conversion_notes'] ?? null,
+                    'voiceProfile' => VoiceProfilePromptSlice::alignmentContext((array) ($adaptation->voice_profile ?? [])),
                 ])->render()
             );
 
