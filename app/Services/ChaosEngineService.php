@@ -79,15 +79,28 @@ final class ChaosEngineService
 
     /**
      * Load the cached runtime narrator prompt + per-session context needed to
-     * assemble injection points and the opening scene.
+     * assemble injection points and the opening section.
      *
      * Returns null when runtime_narrator_prompt is null (story not V2-adapted).
+     *
+     * Opening artifacts are returned separately so renderSystemPrompt() can
+     * combine them correctly:
+     *   - cold_open         : Phase 3 authored prose (120-180 words), every session
+     *   - opening_handoff   : arc_progression.opens_with one-liner (sessions 2+); empty for session 1
+     *   - emotional_promise : Phase 3 emotional promise sentence
+     *   - must_reintroduce  : Phase 3 cut material to weave back in through action
+     *
+     * The old single `opening_scene` field (which discarded the cold open when
+     * opening_handoff was set) is intentionally removed. Callers must use
+     * renderSystemPrompt() with isSessionStart=true to get the full opening block.
      *
      * @return array{
      *     session_number: int,
      *     total_sessions: int,
+     *     cold_open: string,
      *     opening_handoff: string,
-     *     opening_scene: string,
+     *     emotional_promise: string,
+     *     must_reintroduce: string,
      *     runtime_prompt: string,
      *     alignment_labels: array<int, array<string, mixed>>,
      *     full_session_events: array<int, array{position:int, title:string, content:string, objectives:?string}>,
@@ -106,8 +119,7 @@ final class ChaosEngineService
             return null;
         }
 
-        $storyMap   = (array) ($adaptation->story_session_map ?? []);
-        $allocation = $this->findAllocationRow($storyMap, $sessionNumber);
+        $storyMap = (array) ($adaptation->story_session_map ?? []);
 
         $events = Event::query()
             ->whereHas('chapter', fn ($q) => $q->where('story_id', $story->id))
@@ -141,26 +153,23 @@ final class ChaosEngineService
 
         $entry = (array) ($sessionAdaptation->entry_point_diagnosis ?? []);
 
-        $openingHandoff = $this->normalizeOpeningScene($openingHandoff);
-
-        if ($openingHandoff === '') {
-            $arcRow         = $this->findArcProgressionRow($adaptation, $sessionNumber);
-            $openingHandoff = $this->normalizeOpeningScene($arcRow['opens_with'] ?? '');
+        // Resolve opening_handoff: caller may pass one (session transitions), otherwise
+        // fall back to arc_progression.opens_with. Session 1 stays empty (N/A).
+        $resolvedHandoff = $this->normalizeOpeningScene($openingHandoff);
+        if ($resolvedHandoff === '') {
+            $arcRow          = $this->findArcProgressionRow($adaptation, $sessionNumber);
+            $resolvedHandoff = $this->normalizeOpeningScene($arcRow['opens_with'] ?? '');
         }
-
-        $coldOpen = $this->normalizeOpeningScene($entry['cold_open'] ?? '');
-
-        $openingScene = trim($openingHandoff) !== ''
-            ? $openingHandoff
-            : $coldOpen;
 
         $totalSessions = (int) ($adaptation?->sessionAdaptations?->count() ?? 0);
 
         return [
             'session_number'      => $sessionNumber,
             'total_sessions'      => $totalSessions,
-            'opening_handoff'     => $openingHandoff,
-            'opening_scene'       => $openingScene,
+            'cold_open'           => $this->normalizeOpeningScene($entry['cold_open'] ?? ''),
+            'opening_handoff'     => $resolvedHandoff,
+            'emotional_promise'   => trim((string) ($entry['emotional_promise'] ?? '')),
+            'must_reintroduce'    => trim((string) ($entry['format_specific_cut']['must_reintroduce'] ?? '')),
             'runtime_prompt'      => (string) $sessionAdaptation->runtime_narrator_prompt,
             'alignment_labels'    => (array) ($storyMap['alignment_labels'] ?? []),
             'full_session_events' => $events,
@@ -168,8 +177,12 @@ final class ChaosEngineService
     }
 
     /**
-     * Inject the four runtime-only blocks into the cached runtime narrator
-     * prompt using marker token replacement.
+     * Inject runtime-only blocks into the cached runtime narrator prompt.
+     *
+     * isSessionStart=true  → Section 13 opening block is assembled and injected
+     *                        (cold open + handoff + must_reintroduce + 3-minute protocol).
+     * isSessionStart=false → Section 13 block is replaced with a single continuation
+     *                        line so the narrator does not re-open on mid-session turns.
      *
      * @param  array<string, mixed>  $sessionContext
      * @param  array<string, mixed>  $worldState
@@ -180,7 +193,7 @@ final class ChaosEngineService
         array $worldState,
         array $alignmentScaffold,
         ?string $symbolicMemory,
-        ?string $currentScene,
+        bool $isSessionStart,
         bool $isClimacticPrevious,
     ): string {
         $prompt = $sessionContext['runtime_prompt'];
@@ -194,22 +207,99 @@ final class ChaosEngineService
             $alignmentScaffold,
         );
 
-        $openingBlock = trim((string) $currentScene) !== ''
-            ? trim((string) $currentScene)
-            : '(This is a continuation turn. Resume from the conversation history; do not re-cold-open.)';
-
         $worldStateBlock = $this->renderTieredWorldState(
             worldState:    $worldState,
             isClimactic:   $isClimacticPrevious,
             sessionEvents: $sessionContext['full_session_events'] ?? [],
         );
 
-        return strtr($prompt, [
-            '[SYMBOLIC_MEMORY_INJECTION_POINT]'    => $symbolicBlock,
-            '[ALIGNMENT_TILT_INJECTION_POINT]'     => $alignmentBlock,
-            '[OPENING_SCENE_INJECTION_POINT]'      => $openingBlock,
-            '[WORLD_STATE_TIERED_INJECTION_POINT]' => $worldStateBlock,
-        ]);
+        // On session-start: inject the full opening block into Section 13 via its token.
+        // On continuation: mechanically strip the entire Section 13 block (header + "THIS IS THE
+        // HARD START" instructions + FIRST-3-MINUTES PROTOCOL + injection point) so those
+        // narrator instructions never reach the model mid-session. The LLM does not see them;
+        // it is not asked to self-suppress them. strtr still processes the other three tokens
+        // normally; [OPENING_SCENE_INJECTION_POINT] simply goes unused on continuation paths.
+        if ($isSessionStart) {
+            $prompt = strtr($prompt, [
+                '[SYMBOLIC_MEMORY_INJECTION_POINT]'    => $symbolicBlock,
+                '[ALIGNMENT_TILT_INJECTION_POINT]'     => $alignmentBlock,
+                '[OPENING_SCENE_INJECTION_POINT]'      => $this->buildOpeningSection($sessionContext),
+                '[WORLD_STATE_TIERED_INJECTION_POINT]' => $worldStateBlock,
+            ]);
+        } else {
+            // Strip Section 13 entirely before substitution. Find the section header and the
+            // injection point token and replace the whole span with a single continuation marker.
+            $sec13Anchor = '=== SECTION 13 —';
+            $injToken    = '[OPENING_SCENE_INJECTION_POINT]';
+            $sec13Start  = strpos($prompt, $sec13Anchor);
+            $injPos      = strpos($prompt, $injToken);
+
+            if ($sec13Start !== false && $injPos !== false && $injPos > $sec13Start) {
+                $prompt = substr($prompt, 0, $sec13Start)
+                    . '(Continuation turn — opening already delivered. Resume from conversation history; do not re-cold-open.)'
+                    . substr($prompt, $injPos + strlen($injToken));
+            }
+
+            $prompt = strtr($prompt, [
+                '[SYMBOLIC_MEMORY_INJECTION_POINT]'    => $symbolicBlock,
+                '[ALIGNMENT_TILT_INJECTION_POINT]'     => $alignmentBlock,
+                '[WORLD_STATE_TIERED_INJECTION_POINT]' => $worldStateBlock,
+            ]);
+        }
+
+        return $prompt;
+    }
+
+    /**
+     * Build the full opening block injected into Section 13 on session-start turns.
+     *
+     * For session 1: cold open only (no handoff).
+     * For sessions 2+: handoff context THEN cold open so the narrator has both
+     *   the continuity seed from the previous session close and the authored
+     *   dramatic cut-in for this session's opening.
+     *
+     * Also injects must_reintroduce and emotional_promise so cut world-building
+     * is woven back in through action, matching the Phase 3 design intent.
+     *
+     * @param  array<string, mixed>  $sessionContext
+     */
+    private function buildOpeningSection(array $sessionContext): string
+    {
+        $sessionNumber    = (int) ($sessionContext['session_number'] ?? 1);
+        $coldOpen         = (string) ($sessionContext['cold_open'] ?? '');
+        $openingHandoff   = (string) ($sessionContext['opening_handoff'] ?? '');
+        $emotionalPromise = (string) ($sessionContext['emotional_promise'] ?? '');
+        $mustReintroduce  = (string) ($sessionContext['must_reintroduce'] ?? '');
+
+        $lines = [];
+
+        // Sessions 2+: prepend the continuity handoff from the previous session close.
+        if ($sessionNumber > 1 && $openingHandoff !== '') {
+            $lines[] = 'SESSION HANDOFF (what the previous session left behind):';
+            $lines[] = $openingHandoff;
+            $lines[] = '';
+        }
+
+        // Full Phase 3 authored cold open — always present for every session.
+        if ($coldOpen !== '') {
+            $lines[] = 'COLD OPEN — begin here, not before:';
+            $lines[] = $coldOpen;
+        }
+
+        // Emotional promise — the engagement hook for this session.
+        if ($emotionalPromise !== '') {
+            $lines[] = '';
+            $lines[] = 'EMOTIONAL PROMISE: ' . $emotionalPromise;
+        }
+
+        // Cut material that must resurface through action, not exposition.
+        if ($mustReintroduce !== '') {
+            $lines[] = '';
+            $lines[] = 'MUST REINTRODUCE (weave through action and dialogue, never as an exposition dump):';
+            $lines[] = $mustReintroduce;
+        }
+
+        return implode("\n", $lines);
     }
 
     /**

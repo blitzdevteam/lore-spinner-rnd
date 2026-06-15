@@ -244,9 +244,10 @@ function step_4(string $slug): void
             echo (strpos($rendered, $token) !== false ? 'ok   ' : 'miss ') . $token . "\n";
         }
         foreach ([
-            'PAUL REVIEW — RUNTIME CADENCE RULES',
+            'RUNTIME GENERATION RULES — CADENCE, ECONOMY, AND FORWARD PULL',
             '300–350 words',
-            'CUSTOM INPUT PROTOCOL',
+            'RULE 7: CUSTOM INPUT PROTOCOL',
+            'FIRST-3-MINUTES OPENING PROTOCOL (turn 1 only',
             'COLLLOCATION FINGERPRINT',
             'Profile type:',
         ] as $marker) {
@@ -539,6 +540,53 @@ function step_v22(string $slug): void
         $path = resource_path('views/ai/agents/adaptation/' . $rel);
         $content = is_file($path) ? file_get_contents($path) : '';
         echo (str_contains($content, $marker) ? 'ok   ' : 'FAIL ') . "{$rel}\n";
+    }
+
+    echo "\nSession-start opening injection checks (ChaosEngineService shape):\n";
+    $enginePath = app_path('Services/ChaosEngineService.php');
+    $engineSrc  = is_file($enginePath) ? file_get_contents($enginePath) : '';
+    $engineChecks = [
+        'loadSessionContext returns cold_open'         => "'cold_open'",
+        'loadSessionContext returns opening_handoff'   => "'opening_handoff'",
+        'loadSessionContext returns emotional_promise' => "'emotional_promise'",
+        'loadSessionContext returns must_reintroduce'  => "'must_reintroduce'",
+        'renderSystemPrompt has isSessionStart param'  => 'bool $isSessionStart',
+        'buildOpeningSection method exists'            => 'function buildOpeningSection(',
+        'opening_scene collapse removed'               => "'opening_scene'",
+    ];
+    foreach ($engineChecks as $label => $needle) {
+        // opening_scene collapse check is an absence test
+        if ($label === 'opening_scene collapse removed') {
+            echo (str_contains($engineSrc, $needle) ? 'FAIL ' : 'ok   ') . "{$label}\n";
+        } else {
+            echo (str_contains($engineSrc, $needle) ? 'ok   ' : 'FAIL ') . "{$label}\n";
+        }
+    }
+
+    echo "\nCall-site isSessionStart checks:\n";
+    $callSites = [
+        'GameController begin()' => [app_path('Http/Controllers/User/GameController.php'), 'isSessionStart:      true'],
+        'GameController nextSession()' => [app_path('Http/Controllers/User/GameController.php'), 'isSessionStart:      true'],
+        'PromptController store()' => [app_path('Http/Controllers/User/Game/PromptController.php'), 'isSessionStart:      false'],
+        'ChaosModeController (no currentScene)' => [app_path('Http/Controllers/ChaosMode/ChaosModeController.php'), 'isSessionStart:      false'],
+        'DumpChaosPromptCommand' => [app_path('Console/Commands/DumpChaosPromptCommand.php'), 'isSessionStart:      true'],
+    ];
+    foreach ($callSites as $label => [$filePath, $needle]) {
+        $src = is_file($filePath) ? file_get_contents($filePath) : '';
+        echo (str_contains($src, $needle) ? 'ok   ' : 'FAIL ') . "{$label}\n";
+    }
+
+    echo "\nMechanical Section 13 strip (continuation turns) — ChaosEngineService:\n";
+    $stripChecks = [
+        'sec13Anchor variable defined'         => "\$sec13Anchor = '=== SECTION 13 —'",
+        'injToken variable defined'            => "\$injToken    = '[OPENING_SCENE_INJECTION_POINT]'",
+        'strpos sec13 used'                    => 'strpos($prompt, $sec13Anchor)',
+        'strpos injToken used'                 => 'strpos($prompt, $injToken)',
+        'continuation marker text present'     => 'Continuation turn — opening already delivered',
+        'isSessionStart branches strtr split'  => 'if ($isSessionStart) {',
+    ];
+    foreach ($stripChecks as $label => $needle) {
+        echo (str_contains($engineSrc, $needle) ? 'ok   ' : 'FAIL ') . "{$label}\n";
     }
 }
 

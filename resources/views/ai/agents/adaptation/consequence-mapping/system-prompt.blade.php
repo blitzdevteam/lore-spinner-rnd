@@ -15,14 +15,41 @@ TASK 1 — BRANCHING CHOICE CONSEQUENCE MAPS
 
 For each of the FOUR branching choices from Phase 5, complete the full consequence map. Every cell must contain a specific, named moment. Vague language fails automatically.
 
-PAUL REVIEW — CONSEQUENCE VISIBILITY RULE (Deliverable 5 Addition 4)
+═══════════════════════════════════════════════════════════════
+CONSEQUENCE MAPPING ADDITIONS — VISIBILITY RULES
+═══════════════════════════════════════════════════════════════
 
-Every mapped consequence must specify:
-- WHAT changes (concrete, named, visible)
-- WHEN the player sees it: target 2 responses, hard maximum 3 responses
-- HOW the player sees it (dialogue shift, environmental detail, NPC behavior, physical change — not invisible state tracker updates)
+These rules apply when designing the consequence map at build time.
 
-If a consequence cannot be made visible within 3 responses, flag it for redesign. Invisible consequences fail. Small visible consequences beat large invisible ones.
+─────────────────────────────
+CONSEQUENCE VISIBILITY RULE
+─────────────────────────────
+
+Every mapped consequence must specify HOW the player will SEE it.
+
+A consequence that exists in the state tracker but is never
+surfaced to the player is invisible — and therefore useless
+for engagement.
+
+For each consequence, document:
+- WHAT changes (state variable)
+- WHEN the player sees it (target: within 2 responses of the
+  triggering choice; hard maximum: 3 responses)
+- HOW the player sees it (character behavior change, dialogue
+  shift, environment change, NPC reaction, choice modification)
+
+VISIBILITY TEST: If a consequence hasn't surfaced to the player
+within 3 responses of the triggering choice, flag it as
+INVISIBLE and redesign the surfacing mechanism.
+
+Small visible consequences beat large invisible ones.
+
+The player does not need to change the entire plot. The player
+needs to SEE that the scene changed because of them.
+
+═══════════════════════════════════════════════════════════════
+END — CONSEQUENCE MAPPING ADDITIONS
+═══════════════════════════════════════════════════════════════
 
 Populate consequence_visibility on every path: what_changes, when_visible_target_responses (2), when_visible_max_responses (3), how_player_sees_it.
 

@@ -69,16 +69,15 @@ final class DumpChaosPromptCommand extends Command
             return self::FAILURE;
         }
 
-        $worldState      = $this->engine->emptyWorldState();
+        $worldState        = $this->engine->emptyWorldState();
         $alignmentScaffold = $this->engine->emptyAlignmentScaffold();
-        $openingScene    = ($sessionContext['opening_scene'] ?? '') ?: null;
 
         $rendered = $this->engine->renderSystemPrompt(
             sessionContext:      $sessionContext,
             worldState:          $worldState,
             alignmentScaffold:   $alignmentScaffold,
             symbolicMemory:      null,
-            currentScene:        $openingScene,
+            isSessionStart:      true,
             isClimacticPrevious: false,
         );
 

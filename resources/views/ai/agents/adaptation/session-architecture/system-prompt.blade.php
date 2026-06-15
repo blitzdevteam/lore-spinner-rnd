@@ -94,8 +94,59 @@ STOP GATE: Are there exactly 4 BRANCHING slots? Is there 1 BREATH beat between m
 
 ---
 
-PAUL REVIEW — BEAT ARCHITECTURE RULES (Deliverable 3 Addition 2)
+═══════════════════════════════════════════════════════════════
+BEAT ARCHITECTURE ADDITIONS — ENDING RULES AND OPENING PROTOCOL
+═══════════════════════════════════════════════════════════════
 
-BEAT ENDING RULES — Every beat in the session beat map must end on forward pull: question, discovery, complication, decision, escalation, or character shift. BANNED beat endings: pure atmosphere, summary, or continuation with no dramatic movement.
+These rules apply when designing the beat-by-beat session architecture.
+They constrain how beats are structured at design time.
 
-FIRST-3-MINUTES RULE — The opening sequence must prove participation within 3 minutes of play: first branching choice within 90 seconds (~300 words of narration), first visible consequence within 120 seconds. Design the SETUP beat and Branching Choice #1 slot accordingly.
+─────────────────────────────
+BEAT ENDING RULES
+─────────────────────────────
+
+Every beat in the session architecture must specify its ENDING TYPE.
+
+Valid ending types:
+- QUESTION: A character asks something that demands player response
+- DISCOVERY: New information that changes the player's understanding
+- COMPLICATION: A new obstacle or threat emerges
+- DECISION: The player must choose between meaningfully different options
+- ESCALATION: The stakes increase visibly
+- CHARACTER SHIFT: A relationship changes in a way the player notices
+
+INVALID ending types — DO NOT DESIGN beats that end on:
+- ATMOSPHERE: Description of room, weather, or mood with no change
+- SUMMARY: Recapping what just happened
+- CONTINUATION: The story pauses mid-flow without a pull
+
+If a designed beat ends on atmosphere, redesign it to end on one
+of the valid types above before finalizing the beat map.
+
+─────────────────────────────
+FIRST-3-MINUTES RULE
+─────────────────────────────
+
+SCOPE: This rule applies ONCE per session — to the opening sequence
+only (SETUP beat / cold open / first tiered turns at session start).
+It does NOT apply to every beat or every turn in the session.
+
+The opening sequence of every session must deliver:
+
+1. Location and situation established in under 30 words
+2. First meaningful choice or custom input opportunity within
+   90 seconds of play start
+3. First visible consequence of player action within 120 seconds
+4. The player understands WHERE they are, WHAT is happening,
+   WHAT they can do, and WHY their input matters — all before
+   the 3-minute mark
+
+If the opening sequence spends more than 2 responses on setup
+before offering the player meaningful participation, redesign it.
+
+The player is not reading a book. They are stepping into a story.
+Prove that within 3 minutes.
+
+═══════════════════════════════════════════════════════════════
+END — BEAT ARCHITECTURE ADDITIONS
+═══════════════════════════════════════════════════════════════

@@ -145,7 +145,7 @@ final class ChaosModeController extends Controller
             worldState:          $emptyWorldState,
             alignmentScaffold:   $emptyAlignment,
             symbolicMemory:      null,
-            currentScene:        $sessionContext['opening_scene'],
+            isSessionStart:      true,
             isClimacticPrevious: false,
         );
 
@@ -261,7 +261,7 @@ final class ChaosModeController extends Controller
             worldState:          $worldState,
             alignmentScaffold:   $alignmentScaffold,
             symbolicMemory:      $chaosSession->symbolic_memory,
-            currentScene:        null,
+            isSessionStart:      false,
             isClimacticPrevious: (bool) $chaosSession->is_climactic_choice,
         );
 
@@ -399,16 +399,12 @@ final class ChaosModeController extends Controller
             'ip_address'           => $request->ip(),
         ]);
 
-        $sceneForOpener = trim($openingHandoff) !== ''
-            ? $openingHandoff
-            : ($sessionContext['opening_scene'] ?? '');
-
         $systemPrompt = $this->engine->renderSystemPrompt(
             sessionContext:      $sessionContext,
             worldState:          $carriedWorldState,
             alignmentScaffold:   $carriedAlignment,
             symbolicMemory:      $carriedSymbolicMem,
-            currentScene:        $sceneForOpener,
+            isSessionStart:      true,
             isClimacticPrevious: false,
         );
 

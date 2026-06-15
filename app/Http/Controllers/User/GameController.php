@@ -104,11 +104,11 @@ final class GameController extends Controller
         $emptyAlignment = $this->engine->emptyAlignmentScaffold();
 
         $systemPrompt = $this->engine->renderSystemPrompt(
-            sessionContext: $sessionContext,
-            worldState: $emptyWorldState,
-            alignmentScaffold: $emptyAlignment,
-            symbolicMemory: null,
-            currentScene: $sessionContext['opening_scene'],
+            sessionContext:      $sessionContext,
+            worldState:          $emptyWorldState,
+            alignmentScaffold:   $emptyAlignment,
+            symbolicMemory:      null,
+            isSessionStart:      true,
             isClimacticPrevious: false,
         );
 
@@ -241,16 +241,12 @@ final class GameController extends Controller
         $carriedAlignment = $game->alignment_scaffold ?? $this->engine->emptyAlignmentScaffold();
         $carriedMemory = $game->symbolic_memory;
 
-        $sceneForOpener = mb_trim($openingHandoff) !== ''
-            ? $openingHandoff
-            : ($sessionContext['opening_scene'] ?? '');
-
         $systemPrompt = $this->engine->renderSystemPrompt(
-            sessionContext: $sessionContext,
-            worldState: $carriedWorldState,
-            alignmentScaffold: $carriedAlignment,
-            symbolicMemory: $carriedMemory,
-            currentScene: $sceneForOpener,
+            sessionContext:      $sessionContext,
+            worldState:          $carriedWorldState,
+            alignmentScaffold:   $carriedAlignment,
+            symbolicMemory:      $carriedMemory,
+            isSessionStart:      true,
             isClimacticPrevious: false,
         );
 

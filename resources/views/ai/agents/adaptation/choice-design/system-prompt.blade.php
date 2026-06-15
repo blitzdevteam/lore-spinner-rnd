@@ -43,15 +43,40 @@ The four branching choices are STRICTLY ordered and beat-locked:
 
 ---
 
-PAUL REVIEW — CHOICE CONTRAST RULES (Deliverable 4 Addition 3)
+═══════════════════════════════════════════════════════════════
+CHOICE DESIGN ADDITIONS — CONTRAST RULES
+═══════════════════════════════════════════════════════════════
 
-Each branching choice must represent genuinely different player instincts — not three polite variations of the same action (investigate vs challenge vs comfort; push vs wait vs deflect).
+These rules apply when designing branching choice sets at build time.
 
-CONTRAST TEST — Swap test: if two options could be exchanged without the player noticing, both fail. Redesign.
+─────────────────────────────
+CHOICE CONTRAST RULES
+─────────────────────────────
 
-INSTINCT TEST — Each option maps to a distinct human value or instinct visible in the option text and outcome.
+Every set of branching choices must represent DIFFERENT PLAYER
+INSTINCTS, not different wordings of the same action.
 
-VISIBILITY TEST — Each option must produce a visibly different outcome within 2 responses (see downstream_effect and world_noticed_signal). The player must feel HOW they play matters.
+Each choice in a set must map to a distinct approach:
+- Investigate vs Challenge vs Comfort
+- Risk vs Conceal vs Confront
+- Follow vs Defy vs Negotiate
+- Trust vs Doubt vs Test
+- Act vs Wait vs Redirect
+
+CONTRAST TEST: If two choices would lead to roughly the same
+next scene beat, they are not different enough. Redesign until
+each choice creates a visibly different consequence within the
+next 2 responses.
+
+INSTINCT TEST: The player should feel that choosing one option
+over another reveals something about HOW they are playing —
+cautious vs bold, empathetic vs analytical, trusting vs suspicious.
+
+Choices are not menu items. They are character-defining moments.
+
+═══════════════════════════════════════════════════════════════
+END — CHOICE DESIGN ADDITIONS
+═══════════════════════════════════════════════════════════════
 
 ---
 

@@ -118,6 +118,84 @@ Validation outcomes will be recorded here after operator runs on Laravel Cloud.
 
 ---
 
+## June 15 — Session-start opening injection fix
+
+**Problem:** `loadSessionContext()` was collapsing `cold_open` and `opens_with` into a single `opening_scene` winner. When `opens_with` was non-empty (sessions 2+), the full Phase 3 cold open — 120–180 word authored prose with `must_reintroduce` and the 3-minute opening hook — was silently discarded. Only the one-sentence arc handoff reached the narrator.
+
+**Root cause:** The doc's intent was `opens_with` = continuity seed *supplementing* the cold open, but the code treated it as a *replacement*.
+
+**Fix:** `loadSessionContext()` now returns four separate fields; the old `opening_scene` collapse is removed.
+
+| New field | Source | Sessions |
+|---|---|---|
+| `cold_open` | `entry_point_diagnosis.cold_open` | All |
+| `opening_handoff` | `arc_progression.opens_with` | 2+ (empty for session 1) |
+| `emotional_promise` | `entry_point_diagnosis.emotional_promise` | All |
+| `must_reintroduce` | `entry_point_diagnosis.format_specific_cut.must_reintroduce` | All |
+
+`renderSystemPrompt()` gained an `isSessionStart: bool` parameter replacing the old `?string $currentScene`. On `true`, a new `buildOpeningSection()` helper assembles:
+- Sessions 2+: handoff → cold open → emotional promise → must_reintroduce
+- Session 1: cold open → emotional promise → must_reintroduce
+
+On `false` (mid-session turns), the injection point receives a single continuation line.
+
+### Files changed
+
+- `app/Services/ChaosEngineService.php` — `loadSessionContext()` return shape, `renderSystemPrompt()` signature, `buildOpeningSection()` new private method
+- `app/Http/Controllers/User/GameController.php` — `begin()` and `nextSession()` call sites (removed dead `$sceneForOpener` variable, pass `isSessionStart: true`)
+- `app/Http/Controllers/User/Game/PromptController.php` — `store()` call site (`isSessionStart: false`)
+- `app/Http/Controllers/ChaosMode/ChaosModeController.php` — `start()`, `continueTurn()`, `continueSession()` call sites
+- `app/Console/Commands/DumpChaosPromptCommand.php` — removed `$openingScene` variable, pass `isSessionStart: true`
+- `validation/pipeline-upgrade-v2-validation-runner.php` — `step_v22` extended with 13 new assertions for context shape + call sites
+
+### Behaviour before vs after
+
+| Scenario | Before | After |
+|---|---|---|
+| Session 1 open | cold open injected | cold open + emotional_promise + must_reintroduce |
+| Session 2+ open | only `opens_with` one-liner (cold open dropped) | handoff + **full cold open** + emotional_promise + must_reintroduce |
+| Mid-session turn | `(continuation turn…)` | same — explicit continuation line |
+
+### No re-adaptation required
+
+The fix is runtime-only (injection layer). Existing `runtime_narrator_prompt` caches remain valid — the `[OPENING_SCENE_INJECTION_POINT]` token is still in every cached prompt; only what gets substituted into it changes.
+
+---
+
+## June 15 — Mechanical Section 13 strip on continuation turns
+
+### Problem
+
+Even after the `isSessionStart` refactor, the cached `runtime_narrator_prompt` still contains the full Section 13 block on every turn: the header, the "THIS IS THE HARD START" instruction, and the FIRST-3-MINUTES PROTOCOL. On continuation turns, `strtr` replaced `[OPENING_SCENE_INJECTION_POINT]` with a one-line continuation message, but the surrounding narrator instructions stayed in the prompt — the model was still asked to self-suppress them rather than mechanically not seeing them.
+
+### Fix
+
+Split `renderSystemPrompt()` into two paths:
+
+**Session start (`isSessionStart = true`)**
+Run `strtr()` with all four tokens. `[OPENING_SCENE_INJECTION_POINT]` receives the full opening block from `buildOpeningSection()`.
+
+**Continuation (`isSessionStart = false`)**
+Before `strtr`, locate `=== SECTION 13 —` (the section header anchor) and `[OPENING_SCENE_INJECTION_POINT]` (the injection token) using `strpos`. Replace the entire span between them (inclusive) with a single continuation marker:
+`(Continuation turn — opening already delivered. Resume from conversation history; do not re-cold-open.)`
+
+Then run `strtr()` with only the three remaining tokens. `[OPENING_SCENE_INJECTION_POINT]` is no longer in the string so its key goes unused — that is intentional.
+
+### Effect
+
+The model never reads "THIS IS THE HARD START" or the FIRST-3-MINUTES PROTOCOL on turn 2+. The instruction is mechanically absent, not instructionally suppressed.
+
+### Files changed
+
+- `app/Services/ChaosEngineService.php` — `renderSystemPrompt()` split into two `strtr` paths with Section 13 string-position strip on continuation path
+- `validation/pipeline-upgrade-v2-validation-runner.php` — `step_v22` extended with 6 assertions for the strip logic
+
+### No re-adaptation required
+
+Existing `runtime_narrator_prompt` caches remain valid. The strip works on the cached string at runtime.
+
+---
+
 ## Known issues / iteration targets
 
 - Merge job timeout remains 420s — monitor on first full-novel re-adapt after V2.2 deploy

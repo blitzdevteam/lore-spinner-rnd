@@ -58,7 +58,7 @@ final class PromptController extends Controller
             worldState:          $worldState,
             alignmentScaffold:   $alignmentScaffold,
             symbolicMemory:      $game->symbolic_memory,
-            currentScene:        null,
+            isSessionStart:      false,
             isClimacticPrevious: (bool) $game->is_climactic_choice,
         );
 

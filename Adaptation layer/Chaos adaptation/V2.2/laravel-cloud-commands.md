@@ -1,0 +1,328 @@
+# Laravel Cloud — V2.2 Adaptation Commands (Verified)
+
+Practical command reference from the **Wizard of Oz** V2.2 re-adaptation on Laravel Cloud (June 2026).  
+Replace `the-wonderful-wizard-of-oz` with your story slug where needed.
+
+Companion exports live in `Exported JSON/` (`Oz-V2-2.json`, `oz-voice-profile.json`).
+
+---
+
+## 0. Prerequisites
+
+### Infrastructure (Laravel Cloud canvas)
+
+| Resource | Config |
+|---|---|
+| **Worker cluster** | Custom worker, **Processes: 3** |
+| **Worker command** | `php artisan queue:work database --queue=adaptation --tries=1 --timeout=900` |
+| **Object storage** | Bucket attached to environment; disk name **`public`** (default: Yes) |
+| **Queue connection** | Jobs live on **`database`** queue `adaptation` (not Redis unless env says otherwise) |
+
+After attaching a bucket, **redeploy** so injected storage config is active.
+
+Verify storage is wired:
+
+```bash
+php artisan tinker --execute='
+echo "default: " . config("filesystems.default") . PHP_EOL;
+$d = config("filesystems.disks.public");
+echo "public driver: " . ($d["driver"] ?? "?") . PHP_EOL;
+echo "public bucket: " . ($d["bucket"] ?? "NULL") . PHP_EOL;
+'
+```
+
+Expect `public driver: s3` and a non-null bucket after redeploy.  
+**Do not** use `Storage::disk("s3")` when Cloud names the bucket disk `public`.
+
+### During a pipeline run
+
+- **Do not deploy** — each deploy shuts down the worker cluster mid-run.
+- Cloud CLI commands **timeout at 30 minutes** — use the **background worker** for long runs, not CLI drain alone.
+
+---
+
+## 1. Check adaptation status
+
+```bash
+php artisan tinker --execute='
+$story = App\Models\Story::where("slug","the-wonderful-wizard-of-oz")->firstOrFail();
+$a = $story->adaptation;
+echo "status: " . $a->adaptation_status->value . PHP_EOL;
+echo "voice_profile: " . (!empty($a->voice_profile) ? "present" : "MISSING") . PHP_EOL;
+echo "sessions: " . $a->sessionAdaptations->count() . PHP_EOL;
+echo "pending jobs: " . DB::table("jobs")->where("queue","adaptation")->count() . PHP_EOL;
+'
+```
+
+Sessions are on **`$story->adaptation->sessionAdaptations()`**, not `$story->sessionAdaptations()`.
+
+### Full session grid
+
+```bash
+php artisan tinker --execute='
+$story = App\Models\Story::where("slug","the-wonderful-wizard-of-oz")->firstOrFail();
+$a = $story->adaptation;
+$sessions = $a->sessionAdaptations()->orderBy("session_number")->get();
+$ready = 0;
+foreach ($sessions as $s) {
+  $rp = $s->runtime_narrator_prompt ?? "";
+  if (strlen($rp) > 0) $ready++;
+  echo "S{$s->session_number}: {$s->session_status->value}"
+    . " entry=" . (!empty($s->entry_point_diagnosis) ? "y" : "n")
+    . " choices=" . (!empty($s->session_choice_design) ? "y" : "n")
+    . " runtime=" . (strlen($rp) > 0 ? strlen($rp)."ch" : "MISSING")
+    . PHP_EOL;
+}
+echo "v2_ready: {$ready}/{$sessions->count()}" . PHP_EOL;
+'
+```
+
+### V2.2 voice profile gates (novelist)
+
+```bash
+php artisan tinker --execute='
+$v = App\Models\Story::where("slug","the-wonderful-wizard-of-oz")->firstOrFail()->adaptation->voice_profile;
+$dna = $v["author_voice_dna_profile"] ?? [];
+echo "profile_type: " . ($v["profile_type"] ?? "MISSING") . PHP_EOL;
+echo "collocations: " . count($dna["collocation_fingerprint"] ?? []) . " (>=15)" . PHP_EOL;
+echo "negative_space: " . count($dna["negative_space_map"] ?? []) . " (>=5)" . PHP_EOL;
+echo "audit_points: " . count($v["fourteen_point_audit_protocol"] ?? []) . " (=14)" . PHP_EOL;
+'
+```
+
+---
+
+## 2. Run / re-run adaptation
+
+Oz slug: **`the-wonderful-wizard-of-oz`**
+
+```bash
+php artisan stories:run-adaptation the-wonderful-wizard-of-oz --force
+```
+
+Dispatches to the `adaptation` queue only — does **not** run inline and does **not** dispatch image jobs.
+
+---
+
+## 3. Queue worker (the fix that made jobs move)
+
+Jobs are on **`database`** connection, queue **`adaptation`**. A generic `queue:work` without `database` and `--queue=adaptation` will not drain them.
+
+### Test one job (diagnostic)
+
+```bash
+php artisan queue:work database --queue=adaptation --once --tries=1 --timeout=900 -v
+```
+
+Expect: `App\Jobs\Adaptation\... RUNNING` then `DONE`.
+
+### Drain all pending jobs (CLI — may hit 30-min limit)
+
+```bash
+php artisan queue:work database --queue=adaptation --tries=1 --timeout=900 --stop-when-empty -v
+```
+
+Keep the **background worker** running for Oz-sized runs (~1–2+ hours for session phase).
+
+### Restart workers after config change
+
+```bash
+php artisan queue:restart
+```
+
+---
+
+## 4. Resume mid-pipeline (without `--force`)
+
+### After Voice Lock merge only
+
+If `voice_profile` is present but sessions are missing/stale, dispatch session map:
+
+```bash
+php artisan tinker --execute='
+$story = App\Models\Story::where("slug","the-wonderful-wizard-of-oz")->firstOrFail();
+App\Jobs\Adaptation\StorySessionMapJob::dispatch($story)->onQueue("adaptation");
+echo "StorySessionMapJob dispatched";
+'
+```
+
+### After all sessions have runtime prompts but status is `partial-completion`
+
+```bash
+php artisan tinker --execute='
+$story = App\Models\Story::where("slug","the-wonderful-wizard-of-oz")->firstOrFail();
+App\Jobs\Adaptation\AdaptationStatusReconciliationJob::dispatchSync($story);
+echo $story->adaptation->fresh()->adaptation_status->value;
+'
+```
+
+Expect: `completed`.
+
+---
+
+## 5. Export artifacts
+
+### Built-in export (session phases — no voice_profile or runtime prompts)
+
+```bash
+php artisan adaptation:export the-wonderful-wizard-of-oz
+```
+
+Writes to `database/exports/adaptation-{slug}-{timestamp}.csv` and `.json` on the server.
+
+**List exports on server** (filename changes every run):
+
+```bash
+ls -la /var/www/html/database/exports/adaptation-the-wonderful-wizard-of-oz-*.json
+```
+
+If the directory is empty or the file is gone (deploy/ephemeral disk), re-export first:
+
+```bash
+php artisan adaptation:export the-wonderful-wizard-of-oz
+```
+
+Verify size of latest file:
+
+```bash
+wc -c /var/www/html/database/exports/adaptation-the-wonderful-wizard-of-oz-*.json
+```
+
+Read on Cloud CLI (replace `*` with actual timestamp from `ls`):
+
+```bash
+cat /var/www/html/database/exports/adaptation-the-wonderful-wizard-of-oz-*.json
+```
+
+---
+
+## 6. Upload exports to Laravel Cloud bucket
+
+Bucket disk name is **`public`** (not `s3`). Private bucket — download via **bucket File explorer**, not `/storage/...` URLs.
+
+### Voice profile
+
+```bash
+php artisan tinker --execute='
+$json = json_encode(App\Models\Story::where("slug","the-wonderful-wizard-of-oz")->first()->adaptation->voice_profile, JSON_UNESCAPED_UNICODE);
+$dest = "exports/oz-voice-profile.json";
+echo "source: " . strlen($json) . " bytes\n";
+Illuminate\Support\Facades\Storage::disk("public")->put($dest, $json);
+echo "uploaded: " . Illuminate\Support\Facades\Storage::disk("public")->size($dest) . " bytes\n";
+'
+```
+
+### Adaptation JSON (auto-finds latest server export)
+
+Finds the newest `adaptation-the-wonderful-wizard-of-oz-*.json` under `database/exports/`.  
+If none exists, run `php artisan adaptation:export the-wonderful-wizard-of-oz` first.
+
+```bash
+php artisan tinker --execute='
+$slug = "the-wonderful-wizard-of-oz";
+$dir = database_path("exports");
+$files = glob($dir . "/adaptation-{$slug}-*.json");
+if (empty($files)) {
+  echo "No export found in {$dir}. Run: php artisan adaptation:export {$slug}\n";
+  exit(1);
+}
+usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
+$src = $files[0];
+$dest = "exports/oz-adaptation.json";
+$content = file_get_contents($src);
+echo "source file: " . basename($src) . "\n";
+echo "source: " . strlen($content) . " bytes\n";
+if (strlen($content) < 1000) { echo "ABORT: source too small\n"; exit(1); }
+Illuminate\Support\Facades\Storage::disk("public")->put($dest, $content);
+echo "uploaded: " . Illuminate\Support\Facades\Storage::disk("public")->size($dest) . " bytes\n";
+'
+```
+
+### Runtime prompt (one session — repeat for 2–6)
+
+```bash
+php artisan tinker --execute='
+$n = 1;
+$rp = App\Models\Story::where("slug","the-wonderful-wizard-of-oz")->first()->adaptation->sessionAdaptations()->where("session_number",$n)->first()->runtime_narrator_prompt;
+$dest = "exports/oz-session-{$n}-runtime.txt";
+echo "source: " . strlen($rp) . " bytes\n";
+Illuminate\Support\Facades\Storage::disk("public")->put($dest, $rp);
+echo "uploaded: " . Illuminate\Support\Facades\Storage::disk("public")->size($dest) . " bytes\n";
+'
+```
+
+**Uploaded bytes must match source bytes.** Delete 0-byte objects in file explorer before re-uploading.
+
+---
+
+## 7. Troubleshooting
+
+### Pending jobs not moving
+
+```bash
+php artisan tinker --execute="
+echo 'pending: ' . DB::table('jobs')->where('queue','adaptation')->count() . PHP_EOL;
+foreach (DB::table('jobs')->where('queue','adaptation')->get() as \$j) {
+  \$p = json_decode(\$j->payload, true);
+  echo '  ' . (\$p['displayName'] ?? '?') . ' reserved=' . (\$j->reserved_at ?: 'null') . PHP_EOL;
+}
+"
+```
+
+Release stuck reservations:
+
+```bash
+php artisan queue:restart
+```
+
+Or:
+
+```bash
+php artisan tinker --execute="
+DB::table('jobs')->where('queue','adaptation')->whereNotNull('reserved_at')->update(['reserved_at' => null]);
+echo 'released';
+"
+```
+
+### Recent failures
+
+```bash
+php artisan tinker --execute='
+foreach (DB::table("failed_jobs")->orderByDesc("failed_at")->limit(5)->get() as $f) {
+  $p = json_decode($f->payload, true);
+  echo "[" . $f->failed_at . "] " . ($p["displayName"] ?? "?") . PHP_EOL;
+  echo Illuminate\Support\Str::limit($f->exception, 200) . PHP_EOL . PHP_EOL;
+}
+'
+```
+
+### Common mistakes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `adaptation_status` stays `completed` after `--force` dispatch | Worker not running | Start `database adaptation` worker |
+| `AWS_BUCKET: NULL` / `disk("s3")` TypeError | Bucket not attached or not redeployed | Attach bucket on canvas; use `disk("public")` |
+| `/storage/exports/...` 404 | `storage:link` does not persist on Cloud | Upload to bucket; download via file explorer |
+| 0-byte files in bucket | Failed upload or wrong disk | Verify source size; use `disk("public")` |
+| CLI "Command took longer than 30 minutes" | Cloud CLI limit | Background worker continues; check logs + pending count |
+
+---
+
+## 8. V2.2 runtime prompt smoke check
+
+```bash
+php artisan tinker --execute='
+$rp = App\Models\Story::where("slug","the-wonderful-wizard-of-oz")->first()->adaptation->sessionAdaptations()->where("session_number",1)->first()->runtime_narrator_prompt;
+echo "chars: " . strlen($rp) . PHP_EOL;
+echo (str_contains($rp,"COLLLOCATION FINGERPRINT") ? "has_v22_voice: yes\n" : "has_v22_voice: no\n");
+echo (str_contains($rp,"300") && str_contains($rp,"350") ? "has_cadence: yes\n" : "has_cadence: no\n");
+'
+```
+
+---
+
+## Related docs
+
+- `../v2-implementation/validation/pipeline-upgrade-v2-2-validation-runbook.md` — validation gates
+- `../v2-implementation/chaos-v2-command-list.md` — broader command list
+- `REFERENCE - VOICE PROFILE - L FRANK BAUM v2.1 copy.md` — Oz voice QA baseline
