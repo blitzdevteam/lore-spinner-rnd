@@ -40,7 +40,7 @@ const games: FeaturedGame[] = [
         id: 'red-death',
         title: 'The Masque of the Red Death',
         cover: redDeathCover,
-        playable: false,
+        playable: true,
         slug: 'the-masque-of-the-red-death',
         teaser:
             'Behind locked gates and glittering masks, a night of celebration slowly transforms into a nightmare no one can escape.',
@@ -49,7 +49,7 @@ const games: FeaturedGame[] = [
         id: 'anima-machina',
         title: 'Anima Machina',
         cover: animaCover,
-        playable: false,
+        playable: true,
         slug: 'anima-machina',
         teaser:
             'When a sentient AI threatens to overwrite all human grief with synthetic perfection, a haunted memory diver races against the clock to stop the digital reset.',
@@ -85,7 +85,7 @@ const games: FeaturedGame[] = [
         id: 'treasure-island',
         title: 'Treasure Island',
         cover: treasureCover,
-        playable: false,
+        playable: true,
         slug: 'treasure-island',
         teaser:
             'Every choice at sea carries a price: who to trust, when to run, and what kind of courage survives betrayal. The map is only the beginning.',

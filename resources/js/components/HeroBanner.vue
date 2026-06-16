@@ -102,7 +102,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
             'Behind locked gates and glittering masks, a night of celebration slowly transforms into a nightmare no one can escape.',
         fallbackAuthor: 'Edgar Allan Poe',
         seriesLabel: LORE_SPINNER_CLASSIC,
-        comingSoon: true,
     },
     {
         slug: 'nocturne',

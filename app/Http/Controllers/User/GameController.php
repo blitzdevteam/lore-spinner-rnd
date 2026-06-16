@@ -34,6 +34,11 @@ final class GameController extends Controller
         'the-adventure-of-the-speckled-band',
         'the-tell-tale-heart',
         'the-masque-of-the-red-death',
+        'treasure-island',
+        'dr-jekyll-and-mr-hyde',
+        'wasteland',
+        'pjs',
+        'anima-machina',
     ];
 
     public function __construct(private readonly ChaosEngineService $engine) {}

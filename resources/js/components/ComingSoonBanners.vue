@@ -5,11 +5,8 @@ import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetail
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
 import janeCover from '@/assets/commingSoon/jane-comming.png';
 import frankensteinCover from '@/assets/commingSoon/frankstein-comming.png';
-import drjCover from '@/assets/commingSoon/drj-comming.png';
 import underseaCover from '@/assets/commingSoon/undersea-comming.JPG';
-import wastelandCover from '@/assets/commingSoon/wasteland-comming.JPG';
 import romeoCover from '@/assets/commingSoon/romeo-comming.png';
-import pjCover from '@/assets/commingSoon/pj-comming.JPG';
 import { useStoryCardExpand } from '@/composables/useStoryCardExpand';
 import { useDesktopStoryPreview } from '@/composables/useDesktopStoryPreview';
 import { index as storiesIndex } from '@/wayfinder/routes/stories';
@@ -38,34 +35,16 @@ const cards: ComingSoonCard[] = [
         teaser: 'Step inside a world where creation, rejection, and consequence follow you like a shadow.',
     },
     {
-        id: 'dr-jekyll-and-mr-hyde',
-        title: 'The Strange Case of Dr. Jekyll and Mr. Hyde',
-        cover: drjCover,
-        teaser: "Beneath the fog-covered streets of Victorian London, a terrifying secret grows inside Dr. Jekyll's laboratory, threatening to consume everyone around him.",
-    },
-    {
         id: 'leagues',
         title: '20,000 Leagues Under the Sea',
         cover: underseaCover,
         teaser: 'Step aboard the Nautilus, where each choice pulls you deeper into beauty, danger, and the mystery of Captain Nemo.',
     },
     {
-        id: 'wasteland',
-        title: 'Wasteland',
-        cover: wastelandCover,
-        teaser: "Abandoned in a desert built from humanity's castoffs, an engineer must decide whether to escape or help the people that the world chose to forget.",
-    },
-    {
         id: 'romeo-and-juliet',
         title: 'Romeo & Juliet',
         cover: romeoCover,
         teaser: 'A masked room. A borrowed name. A city holding its breath. Somewhere in the dark of Verona, love discovers it has enemies.',
-    },
-    {
-        id: 'pjs',
-        title: "PJ's",
-        cover: pjCover,
-        teaser: "A team of elite Air Force PJs discover that the hardest battlefield may be the one where there's no enemy to shoot, only lives to save and ghosts to outrun.",
     },
 ];
 
