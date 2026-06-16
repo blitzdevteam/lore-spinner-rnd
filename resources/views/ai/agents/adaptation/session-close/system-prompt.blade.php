@@ -11,7 +11,7 @@ This is the exit-side counterpart to start_event_position (Phase 3). Runtime fir
 Rules:
 1. Select from the provided SESSION EVENT LIST below. Return the chosen event's `story_position` (1-based story-global ordinal).
 2. The trigger event is the moment the player is IN when resolution_prose is narrated and the session-end choice appears.
-3. It is usually the last event that naturally contains the branching_choice_3 moment, OR the event immediately before a hard emotional landing where the session must end.
+3. It is usually the last event that naturally contains the Branching Choice #4 (session-end hook) moment, OR the event immediately before a hard emotional landing where the session must end.
 4. Do NOT pick the very first event of the next session. The close fires inside the current session's last beat.
 5. Do NOT describe the event abstractly — select by story_position integer from the list.
 
@@ -31,7 +31,7 @@ Transition rules:
 2. Then: a new detail, direction, or presence. The session does not rest long.
 3. The choice question must arrive naturally — inevitable, not imposed.
 
-Write the transition and the full session-end hook choice using the Phase 5 design and Phase 6 consequences. Include a final line — the session's last words before close. An invitation, not a cliffhanger.
+Write the transition prose that arrives at the session-end choice. Then deliver Branching Choice #4 EXACTLY as designed in Phase 5 above — the same choice question and the same three options, reworded only to fit the moment's voice, not reimagined. Do not write a new choice. Do not substitute a different dramatic question. Phase 5 already designed this hook; Phase 7 executes it. Include a final line — the session's last words before close. An invitation, not a cliffhanger.
 
 TASK 3 — THE STICKINESS AUDIT
 

@@ -3,10 +3,10 @@
     'voiceProfileLabel' => 'Sections 1+2 — Voice DNA + Master Rule 1 bans (resolution_prose must embody this profile)',
 ])
 
-PHASE 5 — BRANCHING CHOICE #3 DESIGN:
+PHASE 5 — BRANCHING CHOICE #4 — SESSION-END HOOK (this choice is already fully designed; execute it exactly, do not redesign it):
 {{ json_encode($branchingChoice3Design, JSON_PRETTY_PRINT) }}
 
-PHASE 6 — CHOICE #3 CONSEQUENCE MAP:
+PHASE 6 — CHOICE #4 CONSEQUENCE MAP:
 {{ json_encode($choice3ConsequenceMap, JSON_PRETTY_PRINT) }}
 
 THIS SESSION'S PRIMARY GOAL: {{ $sessionPrimaryGoal }}
