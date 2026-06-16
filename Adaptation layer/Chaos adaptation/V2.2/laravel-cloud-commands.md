@@ -251,6 +251,23 @@ echo "uploaded: " . Illuminate\Support\Facades\Storage::disk("public")->size($de
 '
 ```
 
+### Runtime prompts — all sessions in one shot
+
+```bash
+php artisan tinker --execute='
+$story = App\Models\Story::where("slug","the-wonderful-wizard-of-oz")->first();
+foreach (range(1, 6) as $n) {
+  $rp = $story->adaptation->sessionAdaptations()->where("session_number",$n)->first()->runtime_narrator_prompt ?? null;
+  if (!$rp) { echo "S{$n}: MISSING\n"; continue; }
+  $dest = "exports/oz-session-{$n}-runtime.txt";
+  Illuminate\Support\Facades\Storage::disk("public")->put($dest, $rp);
+  echo "S{$n}: uploaded " . strlen($rp) . " bytes\n";
+}
+'
+```
+
+All 6 files land in the bucket under `exports/` in one run. Replace slug and session range for other stories.
+
 **Uploaded bytes must match source bytes.** Delete 0-byte objects in file explorer before re-uploading.
 
 ---

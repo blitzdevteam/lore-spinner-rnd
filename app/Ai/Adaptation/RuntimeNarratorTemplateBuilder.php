@@ -50,7 +50,11 @@ final class RuntimeNarratorTemplateBuilder
         $totalSessions = $adaptation->sessionAdaptations()->count();
 
         $startEventPosition = (int) ($session->entry_point_diagnosis['start_event_position'] ?? 0);
-        $sessionEvents = $this->loadSessionEvents($story, $session->session_number, $startEventPosition);
+        $sessionEvents = $this->loadSessionEvents($story, $session->session_number);
+
+        if ($startEventPosition > 0 && ! empty($sessionEvents)) {
+            $sessionEvents = $this->filterEventsByStoryPosition($story, $sessionEvents, $startEventPosition);
+        }
 
         $compressionAttempts = [
             'full' => fn () => $sessionEvents,
@@ -355,22 +359,46 @@ final class RuntimeNarratorTemplateBuilder
     }
 
     /**
+     * Filter session events to only those at or after `$startEventPosition`,
+     * where position is the story-wide 1-based index computed by ordering all
+     * story events by (chapter.position, event.position).
+     *
+     * @param  array<int, array<string, mixed>>  $sessionEvents  Already ordered
      * @return array<int, array<string, mixed>>
      */
-    private function loadSessionEvents(Story $story, int $sessionNumber, int $startEventPosition = 0): array
+    private function filterEventsByStoryPosition(Story $story, array $sessionEvents, int $startEventPosition): array
     {
-        $query = Event::query()
+        $orderedIds = Event::query()
+            ->join('chapters', 'chapters.id', '=', 'events.chapter_id')
+            ->where('chapters.story_id', $story->id)
+            ->orderBy('chapters.position')
+            ->orderBy('events.position')
+            ->pluck('events.id')
+            ->values()
+            ->toArray();
+
+        $idToStoryPosition = array_flip($orderedIds);
+
+        return array_values(
+            array_filter(
+                $sessionEvents,
+                function (array $e) use ($idToStoryPosition, $startEventPosition): bool {
+                    $idx = $idToStoryPosition[$e['id']] ?? null;
+
+                    return $idx !== null && ($idx + 1) >= $startEventPosition;
+                }
+            )
+        );
+    }
+
+    private function loadSessionEvents(Story $story, int $sessionNumber): array
+    {
+        return Event::query()
             ->join('chapters', 'events.chapter_id', '=', 'chapters.id')
             ->where('chapters.story_id', $story->id)
             ->where('events.session_number', $sessionNumber)
             ->orderBy('chapters.position')
-            ->orderBy('events.position');
-
-        if ($startEventPosition > 0) {
-            $query->where('events.position', '>=', $startEventPosition);
-        }
-
-        return $query
+            ->orderBy('events.position')
             ->get([
                 'events.id',
                 'events.chapter_id',
