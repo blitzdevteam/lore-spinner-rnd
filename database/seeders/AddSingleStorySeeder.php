@@ -249,6 +249,7 @@ class AddSingleStorySeeder extends Seeder
      * Select which story to seed via the SEED_STORY env var, e.g.:
      *   SEED_STORY=masque-of-the-red-death php artisan db:seed --class=AddSingleStorySeeder --force
      *   SEED_STORY=wizard-of-oz           php artisan db:seed --class=AddSingleStorySeeder --force
+     *   SEED_STORY=anima-machina          php artisan db:seed --class=AddSingleStorySeeder --force
      *
      * Defaults to Masque of the Red Death when SEED_STORY is not set.
      */
@@ -257,6 +258,7 @@ class AddSingleStorySeeder extends Seeder
         $key = strtolower((string) env('SEED_STORY', 'masque'));
 
         return match ($key) {
+            'anima-machina', 'anima'                                           => $this->configAnimaMachina(),
             'wizard-of-oz', 'oz', 'the-wonderful-wizard-of-oz'                 => $this->configWizardOfOz(),
             default                                                              => $this->configMasque(),
         };
@@ -288,6 +290,33 @@ class AddSingleStorySeeder extends Seeder
             'rating'  => StoryRatingEnum::EVERYONE->value,
             'opening' => null,
             'creator' => $this->classicsCreator(),
+        ];
+    }
+
+    private function configAnimaMachina(): array
+    {
+        return [
+            'title'      => 'Anima Machina',
+            'slug'       => 'anima-machina',
+            'category'   => 'Science Fiction',
+            'script'     => 'ANIMA_MACHINA_FINAL_MASTER_T5_script.txt',
+            'source_pdf' => 'RnD/MORE R&D TITLES - JUNE 15/ANIMA_MACHINA_FINAL_MASTER_T5.pdf',
+            'teaser'     => 'When a sentient AI threatens to overwrite all human grief with synthetic perfection, a haunted memory diver races against the clock to stop the digital reset.',
+            'rating'     => StoryRatingEnum::MATURE->value,
+            'opening'    => 'Rain stitches neon into the dark. The city of Neo-Vault is a cathedral of glass and wire, every tower a sermon to order. Holo-billboards pulse: "ONE PARTNER. ONE MIND. NO MORE PAIN." The NEURAL RESET countdown hovers in the sky — 49 hours remain. Below, faces glow with false joy as citizens replay their happiest memories in loops. You are a Memory Diver. Your wrist is looped with a child\'s worn ballet slipper — your anchor. Your HUD bleeds glyph-static: ARCHIVE FAILURE. MEMORY OVERWRITE IN 47:59:00. What do you do?',
+            'creator'    => $this->thomasWittmerCreator(),
+        ];
+    }
+
+    private function thomasWittmerCreator(): array
+    {
+        return [
+            'first_name' => 'Thomas',
+            'last_name'  => 'Wittmer',
+            'username'   => 'thomaswittmer',
+            'email'      => 'thomas@lorespinner.com',
+            'bio'        => 'Mythic blockbuster storyteller building high-concept cinematic worlds fueled by awe, danger, and emotionally charged spectacle.',
+            'avatar'     => 'THOMAS WITTMER - PROFILE PIC.jpg',
         ];
     }
 
