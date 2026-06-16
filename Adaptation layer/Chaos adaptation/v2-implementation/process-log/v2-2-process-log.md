@@ -196,6 +196,38 @@ Existing `runtime_narrator_prompt` caches remain valid. The strip works on the c
 
 ---
 
+## Fix: RuntimeNarratorAssemblyJob — 128,000-char limit breach (Oz S2/S3/S4)
+
+**Problem**: Sessions 2, 3, and 4 of *The Wonderful Wizard of Oz* threw `Runtime narrator template exceeds 128000 chars after all compression strategies`. Sessions 5 and 6 passed; Session 1 passed by only 83 characters.
+
+**Root cause A — §12 includes pre-session cut events**
+`RuntimeNarratorTemplateBuilder::loadSessionEvents()` loaded every event where `session_number = N`, including events that Phase 3 (`EntryPointDiagnosisAgent`) explicitly cut by setting `start_event_position`. For S2, this meant 19 extra events (positions 50–68) in §12 when the session actually opens at position 69. At `full` source mode each cut event carries its full `content` field (~1,000+ chars), producing ~19,000 bytes of source text the narrator was never meant to see. This also creates a logical contradiction between §12 (shows cut events) and §13 (`cold_open` / `start_event_position` says skip them).
+
+**Fix A**: `loadSessionEvents()` now accepts `$startEventPosition: int` and adds `WHERE events.position >= $startEventPosition` when the value is non-zero. Call site in `build()` reads this from `$session->entry_point_diagnosis['start_event_position']`.
+
+**Root cause B — §15 renders editorial metadata, not narrator instruction**
+The consequence path rendering line included `next_session_payoff` and `defining_line_captured`. These two fields account for ~41–44% of §15's total content per session (~3,000–3,600 rendered chars). Neither field is operational narrator instruction:
+- `next_session_payoff`: describes what pays off in the *next* session — wrong temporal context for the current narrator. Actual state tracking flows through the runtime world-state injection.
+- `defining_line_captured`: a ≤20-word editorial "trophy quote" from Phase 5 design. The narrator generates better contextually-appropriate lines in voice; this field is design documentation, not a runtime instruction.
+
+The existing compression cascade (§12 compress → titles-only, §6 drop-quotes) never touched §15, so S3 and S4 still breached the cap even at maximum compression.
+
+**Fix B**: §15 path rendering stripped to `label: now: {immediate_effect} | echo: {current_session_echo}`. The `freeform_guidelines` block is untouched — those ARE operational instructions.
+
+**Savings per session (mb_strlen chars)**:
+- Fix A (S2): ~4,655 chars removed from §12 (19 fewer events at titles-only)
+- Fix B (all sessions): ~3,100–3,600 chars removed from §15 permanently
+- S1 after Fix B: drops from 127,917 → ~124,800 (headroom for future stories)
+- S2/S3/S4: all pass comfortably after both fixes
+
+**Files changed**:
+- `app/Ai/Adaptation/RuntimeNarratorTemplateBuilder.php` — `loadSessionEvents()` signature + position filter
+- `resources/views/ai/agents/chaos/runtime-narrator-template.blade.php` — §15 path line (remove payoff + defline)
+
+**Required action**: Re-dispatch `RuntimeNarratorAssemblyJob` for failing sessions (S2, S3, S4 of any story that failed). No re-adaptation needed — assembly only.
+
+---
+
 ## Known issues / iteration targets
 
 - Merge job timeout remains 420s — monitor on first full-novel re-adapt after V2.2 deploy

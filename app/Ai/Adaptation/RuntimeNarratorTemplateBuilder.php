@@ -49,7 +49,8 @@ final class RuntimeNarratorTemplateBuilder
         $adaptation = $session->storyAdaptation;
         $totalSessions = $adaptation->sessionAdaptations()->count();
 
-        $sessionEvents = $this->loadSessionEvents($story, $session->session_number);
+        $startEventPosition = (int) ($session->entry_point_diagnosis['start_event_position'] ?? 0);
+        $sessionEvents = $this->loadSessionEvents($story, $session->session_number, $startEventPosition);
 
         $compressionAttempts = [
             'full' => fn () => $sessionEvents,
@@ -356,14 +357,20 @@ final class RuntimeNarratorTemplateBuilder
     /**
      * @return array<int, array<string, mixed>>
      */
-    private function loadSessionEvents(Story $story, int $sessionNumber): array
+    private function loadSessionEvents(Story $story, int $sessionNumber, int $startEventPosition = 0): array
     {
-        return Event::query()
+        $query = Event::query()
             ->join('chapters', 'events.chapter_id', '=', 'chapters.id')
             ->where('chapters.story_id', $story->id)
             ->where('events.session_number', $sessionNumber)
             ->orderBy('chapters.position')
-            ->orderBy('events.position')
+            ->orderBy('events.position');
+
+        if ($startEventPosition > 0) {
+            $query->where('events.position', '>=', $startEventPosition);
+        }
+
+        return $query
             ->get([
                 'events.id',
                 'events.chapter_id',

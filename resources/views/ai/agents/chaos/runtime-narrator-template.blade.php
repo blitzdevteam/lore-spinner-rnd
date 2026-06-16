@@ -393,7 +393,7 @@ Use these to surface prior-choice consequences.
 @foreach($consequenceMaps as $cm)
 {{ $cm['choice_id'] ?? '' }} (tracks {{ $cm['tracked_dimension'] ?? '' }}):
 @foreach($cm['paths'] ?? [] as $path)
-{{ $path['label'] ?? '' }}: now: {{ $path['immediate_effect'] ?? '' }} | echo: {{ $path['current_session_echo'] ?? '' }} | payoff: {{ $path['next_session_payoff'] ?? '' }} | line: "{{ $path['defining_line_captured'] ?? '' }}"
+{{ $path['label'] ?? '' }}: now: {{ $path['immediate_effect'] ?? '' }} | echo: {{ $path['current_session_echo'] ?? '' }}
 @endforeach
 @endforeach
 
