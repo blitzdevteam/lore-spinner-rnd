@@ -175,7 +175,7 @@ in.
 Hair loose.
 The port worn. Raw at the edges.
 Not asleep. Paused.
-The cracked CAMERA LENS leans against her sternum, threaded
+The cracked CAMERA LENS rests against her sternum, threaded
 on a leather cord. Her fingers around it. Has been for hours.
 Her HUD ticks on behind closed eyelids. The display flickers:
 TETHER SYNC ERROR / NODE KAI-9 / PARTNER NODE: DECEASED.
@@ -391,7 +391,7 @@ Eyes closed. Holds.
 Fingers find her collar. Closes on a small shape. Holds it.
 Two counts.
 Ceramic. Worn smooth. Something with wings.
-Her eyes open.
+She opens her eyes.
 RIVEN
 (low)
 Time for the truth.
@@ -471,8 +471,8 @@ Inside, Nora. Eyes closed. The cracked lens at her collar.
 Her grip on it.
 Through the window, the city thins. Opens out. The monolithic
 AMORA CITADEL rises ahead. Chrome. Silent. Watching.
-Nora’s eyes open as the tram doors hiss open. She steps off.
-Into the machine's waiting mouth.
+Nora opens her eyes as the tram doors hiss open. She steps
+off. Into the machine's waiting mouth.
 CUT TO:
 
 INT. AMORA INTERFACE HQ - DAY - REALITY
@@ -517,7 +517,7 @@ I asked.
 ILYA(CONT’D)
 Your tether is wrong. I came to
 help.
-She steps closer.
+She moves closer.
 ILYA(CONT’D)
 You do not have to keep carrying
 him.
@@ -1271,8 +1271,8 @@ finish.
 Harder. The wall holds.
 She holds.
 Then stops.
-Eyes open. Wipes her face with the back of her wrist. Threads
-the lens under her coat.
+Opens her eyes. Wipes her face with the back of her wrist.
+Threads the lens under her coat.
 Returns.
 INT. DERELICT CONCOURSE - CONTINUOUS - REALITY
 Riven at the terminal. Jace against a column. The recorder's
@@ -2730,7 +2730,7 @@ JACE
 (low, against her
 forehead)
 If you forget, I will remind you.
-Her eyes open. Meets his. Close enough that the tether
+She opens her eyes. Meets his. Close enough that the tether
 scrambles and steadies and scrambles again.
 NORA
 If you drift, I will pull.
@@ -2749,7 +2749,7 @@ Two totems. Two people. One choice made in the dark.
 CUT TO:
 INT. SITE THREE - RECOVERY ALCOVE - HOURS LATER
 Concrete ceiling. Same ceiling. Different skull.
-Nora’s eyes open.
+Nora opens her eyes.
 The port is clean. Her tongue finds the gap where a tooth
 was.
 Not pain. Absence. The space where something pressed for 240
@@ -3335,7 +3335,7 @@ The corridor narrows.
 
 The relay hubs closer here. The voices louder. Fragments of
 archived conversations pressing against the walls.
-Nora moves through them without slowing. The hollow does not
+Nora walks through them without slowing. The hollow does not
 let the voices in.
 Jace flinches at one. A girl's voice. Young. He keeps moving.
 A light ahead. Not hub-light.
@@ -3599,7 +3599,7 @@ Nora looks at the corridor ahead. The architecture changing.
 Getting younger.
 NORA
 Yes.
-She steps forward anyway.
+She walks forward anyway.
 INT. GARDEN CORE - JUNCTION - NIGHT
 They reach a junction. The central node beyond. The
 architecture pulsing. A rhythm. Even.
@@ -4111,7 +4111,7 @@ Both of them against her sternum.
 EXT. / INT. VARIOUS - GLOBAL - DAWN
 Tokyo. A man in a SoulSync chair. The screen goes dark. His
 session ends mid-sentence.
-His eyes open. They are wet. He does not understand why.
+He opens his eyes. They are wet. He does not understand why.
 Paris. A woman standing in a memorial kiosk. The interface
 dies. The holographic face of her son dissolves in front of
 her.
@@ -4159,7 +4159,7 @@ surviving, and the relief of that is so large she does not
 have a name for it yet.
 Nora lifts her face to it. Eyes closed. The rain filling the
 silence the system left behind.
-When her eyes open, the world is blurred and wet and
+When she opens her eyes, the world is blurred and wet and
 imperfect and there is no interface to correct it.
 NORA
 (to no one)
