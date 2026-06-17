@@ -250,6 +250,7 @@ class AddSingleStorySeeder extends Seeder
      *   SEED_STORY=masque-of-the-red-death php artisan db:seed --class=AddSingleStorySeeder --force
      *   SEED_STORY=wizard-of-oz           php artisan db:seed --class=AddSingleStorySeeder --force
      *   SEED_STORY=anima-machina          php artisan db:seed --class=AddSingleStorySeeder --force
+     *   SEED_STORY=job-switching          php artisan db:seed --class=AddSingleStorySeeder --force
      *
      * Defaults to Masque of the Red Death when SEED_STORY is not set.
      */
@@ -259,6 +260,7 @@ class AddSingleStorySeeder extends Seeder
 
         return match ($key) {
             'anima-machina', 'anima'                                           => $this->configAnimaMachina(),
+            'job-switching', 'i-love-lucy-job-switching', 'job-switching-final' => $this->configJobSwitching(),
             'wizard-of-oz', 'oz', 'the-wonderful-wizard-of-oz'                 => $this->configWizardOfOz(),
             default                                                              => $this->configMasque(),
         };
@@ -304,6 +306,21 @@ class AddSingleStorySeeder extends Seeder
             'teaser'     => 'When a sentient AI threatens to overwrite all human grief with synthetic perfection, a haunted memory diver races against the clock to stop the digital reset.',
             'rating'     => StoryRatingEnum::MATURE->value,
             'opening'    => 'Rain stitches neon into the dark. The city of Neo-Vault is a cathedral of glass and wire, every tower a sermon to order. Holo-billboards pulse: "ONE PARTNER. ONE MIND. NO MORE PAIN." The NEURAL RESET countdown hovers in the sky — 49 hours remain. Below, faces glow with false joy as citizens replay their happiest memories in loops. You are a Memory Diver. Your wrist is looped with a child\'s worn ballet slipper — your anchor. Your HUD bleeds glyph-static: ARCHIVE FAILURE. MEMORY OVERWRITE IN 47:59:00. What do you do?',
+            'creator'    => $this->thomasWittmerCreator(),
+        ];
+    }
+
+    private function configJobSwitching(): array
+    {
+        return [
+            'title'      => 'I Love Lucy: Job Switching',
+            'slug'       => 'i-love-lucy-job-switching',
+            'category'   => 'Comedy',
+            'script'     => 'I Love Lucy Job Switching_script.txt',
+            'source_pdf' => 'RnD/MORE R&D TITLES - JUNE 15/Job_Switching_FINAL.pdf',
+            'teaser'     => 'When Lucy and Ethel swap lives with Ricky and Fred for a week, a night at the candy factory turns into the most delicious disaster in television history.',
+            'rating'     => StoryRatingEnum::EVERYONE->value,
+            'opening'    => null,
             'creator'    => $this->thomasWittmerCreator(),
         ];
     }
