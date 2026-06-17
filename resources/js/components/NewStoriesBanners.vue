@@ -3,6 +3,7 @@ import SectionHeader from '@/components/SectionHeader.vue';
 import HomeBannerStoryCard from '@/components/HomeBannerStoryCard.vue';
 import StoryDetailsSheet, { type StorySheetData } from '@/components/StoryDetailsSheet.vue';
 import StoryExpandableCard from '@/components/StoryExpandableCard.vue';
+import lucyNewCover from '@/assets/newStories/lucy-landscape-banner.jpeg';
 import ozNewCover from '@/assets/newStories/Oz landscape titled.png';
 import sherlockNewCover from '@/assets/newStories/sherlock-new.png';
 import tellTaleNewCover from '@/assets/newStories/Tell Tale 5_3 landscape.png';
@@ -26,6 +27,17 @@ interface NewStory {
 }
 
 const stories: NewStory[] = [
+    {
+        id: 'i-love-lucy-job-switching',
+        title: 'I Love Lucy: Job Switching',
+        cover: lucyNewCover,
+        category: 'Comedy',
+        rating: 'Everyone',
+        playable: true,
+        slug: 'i-love-lucy-job-switching',
+        teaser:
+            'When Lucy and Ethel swap lives with Ricky and Fred for a week, a night at the candy factory turns into the most delicious disaster in television history.',
+    },
     {
         id: 'the-adventure-of-the-speckled-band',
         title: 'Sherlock Holmes in The Speckled Band',

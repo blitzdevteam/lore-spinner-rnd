@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import lucyImage from '@/assets/carosel/Lucy Ultrawide banner.jpeg';
 import janeEyreImage from '@/assets/carosel/Ultrawide jane eyre.png';
 import masqueImage from '@/assets/carosel/Ultrawide 21_9 The Masque of the Red Death.png';
 import nocturneImage from '@/assets/carosel/Ultrawide nocturne.png';
@@ -55,6 +56,21 @@ const heroSlideConfigs: HeroSlideConfig[] = [
         fallbackTeaser:
             'A young woman fears she will suffer the same fate as her sister, forcing Sherlock Holmes to confront a mystery hidden behind locked doors and deadly secrets.',
         fallbackAuthor: 'Sir Arthur Conan Doyle',
+        seriesLabel: LORE_SPINNER_CLASSIC,
+    },
+    {
+        slug: 'i-love-lucy-job-switching',
+        image: lucyImage,
+        imagePosition: 'object-center md:object-center',
+        titleLines: ['I Love Lucy:', 'Job Switching'],
+        fallbackTitle: 'I Love Lucy: Job Switching',
+        teaserLines: [
+            'When Lucy and Ethel swap lives with Ricky and Fred for a week,',
+            'a night at the candy factory turns into the most delicious disaster in television history.',
+        ],
+        fallbackTeaser:
+            'When Lucy and Ethel swap lives with Ricky and Fred for a week, a night at the candy factory turns into the most delicious disaster in television history.',
+        fallbackAuthor: 'Jess Oppenheimer, Madelyn Pugh & Bob Carroll Jr.',
         seriesLabel: LORE_SPINNER_CLASSIC,
     },
     {

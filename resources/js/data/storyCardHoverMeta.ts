@@ -16,6 +16,7 @@ export const STORY_DESCRIPTOR_THEMES_BY_SLUG: Record<string, [string, string, st
     'treasure-island': ['Greed', 'Danger', 'Discovery'],
     leagues: ['Discovery', 'Depth', 'Wonder'],
     'anima-machina': ['Creation', 'Control', 'Destiny'],
+    'i-love-lucy-job-switching': ['Comedy', 'Chaos', 'Friendship'],
     nocturne: ['Identity', 'Memory', 'Control'],
     pjs: ['Brotherhood', 'Sacrifice', 'Duty'],
     wasteland: ['Survival', 'Guilt', 'Escape'],
