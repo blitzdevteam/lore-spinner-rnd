@@ -34,7 +34,68 @@ SYNTHESIS INSTRUCTIONS:
 
 5. NOVELIST ONLY: narrator_perspective, paragraph_architecture, dialogue_tag_patterns.
 
-6. SCREENWRITER ONLY: action_line_metrics, screenplay_structure_metrics, emotional_vocabulary_hierarchy, screenplay_to_prose_protocol.
+6. SCREENWRITER ONLY (1B v2): action_line_metrics, screenplay_structure_metrics, emotional_vocabulary_hierarchy.
+
+   Then populate the following 1B v2 fields using the Chunk Metric Aggregation Contract:
+
+   **1C AGGREGATION STEPS (required — do not skip):**
+
+   Step 1 — SUM raw counts across all chapter fragments:
+   - Sum all metric_counts.action_line_count, metric_counts.action_line_word_count, etc.
+   - Sum all metric_counts.punctuation_counts.* fields
+   - Sum all metric_counts.line_length_bucket_counts.* fields (1_3w, 4_5w, 6_8w, 9_12w, 13_18w, 19_25w, 26_plus_w)
+   - Sum all metric_counts.opener_type_counts.* fields
+   - Sum all metric_counts.word_length_bucket_counts.* fields
+   - Sum all metric_counts.rhythm_transition_matrix_counts.*.* (all 16 cells)
+   - Add inter-chapter boundary transitions: for each consecutive pair of chapters, add the transition from chapter[N].metric_counts.last_action_line_bucket → chapter[N+1].metric_counts.first_action_line_bucket to the corresponding matrix cell.
+   - Concatenate dialogue_speech_lengths_by_character[].speech_lengths_w per character across all chunks.
+
+   Step 2 — DERIVE percentages and enforcement specs from summed totals:
+   - Percentages: (summed count / summed denominator) × 100
+   - Never average percentages across chunks.
+   - Zero-occurrence ABSOLUTE bans: only if summed count is 0 across ALL chunks AND denominator covers full source.
+   - Dialogue AVG/P90/P95/MAX: compute from combined speech_lengths_w array per character.
+
+   Step 3 — Produce 1B v2 enforcement fields:
+
+   M. `author_voice_dna_profile.numerical_enforcement_layer`:
+   - punctuation enforcement (period_density_per_100w, comma_density_per_100w, semicolons, exclamation_marks_narration, em_dashes, question_marks_narration, question_marks_dialogue, ellipses_narration, ellipses_dialogue, period_to_comma_ratio) — target/floor/ceiling/confidence/sample_size each
+   - rhythm enforcement (sentence_length_1_3w through sentence_length_26_plus_w, fragment_rate, verb_first_percentage, ing_opening_percentage, rhythm_change_frequency) — target/floor/ceiling/confidence/sample_size each
+   - dialogue_ceilings_per_character — AVG/P90/P95/MAX per character from combined speech_lengths_w
+   - opener_distribution — target/floor/ceiling/confidence per opener type
+   - word_length — average_chars + bucket percentages
+
+   N. `author_voice_dna_profile.rhythm_transition_architecture`:
+   - transition_matrix: 4×4 grid with probabilities (%) derived from summed rhythm_transition_matrix_counts (ultra_short/short/medium/long axes)
+   - rhythm_change_frequency: % consecutive action lines that change bucket
+   - max_consecutive_same_category: observed max
+   - signature_moves: 2-3 characteristic transitions with evidence
+   - anti_patterns: transitions writer never or rarely makes
+
+   O. `author_voice_dna_profile.beat_architecture_protocol`:
+   - beat_frequency: beat_count / action_line_count × 100
+   - beat_vocabulary: status_beats, action_beats, transition_beats, emphasis_beats (from beat_candidates)
+   - beat_placement: where beats appear from placement_context evidence
+   - beat_density_by_context: cluster pattern across scene types
+
+   P. `author_voice_dna_profile.scene_transition_compression_protocol`:
+   - closing_line_avg_length: scene_closing_word_count / scene_closing_line_count
+   - closing_line_type_distribution: percentages from scene_closing_type_counts.*
+   - closing_line_examples: from scene_closing_samples (8-10 examples)
+   - transition_guidance: how runtime narrator should end scenes
+
+   `author_voice_dna_profile.screenplay_to_prose_protocol`:
+   - element_rules[]: { screenplay_element, prose_translation_rule } — 7 element rows (action line, scene heading, CUT TO/transition, parenthetical, character cue, ALL CAPS, (beat))
+   - quantitative_translation_mappings[]: { screenplay_metric, source_value, prose_target, drift_ceiling, rationale } — minimum 6 entries (fragment rate, period density, comma density, avg line length, -ing openings, max speech length per character)
+
+   TOP-LEVEL `voice_decay_prevention_protocol` (NOT inside author_voice_dna_profile):
+   - re_anchoring_trigger: word-count trigger (e.g., "Every 300-400 words of generated prose")
+   - passage_level_enforcement_checks[]: deterministic checks before delivering any passage
+   - drift_detection_metrics[]: metrics to track across consecutive passages
+
+   **VERIFICATION GATE — INTERNAL SELF-CHECK ONLY.**
+   Before finalizing, internally verify: does the profile produce clearly author-specific prose vs. generic prose? Does the Numerical Enforcement Layer have at least 3 ABSOLUTE bans? Is the 4×4 rhythm transition matrix complete?
+   Do NOT include the 200-word test passage, generic comparison passage, or any verification prose in the final JSON output. Return structured JSON only.
 
 7. DIALOGUE FINGERPRINT PER MAJOR CHARACTER: merge cross-chapter observations; require 3+ distinguishing markers per character.
 

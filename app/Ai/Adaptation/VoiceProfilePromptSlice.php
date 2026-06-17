@@ -41,16 +41,41 @@ final class VoiceProfilePromptSlice
      * Sections 1+2 — Voice DNA + Master Rule 1 hard bans.
      * Used by Phases 3, 5, 6, 7 per D4 spec.
      *
+     * For SCREENWRITER profiles (1B v2), also includes:
+     *   - author_voice_dna_profile.screenplay_to_prose_protocol (element_rules + quantitative_translation_mappings)
+     *   - author_voice_dna_profile.numerical_enforcement_layer (enforcement fields preserved;
+     *     only quote/evidence-heavy material stripped — same canonical field shape)
+     *
+     * voice_decay_prevention_protocol is NOT included (runtime narrator only).
+     * beat_architecture_protocol and scene_transition_compression_protocol are NOT added here;
+     * they flow to Phase 4 via dna() which already receives full stripped author_voice_dna_profile.
+     *
      * @param  array<string, mixed>  $voiceProfile
      * @return array<string, mixed>
      */
     public static function dnaAndBans(array $voiceProfile): array
     {
+        $profileType = $voiceProfile['profile_type'] ?? 'LEGACY';
+        $dna         = self::stripQuotes((array) ($voiceProfile['author_voice_dna_profile'] ?? []));
+
+        if ($profileType === 'SCREENWRITER') {
+            // screenplay_to_prose_protocol: pass the full object (element_rules + quantitative_translation_mappings).
+            // The field is already inside $dna from stripQuotes() — ensure both sub-keys are present.
+            // No stripping needed: element_rules and quantitative_translation_mappings contain rules/tables,
+            // not evidence quotes.
+
+            // numerical_enforcement_layer: preserve all enforcement fields (target/floor/ceiling/
+            // confidence/sample_size on every metric); strip only auxiliary evidence arrays if present.
+            if (isset($dna['numerical_enforcement_layer'])) {
+                $dna['numerical_enforcement_layer'] = self::stripNelAuxiliaryArrays(
+                    (array) $dna['numerical_enforcement_layer']
+                );
+            }
+        }
+
         return [
-            'profile_type'             => $voiceProfile['profile_type'] ?? 'LEGACY',
-            'author_voice_dna_profile' => self::stripQuotes(
-                (array) ($voiceProfile['author_voice_dna_profile'] ?? [])
-            ),
+            'profile_type'             => $profileType,
+            'author_voice_dna_profile' => $dna,
             'master_rule_1_hard_bans'  => $voiceProfile['master_rule_1_hard_bans'] ?? [],
         ];
     }
@@ -91,6 +116,23 @@ final class VoiceProfilePromptSlice
     public static function full(array $voiceProfile): array
     {
         return $voiceProfile;
+    }
+
+    /**
+     * Strip only auxiliary evidence arrays from the numerical_enforcement_layer
+     * for token control. Enforcement fields (target/floor/ceiling/confidence/
+     * sample_size on every metric, dialogue ceilings, opener distribution,
+     * word-length buckets) are preserved intact — same canonical field shape.
+     *
+     * @param  array<string, mixed>  $nel
+     * @return array<string, mixed>
+     */
+    private static function stripNelAuxiliaryArrays(array $nel): array
+    {
+        // All current NEL sub-objects are purely enforcement specs (no evidence quotes).
+        // This method is the correct extension point if future NEL versions add
+        // evidence-quote arrays. Passes through unchanged until such arrays exist.
+        return $nel;
     }
 
     /**

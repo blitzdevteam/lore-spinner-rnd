@@ -75,11 +75,18 @@ final class EditorialVerificationJob implements ShouldQueue
      */
     private function runVerification($adaptation, $session, array $completeDesign): array
     {
+        // voice_decay_prevention_protocol is a runtime-only field (1B v2 Section 3B).
+        // It must not reach Phase 8 editorial prompts — exclude it from the payload.
+        $voiceProfileForEditorial = array_diff_key(
+            (array) $adaptation->voice_profile,
+            ['voice_decay_prevention_protocol' => true]
+        );
+
         $response = (new EditorialVerificationAgent)->prompt(
             view('ai.agents.adaptation.editorial-verification.prompt', [
                 'completeSessionDesign' => $completeDesign,
                 'storySessionMap' => $adaptation->story_session_map,
-                'voiceProfile' => $adaptation->voice_profile,
+                'voiceProfile' => $voiceProfileForEditorial,
                 'storyGuardCanon' => $adaptation->story_session_map['story_guard_canon'] ?? [],
                 'persistentStateSchema' => $adaptation->story_session_map['persistent_state_schema'] ?? [],
                 'worldReactivityRules' => $adaptation->story_session_map['world_reactivity_rules'] ?? [],

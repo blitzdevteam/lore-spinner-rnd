@@ -480,6 +480,12 @@ final class RuntimeNarratorTemplateBuilder
      * Voice compression: drop the source-quote arrays from the voice DNA
      * profile (keep technique names, ban list, sentence/diction summary).
      *
+     * 1B v2 additions: strip closing_line_examples, action_line demonstrative
+     * quotes, emotional_vocabulary_hierarchy quotes, and dialogue fingerprint
+     * evidence arrays. Numeric enforcement specs (numerical_enforcement_layer,
+     * rhythm_transition_architecture, voice_decay_prevention_protocol) are
+     * NEVER touched — they carry the enforcement data the runtime needs.
+     *
      * @param  array<string, mixed>  $voice
      * @return array<string, mixed>
      */
@@ -487,6 +493,7 @@ final class RuntimeNarratorTemplateBuilder
     {
         $dna = $voice['author_voice_dna_profile'] ?? [];
 
+        // ── Existing quote-strip passes ────────────────────────────────
         foreach ((array) ($dna['signature_writing_techniques'] ?? []) as $i => $t) {
             $dna['signature_writing_techniques'][$i]['quotes'] = [];
         }
@@ -502,7 +509,6 @@ final class RuntimeNarratorTemplateBuilder
         foreach ((array) ($dna['emotional_range_map'] ?? []) as $key => $entry) {
             $dna['emotional_range_map'][$key]['quote'] = '';
         }
-
         foreach ((array) ($dna['collocation_fingerprint'] ?? []) as $i => $col) {
             $dna['collocation_fingerprint'][$i]['quotes'] = [];
         }
@@ -513,7 +519,43 @@ final class RuntimeNarratorTemplateBuilder
             );
         }
 
+        // ── 1B v2 screenwriter quote-strip passes ──────────────────────
+        // Action line metrics — evidence quotes
+        if (isset($dna['action_line_metrics']['demonstrative_quotes'])) {
+            $dna['action_line_metrics']['demonstrative_quotes'] = [];
+        }
+
+        // Emotional vocabulary hierarchy — representative quotes per category
+        foreach ((array) ($dna['emotional_vocabulary_hierarchy'] ?? []) as $i => $cat) {
+            $dna['emotional_vocabulary_hierarchy'][$i]['representative_quotes'] = [];
+        }
+
+        // Scene Transition Compression Protocol — closing-line example quotes
+        // (guidance text and distribution data are preserved)
+        if (isset($dna['scene_transition_compression_protocol']['closing_line_examples'])) {
+            $dna['scene_transition_compression_protocol']['closing_line_examples'] = [];
+        }
+
+        // Dialogue fingerprint — evidence/quote fields
+        foreach ((array) ($dna['dialogue_fingerprint_per_character'] ?? []) as $i => $char) {
+            // signature_line is load-bearing runtime content; keep it
+            // verbal_tics and distinguishing_markers are compact arrays; keep them
+            // No direct quote arrays on character fingerprint in v2 schema
+            unset($char); // suppress unused-variable
+        }
+
+        // ── Numeric enforcement fields — DO NOT TOUCH ──────────────────
+        // numerical_enforcement_layer, rhythm_transition_architecture,
+        // beat_architecture_protocol, scene_transition_compression_protocol
+        // (minus closing_line_examples already stripped above) are all
+        // preserved because they carry machine-checkable constraints.
+
+        // ── voice_decay_prevention_protocol (top-level) — DO NOT TOUCH ─
+        // The structured re_anchoring_trigger, passage_level_enforcement_checks,
+        // and drift_detection_metrics are live runtime self-audit instructions.
+
         $voice['author_voice_dna_profile'] = $dna;
+
         return $voice;
     }
 }

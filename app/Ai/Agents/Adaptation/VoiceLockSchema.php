@@ -14,9 +14,17 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
  */
 final class VoiceLockSchema
 {
+    /**
+     * Route to the 1B (screenwriter) path for any screenplay-family format label.
+     * Defensive: FormatDetectionAgent currently only emits SCREENPLAY | NOVEL, but
+     * future subtypes (TELEPLAY, PILOT, LIMITED_SERIES) will route correctly here
+     * without touching FormatDetectionAgent or pipeline wiring.
+     */
     public static function isScreenwriter(?string $detectedFormat): bool
     {
-        return strtoupper((string) $detectedFormat) === 'SCREENPLAY';
+        return in_array(strtoupper((string) $detectedFormat), [
+            'SCREENPLAY', 'TELEPLAY', 'PILOT', 'LIMITED_SERIES',
+        ], true);
     }
 
     public static function mergeSchema(JsonSchema $schema, ?string $detectedFormat): array
@@ -197,15 +205,150 @@ final class VoiceLockSchema
                 ])->required()->withoutAdditionalProperties()
             );
 
-            $dnaProfileFields['screenplay_to_prose_protocol'] = $schema->array()->required()->title('Screenplay To Prose Protocol')->items(
-                $schema->object([
-                    'screenplay_element' => $schema->string()->required()->title('Screenplay Element'),
-                    'prose_translation_rule' => $schema->string()->required()->title('Prose Translation Rule'),
-                ])->required()->withoutAdditionalProperties()
-            );
+            // --- 1B v2 Section M: Numerical Enforcement Layer ---
+            // Each metric carries target/floor/ceiling/confidence/sample_size.
+            // Derived by merge from summed raw chapter counts (1C contract).
+            $metricSpecSchema = $schema->object([
+                'target'      => $schema->string()->required()->title('Target')->description('Target range aim for.'),
+                'floor'       => $schema->string()->required()->title('Floor')->description('Minimum acceptable — violation triggers rejection.'),
+                'ceiling'     => $schema->string()->required()->title('Ceiling')->description('Maximum acceptable — violation triggers rejection.'),
+                'confidence'  => $schema->string()->required()->title('Confidence')->description('ABSOLUTE | HIGH | MEDIUM | LOW'),
+                'sample_size' => $schema->string()->required()->title('Sample Size')->description('Data points or instance count.'),
+            ])->required()->withoutAdditionalProperties();
+
+            $dialogueCeilingSchema = $schema->object([
+                'character'          => $schema->string()->required()->title('Character'),
+                'avg_words'          => $schema->string()->required()->title('Avg Words'),
+                'p90_words'          => $schema->string()->required()->title('P90 Words'),
+                'p95_words'          => $schema->string()->required()->title('P95 Words'),
+                'max_words'          => $schema->string()->required()->title('Max Words — Hard Ceiling'),
+                'speech_count'       => $schema->number()->required()->title('Speech Count'),
+                'confidence'         => $schema->string()->required()->title('Confidence'),
+            ])->required()->withoutAdditionalProperties();
+
+            $openerTypeSpecSchema = $schema->object([
+                'opener_type' => $schema->string()->required()->title('Opener Type'),
+                'target'      => $schema->string()->required()->title('Target %'),
+                'floor'       => $schema->string()->required()->title('Floor %'),
+                'ceiling'     => $schema->string()->required()->title('Ceiling %'),
+                'confidence'  => $schema->string()->required()->title('Confidence'),
+            ])->required()->withoutAdditionalProperties();
+
+            $dnaProfileFields['numerical_enforcement_layer'] = $schema->object([
+                'punctuation' => $schema->object([
+                    'period_density_per_100w'      => (clone $metricSpecSchema)->title('Period Density Per 100w'),
+                    'comma_density_per_100w'        => (clone $metricSpecSchema)->title('Comma Density Per 100w'),
+                    'semicolons'                    => (clone $metricSpecSchema)->title('Semicolons')->description('If zero across source: ABSOLUTE HARD BAN.'),
+                    'exclamation_marks_narration'   => (clone $metricSpecSchema)->title('Exclamation Marks Narration'),
+                    'em_dashes'                     => (clone $metricSpecSchema)->title('Em Dashes'),
+                    'question_marks_narration'      => (clone $metricSpecSchema)->title('Question Marks Narration'),
+                    'question_marks_dialogue'       => (clone $metricSpecSchema)->title('Question Marks Dialogue'),
+                    'ellipses_narration'            => (clone $metricSpecSchema)->title('Ellipses Narration'),
+                    'ellipses_dialogue'             => (clone $metricSpecSchema)->title('Ellipses Dialogue'),
+                    'period_to_comma_ratio'         => (clone $metricSpecSchema)->title('Period To Comma Ratio'),
+                ])->required()->withoutAdditionalProperties()->title('Punctuation Enforcement'),
+                'rhythm' => $schema->object([
+                    'sentence_length_1_3w'     => (clone $metricSpecSchema)->title('Sentence Length 1-3w %'),
+                    'sentence_length_4_5w'     => (clone $metricSpecSchema)->title('Sentence Length 4-5w %'),
+                    'sentence_length_6_8w'     => (clone $metricSpecSchema)->title('Sentence Length 6-8w %'),
+                    'sentence_length_9_12w'    => (clone $metricSpecSchema)->title('Sentence Length 9-12w %'),
+                    'sentence_length_13_18w'   => (clone $metricSpecSchema)->title('Sentence Length 13-18w %'),
+                    'sentence_length_19_25w'   => (clone $metricSpecSchema)->title('Sentence Length 19-25w %'),
+                    'sentence_length_26_plus_w' => (clone $metricSpecSchema)->title('Sentence Length 26+w %'),
+                    'fragment_rate'            => (clone $metricSpecSchema)->title('Fragment Rate'),
+                    'verb_first_percentage'    => (clone $metricSpecSchema)->title('Verb First Opening %'),
+                    'ing_opening_percentage'   => (clone $metricSpecSchema)->title('-ing Opening % (AI over-deploys — ceiling enforced)'),
+                    'rhythm_change_frequency'  => (clone $metricSpecSchema)->title('Rhythm Change Frequency %'),
+                ])->required()->withoutAdditionalProperties()->title('Rhythm Enforcement'),
+                'dialogue_ceilings_per_character' => $schema->array()->required()->title('Dialogue Ceilings Per Character')->items($dialogueCeilingSchema),
+                'opener_distribution' => $schema->array()->required()->title('Opener Distribution')->items($openerTypeSpecSchema),
+                'word_length' => $schema->object([
+                    'average_chars'          => (clone $metricSpecSchema)->title('Average Word Length (chars)'),
+                    'bucket_1_3_chars_pct'   => (clone $metricSpecSchema)->title('1-3 Char Words %'),
+                    'bucket_4_5_chars_pct'   => (clone $metricSpecSchema)->title('4-5 Char Words %'),
+                    'bucket_6_8_chars_pct'   => (clone $metricSpecSchema)->title('6-8 Char Words %'),
+                    'bucket_9_plus_chars_pct' => (clone $metricSpecSchema)->title('9+ Char Words %'),
+                ])->required()->withoutAdditionalProperties()->title('Word Length Enforcement'),
+            ])->required()->withoutAdditionalProperties()->title('Numerical Enforcement Layer — Section M');
+
+            // --- 1B v2 Section N: Rhythm Transition Architecture ---
+            // 4x4 transition probability matrix (ultra_short / short / medium / long)
+            $rhythmRowSchema = $schema->object([
+                'ultra_short' => $schema->number()->required()->title('→ Ultra-Short %'),
+                'short'       => $schema->number()->required()->title('→ Short %'),
+                'medium'      => $schema->number()->required()->title('→ Medium %'),
+                'long'        => $schema->number()->required()->title('→ Long %'),
+            ])->required()->withoutAdditionalProperties();
+
+            $dnaProfileFields['rhythm_transition_architecture'] = $schema->object([
+                'transition_matrix' => $schema->object([
+                    'ultra_short' => (clone $rhythmRowSchema)->title('After Ultra-Short (1-3w)'),
+                    'short'       => (clone $rhythmRowSchema)->title('After Short (4-6w)'),
+                    'medium'      => (clone $rhythmRowSchema)->title('After Medium (7-12w)'),
+                    'long'        => (clone $rhythmRowSchema)->title('After Long (13+w)'),
+                ])->required()->withoutAdditionalProperties()->title('4x4 Transition Matrix (probabilities, %)'),
+                'rhythm_change_frequency'       => $schema->string()->required()->title('Rhythm Change Frequency')->description('% consecutive lines that change length category.'),
+                'max_consecutive_same_category'  => $schema->string()->required()->title('Max Consecutive Same-Category')->description('Hard ceiling; e.g. "never >3 consecutive ultra-short".'),
+                'signature_moves'               => $schema->array()->required()->title('Signature Moves')->description('2-3 characteristic transition patterns with evidence.')->items($schema->string()->required()),
+                'anti_patterns'                 => $schema->array()->required()->title('Anti-Patterns')->description('Transitions never or rarely made in source.')->items($schema->string()->required()),
+            ])->required()->withoutAdditionalProperties()->title('Rhythm Transition Architecture — Section N');
+
+            // --- 1B v2 Section O: Beat Architecture Protocol ---
+            $beatVocabularySchema = $schema->object([
+                'status_beats'     => $schema->array()->required()->title('Status Beats')->items($schema->string()->required()),
+                'action_beats'     => $schema->array()->required()->title('Action Beats')->items($schema->string()->required()),
+                'transition_beats' => $schema->array()->required()->title('Transition Beats')->items($schema->string()->required()),
+                'emphasis_beats'   => $schema->array()->required()->title('Emphasis Beats')->items($schema->string()->required()),
+            ])->required()->withoutAdditionalProperties();
+
+            $dnaProfileFields['beat_architecture_protocol'] = $schema->object([
+                'beat_frequency'         => $schema->string()->required()->title('Beat Frequency')->description('% of total action lines that are 1-2 word standalone beats.'),
+                'beat_vocabulary'        => $beatVocabularySchema->title('Beat Vocabulary'),
+                'beat_placement'         => $schema->string()->required()->title('Beat Placement')->description('Where beats appear: before scene changes, after action, etc.'),
+                'beat_density_by_context' => $schema->string()->required()->title('Beat Density By Context')->description('Whether beats cluster more in action, emotional, or transition scenes.'),
+            ])->required()->withoutAdditionalProperties()->title('Beat Architecture Protocol — Section O');
+
+            // --- 1B v2 Section P: Scene Transition Compression Protocol ---
+            $dnaProfileFields['scene_transition_compression_protocol'] = $schema->object([
+                'closing_line_avg_length'         => $schema->string()->required()->title('Closing Line Avg Length')->description('Average word count of last action line before scene change.'),
+                'closing_line_type_distribution'  => $schema->object([
+                    'image'             => $schema->string()->required()->title('Image %'),
+                    'action'            => $schema->string()->required()->title('Action %'),
+                    'status'            => $schema->string()->required()->title('Status %'),
+                    'dialogue_adjacent' => $schema->string()->required()->title('Dialogue-Adjacent %'),
+                    'beat'              => $schema->string()->required()->title('Beat %'),
+                ])->required()->withoutAdditionalProperties()->title('Closing Line Type Distribution'),
+                'closing_line_examples' => $schema->array()->required()->title('Closing Line Examples')->description('8-10 representative scene-closing action lines.')->items($schema->string()->required()),
+                'transition_guidance'   => $schema->string()->required()->title('Transition Guidance')->description('How the runtime narrator should end scenes.'),
+            ])->required()->withoutAdditionalProperties()->title('Scene Transition Compression Protocol — Section P');
+
+            // --- 1B v2 Section 4: Screenplay-to-Prose Protocol (object shape, replaces flat array) ---
+            // Canonical path: author_voice_dna_profile.screenplay_to_prose_protocol.element_rules
+            //                 author_voice_dna_profile.screenplay_to_prose_protocol.quantitative_translation_mappings
+            $dnaProfileFields['screenplay_to_prose_protocol'] = $schema->object([
+                'element_rules' => $schema->array()->required()->title('Element Rules')
+                    ->description('Element-by-element rules: scene headings, action lines, dialogue, parentheticals, transitions.')
+                    ->items(
+                        $schema->object([
+                            'screenplay_element'   => $schema->string()->required()->title('Screenplay Element'),
+                            'prose_translation_rule' => $schema->string()->required()->title('Prose Translation Rule'),
+                        ])->required()->withoutAdditionalProperties()
+                    ),
+                'quantitative_translation_mappings' => $schema->array()->required()->title('Quantitative Translation Mappings')
+                    ->description('Numerical translations from screenplay metrics to prose targets. Minimum 6 entries per deliverable table.')
+                    ->items(
+                        $schema->object([
+                            'screenplay_metric' => $schema->string()->required()->title('Screenplay Metric'),
+                            'source_value'      => $schema->string()->required()->title('Source Value'),
+                            'prose_target'      => $schema->string()->required()->title('Prose Target'),
+                            'drift_ceiling'     => $schema->string()->required()->title('Drift Ceiling'),
+                            'rationale'         => $schema->string()->required()->title('Rationale'),
+                        ])->required()->withoutAdditionalProperties()
+                    ),
+            ])->required()->withoutAdditionalProperties()->title('Screenplay To Prose Protocol — Section 4');
         }
 
-        return [
+        $topLevel = [
             'profile_type' => $schema->string()->required()->title('Profile Type')->description($profileType),
 
             'author_voice_dna_profile' => $schema->object($dnaProfileFields)
@@ -220,5 +363,24 @@ final class VoiceLockSchema
 
             'fourteen_point_audit_protocol' => $schema->array()->required()->title('Fourteen Point Audit Protocol')->description('Exactly 14 entries.')->items($auditPointSchema),
         ];
+
+        // --- 1B v2 Section 3B: Voice Decay Prevention Protocol ---
+        // Top-level only (sibling to fourteen_point_audit_protocol), SCREENWRITER only.
+        // Canonical path: voice_profile.voice_decay_prevention_protocol
+        // MUST NOT appear under author_voice_dna_profile.
+        if ($includeScreenwriterFields) {
+            $topLevel['voice_decay_prevention_protocol'] = $schema->object([
+                're_anchoring_trigger'             => $schema->string()->required()->title('Re-Anchoring Trigger')
+                    ->description('Word-count trigger (every 300-400 words) at which runtime must re-inject core enforcement constraints.'),
+                'passage_level_enforcement_checks' => $schema->array()->required()->title('Passage-Level Enforcement Checks')
+                    ->description('Deterministic checks to run before delivering any passage to the player.')
+                    ->items($schema->string()->required()),
+                'drift_detection_metrics'          => $schema->array()->required()->title('Drift Detection Metrics')
+                    ->description('Metrics to track across consecutive passages; consistent trend away from target triggers re-anchoring.')
+                    ->items($schema->string()->required()),
+            ])->required()->withoutAdditionalProperties()->title('Voice Decay Prevention Protocol — Section 3B');
+        }
+
+        return $topLevel;
     }
 }

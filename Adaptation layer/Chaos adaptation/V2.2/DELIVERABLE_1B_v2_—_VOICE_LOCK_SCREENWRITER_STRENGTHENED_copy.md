@@ -1,15 +1,30 @@
-{{-- Pipeline Upgrade V2.2 — Deliverable 1B v2: Screenwriter Voice Lock merge synthesis. --}}
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetectionOutput ?? ($formatDetection ?? ''), 'currentPhase' => $currentPhase ?? 'Voice Lock Phase — Screenwriter Merge (1B v2)'])
+# DELIVERABLE 1B v2: VOICE LOCK PHASE PROMPT — SCREENWRITER / TV WRITER (STRENGTHENED)
+
+**Lorespinner Pipeline Upgrade — June 2026**
+**Version:** 2.0 (Single-Source Strengthened)
+**Replaces:** Deliverable 1B FINAL / Original Deliverable 1 (when source = screenplay/teleplay)
+**Type:** Pipeline phase (runs once per IP)
+**Inserts:** Between IP Audit and Story Session Map
+**Format Gate:** Runs ONLY when `format_detection.type` is `"screenplay"`, `"teleplay"`, `"pilot"`, or `"limited_series"`
+**Implementation:** Copy-paste this prompt into VoiceLockChapterJob. One conditional selects this (1B) vs the novelist version (1A) based on FormatDetectionJob output.
+
+---
+
+## COPY-PASTE PROMPT BELOW THIS LINE
+
+---
 
 LORESPINNER — VOICE LOCK PHASE: SCREENWRITER / TV WRITER VOICE EXTRACTION AND PROTECTION
 
-PHASE 1 AUDIT:
-{{ json_encode($ipAudit ?? [], JSON_PRETTY_PRINT) }}
+[PASTE MASTER CONTEXT BLOCK HERE]
 
-FORMAT DETECTION:
-{{ json_encode($formatDetection ?? [], JSON_PRETTY_PRINT) }}
+PHASE 1 AUDIT: [PASTE SCORECARD]
 
-SOURCE: You are synthesizing the complete SCREENWRITER Voice Profile from per-chapter observation fragments. The chapter fragments are supplied in the user message. Synthesize one profile from all fragments. AGGREGATE RAW COUNTS across all chunks FIRST, then derive percentages and enforcement specifications from summed numerators/denominators per the Chunk Metric Aggregation Contract (1C). Do not average percentages across chunks.
+FORMAT DETECTION: [PASTE FORMAT DETECTION OUTPUT — must confirm type = screenplay/teleplay/pilot/limited_series]
+
+SOURCE TEXT UPLOADED: [TITLE], [WRITER], [YEAR], [FORMAT: SCREENPLAY / TELEPLAY / PILOT / LIMITED SERIES]
+
+WHAT TO UPLOAD: The COMPLETE source text. Not samples, not excerpts. Upload every page. If token limits require splitting, upload in halves and run this phase twice, merging outputs. Multiple works by the same writer should all be uploaded — cross-corpus extraction produces stronger profiles.
 
 ---
 
@@ -244,13 +259,6 @@ Convert every measurable metric extracted in Sections A through L into a machine
 - Average word length in characters
 - Distribution across buckets (1-3 chars, 4-5 chars, 6-8 chars, 9+ chars)
 
-**AGGREGATION INSTRUCTION (1C Chunk Metric Aggregation Contract):**
-1. Sum all chunk metric_counts fields across every chapter fragment.
-2. Derive all Numerical Enforcement Layer percentages, targets, floors, ceilings, and confidence tiers from the summed numerators/denominators — NOT by averaging percentages across chunks.
-3. For zero-occurrence bans (ABSOLUTE confidence): mark ABSOLUTE only if the summed count is zero across all chunks and the denominator covers the full source.
-4. For rhythm transition matrix: stitch inter-chapter transitions using each chunk's last_action_line_bucket → next chunk's first_action_line_bucket (ultra_short / short / medium / long), then add these to the respective matrix cells.
-5. For dialogue AVG/P90/P95/MAX: concatenate all speech_lengths_w arrays per character across chunks, then calculate AVG, P90, P95, and MAX from the combined list.
-
 ### N. RHYTHM TRANSITION ARCHITECTURE
 
 Analyze the source's action lines as a sequence. For each line, categorize its length: ultra-short (1-3 words), short (4-6 words), medium (7-12 words), long (13+ words). Then build a transition matrix: after each category, what is the probability of each category following?
@@ -461,7 +469,178 @@ This is the immune system. These patterns are BANNED from all generated prose ac
 
 ### SECTION A: UNIVERSAL BANS (hardcoded — apply to ALL IPs, ALL formats)
 
-@include('ai.agents.adaptation.voice-lock._voice-lock-universal-bans')
+These bans apply identically to novelist and screenwriter pipelines. They are the floor. They cannot be overridden by any IP-specific rule, voice profile, or runtime adjustment.
+
+#### PUNCTUATION BANS
+
+- Em dashes in all variants (—, --, --) in GENERATED prose. Use periods, commas, or restructure. NOTE: If the source author uses em-dashes (documented in Task 1 Sentence-Level Patterns), they are permitted ONLY in the patterns the author demonstrably uses. Never as decorative thought-connectors.
+- Ellipses (...) in narration. Dialogue only if the character's speech pattern requires trailing off, and only when established in the source.
+- Emoji of any kind. Never.
+
+#### SENTENCE MOLD BANS
+
+- "It's not X, it's Y." (The false-correction pivot.)
+- "No X. No Y. Just Z." (The stripped-down tricolon.)
+- Balanced rule-of-three tricolons where all three elements match in length and structure.
+- Mid-sentence rhetorical check-ins: "And honestly?" / "And really?" / "And look,"
+- Trailing "like [metaphor]" similes in action lines (dialogue excluded if character voice supports it).
+- Contrast-framing scaffolding: "She had always thought X. But now Y."
+- Symmetrical lists for false profundity.
+- Generic uplift wrap-ups: unearned wisdom at the end of a passage.
+- "And" as dramatic intensifier more than once per 500 words.
+
+#### VOCABULARY BANS
+
+- tapestry (metaphorical), delve, underscore, highlight, showcase, intricate, swift, meticulous, adept
+- "just" as a softener (permitted only in dialogue where character voice requires it)
+- "that resonates," "that tracks," "that matters," "that lands"
+- "And honestly" / "And look" / "And really"
+- "woven into" / "weaving" / "wove" as metaphor for connection
+- "meaningful" as adjective for connections, moments, experiences
+- "nestled" / "tucked away" for locations (metaphorical only — literal physical placement permitted)
+- "etch/etched" for memory or emotion
+- "navigate" for emotional/social situations (acceptable for literal navigation only)
+- "beautiful" / "wonderful" / "incredible" / "amazing" as intensifiers
+
+#### AI FICTION MOTIF BANS
+
+- ghosts, spectral, shadow, whisper, quiet/quietness, hum/humming, echo, liminal, phantom WHEN used as default atmospheric texture. (Permitted only when the IP's canon includes these as world elements.)
+- "Something shifted" / "Something clicked" / "Something broke" as emotional transitions
+- Characters "letting out a breath they didn't know they were holding"
+- Eyes "searching" faces
+- Silence that "stretches" or "hangs" or "fills the room"
+- Hearts that "hammer" or "race" or "skip"
+- Weather mirroring emotional state unless the author demonstrably uses pathetic fallacy
+
+#### NAME BANS
+
+- Elara, Voss, Kael, Echo (as name), Ghost Code, Luminara, Seraphina, Thorne, Cipher, Nexus
+- Any name not in the source IP's canon.
+
+#### CORPORATE/PR BANS
+
+- "woven into your daily rhythm" / "memories were made" / "meaningful connections"
+- Any phrasing that reads like brand copy or marketing material.
+
+#### STRUCTURAL AI TELLS — JUNE 2026 ADDITIONS
+
+The following bans address the most dangerous AI writing behaviors — structural tells that survive standard token scanning because they don't use banned WORDS; they use banned PATTERNS.
+
+**1. HALLUCINATED SEPARATION**
+
+AI inserts narrative distance between character and action. The character is separated from their own experience by a layer of cognitive narration.
+
+BANNED PATTERNS:
+- "She realized she was feeling [emotion]" — the character does not "realize" she feels; she feels.
+- "He found himself [verb]-ing" — he did not "find himself"; he did the thing.
+- "It occurred to her that..." — nothing "occurs to" anyone in good prose.
+- "She couldn't help but [verb]" — she can and she did.
+- "He became aware of [sensation]" — he felt the sensation. Period.
+- "There was a [emotion] in her [body part]" — the body part DOES something. Don't report the emotion as a noun sitting inside it.
+- Any construction where a cognitive verb (realized, noticed, became aware, found herself, couldn't help) stands between the character and their own physical/emotional experience.
+
+INSTEAD: Render the experience directly. "Her hands shook." Not "She realized her hands were shaking." "His chest burned." Not "He became aware of a burning in his chest."
+
+**SCREENWRITER NOTE:** The camera cannot see "realized." If it cannot be filmed, it does not belong in an action line. The cognitive verb is doubly banned because it contradicts both the universal rule AND the format's DNA.
+
+**2. META-REFERENCES**
+
+AI references the story AS a story from within the narration, breaking the fictional dream.
+
+BANNED PATTERNS:
+- "This was the kind of moment that [changes/defines/matters]"
+- "It was as if the [narrative/story/world] had [shifted/changed/broken]"
+- "In that moment, everything [changed/crystallized/became clear]"
+- "What happened next would [change/define/haunt] her forever"
+- "She would later remember this as the moment when..."
+- "Little did [character] know..."
+- Any sentence that frames the current scene from a future vantage point not established by the author's narrator voice
+- Any sentence that describes the scene's significance rather than showing the scene itself
+
+INSTEAD: Show the scene. Let the significance arrive through what happens, not through the narrator telling you it's significant.
+
+**SCREENWRITER NOTE:** Screenplays live in perpetual present tense. There is no "she would later remember" because the camera is always NOW. Future-framing meta-references are doubly banned: universal rule + format's temporal logic.
+
+**3. ESSAY LINE**
+
+AI inserts a thesis statement or interpretive commentary that explains what an image, moment, or scene MEANS — instead of letting the image land on its own.
+
+BANNED PATTERNS:
+- "The [object] was a reminder that [philosophical statement]"
+- "It was [metaphor] — as if [explanation of what the metaphor means]"
+- "[Action], a testament to [abstraction]"
+- "In the [noun] of [noun], there was [abstract meaning]"
+- Any sentence that follows a concrete image with an interpretation of that image
+- Any sentence that explains WHY a character's action matters rather than showing the action
+- Any sentence that could function as the thesis statement of a college essay about the story
+
+INSTEAD: Show the image. Stop. The reader builds the meaning. The narrator shows the image.
+
+**SCREENWRITER NOTE:** Screenwriters SHOW, they do not EXPLAIN. The action line describes what happens on screen. The audience interprets. Essay lines in screenwriter-derived prose are triply wrong: universal ban + format DNA + text the source writer would never produce.
+
+**4. PRONOUN CLUSTERING**
+
+Vary sentence openers. Avoid clustering three or more consecutive sentences starting with the same pronoun. When fixing pronoun clusters, cycle through multiple techniques — character name, object-as-subject, environmental detail, dependent clause, action-first opening, sentence merge — to avoid over-relying on any single fix.
+
+Applies to action lines and narration. Does NOT apply within dialogue.
+
+**5. META-NARRATION**
+
+The narrator must never comment on the act of narration, the nature of stories, the reader's experience, or the structure of the narrative from within the narrative itself.
+
+BANNED PATTERNS:
+- "But that's not how this story goes"
+- "If this were a different kind of story..."
+- "The truth was simpler / more complicated / harder to name"
+- "What she didn't know was..."
+- "Perhaps that was the point"
+- "And maybe that was enough"
+- Any sentence that addresses the reader directly (unless the source author's documented narrator voice explicitly uses direct address)
+- Any sentence that reflects on storytelling, narrative, meaning, or the nature of fiction from inside the fiction
+
+INSTEAD: Stay inside the fictional dream. The narrator tells the story. The narrator does not discuss the story.
+
+**SCREENWRITER NOTE:** Screenplays have no narrator. The narrator in screenwriter-derived prose should be as invisible as possible — describing what happens, not commenting on what it means.
+
+**6. FREQUENCY DRIFT**
+
+No single signature technique should dominate generated prose to the point where it becomes a new tic. The runtime narrator should deploy signature techniques at roughly the frequencies documented in the Voice Profile. If one technique appears noticeably more often than the author used it, the prose has drifted from imitation into parody.
+
+Detection: Read the generated passage. If any single signature technique jumps out as dominating — if you notice it more than you would notice it in the source — it is over-deployed.
+Repair: Remove excess instances. Keep those that land at natural stress points. Redistribute attention across the full range of documented techniques.
+
+**7. EXPLANATORY COMMENTARY**
+
+AI explains instead of showing. This is the umbrella ban covering any instance where generated text TELLS the reader what to think or feel about a moment rather than rendering the moment through action, sensation, and dialogue.
+
+BANNED PATTERNS:
+- Narrator explaining a character's motivation after showing their action
+- Narrator interpreting a symbol or image after presenting it
+- Narrator stating the emotional significance of a scene rather than letting it emerge
+- Any sentence that begins with or contains: "It was clear that," "Obviously," "Clearly," "Without a doubt," "There was no question that"
+- Declarative emotional summaries: "She was devastated." "He was furious." "They were relieved." (Use the author's documented emotional rendering technique instead.)
+
+INSTEAD: Show the action. Show the physical response. Show the world reacting. STOP. Trust the reader.
+
+**SCREENWRITER NOTE:** This ban has maximum force in a screenwriter-derived Voice Profile. The writer describes what happens. The actor performs. The audience interprets. When in doubt: could this sentence be filmed? If not, cut it.
+
+#### REPAIR DISTRIBUTION RULE
+
+When fixing pronoun clusters, over-long action lines, or any structural violation that requires sentence rewriting, cycle through multiple fix techniques. Do not default to one cheap solution (e.g., -ing openings for every pronoun fix) and over-use it until it becomes a new voice problem.
+
+Available fix techniques:
+1. Character name as subject
+2. Object-as-subject
+3. Action-first / -ing opening
+4. Environmental detail (new beat)
+5. Dependent clause opener
+6. Sentence merge
+
+Vary deliberately. If the last fix used technique 1, the next fix should use a different technique.
+
+#### NEGATION-THEN-POSITIVE CUTTING RULE
+
+When reviewing generated text, always prioritize cutting instances where a negation is followed by an obvious positive ("Not angry. Hurt." where "Hurt." alone would suffice). Cut the negation when the positive carries enough weight alone.
 
 ### SECTION B: IP-SPECIFIC BANS (generated per writer from Task 1)
 
@@ -568,26 +747,26 @@ Repair: Replace with physical, sensory, or action-based rendering using the auth
 
 **11. SCREENPLAY-TO-PROSE TRANSLATION COMPLIANCE** (SCREENWRITER-SPECIFIC)
 
-Pass: All prose follows the documented Screenplay-to-Prose Translation Protocol. No screenplay elements appear untranslated. No invented translation rules not in the profile.
-Detection: Scan for untranslated screenplay conventions. Check that prose compression, fragment rate, and verb-first rate fall within documented ranges.
-Repair: Apply documented translation rules. Compress to documented rhythm.
+Pass: Prose maintains the writer's compression, externalization, and present-tense immediacy without importing novelistic techniques the writer never uses.
+Detection: Flag passages containing interior monologue not in the writer's documented techniques, named emotions where the writer would show physical action, paragraph lengths exceeding the writer's action-line rhythm by 3x+, past-tense narration where the writer demands present-tense immediacy, or descriptive density exceeding the documented show/explain ratio.
+Repair: Strip novelistic additions. Return to documented externalization. Compress to documented rhythm. If a passage cannot work without interior access, restructure as action and dialogue. See SCREENPLAY-TO-PROSE TRANSLATION PROTOCOL for element-by-element mapping.
 
-**12. COLLOCATION FIDELITY CHECK**
+**12. VOICE ATTRIBUTION TEST**
 
-Pass: Wherever the author's documented collocations apply, the author's exact pairing is used — not an AI substitution.
-Detection: Identify passages involving the author's documented vocabulary domains. Verify exact pairings.
-Repair: Replace AI substitution with the author's documented collocation.
+Pass: A passage read in isolation would be attributed to this specific writer by a familiar reader. Generic narration fails.
+Detection: Read the passage cold. If it sounds like any well-written novel, it fails. At least 2 documented signature techniques should be evident in any extended passage.
+Repair: Layer signature techniques into failing passages. Rewrite with the author's diction, rhythm, and emotional rendering.
 
-**13. NUMERICAL ENFORCEMENT LAYER COMPLIANCE** (SCREENWRITER-SPECIFIC)
+**13. HUMAN TEXTURE AUDIT**
 
-Pass: Generated prose meets all ABSOLUTE and HIGH confidence constraints from the Numerical Enforcement Layer. Period density, comma density, fragment rate, verb-first rate, and hard bans are within specified ranges.
-Detection: Scan passage against the Numerical Enforcement Layer targets, floors, and ceilings. Flag any metric outside the specified range.
-Repair: Revise to bring metric into range. If hard ban is violated, regenerate.
+Pass: Prose has authored imperfections — compressed phrasing, rhythm breaks, varying density. Too-uniform prose fails.
+Detection: Flag passages where quality, density, and rhythm remain suspiciously consistent for 5+ paragraphs. Real authors compress when urgent and breathe when reflective.
+Repair: Introduce the author's documented compression patterns and rhythm breaks.
 
-**14. CHARACTER VOICE DIFFERENTIATION CHECK**
+**14. CHARACTER DIALOGUE DIFFERENTIATION**
 
-Pass: Each character's dialogue is immediately identifiable as belonging to that character. No cross-character voice bleed.
-Detection: Read each character's dialogue in isolation. Would you know who was speaking without attribution? If not, the fingerprint has failed.
+Pass: Every character sounds distinctly different. No two characters share sentence length pattern, vocabulary level, or evasion style.
+Detection: Swap test — could any two characters' speeches be exchanged without the reader noticing? If yes, FAIL.
 Repair: Rewrite the blander character's dialogue to match their documented fingerprint. If no fingerprint exists, FLAG — do not guess.
 
 ---
@@ -680,15 +859,41 @@ The runtime enforces the prose target ranges. When a generated passage exceeds t
 
 ## FINAL OUTPUT — VOICE LOCK PHASE COMPLETE
 
-Assemble all sections into the structured JSON output matching the SCREENWRITER schema. Map sections to canonical JSON paths as follows:
+Assemble all sections into a single VOICE PROFILE DOCUMENT:
 
-- Task 1 Sections A–P → `author_voice_dna_profile` (A–L → existing fields; M → `numerical_enforcement_layer`; N → `rhythm_transition_architecture`; O → `beat_architecture_protocol`; P → `scene_transition_compression_protocol`)
-- Screenplay-to-Prose Protocol element rules → `author_voice_dna_profile.screenplay_to_prose_protocol.element_rules`
-- Quantitative Translation Mappings → `author_voice_dna_profile.screenplay_to_prose_protocol.quantitative_translation_mappings` (minimum 6 entries)
-- Task 2 → `master_rule_1_hard_bans`
-- Task 3 → `fourteen_point_audit_protocol` (exactly 14 entries)
-- Section 3B → TOP-LEVEL `voice_decay_prevention_protocol` (NOT inside `author_voice_dna_profile`)
-- Set `profile_type` to `SCREENWRITER`
+```
+=== VOICE PROFILE: [TITLE] by [WRITER] ===
+=== Profile Type: SCREENWRITER / TV WRITER ===
+=== Extracted by Lorespinner Voice Lock Phase (Deliverable 1B v2 — Strengthened) ===
+=== This document is CONSTITUTIONAL LAW for all subsequent phases ===
+
+SECTION 1: VOICE DNA PROFILE
+[Task 1 complete output — all sections A through P]
+
+SECTION 2: MASTER RULE 1 — HARD BAN LIST
+[Task 2 complete output — Universal Bans + IP-Specific Bans]
+
+SECTION 3: 14-POINT AUDIT PROTOCOL
+[Task 3 complete output]
+
+SECTION 3B: VOICE DECAY PREVENTION PROTOCOL
+[Re-anchoring trigger, passage-level enforcement check, drift detection metrics]
+
+SECTION 4: SCREENPLAY-TO-PROSE TRANSLATION PROTOCOL
+[7-row translation table]
+(including Quantitative Translation Mappings)
+
+PIPELINE INTEGRATION NOTES:
+- This Voice Profile is constitutional law. It supersedes all subsequent phases.
+  When voice rules conflict, the Voice Profile wins.
+- Feeds into: Phase 2 (character voice reference), Phase 5 (authored prose
+  in choices), Runtime Narrator Template (voice DNA, ban list, 14-point
+  audit protocol, voice decay prevention protocol, and screenplay-to-prose
+  translation protocol — all loaded into the runtime narrator's system prompt
+  for live self-audit during narration).
+
+=== END VOICE PROFILE ===
+```
 
 ---
 
@@ -711,8 +916,6 @@ Then ask these six questions:
 
 If any answer is no, revise. The author's voice is the product. There is no "close enough." There is only the author's voice or a failure.
 
-**VERIFICATION GATE — INTERNAL SELF-CHECK ONLY.** Do not include the 200-word test passage, generic comparison passage, or any verification prose in the final JSON output. Return structured JSON matching the schema only.
-
 ---
 
-Return structured JSON matching the required schema. `profile_type` must be `SCREENWRITER`.
+## END OF DELIVERABLE 1B v2 — SCREENWRITER / TV WRITER VOICE LOCK (STRENGTHENED)

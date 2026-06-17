@@ -592,6 +592,362 @@ function step_v22(string $slug): void
 
 // -----------------------------------------------------------------------------
 
+/**
+ * step_1b_v2 — 1B v2 Surgical Upgrade validation.
+ *
+ * 5A: Prompt marker checks (hard FAIL if any of the 7 markers are absent).
+ * 5B: SCREENWRITER voice_profile schema probe + canonical path guards.
+ * 5C: Runtime Section 6 content probe (SCREENWRITER and NOVELIST stub renders).
+ *
+ * Run as:
+ *   php pipeline-upgrade-v2-validation-runner.php step_1b_v2 [anima-machina]
+ */
+function step_1b_v2(string $slug): void
+{
+    echo "=== 1B v2 Surgical Upgrade Validation ===\n\n";
+
+    // ── 5A: Prompt marker checks ─────────────────────────────────────────────
+    echo "--- 5A: Prompt marker checks ---\n";
+
+    $requiredMarkers = [
+        'SINGLE-SOURCE CONFIDENCE FRAMEWORK',
+        'NUMERICAL ENFORCEMENT LAYER',
+        'RHYTHM TRANSITION ARCHITECTURE',
+        'BEAT ARCHITECTURE PROTOCOL',
+        'SCENE TRANSITION COMPRESSION PROTOCOL',
+        'VOICE DECAY PREVENTION PROTOCOL',
+        'QUANTITATIVE TRANSLATION MAPPINGS',
+    ];
+
+    $screenwriterBlades = [
+        'ai.agents.adaptation.voice-lock.system-prompt-screenwriter' => [
+            'formatDetection' => ['detected_format' => 'SCREENPLAY'],
+            'formatDetectionOutput' => '{"detected_format":"SCREENPLAY"}',
+            'ipAudit' => ['scorecard' => 'stub'],
+            'currentPhase' => 'Voice Lock 1B v2',
+        ],
+        'ai.agents.adaptation.voice-lock.chapter-system-prompt-screenwriter' => [],
+    ];
+
+    foreach ($screenwriterBlades as $view => $data) {
+        try {
+            $rendered = view($view, $data)->render();
+            echo "Blade rendered: {$view} (" . strlen($rendered) . " bytes)\n";
+            foreach ($requiredMarkers as $marker) {
+                $found = str_contains($rendered, $marker);
+                echo ($found ? 'ok   ' : 'FAIL ') . "marker present: {$marker}\n";
+            }
+        } catch (\Throwable $e) {
+            echo "FAIL render {$view}: {$e->getMessage()}\n";
+        }
+        echo "\n";
+    }
+
+    // ── 5B: SCREENWRITER voice_profile schema probe ───────────────────────────
+    echo "--- 5B: SCREENWRITER voice_profile schema probe ---\n";
+
+    $story = null;
+    try {
+        $story = \App\Models\Story::query()->where('slug', $slug)->with('adaptation')->first();
+    } catch (\Throwable $e) {
+        echo "(DB unavailable — skipping schema probe: {$e->getMessage()})\n";
+    }
+
+    if ($story?->adaptation?->voice_profile) {
+        $vp = (array) $story->adaptation->voice_profile;
+        $profileType = $vp['profile_type'] ?? 'MISSING';
+        echo "profile_type: {$profileType}\n";
+
+        if ($profileType !== 'SCREENWRITER') {
+            echo "SKIP schema probe — story '{$slug}' is not SCREENWRITER (profile_type={$profileType}). Run on a screenplay IP.\n";
+        } else {
+            $dna = (array) ($vp['author_voice_dna_profile'] ?? []);
+
+            // M–P field presence under author_voice_dna_profile
+            foreach ([
+                'numerical_enforcement_layer',
+                'rhythm_transition_architecture',
+                'beat_architecture_protocol',
+                'scene_transition_compression_protocol',
+            ] as $field) {
+                echo (array_key_exists($field, $dna) ? 'ok   ' : 'FAIL ') . "author_voice_dna_profile.{$field} present\n";
+            }
+
+            // voice_decay_prevention_protocol at TOP LEVEL (not under DNA)
+            $vdpp = $vp['voice_decay_prevention_protocol'] ?? null;
+            echo (($vdpp !== null) ? 'ok   ' : 'FAIL ') . "voice_decay_prevention_protocol present (top-level)\n";
+            if ($vdpp !== null) {
+                foreach (['re_anchoring_trigger', 'passage_level_enforcement_checks', 'drift_detection_metrics'] as $key) {
+                    echo (array_key_exists($key, (array) $vdpp) ? 'ok   ' : 'FAIL ') . "voice_decay_prevention_protocol.{$key}\n";
+                }
+            }
+
+            // screenplay_to_prose_protocol as object (not bare array)
+            $s2p = $dna['screenplay_to_prose_protocol'] ?? null;
+            $isObject = is_array($s2p) && array_key_exists('element_rules', $s2p) && array_key_exists('quantitative_translation_mappings', $s2p);
+            echo ($isObject ? 'ok   ' : 'FAIL ') . "screenplay_to_prose_protocol is object with element_rules + quantitative_translation_mappings\n";
+            if ($isObject) {
+                $qtmCount = count((array) ($s2p['quantitative_translation_mappings'] ?? []));
+                echo ($qtmCount >= 6 ? 'ok   ' : 'FAIL ') . "quantitative_translation_mappings count >= 6 (got {$qtmCount})\n";
+                $erCount = count((array) ($s2p['element_rules'] ?? []));
+                echo ($erCount > 0 ? 'ok   ' : 'FAIL ') . "element_rules non-empty (got {$erCount})\n";
+            }
+
+            // rhythm_transition_architecture.transition_matrix 4×4
+            $rta = (array) ($dna['rhythm_transition_architecture'] ?? []);
+            $matrix = (array) ($rta['transition_matrix'] ?? []);
+            $matrixComplete = count($matrix) === 4 && collect($matrix)->every(fn ($row) => is_array($row) && count($row) === 4);
+            echo ($matrixComplete ? 'ok   ' : 'FAIL ') . "rhythm_transition_architecture.transition_matrix is 4x4\n";
+
+            // ── Canonical path guards ─────────────────────────────────────────
+            echo "\n--- Canonical path guards ---\n";
+
+            // FAIL if quantitative_translation_mappings exists anywhere except correct path
+            $serialized = json_encode($vp, JSON_UNESCAPED_UNICODE) ?: '';
+            // Check for top-level qtm
+            $topLevelQtm = array_key_exists('quantitative_translation_mappings', $vp);
+            echo ($topLevelQtm ? 'FAIL ' : 'ok   ') . "quantitative_translation_mappings NOT at top-level of voice_profile\n";
+
+            // Check for qtm directly under author_voice_dna_profile (not inside screenplay_to_prose_protocol)
+            $dnaRootQtm = array_key_exists('quantitative_translation_mappings', $dna);
+            echo ($dnaRootQtm ? 'FAIL ' : 'ok   ') . "quantitative_translation_mappings NOT directly under author_voice_dna_profile root\n";
+
+            // FAIL if voice_decay_prevention_protocol appears under author_voice_dna_profile
+            $vdppUnderDna = array_key_exists('voice_decay_prevention_protocol', $dna);
+            echo ($vdppUnderDna ? 'FAIL ' : 'ok   ') . "voice_decay_prevention_protocol NOT under author_voice_dna_profile (must be top-level only)\n";
+
+            // ── Chunk aggregation guards ──────────────────────────────────────
+            echo "\n--- Chunk aggregation guards ---\n";
+            echo "Checking cached chapter fragments for {$slug}...\n";
+
+            $requiredFragmentFields = [
+                'action_line_count',
+                'rhythm_transition_matrix_counts',
+                'dialogue_speech_lengths_by_character',
+            ];
+
+            $story2 = \App\Models\Story::query()->where('slug', $slug)->with('chapters.cachedChapterVoiceFragments')->first();
+            $fragmentsChecked = 0;
+            $fragmentFails = [];
+            if ($story2) {
+                foreach ($story2->chapters ?? [] as $chapter) {
+                    foreach ($chapter->cachedChapterVoiceFragments ?? [] as $frag) {
+                        $fragData = (array) ($frag->voice_observations ?? []);
+                        $metricCounts = (array) ($fragData['metric_counts'] ?? []);
+                        $fragmentsChecked++;
+                        foreach ($requiredFragmentFields as $field) {
+                            if (!array_key_exists($field, $metricCounts)) {
+                                $fragmentFails[] = "fragment {$frag->id}: missing metric_counts.{$field}";
+                            }
+                        }
+                        // Guard: fragment must NOT be percentage-only
+                        if (!empty($fragData['fragment_rate_notes']) && empty($metricCounts)) {
+                            $fragmentFails[] = "fragment {$frag->id}: percentage-only notes without metric_counts (violates 1C contract)";
+                        }
+                        // Check dialogue_speech_lengths_by_character has speech_lengths_w
+                        $dspc = (array) ($metricCounts['dialogue_speech_lengths_by_character'] ?? []);
+                        foreach ($dspc as $charEntry) {
+                            if (!isset($charEntry['speech_lengths_w'])) {
+                                $fragmentFails[] = "fragment {$frag->id}: dialogue_speech_lengths_by_character missing speech_lengths_w for {$charEntry['character']}";
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($fragmentsChecked === 0) {
+                echo "SKIP no cached chapter voice fragments found (run pipeline first)\n";
+            } elseif (empty($fragmentFails)) {
+                echo "ok   {$fragmentsChecked} chapter fragment(s) have required raw-count fields\n";
+            } else {
+                foreach ($fragmentFails as $fail) {
+                    echo "FAIL {$fail}\n";
+                }
+            }
+        }
+    } else {
+        echo "(no voice_profile for '{$slug}' — run pipeline on a screenplay IP first, then rerun step_1b_v2)\n";
+    }
+
+    // ── 5C: Runtime Section 6 content probe ──────────────────────────────────
+    echo "\n--- 5C: Runtime Section 6 content probe ---\n";
+
+    // SCREENWRITER stub
+    $screenwriterStub = stub_runtime_template_data_screenwriter();
+    try {
+        $swRendered = view('ai.agents.chaos.runtime-narrator-template', $screenwriterStub)->render();
+        echo "Blade rendered (SCREENWRITER): " . strlen($swRendered) . " bytes\n";
+
+        $instructionMarkers = [
+            'Apply the passage-level enforcement checks',
+            're-anchor to the numerical enforcement layer',
+            'VOICE DECAY PREVENTION PROTOCOL',
+            'NUMERICAL ENFORCEMENT LAYER',
+            'RHYTHM TRANSITION ARCHITECTURE',
+            'SCREENPLAY-TO-PROSE PROTOCOL',
+            'QUANTITATIVE TRANSLATION MAPPINGS',
+            'Every 300-400 words',  // re_anchoring_trigger value from stub
+        ];
+        foreach ($instructionMarkers as $marker) {
+            echo (str_contains($swRendered, $marker) ? 'ok   ' : 'FAIL ') . "SCREENWRITER Section 6 contains: {$marker}\n";
+        }
+
+        // Assert no raw chunk metric count keys in runtime render
+        $chunkRawFields = ['action_line_count', 'line_length_bucket_counts', 'rhythm_transition_matrix_counts', 'dialogue_speech_lengths_by_character', 'speech_lengths_w'];
+        foreach ($chunkRawFields as $rawField) {
+            $found = str_contains($swRendered, $rawField);
+            echo ($found ? 'FAIL ' : 'ok   ') . "SCREENWRITER runtime does NOT expose chunk raw field: {$rawField}\n";
+        }
+    } catch (\Throwable $e) {
+        echo "FAIL SCREENWRITER render: {$e->getMessage()}\n";
+    }
+
+    // NOVELIST stub — assert no Section 3B content
+    $novelistStub = stub_runtime_template_data();
+    try {
+        $novRendered = view('ai.agents.chaos.runtime-narrator-template', $novelistStub)->render();
+        echo "\nBlade rendered (NOVELIST): " . strlen($novRendered) . " bytes\n";
+
+        $section3bMarkers = [
+            'VOICE DECAY PREVENTION PROTOCOL',
+            're_anchoring_trigger',
+            'passage_level_enforcement_checks',
+        ];
+        foreach ($section3bMarkers as $marker) {
+            $found = str_contains($novRendered, $marker);
+            echo ($found ? 'FAIL ' : 'ok   ') . "NOVELIST runtime does NOT contain Section 3B: {$marker}\n";
+        }
+    } catch (\Throwable $e) {
+        echo "FAIL NOVELIST render: {$e->getMessage()}\n";
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+function stub_runtime_template_data_screenwriter(): array
+{
+    $base = stub_runtime_template_data();
+
+    $base['voice'] = [
+        'profile_type' => 'SCREENWRITER',
+        'author_voice_dna_profile' => [
+            'signature_writing_techniques' => [
+                ['name' => 'Fragment Punch', 'why_this_author' => 'Compresses impact into 1-3 words', 'frequency' => 'every emotional beat'],
+            ],
+            'sentence_level_patterns' => [
+                'average_sentence_length' => '6',
+                'cadence_variation' => 'staccato with expansion bursts',
+                'clause_structure_preference' => 'simple declarative',
+                'punctuation_habits' => 'periods only, no semicolons',
+            ],
+            'diction_fingerprint' => [
+                'register_and_formality' => 'sparse, kinetic',
+                'word_frequency_patterns' => 'avoids adverbs',
+            ],
+            'action_line_metrics' => [
+                'average_words_per_line' => '5.2',
+                'fragment_percentage' => '34%',
+                'verb_first_percentage' => '28%',
+                'paragraph_rhythm' => '2-3 lines then isolate',
+            ],
+            'screenplay_structure_metrics' => [
+                'scene_density' => '2.1 per page',
+                'int_ext_ratio' => '60:40',
+                'action_to_dialogue_ratio' => '55:45',
+            ],
+            'dialogue_fingerprint_per_character' => [],
+            'collocation_fingerprint' => [],
+            'negative_space_map' => [],
+            'show_explain_ratio' => ['approximate_balance' => '90% show', 'enforcement_note' => 'camera logic only'],
+            'comparative_exclusion' => [],
+            'numerical_enforcement_layer' => [
+                'punctuation' => [
+                    'period_density_per_100w' => ['target' => '8-12', 'floor' => '6', 'ceiling' => '16', 'confidence' => 'HIGH', 'sample_size' => '1200 action-line words'],
+                    'semicolons' => ['target' => '0', 'floor' => '0', 'ceiling' => '0', 'confidence' => 'ABSOLUTE', 'sample_size' => '0/4800 words'],
+                ],
+                'rhythm' => [
+                    'fragment_rate' => ['target' => '30-38%', 'floor' => '22%', 'ceiling' => '50%', 'confidence' => 'HIGH', 'sample_size' => '420 action lines'],
+                    'ing_opening_percentage' => ['target' => '4-8%', 'floor' => '0%', 'ceiling' => '12%', 'confidence' => 'MEDIUM', 'sample_size' => '420 action lines'],
+                ],
+                'dialogue_ceilings_per_character' => [
+                    ['character' => 'NORA', 'avg_words' => '8', 'p90_words' => '18', 'p95_words' => '22', 'max_words' => '31', 'speech_count' => 88, 'confidence' => 'HIGH'],
+                ],
+                'opener_distribution' => [
+                    ['opener_type' => 'verb', 'target' => '25-32%', 'floor' => '15%', 'ceiling' => '45%', 'confidence' => 'HIGH'],
+                ],
+                'word_length' => [
+                    'average_chars' => ['target' => '3.8-4.4', 'floor' => '3.5', 'ceiling' => '5.0', 'confidence' => 'HIGH', 'sample_size' => '4800 words'],
+                    'bucket_1_3_chars_pct' => ['target' => '52-60%', 'floor' => '45%', 'ceiling' => '68%', 'confidence' => 'HIGH', 'sample_size' => '4800 words'],
+                ],
+            ],
+            'rhythm_transition_architecture' => [
+                'transition_matrix' => [
+                    'ultra_short' => ['ultra_short' => 18, 'short' => 42, 'medium' => 30, 'long' => 10],
+                    'short'       => ['ultra_short' => 22, 'short' => 35, 'medium' => 28, 'long' => 15],
+                    'medium'      => ['ultra_short' => 20, 'short' => 30, 'medium' => 32, 'long' => 18],
+                    'long'        => ['ultra_short' => 35, 'short' => 30, 'medium' => 25, 'long' => 10],
+                ],
+                'rhythm_change_frequency' => '71%',
+                'max_consecutive_same_category' => '3',
+                'signature_moves' => ['After ultra-short beat, expands to medium 30% of the time — punch-then-breathe.'],
+                'anti_patterns' => ['Never stacks 4+ ultra-short lines consecutively.'],
+            ],
+            'beat_architecture_protocol' => [
+                'beat_frequency' => '8.2%',
+                'beat_vocabulary' => ['status_beats' => ['Silence.', 'Still.', 'Gone.'], 'action_beats' => ['Hold.', 'Move.'], 'transition_beats' => ['Later.'], 'emphasis_beats' => ['Eyes down.']],
+                'beat_placement' => 'Before scene changes and after emotional peaks.',
+                'beat_density_by_context' => 'Higher in emotional/transition scenes.',
+            ],
+            'scene_transition_compression_protocol' => [
+                'closing_line_avg_length' => '3.8w',
+                'closing_line_type_distribution' => ['image' => '42%', 'action' => '28%', 'status' => '12%', 'dialogue_adjacent' => '10%', 'beat' => '8%'],
+                'closing_line_examples' => [],
+                'transition_guidance' => 'Close on image or beat. Never on a 20+ word reflective sentence.',
+            ],
+            'screenplay_to_prose_protocol' => [
+                'element_rules' => [
+                    ['screenplay_element' => 'ACTION LINE', 'prose_translation_rule' => 'Maintain compression. No expansion into novelistic description.'],
+                    ['screenplay_element' => 'SCENE HEADING', 'prose_translation_rule' => 'Single establishing sentence or white-space break.'],
+                    ['screenplay_element' => '(beat)', 'prose_translation_rule' => 'A physical action — gesture, look, movement. NOT "There was silence."'],
+                ],
+                'quantitative_translation_mappings' => [
+                    ['screenplay_metric' => 'Fragment rate', 'source_value' => '34%', 'prose_target' => '18-28%', 'drift_ceiling' => '10% floor', 'rationale' => 'Prose needs connective tissue but fragments are signature.'],
+                    ['screenplay_metric' => 'Period density per 100w', 'source_value' => '9.8', 'prose_target' => '7-11', 'drift_ceiling' => '6 floor', 'rationale' => 'Prose sentences slightly longer.'],
+                    ['screenplay_metric' => 'Avg line length', 'source_value' => '5.2w', 'prose_target' => '7-12w', 'drift_ceiling' => '16w ceiling', 'rationale' => 'Prose runs longer than action lines.'],
+                    ['screenplay_metric' => '-ing openings', 'source_value' => '5%', 'prose_target' => '3-7%', 'drift_ceiling' => '12% ceiling', 'rationale' => 'AI over-deploys; low ceiling preserves voice.'],
+                    ['screenplay_metric' => 'Max speech NORA', 'source_value' => '31w', 'prose_target' => '31w', 'drift_ceiling' => '31w hard ceiling', 'rationale' => 'Screenplay is the ceiling.'],
+                    ['screenplay_metric' => 'Comma density per 100w', 'source_value' => '3.2', 'prose_target' => '3-5', 'drift_ceiling' => '7 ceiling', 'rationale' => 'Writer avoids commas — ceiling prevents drift.'],
+                ],
+            ],
+        ],
+        'voice_decay_prevention_protocol' => [
+            're_anchoring_trigger' => 'Every 300-400 words of generated prose.',
+            'passage_level_enforcement_checks' => [
+                'Period density within prose target range.',
+                'Zero banned punctuation (semicolons — ABSOLUTE BAN).',
+                'Fragment rate above prose floor.',
+                'No pronoun cluster of 3+ same-pronoun starts.',
+            ],
+            'drift_detection_metrics' => [
+                'Fragment rate trending downward over 3+ consecutive passages.',
+                '-ing openings trending upward.',
+                'Speech lengths trending upward.',
+            ],
+        ],
+        'master_rule_1_hard_bans' => [
+            'universal_bans_acknowledged' => true,
+            'ip_specific_bans' => [],
+        ],
+        'fourteen_point_audit_protocol' => [
+            ['point_number' => 1, 'point_name' => 'Hard Ban Scan', 'pass_fail_definition' => 'zero bans'],
+        ],
+    ];
+
+    return $base;
+}
+
+// -----------------------------------------------------------------------------
+
 function stub_runtime_template_data(): array
 {
     return [

@@ -80,9 +80,142 @@ class VoiceLockChapterAgent implements Agent, HasStructuredOutput
         ];
 
         if (VoiceLockSchema::isScreenwriter($this->detectedFormat)) {
+            // Qualitative context fields (retained from 1B FINAL)
             $voiceObservationsFields['action_line_samples'] = $schema->array()->required()->title('Action Line Samples')->items($schema->string()->required());
             $voiceObservationsFields['action_line_metrics_note'] = $schema->string()->required()->title('Action Line Metrics Note');
             $voiceObservationsFields['dialogue_metrics_note'] = $schema->string()->required()->title('Dialogue Metrics Note');
+
+            // --- 1B v2 / 1C: producer-neutral raw-count fields ---
+            // Merge sums these across all chapter fragments BEFORE deriving percentages.
+            // A future deterministic extractor can populate the same fields without
+            // changing merge schema, voice_profile schema, or runtime rendering.
+            $voiceObservationsFields['metric_counts'] = $schema->object([
+                // Action-line denominators
+                'action_line_count'       => $schema->number()->required()->title('Action Line Count'),
+                'action_line_word_count'  => $schema->number()->required()->title('Action Line Word Count'),
+                // Dialogue denominators
+                'dialogue_speech_count'   => $schema->number()->required()->title('Dialogue Speech Count'),
+                'dialogue_word_count'     => $schema->number()->required()->title('Dialogue Word Count'),
+                // Punctuation (split action vs dialogue where measurable; estimate otherwise)
+                'punctuation_counts' => $schema->object([
+                    'period'      => $schema->number()->required()->title('Periods'),
+                    'comma'       => $schema->number()->required()->title('Commas'),
+                    'semicolon'   => $schema->number()->required()->title('Semicolons'),
+                    'exclamation' => $schema->number()->required()->title('Exclamation Marks'),
+                    'em_dash'     => $schema->number()->required()->title('Em Dashes'),
+                    'question'    => $schema->number()->required()->title('Question Marks'),
+                    'ellipsis'    => $schema->number()->required()->title('Ellipses'),
+                ])->required()->withoutAdditionalProperties()->title('Punctuation Counts'),
+                // Rhythm counts
+                'fragment_line_count'     => $schema->number()->required()->title('Fragment Line Count — action lines ≤5 words'),
+                'verb_first_line_count'   => $schema->number()->required()->title('Verb-First Line Count'),
+                'ing_opening_line_count'  => $schema->number()->required()->title('-ing Opening Line Count'),
+                // Line-length buckets (deliverable keys: 1_3w … 26_plus_w)
+                'line_length_bucket_counts' => $schema->object([
+                    '1_3w'       => $schema->number()->required()->title('1-3 Words'),
+                    '4_5w'       => $schema->number()->required()->title('4-5 Words'),
+                    '6_8w'       => $schema->number()->required()->title('6-8 Words'),
+                    '9_12w'      => $schema->number()->required()->title('9-12 Words'),
+                    '13_18w'     => $schema->number()->required()->title('13-18 Words'),
+                    '19_25w'     => $schema->number()->required()->title('19-25 Words'),
+                    '26_plus_w'  => $schema->number()->required()->title('26+ Words'),
+                ])->required()->withoutAdditionalProperties()->title('Line Length Bucket Counts'),
+                // Opener type counts
+                'opener_type_counts' => $schema->object([
+                    'article'        => $schema->number()->required()->title('Article Openers'),
+                    'pronoun'        => $schema->number()->required()->title('Pronoun Openers'),
+                    'character_name' => $schema->number()->required()->title('Character Name Openers'),
+                    'verb'           => $schema->number()->required()->title('Verb Openers'),
+                    'negation'       => $schema->number()->required()->title('Negation Openers'),
+                    'preposition'    => $schema->number()->required()->title('Preposition Openers'),
+                    'ing'            => $schema->number()->required()->title('-ing Openers'),
+                    'all_caps'       => $schema->number()->required()->title('ALL CAPS Openers'),
+                ])->required()->withoutAdditionalProperties()->title('Opener Type Counts'),
+                // Word-length distribution
+                'word_length_bucket_counts' => $schema->object([
+                    'chars_1_3'    => $schema->number()->required()->title('1-3 Char Words'),
+                    'chars_4_5'    => $schema->number()->required()->title('4-5 Char Words'),
+                    'chars_6_8'    => $schema->number()->required()->title('6-8 Char Words'),
+                    'chars_9_plus' => $schema->number()->required()->title('9+ Char Words'),
+                ])->required()->withoutAdditionalProperties()->title('Word Length Bucket Counts'),
+                // Beat counts
+                'beat_count'              => $schema->number()->required()->title('Beat Count — 1-2 word standalone action-line beats'),
+                // Scene closing
+                'scene_closing_line_count' => $schema->number()->required()->title('Scene Closing Line Count'),
+                'scene_closing_word_count' => $schema->number()->required()->title('Scene Closing Word Count'),
+                'scene_closing_type_counts' => $schema->object([
+                    'image'             => $schema->number()->required()->title('Image Closes'),
+                    'action'            => $schema->number()->required()->title('Action Closes'),
+                    'status'            => $schema->number()->required()->title('Status Closes'),
+                    'dialogue_adjacent' => $schema->number()->required()->title('Dialogue-Adjacent Closes'),
+                    'beat'              => $schema->number()->required()->title('Beat Closes'),
+                ])->required()->withoutAdditionalProperties()->title('Scene Closing Type Counts'),
+                // Rhythm transition matrix (ultra_short/short/medium/long buckets)
+                // After each category: how many times each category followed
+                'rhythm_transition_matrix_counts' => $schema->object([
+                    'ultra_short' => $schema->object([
+                        'ultra_short' => $schema->number()->required()->title('→ Ultra-Short'),
+                        'short'       => $schema->number()->required()->title('→ Short'),
+                        'medium'      => $schema->number()->required()->title('→ Medium'),
+                        'long'        => $schema->number()->required()->title('→ Long'),
+                    ])->required()->withoutAdditionalProperties()->title('After Ultra-Short'),
+                    'short' => $schema->object([
+                        'ultra_short' => $schema->number()->required()->title('→ Ultra-Short'),
+                        'short'       => $schema->number()->required()->title('→ Short'),
+                        'medium'      => $schema->number()->required()->title('→ Medium'),
+                        'long'        => $schema->number()->required()->title('→ Long'),
+                    ])->required()->withoutAdditionalProperties()->title('After Short'),
+                    'medium' => $schema->object([
+                        'ultra_short' => $schema->number()->required()->title('→ Ultra-Short'),
+                        'short'       => $schema->number()->required()->title('→ Short'),
+                        'medium'      => $schema->number()->required()->title('→ Medium'),
+                        'long'        => $schema->number()->required()->title('→ Long'),
+                    ])->required()->withoutAdditionalProperties()->title('After Medium'),
+                    'long' => $schema->object([
+                        'ultra_short' => $schema->number()->required()->title('→ Ultra-Short'),
+                        'short'       => $schema->number()->required()->title('→ Short'),
+                        'medium'      => $schema->number()->required()->title('→ Medium'),
+                        'long'        => $schema->number()->required()->title('→ Long'),
+                    ])->required()->withoutAdditionalProperties()->title('After Long'),
+                ])->required()->withoutAdditionalProperties()->title('Rhythm Transition Matrix Counts'),
+                // Boundary bucket values for inter-chapter transition stitching
+                'first_action_line_bucket' => $schema->string()->required()->title('First Action Line Bucket')
+                    ->description('ultra_short | short | medium | long'),
+                'last_action_line_bucket'  => $schema->string()->required()->title('Last Action Line Bucket')
+                    ->description('ultra_short | short | medium | long'),
+                // Dialogue: raw speech lengths per character (not histogram buckets)
+                // Merge concatenates speech_lengths_w across chunks per character,
+                // then derives AVG, P90, P95, MAX.
+                'dialogue_speech_lengths_by_character' => $schema->array()->required()
+                    ->title('Dialogue Speech Lengths By Character')
+                    ->items(
+                        $schema->object([
+                            'character'         => $schema->string()->required()->title('Character'),
+                            'speech_lengths_w'  => $schema->array()->required()->title('Speech Lengths (words each)')
+                                ->items($schema->number()->required()),
+                            'speech_count'      => $schema->number()->required()->title('Speech Count'),
+                            'max_speech_length_w' => $schema->number()->required()->title('Max Speech Length (words)'),
+                        ])->required()->withoutAdditionalProperties()
+                    ),
+            ])->required()->withoutAdditionalProperties()->title('Metric Counts — Producer-Neutral Raw Counts');
+
+            // Qualitative evidence fields (supplement counts; do not replace them)
+            $voiceObservationsFields['beat_candidates'] = $schema->array()->required()->title('Beat Candidates')->items(
+                $schema->object([
+                    'beat_text'         => $schema->string()->required()->title('Beat Text'),
+                    'placement_context' => $schema->string()->required()->title('Placement Context'),
+                    'function'          => $schema->string()->required()->title('Function'),
+                ])->required()->withoutAdditionalProperties()
+            );
+            $voiceObservationsFields['scene_closing_samples'] = $schema->array()->required()->title('Scene Closing Samples')->items(
+                $schema->object([
+                    'closing_lines' => $schema->array()->required()->title('Closing Lines')->items($schema->string()->required()),
+                    'scene_context' => $schema->string()->required()->title('Scene Context'),
+                ])->required()->withoutAdditionalProperties()
+            );
+            $voiceObservationsFields['confidence_sample_size_notes'] = $schema->string()->required()
+                ->title('Confidence Sample Size Notes')
+                ->description('Confidence tier + sample size notes for sparse metrics in this chapter.');
         } else {
             $voiceObservationsFields['paragraph_architecture_note'] = $schema->string()->required()->title('Paragraph Architecture Note');
             $voiceObservationsFields['demonstrative_paragraphs'] = $schema->array()->required()->title('Demonstrative Paragraphs')->items($schema->string()->required());

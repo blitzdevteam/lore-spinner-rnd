@@ -157,10 +157,117 @@ ACTION LINE METRICS: avg words/line {{ $voice['author_voice_dna_profile']['actio
 
 SCREENPLAY STRUCTURE: scene density {{ $voice['author_voice_dna_profile']['screenplay_structure_metrics']['scene_density'] ?? '' }}. INT/EXT {{ $voice['author_voice_dna_profile']['screenplay_structure_metrics']['int_ext_ratio'] ?? '' }}. Action/dialogue {{ $voice['author_voice_dna_profile']['screenplay_structure_metrics']['action_to_dialogue_ratio'] ?? '' }}.
 
+{{-- SCREENWRITER-ONLY: voice decay prevention + numerical enforcement blocks --}}
+@if(!empty($voice['voice_decay_prevention_protocol']) || !empty($voice['author_voice_dna_profile']['numerical_enforcement_layer'] ?? null))
+
+--- 1B v2 VOICE ENFORCEMENT (SCREENWRITER) ---
+
+Use the Voice Decay Prevention Protocol to prevent drift from the writer's documented voice during live gameplay narration.
+
+Before delivering player-facing narration:
+
+1. Apply the passage-level enforcement checks.
+2. Use the numerical enforcement layer targets, floors, ceilings, confidence levels, and hard bans as active constraints.
+3. Use the screenplay-to-prose protocol and quantitative translation mappings when converting screenplay-derived voice into runtime prose.
+4. Watch the drift detection metrics across passages.
+5. When the re-anchoring trigger is reached, re-anchor to the numerical enforcement layer, punctuation profile, top signature techniques, and rhythm transition architecture before continuing.
+6. If a hard constraint is violated, revise before output.
+
+--- VOICE DECAY PREVENTION PROTOCOL ---
+@if(!empty($voice['voice_decay_prevention_protocol']['re_anchoring_trigger']))
+RE-ANCHORING TRIGGER: {{ $voice['voice_decay_prevention_protocol']['re_anchoring_trigger'] }}
+@endif
+
+@if(!empty($voice['voice_decay_prevention_protocol']['passage_level_enforcement_checks']))
+PASSAGE-LEVEL ENFORCEMENT CHECKS (run before every delivered passage):
+@foreach($voice['voice_decay_prevention_protocol']['passage_level_enforcement_checks'] as $check)
+- {{ $check }}
+@endforeach
+@endif
+
+@if(!empty($voice['voice_decay_prevention_protocol']['drift_detection_metrics']))
+DRIFT DETECTION METRICS (track across consecutive passages — re-anchor if any metric trends away from target over 3+ passages):
+@foreach($voice['voice_decay_prevention_protocol']['drift_detection_metrics'] as $metric)
+- {{ $metric }}
+@endforeach
+@endif
+
+--- NUMERICAL ENFORCEMENT LAYER ---
+@php
+    $nel = $voice['author_voice_dna_profile']['numerical_enforcement_layer'] ?? [];
+@endphp
+@if(!empty($nel['punctuation']))
+PUNCTUATION ENFORCEMENT:
+@foreach($nel['punctuation'] as $metricKey => $spec)
+@if(is_array($spec) && isset($spec['target']))
+- {{ str_replace('_', ' ', strtoupper($metricKey)) }}: TARGET {{ $spec['target'] }} | FLOOR {{ $spec['floor'] ?? '—' }} | CEILING {{ $spec['ceiling'] ?? '—' }} | CONFIDENCE: {{ $spec['confidence'] ?? '—' }} (sample: {{ $spec['sample_size'] ?? '—' }})
+@endif
+@endforeach
+@endif
+@if(!empty($nel['rhythm']))
+RHYTHM ENFORCEMENT:
+@foreach($nel['rhythm'] as $metricKey => $spec)
+@if(is_array($spec) && isset($spec['target']))
+- {{ str_replace('_', ' ', strtoupper($metricKey)) }}: TARGET {{ $spec['target'] }} | FLOOR {{ $spec['floor'] ?? '—' }} | CEILING {{ $spec['ceiling'] ?? '—' }} | CONFIDENCE: {{ $spec['confidence'] ?? '—' }}
+@endif
+@endforeach
+@endif
+@if(!empty($nel['dialogue_ceilings_per_character']))
+DIALOGUE CEILINGS:
+@foreach($nel['dialogue_ceilings_per_character'] as $char)
+- {{ strtoupper($char['character'] ?? '?') }}: AVG {{ $char['avg_words'] ?? '?' }}w | P90 {{ $char['p90_words'] ?? '?' }}w | P95 {{ $char['p95_words'] ?? '?' }}w | MAX {{ $char['max_words'] ?? '?' }}w (HARD CEILING) | {{ $char['speech_count'] ?? '?' }} speeches | CONFIDENCE: {{ $char['confidence'] ?? '—' }}
+@endforeach
+@endif
+
+--- RHYTHM TRANSITION ARCHITECTURE ---
+@php
+    $rta = $voice['author_voice_dna_profile']['rhythm_transition_architecture'] ?? [];
+@endphp
+@if(!empty($rta['transition_matrix']))
+TRANSITION MATRIX (after each category → probability of each following category):
+@foreach($rta['transition_matrix'] as $fromCat => $row)
+@if(is_array($row))
+After {{ strtoupper($fromCat) }}: → ultra-short {{ $row['ultra_short'] ?? '?' }}% | short {{ $row['short'] ?? '?' }}% | medium {{ $row['medium'] ?? '?' }}% | long {{ $row['long'] ?? '?' }}%
+@endif
+@endforeach
+Rhythm change frequency: {{ $rta['rhythm_change_frequency'] ?? '—' }}. Max consecutive same-category: {{ $rta['max_consecutive_same_category'] ?? '—' }}.
+@endif
+@if(!empty($rta['signature_moves']))
+SIGNATURE MOVES:
+@foreach($rta['signature_moves'] as $move)
+- {{ $move }}
+@endforeach
+@endif
+@if(!empty($rta['anti_patterns']))
+ANTI-PATTERNS (never produce these):
+@foreach($rta['anti_patterns'] as $ap)
+- {{ $ap }}
+@endforeach
+@endif
+@endif
+
+{{-- Screenplay-to-Prose: legacy shim + new element_rules object shape --}}
 SCREENPLAY-TO-PROSE PROTOCOL:
-@foreach($voice['author_voice_dna_profile']['screenplay_to_prose_protocol'] ?? [] as $rule)
+@php
+    $s2p = $voice['author_voice_dna_profile']['screenplay_to_prose_protocol'] ?? [];
+    // Legacy shim: if bare array (pre-v2 Anima profile), treat items as element_rules entries
+    $elementRules = is_array($s2p) && array_key_exists('element_rules', $s2p)
+        ? ($s2p['element_rules'] ?? [])
+        : (is_array($s2p) && !empty($s2p) ? $s2p : []);
+    $qtm = is_array($s2p) && array_key_exists('quantitative_translation_mappings', $s2p)
+        ? ($s2p['quantitative_translation_mappings'] ?? [])
+        : [];
+@endphp
+@foreach($elementRules as $rule)
 - {{ $rule['screenplay_element'] ?? '' }} → {{ $rule['prose_translation_rule'] ?? '' }}
 @endforeach
+
+@if(!empty($qtm))
+QUANTITATIVE TRANSLATION MAPPINGS (canonical path: author_voice_dna_profile.screenplay_to_prose_protocol.quantitative_translation_mappings):
+@foreach($qtm as $mapping)
+- {{ $mapping['screenplay_metric'] ?? '' }}: source {{ $mapping['source_value'] ?? '' }} → prose target {{ $mapping['prose_target'] ?? '' }} | drift ceiling {{ $mapping['drift_ceiling'] ?? '' }} | {{ $mapping['rationale'] ?? '' }}
+@endforeach
+@endif
 @else
 PARAGRAPH ARCHITECTURE: {{ $voice['author_voice_dna_profile']['paragraph_architecture']['pattern'] ?? '' }}. Transitions: {{ $voice['author_voice_dna_profile']['paragraph_architecture']['transition_method'] ?? '' }}.
 @endif

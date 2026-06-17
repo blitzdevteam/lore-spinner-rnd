@@ -115,6 +115,75 @@ Checklist:
 
 ---
 
-## 7. Screenplay QA (later)
+## 7. Screenplay QA — 1B v2 (Anima Machina)
 
-**Anima Machina** — after novelist baselines pass, verify `profile_type: SCREENWRITER` and 1B fields (`action_line_metrics`, `screenplay_to_prose_protocol`, etc.).
+Run after novelist baselines pass. Do NOT re-run novelist baselines for this patch.
+
+### 7A. Static checks (no API cost — run locally first)
+
+```bash
+php "Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runner.php" step_1b_v2 anima-machina
+```
+
+**Expected output (static probes only — DB unavailable locally):**
+- 5A: All 7 markers present in both screenwriter blades (14/14 ok lines)
+- 5C: All SCREENWRITER Section 6 instruction wrapper + enforcement heading checks pass (8/8 ok)
+- 5C: All NOVELIST Section 3B absence checks pass (3/3 ok)
+
+### 7B. Re-adapt Anima Machina on Cloud
+
+```bash
+php artisan stories:run-adaptation anima-machina --force
+php artisan queue:work --queue=adaptation --stop-when-empty
+```
+
+### 7C. Verify 1B v2 voice profile fields
+
+```bash
+php artisan tinker --execute='$v=App\Models\Story::where("slug","anima-machina")->firstOrFail()->adaptation->voice_profile;
+$dna=$v["author_voice_dna_profile"]??[];
+echo "profile_type: ".($v["profile_type"]??"MISSING").PHP_EOL;
+echo "numerical_enforcement_layer: ".(!empty($dna["numerical_enforcement_layer"])?"present":"MISSING").PHP_EOL;
+echo "rhythm_transition_architecture: ".(!empty($dna["rhythm_transition_architecture"])?"present":"MISSING").PHP_EOL;
+echo "beat_architecture_protocol: ".(!empty($dna["beat_architecture_protocol"])?"present":"MISSING").PHP_EOL;
+echo "scene_transition_compression_protocol: ".(!empty($dna["scene_transition_compression_protocol"])?"present":"MISSING").PHP_EOL;
+echo "voice_decay_prevention_protocol (top-level): ".(!empty($v["voice_decay_prevention_protocol"])?"present":"MISSING").PHP_EOL;
+$s2p=$dna["screenplay_to_prose_protocol"]??[];
+echo "screenplay_to_prose_protocol.element_rules: ".count($s2p["element_rules"]??[])." entries".PHP_EOL;
+echo "screenplay_to_prose_protocol.quantitative_translation_mappings: ".count($s2p["quantitative_translation_mappings"]??[])." entries (need >=6)".PHP_EOL;
+$rta=$dna["rhythm_transition_architecture"]??[];
+echo "rhythm transition matrix: ".count($rta["transition_matrix"]??[])." rows (need 4)".PHP_EOL;'
+```
+
+### 7D. Canonical path guard check (run step_1b_v2 on Cloud)
+
+```bash
+php "Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runner.php" step_1b_v2 anima-machina
+```
+
+**Expected 5B output:**
+- All M–P fields under `author_voice_dna_profile`: `ok`
+- `voice_decay_prevention_protocol` top-level with 3 sub-keys: `ok`
+- `screenplay_to_prose_protocol` as object (not bare array): `ok`
+- `quantitative_translation_mappings` count ≥ 6: `ok`
+- 4×4 transition matrix: `ok`
+- Canonical path guards (no misplaced qtm or vdpp): all `ok`
+- Chapter fragments with required raw-count fields: `ok` (after pipeline run)
+
+**Pass thresholds:** profile_type = SCREENWRITER, all M–P fields present, quantitative_translation_mappings ≥ 6, transition matrix 4×4, voice_decay_prevention_protocol top-level only.
+
+### 7E. Runtime prompt check (SCREENWRITER Section 6)
+
+```bash
+php artisan tinker --execute='$s=App\Models\Story::where("slug","anima-machina")->firstOrFail()->sessionAdaptations()->orderBy("session_number")->first(); echo "runtime_prompt_chars: ".strlen($s->runtime_narrator_prompt??"").PHP_EOL; echo (str_contains($s->runtime_narrator_prompt??"","Apply the passage-level enforcement checks")?"has_1b_v2_instruction_wrapper":"missing_wrapper").PHP_EOL; echo (str_contains($s->runtime_narrator_prompt??"","NUMERICAL ENFORCEMENT LAYER")?"has_NEL_section":"missing_NEL").PHP_EOL; echo (str_contains($s->runtime_narrator_prompt??"","VOICE DECAY PREVENTION PROTOCOL")?"has_VDPP_section":"missing_VDPP").PHP_EOL;'
+```
+
+### 7F. Failures
+
+| Symptom | Action |
+|---------|--------|
+| `profile_type = NOVELIST` on Anima | FormatDetection emitted NOVEL — check format_detection column |
+| Missing M–P fields | Merge did not produce 1B v2 output — check LLM output in job logs |
+| `quantitative_translation_mappings` count < 6 | LLM under-populated — add example to merge prompt, re-adapt |
+| `voice_decay_prevention_protocol` under `author_voice_dna_profile` | Schema constraint violation — re-adapt with corrected merge instructions |
+| Runtime prompt missing instruction wrapper | Section 6 Blade condition `!empty($voice[...])` false — check voice_profile for missing NEL or VDPP |
