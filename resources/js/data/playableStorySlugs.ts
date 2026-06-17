@@ -8,6 +8,7 @@ export const PLAYABLE_STORY_SLUGS = [
     'wasteland',
     'pjs',
     'anima-machina',
+    'i-love-lucy-job-switching',
 ] as const;
 
 export type PlayableStorySlug = (typeof PLAYABLE_STORY_SLUGS)[number];

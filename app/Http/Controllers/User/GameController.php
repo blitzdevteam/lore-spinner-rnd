@@ -39,6 +39,7 @@ final class GameController extends Controller
         'wasteland',
         'pjs',
         'anima-machina',
+        'i-love-lucy-job-switching',
     ];
 
     public function __construct(private readonly ChaosEngineService $engine) {}
