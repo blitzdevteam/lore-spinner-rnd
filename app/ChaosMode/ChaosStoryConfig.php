@@ -34,6 +34,11 @@ final class ChaosStoryConfig
     private const VOICE_DECLAN_SAGE = 'kqVT88a5QfII1HNAEPTJ';
 
     /**
+     * Ember voice (37i69iUK8H0KcGuz48hE) — used for I Love Lucy: Job Switching.
+     */
+    private const VOICE_EMBER = '37i69iUK8H0KcGuz48hE';
+
+    /**
      * @return array<int, array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null}>
      */
     public static function all(): array
@@ -101,6 +106,13 @@ final class ChaosStoryConfig
                 'protagonist'   => 'Dorothy',
                 'tagline'       => 'Baum — follow the yellow brick road to the Emerald City.',
                 'tts_voice_id'  => null,
+            ],
+            [
+                'slug'          => 'i-love-lucy-job-switching',
+                'title'         => 'I Love Lucy: Job Switching',
+                'protagonist'   => 'Lucy',
+                'tagline'       => 'Wittmer — swap lives, then survive the candy factory.',
+                'tts_voice_id'  => self::VOICE_EMBER,
             ],
         ];
     }

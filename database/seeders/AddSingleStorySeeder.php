@@ -321,7 +321,7 @@ class AddSingleStorySeeder extends Seeder
             'teaser'     => 'When Lucy and Ethel swap lives with Ricky and Fred for a week, a night at the candy factory turns into the most delicious disaster in television history.',
             'rating'     => StoryRatingEnum::EVERYONE->value,
             'opening'    => null,
-            'creator'    => $this->thomasWittmerCreator(),
+            'creator'    => $this->classicsCreator(),
         ];
     }
 
