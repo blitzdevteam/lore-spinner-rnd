@@ -22,7 +22,7 @@ export const MOOD_STORY_CATALOG: Record<MoodId, MoodStoryCatalog> = {
         ],
     },
     adventurous: {
-        top: ['the-wonderful-wizard-of-oz', 'treasure-island', 'anima-machina', 'leagues'],
+        top: ['the-wonderful-wizard-of-oz', 'treasure-island', 'anima-machina', 'the-matrix'],
         secondary: [
             'wasteland',
             'alice-in-wonderland',
@@ -31,6 +31,7 @@ export const MOOD_STORY_CATALOG: Record<MoodId, MoodStoryCatalog> = {
             'the-wonderful-wizard-of-oz',
             'treasure-island',
             'anima-machina',
+            'the-matrix',
             'leagues',
         ],
     },
@@ -53,13 +54,14 @@ export const MOOD_STORY_CATALOG: Record<MoodId, MoodStoryCatalog> = {
         ],
     },
     epic: {
-        top: ['anima-machina', 'frankenstein', 'pjs', 'dracula'],
+        top: ['anima-machina', 'the-matrix', 'frankenstein', 'pjs'],
         secondary: [
             'the-wonderful-wizard-of-oz',
             'treasure-island',
             'leagues',
             'wasteland',
             'anima-machina',
+            'the-matrix',
             'frankenstein',
             'pjs',
             'dracula',

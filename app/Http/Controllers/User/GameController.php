@@ -40,6 +40,7 @@ final class GameController extends Controller
         'pjs',
         'anima-machina',
         'i-love-lucy-job-switching',
+        'the-matrix',
     ];
 
     public function __construct(private readonly ChaosEngineService $engine) {}

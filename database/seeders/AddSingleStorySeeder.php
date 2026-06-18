@@ -251,6 +251,7 @@ class AddSingleStorySeeder extends Seeder
      *   SEED_STORY=wizard-of-oz           php artisan db:seed --class=AddSingleStorySeeder --force
      *   SEED_STORY=anima-machina          php artisan db:seed --class=AddSingleStorySeeder --force
      *   SEED_STORY=job-switching          php artisan db:seed --class=AddSingleStorySeeder --force
+     *   SEED_STORY=the-matrix             php artisan db:seed --class=AddSingleStorySeeder --force
      *
      * Defaults to Masque of the Red Death when SEED_STORY is not set.
      */
@@ -260,6 +261,7 @@ class AddSingleStorySeeder extends Seeder
 
         return match ($key) {
             'anima-machina', 'anima'                                           => $this->configAnimaMachina(),
+            'the-matrix', 'matrix', 'the-matrix-1999'                          => $this->configTheMatrix(),
             'job-switching', 'i-love-lucy-job-switching', 'job-switching-final' => $this->configJobSwitching(),
             'wizard-of-oz', 'oz', 'the-wonderful-wizard-of-oz'                 => $this->configWizardOfOz(),
             default                                                              => $this->configMasque(),
@@ -307,6 +309,21 @@ class AddSingleStorySeeder extends Seeder
             'rating'     => StoryRatingEnum::MATURE->value,
             'opening'    => 'Rain stitches neon into the dark. The city of Neo-Vault is a cathedral of glass and wire, every tower a sermon to order. Holo-billboards pulse: "ONE PARTNER. ONE MIND. NO MORE PAIN." The NEURAL RESET countdown hovers in the sky — 49 hours remain. Below, faces glow with false joy as citizens replay their happiest memories in loops. You are a Memory Diver. Your wrist is looped with a child\'s worn ballet slipper — your anchor. Your HUD bleeds glyph-static: ARCHIVE FAILURE. MEMORY OVERWRITE IN 47:59:00. What do you do?',
             'creator'    => $this->thomasWittmerCreator(),
+        ];
+    }
+
+    private function configTheMatrix(): array
+    {
+        return [
+            'title'      => 'The Matrix',
+            'slug'       => 'the-matrix',
+            'category'   => 'Science Fiction',
+            'script'     => 'THE_MATRIX_1999_script.txt',
+            'source_pdf' => 'RnD/MORE R&D TITLES - JUNE 15/the-matrix-1999 copy.pdf',
+            'teaser'     => 'A hacker named Neo discovers the world he knows is a simulation — and the only way out is to trust rebels who claim reality has been hijacked.',
+            'rating'     => StoryRatingEnum::MATURE->value,
+            'opening'    => null,
+            'creator'    => $this->classicsCreator(),
         ];
     }
 
