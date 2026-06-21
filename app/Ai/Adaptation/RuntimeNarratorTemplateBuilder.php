@@ -17,19 +17,18 @@ use Illuminate\Support\Facades\View;
  * template at `ai.agents.chaos.runtime-narrator-template` into a single
  * string cached on `session_adaptations.runtime_narrator_prompt`.
  *
- * V2.3 requirements:
- *   - voice_profile MUST contain voice_anchor, anchor_card, runtime_self_check.
- *     If any are absent, a RuntimeException is thrown immediately — no silent
- *     degradation, no fallback to old-profile behavior.
- *   - Compression cascade (D8 v2 priority order):
- *     1. Compress Section 12 (Full Source Script) — first/last event verbatim,
- *        middle events to titles + objectives only.
- *     2. Compress Section 12 further (titles only, all events).
- *     3. Drop voice DNA quote arrays (see dropVoiceQuotes) — anchor fields
- *        (voice_anchor, anchor_card, runtime_self_check) are NEVER touched.
- *     4. Flag for editorial split (RuntimeException — caller should split session).
- *   - After render: throws RuntimeException if any {{…}} token or
- *     [OPENING_SCENE_INJECTION_POINT] is missing from the assembled prompt.
+ * V2.3 size behaviour (warn-not-fail):
+ *   - Compression cascade runs first/last/titles × full/drop-quotes (6 passes).
+ *   - If a pass fits under MAX_PROMPT_CHARS the result is returned immediately.
+ *   - If no pass fits, the most-compressed version is returned anyway with a
+ *     warning logged — adaptation is NEVER blocked by prompt size.
+ *   - WARN_MARGIN_CHARS triggers an early warning when within ~15k of the cap.
+ *
+ * V2.3 anchor / token checks (warn-not-fail):
+ *   - Missing voice_anchor / anchor_card / runtime_self_check → warning logged,
+ *     assembly continues (pre-V2.3 profiles still produce a prompt).
+ *   - Unmapped {{…}} tokens or missing [OPENING_SCENE_INJECTION_POINT] → warning
+ *     logged, prompt still persisted.
  *
  * Injection-point tokens filled at runtime by ChaosEngineService, not here:
  *   [OPENING_SCENE_INJECTION_POINT], [SYMBOLIC_MEMORY_INJECTION_POINT],
@@ -38,32 +37,39 @@ use Illuminate\Support\Facades\View;
 final class RuntimeNarratorTemplateBuilder
 {
     /**
-     * Hard cap for the cached runtime narrator prompt (D8 v2 — 65 k chars).
+     * Target cap for the cached runtime narrator prompt (D8 v2 — 65 k chars).
+     * Prompts over this cap are logged as warnings but still persisted.
      */
     public const MAX_PROMPT_CHARS = 65_000;
 
     /**
+     * Early-warning threshold — ~15k below the cap.
+     * Prompts between this value and MAX_PROMPT_CHARS get a near-cap log entry.
+     */
+    public const WARN_MARGIN_CHARS = 50_000;
+
+    /**
      * Build the cached runtime narrator prompt for a given session adaptation.
      *
-     * V2.3 contract:
-     *   - Throws immediately if voice_profile lacks voice_anchor, anchor_card,
-     *     or runtime_self_check — no silent degradation.
-     *   - Compression cascade protects anchor fields (they are NEVER touched by
-     *     dropVoiceQuotes; they are cut LAST).
-     *   - Throws after render if any {{…}} literal or missing
-     *     [OPENING_SCENE_INJECTION_POINT] is detected.
+     * Always returns a string — adaptation is never blocked by prompt size or
+     * missing anchor fields. Issues are logged as warnings so they are visible
+     * without stopping the pipeline.
      *
-     * @throws \RuntimeException if voice_profile is missing required V2.3 anchor
-     *                            fields, if the rendered prompt contains unmapped
-     *                            tokens, or if no compression strategy fits under
-     *                            MAX_PROMPT_CHARS (editorial split required).
+     * Compression cascade (D8 v2 priority — 6 passes):
+     *   full × full → compressed_source × full → titles_only × full
+     *   full × drop_quotes → compressed_source × drop_quotes → titles_only × drop_quotes
+     *
+     * If a pass fits under MAX_PROMPT_CHARS the result is returned immediately.
+     * If all passes exceed the cap the most-compressed version is returned with
+     * a warning logged. WARN_MARGIN_CHARS triggers an early near-cap warning.
      */
     public function build(Story $story, SessionAdaptation $session): string
     {
         $adaptation   = $session->storyAdaptation;
         $voiceProfile = (array) ($adaptation->voice_profile ?? []);
 
-        $this->assertAnchorFieldsPresent($voiceProfile, $story, $session);
+        // Log warnings for missing V2.3 anchor fields but continue assembly.
+        $this->warnIfAnchorFieldsMissing($voiceProfile, $story, $session);
 
         $totalSessions      = $adaptation->sessionAdaptations()->count();
         $startEventPosition = (int) ($session->entry_point_diagnosis['start_event_position'] ?? 0);
@@ -83,41 +89,60 @@ final class RuntimeNarratorTemplateBuilder
         ];
 
         $voiceCompression = [
-            'full'       => fn (array $v) => $v,
+            'full'        => fn (array $v) => $v,
             'drop_quotes' => fn (array $v) => $this->dropVoiceQuotes($v),
         ];
 
+        $lastRendered    = '';
+        $lastCompression = 'full+full';
+
         foreach ($compressionAttempts as $sourceMode => $sourceFn) {
             foreach ($voiceCompression as $voiceMode => $voiceFn) {
-                $rendered = $this->render(
-                    $story,
-                    $session,
-                    $totalSessions,
-                    $sourceFn(),
-                    $voiceFn($voiceProfile),
-                );
+                $rendered        = $this->render($story, $session, $totalSessions, $sourceFn(), $voiceFn($voiceProfile));
+                $charCount       = mb_strlen($rendered);
+                $lastRendered    = $rendered;
+                $lastCompression = "{$sourceMode}+{$voiceMode}";
 
-                if (mb_strlen($rendered) <= self::MAX_PROMPT_CHARS) {
-                    $this->assertRenderedPromptClean($rendered, $story, $session);
+                if ($charCount <= self::MAX_PROMPT_CHARS) {
+                    if ($charCount >= self::WARN_MARGIN_CHARS) {
+                        \Log::channel('narration')->warning('runtime_narrator_assembly.near_cap', [
+                            'story_id'       => $story->id,
+                            'session_number' => $session->session_number,
+                            'char_count'     => $charCount,
+                            'cap'            => self::MAX_PROMPT_CHARS,
+                            'compression'    => $lastCompression,
+                            'headroom'       => self::MAX_PROMPT_CHARS - $charCount,
+                        ]);
+                    }
+                    $this->warnIfPromptHasIssues($rendered, $story, $session);
+
                     return $rendered;
                 }
             }
         }
 
-        throw new \RuntimeException(sprintf(
-            'Runtime narrator template exceeds %d chars after all compression strategies (story %d, session %d). Editorial split required.',
-            self::MAX_PROMPT_CHARS,
-            $story->id,
-            $session->session_number,
-        ));
+        // All passes exhausted — persist most-compressed version with a warning.
+        $charCount = mb_strlen($lastRendered);
+        \Log::channel('narration')->warning('runtime_narrator_assembly.over_cap', [
+            'story_id'       => $story->id,
+            'session_number' => $session->session_number,
+            'char_count'     => $charCount,
+            'cap'            => self::MAX_PROMPT_CHARS,
+            'overage'        => $charCount - self::MAX_PROMPT_CHARS,
+            'compression'    => $lastCompression,
+            'action'         => 'Persisting most-compressed version. Consider editorial session split.',
+        ]);
+
+        $this->warnIfPromptHasIssues($lastRendered, $story, $session);
+
+        return $lastRendered;
     }
 
     /**
-     * Assert that the voice_profile contains the three V2.3 anchor fields.
-     *
-     * @throws \RuntimeException with a clear re-adaptation instruction.
+     * Log a warning if the voice_profile is missing V2.3 anchor fields.
+     * Assembly continues regardless — pre-V2.3 profiles still produce a prompt.
      */
-    private function assertAnchorFieldsPresent(array $voiceProfile, Story $story, SessionAdaptation $session): void
+    private function warnIfAnchorFieldsMissing(array $voiceProfile, Story $story, SessionAdaptation $session): void
     {
         $missing = [];
 
@@ -132,41 +157,35 @@ final class RuntimeNarratorTemplateBuilder
         }
 
         if ($missing !== []) {
-            throw new \RuntimeException(sprintf(
-                'Runtime narrator assembly requires a V2.3 voice_profile with voice_anchor, anchor_card, and runtime_self_check. '
-                . 'Missing fields: %s (story %d, session %d). Re-run adaptation for this story.',
-                implode(', ', $missing),
-                $story->id,
-                $session->session_number,
-            ));
+            \Log::channel('narration')->warning('runtime_narrator_assembly.missing_v23_anchor_fields', [
+                'story_id'       => $story->id,
+                'session_number' => $session->session_number,
+                'missing_fields' => $missing,
+                'action'         => 'Assembling without V2.3 anchor fields. Re-run Voice Lock to get full D8 v2 quality.',
+            ]);
         }
     }
 
     /**
-     * Assert the rendered prompt contains no unmapped {{…}} tokens and that
-     * the cold-open injection point is present.
-     *
-     * @throws \RuntimeException if the prompt contains literal {{…}} tokens or
-     *                            is missing [OPENING_SCENE_INJECTION_POINT].
+     * Log warnings if the rendered prompt contains unmapped {{…}} tokens or is
+     * missing [OPENING_SCENE_INJECTION_POINT]. Prompt is still persisted.
      */
-    private function assertRenderedPromptClean(string $rendered, Story $story, SessionAdaptation $session): void
+    private function warnIfPromptHasIssues(string $rendered, Story $story, SessionAdaptation $session): void
     {
         if (preg_match('/\{\{[^}]+\}\}/', $rendered)) {
-            throw new \RuntimeException(sprintf(
-                'Assembled runtime narrator prompt contains unmapped {{…}} tokens (story %d, session %d). '
-                . 'Template slot wiring is incomplete.',
-                $story->id,
-                $session->session_number,
-            ));
+            \Log::channel('narration')->warning('runtime_narrator_assembly.unmapped_tokens', [
+                'story_id'       => $story->id,
+                'session_number' => $session->session_number,
+                'action'         => 'Prompt contains unmapped {{…}} tokens — template slot wiring may be incomplete.',
+            ]);
         }
 
         if (! str_contains($rendered, '[OPENING_SCENE_INJECTION_POINT]')) {
-            throw new \RuntimeException(sprintf(
-                'Assembled runtime narrator prompt is missing [OPENING_SCENE_INJECTION_POINT] (story %d, session %d). '
-                . 'Section 13 must contain the injection point token.',
-                $story->id,
-                $session->session_number,
-            ));
+            \Log::channel('narration')->warning('runtime_narrator_assembly.missing_injection_point', [
+                'story_id'       => $story->id,
+                'session_number' => $session->session_number,
+                'action'         => 'Prompt is missing [OPENING_SCENE_INJECTION_POINT] — cold open will not inject at session start.',
+            ]);
         }
     }
 

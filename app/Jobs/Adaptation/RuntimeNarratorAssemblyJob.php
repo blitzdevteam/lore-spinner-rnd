@@ -10,22 +10,22 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Carbon;
-use RuntimeException;
 use Throwable;
 
 /**
  * Pipeline Upgrade V2 — Deliverable 8 assembly job.
  *
  * Runs as the LAST step in each per-session chain (after EditorialVerificationJob).
- * Assembles the 17-section runtime narrator prompt from every prior phase output
- * and persists it on `session_adaptations.runtime_narrator_prompt`. Chaos Mode
- * then reads this column at session start; runtime only injects tiered state /
- * symbolic memory / opening scene on top.
+ * Assembles the 18-section D8 v2 runtime narrator prompt from every prior phase
+ * output and persists it on `session_adaptations.runtime_narrator_prompt`.
+ * Chaos Mode reads this column at session start.
  *
- * Failure modes:
- *   - Builder raises if compression cascade fails (prompt exceeds its configured
- *     cap even after dropping voice quotes + collapsing source to titles). Logged
- *     so the editor can mark the session for a manual split.
+ * Size policy (warn-not-fail):
+ *   The builder runs a 6-pass compression cascade. If the prompt fits under
+ *   MAX_PROMPT_CHARS it is returned from that pass. If all passes exceed the cap
+ *   the most-compressed version is returned with a warning logged. Either way
+ *   this job always persists — adaptation is never blocked by prompt size.
+ *   Check the narration log after adaptation for near_cap / over_cap entries.
  */
 final class RuntimeNarratorAssemblyJob implements ShouldQueue
 {
@@ -52,48 +52,23 @@ final class RuntimeNarratorAssemblyJob implements ShouldQueue
         $adaptation = $this->story->adaptation;
         $session    = $adaptation->sessionAdaptations()->where('session_number', $this->sessionNumber)->firstOrFail();
 
-        try {
-            $prompt = $builder->build($this->story, $session);
+        // build() always returns a string — it logs warnings but never throws
+        // for size or missing anchor fields. Non-assembly exceptions (DB, render
+        // errors) still bubble up and fail the job naturally.
+        $prompt    = $builder->build($this->story, $session);
+        $charCount = mb_strlen($prompt);
 
-            // D8 v2 post-render guards — explicit RuntimeException (no assert()).
-            // The builder already checks these inside build(), but we enforce
-            // here as a secondary gate before persisting to the database.
+        \Log::channel('narration')->info('runtime_narrator_assembly.assembled', [
+            'story_id'       => $this->story->id,
+            'session_number' => $this->sessionNumber,
+            'char_count'     => $charCount,
+            'cap'            => RuntimeNarratorTemplateBuilder::MAX_PROMPT_CHARS,
+            'over_cap'       => $charCount > RuntimeNarratorTemplateBuilder::MAX_PROMPT_CHARS,
+        ]);
 
-            if (preg_match('/\{\{[^}]+\}\}/', $prompt)) {
-                throw new RuntimeException(sprintf(
-                    'Assembled runtime narrator prompt contains unmapped {{…}} tokens (story %d, session %d). '
-                    . 'Template slot wiring is incomplete — do not persist.',
-                    $this->story->id,
-                    $this->sessionNumber,
-                ));
-            }
-
-            $charCount = mb_strlen($prompt);
-            if ($charCount > RuntimeNarratorTemplateBuilder::MAX_PROMPT_CHARS) {
-                throw new RuntimeException(sprintf(
-                    'Assembled runtime narrator prompt exceeds %d character cap: %d chars (story %d, session %d). '
-                    . 'Editorial split required.',
-                    RuntimeNarratorTemplateBuilder::MAX_PROMPT_CHARS,
-                    $charCount,
-                    $this->story->id,
-                    $this->sessionNumber,
-                ));
-            }
-
-            $session->update([
-                'runtime_narrator_prompt'        => $prompt,
-                'runtime_narrator_assembled_at'  => Carbon::now(),
-            ]);
-        } catch (RuntimeException $assemblyFailure) {
-            // Persist nothing. No legacy partial fallback. The session stays
-            // un-runnable in Chaos Mode until the pipeline is re-run.
-            \Log::channel('narration')->error('runtime_narrator_assembly.failed', [
-                'story_id'       => $this->story->id,
-                'session_number' => $this->sessionNumber,
-                'message'        => $assemblyFailure->getMessage(),
-            ]);
-
-            throw $assemblyFailure;
-        }
+        $session->update([
+            'runtime_narrator_prompt'       => $prompt,
+            'runtime_narrator_assembled_at' => Carbon::now(),
+        ]);
     }
 }

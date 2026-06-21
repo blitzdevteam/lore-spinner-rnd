@@ -901,30 +901,40 @@ function step_v23(string $slug): void
         echo (str_contains($sliceSrc, $needle) ? 'ok   ' : 'FAIL ') . "VoiceProfilePromptSlice: {$label}\n";
     }
 
-    // A2. RuntimeNarratorTemplateBuilder — D8 v2 guards
+    // A2. RuntimeNarratorTemplateBuilder — D8 v2 warn-not-fail guards
     $builderPath = app_path('Ai/Adaptation/RuntimeNarratorTemplateBuilder.php');
     $builderSrc  = is_file($builderPath) ? file_get_contents($builderPath) : '';
     $builderChecks = [
-        'MAX_PROMPT_CHARS = 65_000'              => 'MAX_PROMPT_CHARS = 65_000',
-        'assertAnchorFieldsPresent() called in build()' => 'assertAnchorFieldsPresent(',
-        'assertRenderedPromptClean() called in build()' => 'assertRenderedPromptClean(',
-        'throws RuntimeException (not assert) on missing anchor' => 'throw new \RuntimeException',
+        'MAX_PROMPT_CHARS = 65_000'                   => 'MAX_PROMPT_CHARS = 65_000',
+        'WARN_MARGIN_CHARS constant exists'            => 'WARN_MARGIN_CHARS = ',
+        'warnIfAnchorFieldsMissing() called in build()' => 'warnIfAnchorFieldsMissing(',
+        'warnIfPromptHasIssues() called in build()'   => 'warnIfPromptHasIssues(',
+        'over_cap logs warning (not throw)'            => "'runtime_narrator_assembly.over_cap'",
+        'near_cap logs warning'                        => "'runtime_narrator_assembly.near_cap'",
+        'always returns string (no throw on size)'     => 'return $lastRendered',
     ];
     foreach ($builderChecks as $label => $needle) {
         echo (str_contains($builderSrc, $needle) ? 'ok   ' : 'FAIL ') . "RuntimeNarratorTemplateBuilder: {$label}\n";
     }
+    // Old throw-on-cap must be gone
+    echo (str_contains($builderSrc, 'throw new \RuntimeException') ? 'FAIL (old throw still present!) ' : 'ok   ')
+        . "RuntimeNarratorTemplateBuilder: no RuntimeException thrown (warn-not-fail)\n";
 
-    // A3. RuntimeNarratorAssemblyJob — post-render guards
+    // A3. RuntimeNarratorAssemblyJob — always persists, logs size info
     $jobPath = app_path('Jobs/Adaptation/RuntimeNarratorAssemblyJob.php');
     $jobSrc  = is_file($jobPath) ? file_get_contents($jobPath) : '';
     $jobChecks = [
-        'post-render unmapped-token guard exists' => '{{',
-        'post-render char-count guard exists'     => 'MAX_PROMPT_CHARS',
-        'throws RuntimeException (not assert)'    => 'throw new RuntimeException',
+        'logs assembled info'         => "'runtime_narrator_assembly.assembled'",
+        'char_count logged'           => "'char_count'",
+        'over_cap flag logged'        => "'over_cap'",
+        'always calls session update' => '$session->update([',
     ];
     foreach ($jobChecks as $label => $needle) {
         echo (str_contains($jobSrc, $needle) ? 'ok   ' : 'FAIL ') . "RuntimeNarratorAssemblyJob: {$label}\n";
     }
+    // Old secondary throw guards must be gone
+    echo (str_contains($jobSrc, 'throw new RuntimeException') ? 'FAIL (secondary throw guard still present!) ' : 'ok   ')
+        . "RuntimeNarratorAssemblyJob: no secondary RuntimeException (always persists)\n";
 
     // A4. ChaosEngineService — D8 v2 sec13 anchor
     $enginePath = app_path('Services/ChaosEngineService.php');
