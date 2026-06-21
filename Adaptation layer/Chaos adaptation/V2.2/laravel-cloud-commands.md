@@ -56,6 +56,142 @@ echo "pending jobs: " . DB::table("jobs")->where("queue","adaptation")->count() 
 
 Sessions are on **`$story->adaptation->sessionAdaptations()`**, not `$story->sessionAdaptations()`.
 
+### Full story pipeline status (seed + adaptation + failed-job check)
+
+Replace `anima-machina` with any slug. Answers: is seed done? is adaptation done? did old `failed_jobs` rows get recovered on retry?
+
+```bash
+php artisan tinker --execute='
+$slug = "anima-machina";
+$story = App\Models\Story::where("slug", $slug)->first();
+
+echo "=== PIPELINE STATUS: {$slug} ===\n\n";
+
+if (! $story) {
+    echo "STORY: NOT IN DB\n";
+    echo "NEXT: SEED_STORY={$slug} php artisan db:seed --class=AddSingleStorySeeder --force\n";
+    echo "pending adaptation: " . DB::table("jobs")->where("queue", "adaptation")->count() . "\n";
+    return;
+}
+
+echo "STORY id={$story->id}\n";
+echo "  status:        {$story->status->value}\n";
+echo "  created_at:    {$story->created_at}\n";
+echo "  updated_at:    {$story->updated_at}\n";
+echo "  system_prompt: " . (filled($story->system_prompt) ? "yes" : "MISSING") . "\n";
+echo "  opening:       " . (filled($story->opening) ? strlen($story->opening) . " chars" : "MISSING") . "\n";
+echo "  script:        " . ($story->getFirstMedia("script")?->file_name ?? "MISSING") . "\n";
+
+$chapters = $story->chapters()->orderBy("position")->get();
+echo "\nCHAPTERS: {$chapters->count()} | events: {$story->events()->count()}\n";
+foreach ($chapters as $ch) {
+    echo "  Ch{$ch->position}: {$ch->status->value} | events={$ch->events()->count()}\n";
+}
+
+$a = $story->adaptation;
+echo "\nADAPTATION: " . ($a ? $a->adaptation_status->value : "none") . "\n";
+if ($a) {
+    $sessions = $a->sessionAdaptations()->orderBy("session_number")->get();
+    foreach ($sessions as $s) {
+        $rp = $s->runtime_narrator_prompt;
+        echo "  S{$s->session_number}: {$s->session_status->value}"
+            . " | choices=" . (filled($s->session_choice_design) ? "y" : "n")
+            . " | consequences=" . (filled($s->choice_consequence_map) ? "y" : "n")
+            . " | runtime=" . (filled($rp) ? strlen($rp) . "ch" : "MISSING")
+            . " | updated {$s->updated_at}\n";
+    }
+    $runtimeReady = $sessions->filter(fn ($s) => filled($s->runtime_narrator_prompt))->count();
+    echo "  v2_ready: {$runtimeReady}/{$sessions->count()}\n";
+}
+
+echo "\nQUEUE\n";
+foreach (["adaptation", "chapter-extraction", "image-generation", "default"] as $q) {
+    $n = DB::table("jobs")->where("queue", $q)->count();
+    if ($n > 0) echo "  {$q}: {$n} pending\n";
+}
+
+$fieldForJob = [
+    "ChoiceDesignJob" => "session_choice_design",
+    "ConsequenceMappingJob" => "choice_consequence_map",
+    "SessionCloseJob" => "session_close_design",
+    "EditorialVerificationJob" => "editorial_verification",
+    "RuntimeNarratorAssemblyJob" => "runtime_narrator_prompt",
+    "EntryPointDiagnosisJob" => "entry_point_diagnosis",
+    "SessionArchitectureJob" => "session_architecture",
+];
+
+echo "\nFAILED JOBS (this story — recovered vs still broken)\n";
+$failed = DB::table("failed_jobs")->orderByDesc("failed_at")->limit(25)->get();
+$storyId = $story->id;
+$shown = 0;
+foreach ($failed as $f) {
+    if (! str_contains($f->payload, "\"id\":{$storyId}") && ! str_contains($f->payload, $slug)) {
+        continue;
+    }
+    $p = json_decode($f->payload, true);
+    $name = $p["displayName"] ?? "?";
+    $short = class_basename($name);
+    $field = $fieldForJob[$short] ?? null;
+    $verdict = "UNKNOWN — inspect exception";
+    if ($a && $field && $sessions->isNotEmpty()) {
+        $missing = $sessions->filter(fn ($s) => ! filled($s->{$field}))->count();
+        $latest = $sessions->max("updated_at");
+        if ($missing === 0) {
+            $verdict = ($latest && $f->failed_at < $latest)
+                ? "RECOVERED (all sessions have output; updated after failure)"
+                : "OUTPUT PRESENT (failure may be stale)";
+        } else {
+            $verdict = "STILL BROKEN ({$missing} session(s) missing {$field})";
+        }
+    }
+    echo "  [{$f->failed_at}] {$short}\n";
+    echo "    {$verdict}\n";
+    echo "    " . Illuminate\Support\Str::limit($f->exception, 120) . "\n";
+    $shown++;
+}
+if ($shown === 0) echo "  (no failed_jobs rows matching this story in last 25)\n";
+
+echo "\n--- NEXT STEP ---\n";
+if ($story->status->value !== "published") {
+    echo "Seed incomplete → wipe + SEED_STORY={$slug} php artisan db:seed --class=AddSingleStorySeeder --force\n";
+} elseif (! $a) {
+    echo "php artisan stories:run-adaptation {$slug} --force\n";
+} elseif (DB::table("jobs")->where("queue", "adaptation")->count() > 0) {
+    echo "Adaptation jobs still pending — wait for workers.\n";
+} elseif ($a->sessionAdaptations->every(fn ($s) => filled($s->runtime_narrator_prompt))) {
+    if ($a->adaptation_status->value !== "completed") {
+        echo "Run reconciliation:\n";
+        echo "  App\\Jobs\\Adaptation\\AdaptationStatusReconciliationJob::dispatchSync(\$story);\n";
+    } else {
+        echo "DONE — seed + adaptation complete. Playable if on LAUNCH_SLUGS.\n";
+    }
+} else {
+    echo "php artisan stories:run-adaptation {$slug} --force\n";
+}
+'
+```
+
+**Reading failed-job verdicts**
+
+| Verdict | Meaning |
+|---|---|
+| `RECOVERED` | Failure is old; all sessions now have that job’s output and rows were updated after the failure |
+| `OUTPUT PRESENT` | Data exists; failure row is likely stale (retried successfully) |
+| `STILL BROKEN` | Re-run adaptation for that phase |
+| `UNKNOWN` | Story-wide job (Voice Lock, Session Map, etc.) — read the exception line |
+
+After all runtime prompts exist but status is `partial-completion`:
+
+```bash
+php artisan tinker --execute='
+$story = App\Models\Story::where("slug","anima-machina")->firstOrFail();
+App\Jobs\Adaptation\AdaptationStatusReconciliationJob::dispatchSync($story);
+echo $story->adaptation->fresh()->adaptation_status->value . PHP_EOL;
+'
+```
+
+Expect: `completed`.
+
 ### Full session grid
 
 ```bash
