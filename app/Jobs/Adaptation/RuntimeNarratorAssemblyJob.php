@@ -50,27 +50,50 @@ final class RuntimeNarratorAssemblyJob implements ShouldQueue
     public function handle(RuntimeNarratorTemplateBuilder $builder): void
     {
         $adaptation = $this->story->adaptation;
-        $session = $adaptation->sessionAdaptations()->where('session_number', $this->sessionNumber)->firstOrFail();
+        $session    = $adaptation->sessionAdaptations()->where('session_number', $this->sessionNumber)->firstOrFail();
 
         try {
             $prompt = $builder->build($this->story, $session);
 
+            // D8 v2 post-render guards — explicit RuntimeException (no assert()).
+            // The builder already checks these inside build(), but we enforce
+            // here as a secondary gate before persisting to the database.
+
+            if (preg_match('/\{\{[^}]+\}\}/', $prompt)) {
+                throw new RuntimeException(sprintf(
+                    'Assembled runtime narrator prompt contains unmapped {{…}} tokens (story %d, session %d). '
+                    . 'Template slot wiring is incomplete — do not persist.',
+                    $this->story->id,
+                    $this->sessionNumber,
+                ));
+            }
+
+            $charCount = mb_strlen($prompt);
+            if ($charCount > RuntimeNarratorTemplateBuilder::MAX_PROMPT_CHARS) {
+                throw new RuntimeException(sprintf(
+                    'Assembled runtime narrator prompt exceeds %d character cap: %d chars (story %d, session %d). '
+                    . 'Editorial split required.',
+                    RuntimeNarratorTemplateBuilder::MAX_PROMPT_CHARS,
+                    $charCount,
+                    $this->story->id,
+                    $this->sessionNumber,
+                ));
+            }
+
             $session->update([
-                'runtime_narrator_prompt' => $prompt,
-                'runtime_narrator_assembled_at' => Carbon::now(),
+                'runtime_narrator_prompt'        => $prompt,
+                'runtime_narrator_assembled_at'  => Carbon::now(),
             ]);
-        } catch (RuntimeException $compressionFailure) {
-            // Persist nothing. Daniel's in-place rule: there is no legacy partial
-            // fallback. The session will stay un-runnable in Chaos Mode until the
-            // pipeline is re-run for this story (typically via
-            // `php artisan stories:run-adaptation <story> --force`).
-            \Log::channel('narration')->error('runtime_narrator_assembly.compression_failed', [
-                'story_id' => $this->story->id,
+        } catch (RuntimeException $assemblyFailure) {
+            // Persist nothing. No legacy partial fallback. The session stays
+            // un-runnable in Chaos Mode until the pipeline is re-run.
+            \Log::channel('narration')->error('runtime_narrator_assembly.failed', [
+                'story_id'       => $this->story->id,
                 'session_number' => $this->sessionNumber,
-                'message' => $compressionFailure->getMessage(),
+                'message'        => $assemblyFailure->getMessage(),
             ]);
 
-            throw $compressionFailure;
+            throw $assemblyFailure;
         }
     }
 }

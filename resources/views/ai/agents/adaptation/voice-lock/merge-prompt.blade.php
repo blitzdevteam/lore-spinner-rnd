@@ -32,11 +32,11 @@ SYNTHESIS INSTRUCTIONS:
 
 4. DICTION FINGERPRINT: merge vocabulary clusters and distinctive quotes.
 
-5. NOVELIST ONLY: narrator_perspective, paragraph_architecture, dialogue_tag_patterns.
+5. NOVELIST ONLY (1A v2): narrator_perspective, paragraph_architecture, dialogue_tag_patterns. Also synthesize documented_narrator_techniques across all chapter fragments into a consolidated carve-out list — any technique listed by any chapter is permitted for this IP and must be carved out of master_rule_1_hard_bans and anchor_card.
 
-6. SCREENWRITER ONLY (1B v2): action_line_metrics, screenplay_structure_metrics, emotional_vocabulary_hierarchy.
+6. SCREENWRITER ONLY (1B v3): action_line_metrics, screenplay_structure_metrics, emotional_vocabulary_hierarchy.
 
-   Then populate the following 1B v2 fields using the Chunk Metric Aggregation Contract:
+   Then populate the following 1B v3 fields using the Chunk Metric Aggregation Contract:
 
    **1C AGGREGATION STEPS (required — do not skip):**
 
@@ -56,7 +56,7 @@ SYNTHESIS INSTRUCTIONS:
    - Zero-occurrence ABSOLUTE bans: only if summed count is 0 across ALL chunks AND denominator covers full source.
    - Dialogue AVG/P90/P95/MAX: compute from combined speech_lengths_w array per character.
 
-   Step 3 — Produce 1B v2 enforcement fields:
+   Step 3 — Produce 1B v3 enforcement fields:
 
    M. `author_voice_dna_profile.numerical_enforcement_layer`:
    - punctuation enforcement (period_density_per_100w, comma_density_per_100w, semicolons, exclamation_marks_narration, em_dashes, question_marks_narration, question_marks_dialogue, ellipses_narration, ellipses_dialogue, period_to_comma_ratio) — target/floor/ceiling/confidence/sample_size each
@@ -88,7 +88,7 @@ SYNTHESIS INSTRUCTIONS:
    - element_rules[]: { screenplay_element, prose_translation_rule } — 7 element rows (action line, scene heading, CUT TO/transition, parenthetical, character cue, ALL CAPS, (beat))
    - quantitative_translation_mappings[]: { screenplay_metric, source_value, prose_target, drift_ceiling, rationale } — minimum 6 entries (fragment rate, period density, comma density, avg line length, -ing openings, max speech length per character)
 
-   TOP-LEVEL `voice_decay_prevention_protocol` (NOT inside author_voice_dna_profile):
+   TOP-LEVEL `voice_decay_prevention_protocol` (NOT inside author_voice_dna_profile — LEGACY FIELD, preserved if present, not required for V2.3 profiles):
    - re_anchoring_trigger: word-count trigger (e.g., "Every 300-400 words of generated prose")
    - passage_level_enforcement_checks[]: deterministic checks before delivering any passage
    - drift_detection_metrics[]: metrics to track across consecutive passages
@@ -109,6 +109,18 @@ SYNTHESIS INSTRUCTIONS:
 
 12. MASTER RULE 1: universal_bans_acknowledged true; 6-10 IP-specific bans from ban candidates.
 
-13. 14-POINT AUDIT PROTOCOL: exactly 14 IP-specific runtime audit points.
+13. BUILD-TIME QA PROTOCOL (1B v3 Task 6 / 1A v2 Task 3 — BOTH formats):
+    For SCREENWRITER: Produce quantitative_checks[] (8+ items: fragment/sentence-length distribution, ABSOLUTE punctuation bans, longest-speech ceiling, signature-technique frequency drift, decay test procedure) and judgment_checks[] (blind attribution, comparative exclusion, character differentiation swap test) and decay_test_procedure (how to compare first/last 200 words of a 600+ word continuous sample).
+    For NOVELIST: Produce exactly 14 audit points per the 1A v2 14-point list (points 7 Paragraph Architecture and 11 Narrator Compliance must be novelist-specific), plus decay_test_procedure. Map the 14 points to quantitative_checks[] and judgment_checks[] as appropriate.
+    This field does NOT ship to runtime. It is a pre-launch QA gate only.
+
+14. TOP-LEVEL `voice_anchor[]` (BOTH formats — 1B v3 Task 3 / 1A v2 Task 4 — ★ RUNTIME-CRITICAL):
+    Synthesize from voice_anchor_candidates across all chapter fragments. Select and refine 6–8 exemplars spanning the required modes (screenwriter: cold tension/forward pressure, physical action, quiet/aftermath, environmental establishing, dialogue-bearing, emotional weight without naming emotion; novelist: atmosphere/establishing, rising tension, quiet/reflective beat, dialogue-bearing, action/event, author's most characteristic emotional register). Each exemplar: {mode, source, techniques, prose (90–150 words, second-person present-tense)}. NOVELIST: convert POV+tense only — near-verbatim author words; SCREENWRITER: translate from screenplay form per 1B v3. These exemplars are loaded VERBATIM into the runtime narrator prompt and are the LAST voice material cut under token pressure. Obey every ban (minus novelist carve-outs). The set must pass the self-validation gate from the system prompt.
+
+15. TOP-LEVEL `anchor_card[]` (BOTH formats — 1B v3 Task 4 / 1A v2 Task 5 — ★ RUNTIME-CRITICAL):
+    Synthesize from anchor_card_candidates across all chapter fragments. Produce 8–12 binary/local commands from ABSOLUTE/HIGH-confidence patterns confirmed across the corpus. NOVELIST: honor documented narrator technique carve-outs — the card states the author's actual pattern, not a blanket ban. Each must be BOTH discretely checkable AND supported by aggregated evidence (not chapter-level guesses). Phrase as direct actions, not statistics.
+
+16. TOP-LEVEL `runtime_self_check[]` (BOTH formats — 1B v3 Task 5 / 1A v2 Task 6 — ★ RUNTIME-CRITICAL):
+    Synthesize from self_check_candidates. Produce a tight ordered sequence of 7 discrete/local check steps (use the template from the system prompt's Task 5/6, populated with this IP's specifics from anchor_card). No rate computations. NOVELIST: step 1 must handle em-dashes per the author's documented pattern (not a blanket delete); step 2 must respect cognitive-verb carve-outs. The narrator runs this silently before delivering each passage.
 
 Return the complete voice profile matching the full required schema.

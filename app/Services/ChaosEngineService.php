@@ -229,7 +229,8 @@ final class ChaosEngineService
         } else {
             // Strip Section 13 entirely before substitution. Find the section header and the
             // injection point token and replace the whole span with a single continuation marker.
-            $sec13Anchor = '=== SECTION 13 —';
+            // D8 v2 template uses '### SECTION 13:' heading format.
+            $sec13Anchor = '### SECTION 13:';
             $injToken    = '[OPENING_SCENE_INJECTION_POINT]';
             $sec13Start  = strpos($prompt, $sec13Anchor);
             $injPos      = strpos($prompt, $injToken);

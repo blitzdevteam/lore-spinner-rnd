@@ -44,6 +44,10 @@ final class EntryPointDiagnosisJob implements ShouldQueue
             );
         }
 
+        // V2.3: Phase 3 (D10) requires voice_anchor and anchor_card.
+        // dnaBansAndAnchor() throws RuntimeException if either is absent — no silent fallback.
+        $voiceProfile = VoiceProfilePromptSlice::dnaBansAndAnchor((array) ($adaptation->voice_profile ?? []));
+
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::ENTRY_POINT_DIAGNOSIS]);
 
@@ -59,20 +63,35 @@ final class EntryPointDiagnosisJob implements ShouldQueue
             // Falls back to raw source if ip_trimming is not yet available.
             $sessionSourcePages = $this->story->getSessionTrimmedText($this->sessionNumber);
 
+            $storySessionMap = $adaptation->story_session_map;
+            $ipAudit         = $adaptation->ip_audit;
+
+            // Derive protagonist name from session map or ip_audit (best-effort; Phase 3 D10 slot).
+            $protagonist = $storySessionMap['protagonist'] ?? ($ipAudit['protagonist'] ?? $this->story->title);
+
+            // Format label for D10 prompt slot.
+            $format = match (strtoupper((string) ($adaptation->voice_profile['profile_type'] ?? ''))) {
+                'SCREENWRITER' => 'SCREENPLAY (via 1B v3)',
+                'NOVELIST'     => 'NOVEL (via 1A v2)',
+                default        => strtoupper((string) ($adaptation->voice_profile['profile_type'] ?? 'UNKNOWN')),
+            };
+
             $response = (new EntryPointDiagnosisAgent)->prompt(
                 view('ai.agents.adaptation.entry-point-diagnosis.prompt', [
-                    'storySessionMap' => $adaptation->story_session_map,
-                    'ipAudit' => $adaptation->ip_audit,
-                    'sessionNumber' => $this->sessionNumber,
+                    'storySessionMap'    => $storySessionMap,
+                    'ipAudit'            => $ipAudit,
+                    'sessionNumber'      => $this->sessionNumber,
                     'sessionSourcePages' => $sessionSourcePages,
-                    'sessionEvents' => $sessionEvents->map(fn (Event $ev) => [
-                        'story_position' => $ev->story_position,
-                        'position' => $ev->position,
+                    'sessionEvents'      => $sessionEvents->map(fn (Event $ev) => [
+                        'story_position'   => $ev->story_position,
+                        'position'         => $ev->position,
                         'chapter_position' => $ev->chapter_position,
-                        'title' => $ev->title,
-                        'objectives' => $ev->objectives,
+                        'title'            => $ev->title,
+                        'objectives'       => $ev->objectives,
                     ])->all(),
-                    'voiceProfile' => VoiceProfilePromptSlice::dnaAndBans((array) ($adaptation->voice_profile ?? [])),
+                    'voiceProfile'       => $voiceProfile,
+                    'protagonist'        => $protagonist,
+                    'format'             => $format,
                 ])->render()
             );
 

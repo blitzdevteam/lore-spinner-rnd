@@ -15,7 +15,14 @@ use Stringable;
 use Throwable;
 
 /**
- * Pipeline Upgrade V2.2 — Voice Lock per-chapter pass (Deliverable 1A or 1B fragment).
+ * Pipeline Upgrade V2.3 — Voice Lock per-chapter pass (Deliverable 1A v2 or 1B v3 fragment).
+ *
+ * V2.3 additions (both branches):
+ *   voice_anchor_candidates[]  — candidate exemplar passages (merge → top-level voice_anchor)
+ *   anchor_card_candidates[]   — ABSOLUTE/HIGH binary/local rule candidates
+ *   self_check_candidates[]    — discrete/local check step candidates
+ * Novelist branch also adds:
+ *   documented_narrator_techniques[] — carve-outs from bans (cognitive verbs, FID, prolepsis…)
  */
 #[Model('gpt-5.4')]
 #[Temperature(0.2)]
@@ -216,11 +223,88 @@ class VoiceLockChapterAgent implements Agent, HasStructuredOutput
             $voiceObservationsFields['confidence_sample_size_notes'] = $schema->string()->required()
                 ->title('Confidence Sample Size Notes')
                 ->description('Confidence tier + sample size notes for sparse metrics in this chapter.');
+
+            // --- 1B v3 / V2.3: anchor candidate fields ---
+            // Merge synthesises these into the top-level voice_anchor, anchor_card,
+            // and runtime_self_check. Arrays may be empty; never omit the keys.
+            $voiceObservationsFields['voice_anchor_candidates'] = $schema->array()->required()
+                ->title('Voice Anchor Candidates')
+                ->description('0–3 candidate exemplar passages from this chapter (Task 3). Empty array valid if no standout moments.')
+                ->items(
+                    $schema->object([
+                        'mode'       => $schema->string()->required()->title('Mode')
+                            ->description('cold_tension | physical_action | quiet_aftermath | environmental | dialogue_bearing | emotional_weight'),
+                        'source'     => $schema->string()->required()->title('Source Moment')
+                            ->description('The screenplay moment translated from.'),
+                        'techniques' => $schema->string()->required()->title('Techniques Demonstrated')
+                            ->description('2–3 signature techniques this exemplar demonstrates.'),
+                        'prose'      => $schema->string()->required()->title('Prose')
+                            ->description('90–150 words, second-person present-tense, passes all bans.'),
+                    ])->required()->withoutAdditionalProperties()
+                );
+
+            $voiceObservationsFields['anchor_card_candidates'] = $schema->array()->required()
+                ->title('Anchor Card Candidates')
+                ->description('ABSOLUTE/HIGH-confidence binary/local rules from this chapter (Task 4). Phrased as direct actions. Empty array valid.')
+                ->items($schema->string()->required());
+
+            $voiceObservationsFields['self_check_candidates'] = $schema->array()->required()
+                ->title('Self-Check Candidates')
+                ->description('Discrete/local check steps observable in this chapter (Task 5). No rate computations. Empty array valid.')
+                ->items($schema->string()->required());
         } else {
             $voiceObservationsFields['paragraph_architecture_note'] = $schema->string()->required()->title('Paragraph Architecture Note');
             $voiceObservationsFields['demonstrative_paragraphs'] = $schema->array()->required()->title('Demonstrative Paragraphs')->items($schema->string()->required());
             $voiceObservationsFields['narrator_perspective_notes'] = $schema->string()->required()->title('Narrator Perspective Notes');
             $voiceObservationsFields['dialogue_tag_notes'] = $schema->string()->required()->title('Dialogue Tag Notes');
+
+            // --- 1A v2 / V2.3: novelist anchor candidate fields ---
+            // Merge synthesises these into the top-level voice_anchor, anchor_card,
+            // and runtime_self_check. Arrays may be empty; never omit the keys.
+
+            // documented_narrator_techniques: novelist-specific carve-outs from bans.
+            // Tracks techniques the author uses deliberately (cognitive verbs, free indirect
+            // discourse, prolepsis, editorial commentary) so merge can carve them out of
+            // the ban list and Anchor Card rather than banning them incorrectly.
+            $voiceObservationsFields['documented_narrator_techniques'] = $schema->array()->required()
+                ->title('Documented Narrator Techniques')
+                ->description('1A v2: techniques observable in this chapter that AI is normally banned from but this author uses deliberately (cognitive verbs, free indirect discourse, prolepsis, direct address, philosophical commentary). Becomes merge carve-outs. Empty array valid.')
+                ->items(
+                    $schema->object([
+                        'technique'   => $schema->string()->required()->title('Technique')
+                            ->description('Name of the normally-banned technique this author uses.'),
+                        'evidence'    => $schema->string()->required()->title('Evidence')
+                            ->description('Direct quote from source demonstrating deliberate use.'),
+                        'carve_out'   => $schema->string()->required()->title('Carve-Out Rule')
+                            ->description('How the ban should be modified to permit this technique for this IP.'),
+                    ])->required()->withoutAdditionalProperties()
+                );
+
+            $voiceObservationsFields['voice_anchor_candidates'] = $schema->array()->required()
+                ->title('Voice Anchor Candidates')
+                ->description('1A v2: 0–3 candidate passages from this chapter, with POV+tense conversion to second-person present only (no paraphrase). Mode + source + techniques header required. Empty array valid.')
+                ->items(
+                    $schema->object([
+                        'mode'       => $schema->string()->required()->title('Mode')
+                            ->description('atmosphere | rising_tension | quiet_beat | dialogue_bearing | action | emotional_register'),
+                        'source'     => $schema->string()->required()->title('Source Passage')
+                            ->description('The original source passage this was converted from.'),
+                        'techniques' => $schema->string()->required()->title('Techniques Demonstrated')
+                            ->description('2–3 signature techniques this exemplar demonstrates.'),
+                        'prose'      => $schema->string()->required()->title('Prose')
+                            ->description('90–150 words, second-person present, near-verbatim author voice. POV+tense conversion only.'),
+                    ])->required()->withoutAdditionalProperties()
+                );
+
+            $voiceObservationsFields['anchor_card_candidates'] = $schema->array()->required()
+                ->title('Anchor Card Candidates')
+                ->description('1A v2: ABSOLUTE/HIGH-confidence binary/local rules from this chapter (Task 5). Carve-outs for documented narrator techniques respected. Empty array valid.')
+                ->items($schema->string()->required());
+
+            $voiceObservationsFields['self_check_candidates'] = $schema->array()->required()
+                ->title('Self-Check Candidates')
+                ->description('1A v2: discrete/local check steps from this chapter (Task 6). No rate computations. Empty array valid.')
+                ->items($schema->string()->required());
         }
 
         return [

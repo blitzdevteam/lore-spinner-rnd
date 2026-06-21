@@ -1,13 +1,15 @@
 @include('ai.agents.adaptation._voice-profile-context', [
     'voiceProfile' => $voiceProfile,
-    'voiceProfileLabel' => 'Sections 1+2 — Voice DNA + Master Rule 1 bans (the cold open you write must embody this profile)',
+    'voiceProfileLabel' => 'Sections 1+2+3 — Voice DNA + Master Rule 1 bans + Voice Anchor exemplars + Anchor Card (the cold open you write must match the Voice Anchor rhythm, diction, and compression; obey all bans and the Anchor Card)',
 ])
+
+PHASE 1 AUDIT: {{ json_encode($ipAudit, JSON_PRETTY_PRINT) }}
 
 STORY SESSION MAP (this session's allocation):
 {{ json_encode($storySessionMap, JSON_PRETTY_PRINT) }}
 
-PHASE 1 AUDIT RESULT:
-{{ json_encode($ipAudit, JSON_PRETTY_PRINT) }}
+PROTAGONIST: {{ $protagonist }}
+FORMAT: {{ $format }}
 
 SESSION NUMBER: {{ $sessionNumber }}
 

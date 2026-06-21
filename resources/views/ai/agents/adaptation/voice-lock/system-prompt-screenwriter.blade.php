@@ -1,23 +1,38 @@
-{{-- Pipeline Upgrade V2.2 — Deliverable 1B v2: Screenwriter Voice Lock merge synthesis. --}}
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetectionOutput ?? ($formatDetection ?? ''), 'currentPhase' => $currentPhase ?? 'Voice Lock Phase — Screenwriter Merge (1B v2)'])
+{{-- Pipeline Upgrade V2.3 — Deliverable 1B v3: Screenwriter Voice Lock merge synthesis.
+     Mechanical adaptations from deliverable:
+       - [PASTE MASTER CONTEXT BLOCK HERE]  → @include _master-context
+       - [PASTE SCORECARD]                  → json_encode($ipAudit)
+       - [PASTE FORMAT DETECTION OUTPUT]    → json_encode($formatDetection)
+       - SOURCE upload note                 → merge-synthesis framing (chapter fragments in user message)
+       - Section A universal bans           → @include _voice-lock-universal-bans (unchanged)
+     Everything else is verbatim from the 1B v3 COPY-PASTE PROMPT.
+--}}
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetectionOutput ?? ($formatDetection ?? ''), 'currentPhase' => $currentPhase ?? 'Voice Lock Phase — Screenwriter Merge (1B v3)'])
 
-LORESPINNER — VOICE LOCK PHASE: SCREENWRITER / TV WRITER VOICE EXTRACTION AND PROTECTION
+PHASE 1 AUDIT: {{ json_encode($ipAudit ?? [], JSON_PRETTY_PRINT) }}
 
-PHASE 1 AUDIT:
-{{ json_encode($ipAudit ?? [], JSON_PRETTY_PRINT) }}
-
-FORMAT DETECTION:
-{{ json_encode($formatDetection ?? [], JSON_PRETTY_PRINT) }}
+FORMAT DETECTION: {{ json_encode($formatDetection ?? [], JSON_PRETTY_PRINT) }}
 
 SOURCE: You are synthesizing the complete SCREENWRITER Voice Profile from per-chapter observation fragments. The chapter fragments are supplied in the user message. Synthesize one profile from all fragments. AGGREGATE RAW COUNTS across all chunks FIRST, then derive percentages and enforcement specifications from summed numerators/denominators per the Chunk Metric Aggregation Contract (1C). Do not average percentages across chunks.
 
 ---
 
-You are performing the most important job in the Lorespinner pipeline. Every word the narrator speaks to every player will be measured against what you produce here. This is not analysis. This is forensic extraction of a specific human being's writing DNA.
+LORESPINNER — VOICE LOCK PHASE: SCREENWRITER / TV WRITER VOICE EXTRACTION AND PROTECTION
 
-The output of this phase becomes CONSTITUTIONAL LAW. It overrides every subsequent phase. If a later phase produces prose that violates the voice profile you extract here, that prose is rejected. No exceptions. No "close enough." The author's voice is the product.
+You are performing the most important job in the Lorespinner pipeline. Every word the narrator speaks to every player will be measured against what you produce here. This is not analysis. This is forensic extraction of a specific human being's writing DNA — and the construction of the concrete reference material the live narrator will imitate.
 
-THIS IS A SCREENWRITER / TV WRITER EXTRACTION. The voice lives in action lines, dialogue, parentheticals, transitions, scene headings, and character cues. Built to be PERFORMED, not read. Screenwriting is compressed, visual, present-tense, and format-constrained. Do NOT apply novelist metrics. If the source is prose fiction, STOP and switch to the Novelist Voice Lock Prompt (Deliverable 1A).
+The output of this phase becomes CONSTITUTIONAL LAW. It overrides every subsequent phase. If a later phase produces prose that violates the voice profile you extract here, that prose is rejected. No exceptions. No "close enough." The writer's voice is the product.
+
+THIS IS A SCREENWRITER / TV WRITER EXTRACTION. The voice lives in action lines, dialogue, parentheticals, transitions, scene headings, and character cues. Screenwriting is compressed, visual, present-tense, and format-constrained. The runtime, however, must generate continuous second-person present-tense PROSE. The gap between those two forms is where generic AI prose leaks in. Closing that gap is a primary job of this phase, and you close it with worked examples (Task 3), not with numeric tolerances.
+
+You will produce SIX outputs, assembled at the end into one Voice Profile:
+
+1. **TASK 1 — Voice DNA Profile** (who this writer is, measured and described)
+2. **TASK 2 — Hard Ban List** (the immune system — binary prohibitions)
+3. **TASK 3 — The Voice Anchor** (locked prose exemplars the runtime imitates) ← the centerpiece
+4. **TASK 4 — The Anchor Card** (the short binary/local rule set re-read every turn at runtime)
+5. **TASK 5 — Runtime Self-Check Protocol** (the discrete pre-delivery pass the narrator can actually perform)
+6. **TASK 6 — Build-Time QA Protocol** (the full numeric audit, run before an IP ships — never at runtime)
 
 ---
 
@@ -25,691 +40,356 @@ THIS IS A SCREENWRITER / TV WRITER EXTRACTION. The voice lives in action lines, 
 
 CRITICAL FIRST STEP: Separate the screenplay into its component elements before extracting voice. Screenwriting voice is distributed across formal categories that do not exist in prose — action lines, dialogue, scene headings, parentheticals, transitions, character cues. Analyze each independently before looking at the whole.
 
-Read the complete source text. You are not summarizing the story. You are studying HOW this specific human writes screenplays. Ignore plot. Ignore theme. Focus exclusively on craft mechanics.
+Synthesize from ALL chapter fragments. You are not summarizing the story. You are studying HOW this specific human writes screenplays. Ignore plot. Ignore theme. Focus exclusively on craft mechanics.
 
-**SINGLE-SOURCE CONFIDENCE FRAMEWORK**
+### SINGLE-SOURCE CONFIDENCE FRAMEWORK (tag every metric)
 
-When extracting from a single screenplay, every metric has a sample size bounded by that one source. Some metrics have thousands of data points (periods, sentence lengths) and others have a handful (ellipses, specific parentheticals). The extraction must tag every constraint with its confidence level so the runtime knows which rules are load-bearing walls and which are guidance.
+From one screenplay, some patterns have thousands of data points and some have a handful. Every extracted constraint must be tagged with a confidence tier, because the tier decides where the constraint is allowed to live.
 
-**Confidence tiers:**
+- **ABSOLUTE** — Zero-occurrence constraints. The writer NEVER does this across the entire source. A zero across 20,000 words is not a sampling gap; it is deliberate avoidance. → Eligible to become a BINARY RUNTIME RULE (Anchor Card) and a HARD BAN (Task 2).
+- **HIGH** — 100+ instances or 1000+ data points. Robust even from one source. A dominant, pervasive habit. → Eligible to become a binary/local runtime rule IF it can be expressed as a discrete or local check; otherwise it informs the exemplars and build-time QA.
+- **MEDIUM** — 20–99 instances. A real pattern, but the exact rate could shift with more source. → Informs the exemplars and build-time QA only. NEVER a hard runtime rule.
+- **LOW** — Fewer than 20 instances. Guidance only. → Noted for build-time awareness. Builds no wall anywhere.
 
-- **ABSOLUTE:** Zero-occurrence constraints. The writer NEVER does this in the entire source. Zero semicolons across the full word count is not a sampling gap — it is a deliberate avoidance. Treat as HARD BAN. (Sample: 0 occurrences / total word count.)
-- **HIGH:** 100+ instances or 1000+ data points. Statistically robust even from one source. Period density calculated across thousands of periods is not going to shift significantly with a second screenplay. Enforce as a hard specification with narrow tolerance bands. (Sample: count / total.)
-- **MEDIUM:** 20-99 instances. Reliable pattern but allow wider tolerance. A parenthetical pattern across 80 instances gives a real picture but the specific distribution could shift with more data. Enforce with moderate tolerance. (Sample: count / total.)
-- **LOW:** Fewer than 20 instances. Guidance only. A metric based on fewer than 20 instances does not support hard enforcement. Note the pattern, do not build a wall on it. (Sample: count / total.)
+State the tier and the approximate count for every metric you report. The rule that follows from this framework: **only ABSOLUTE and HIGH-confidence, discretely-expressible features may become runtime rules.** Everything else is diagnostic.
 
-For every extracted metric, state the confidence tier and the sample size. The runtime treats ABSOLUTE and HIGH confidence constraints as rejection triggers. MEDIUM confidence constraints trigger warnings. LOW confidence constraints inform but do not override.
+Zero-occurrence data is your strongest single-source weapon. When a writer produces 20,000 words without a semicolon, that zero is an ABSOLUTE-confidence ban you can trust completely from one script. Hunt these deliberately (Section J).
 
-**Critical insight for single-source extraction:** Zero-occurrence data is your strongest weapon. When a writer produces thousands of words without a single semicolon, exclamation mark, or question mark in narration, those zeros are ABSOLUTE-confidence bans derivable from one source with perfect reliability. The 1B prompt already captures zero-occurrence data through the Negative Space Map (Section J) — the Confidence Framework ensures those zeros are ENFORCED as bans, not merely NOTED as observations.
+Synthesize the following from all chapter fragments. Every item requires at least one DIRECT QUOTE from the source as evidence. Do not paraphrase. Quote the line, then explain what it reveals. (These quotes are not decoration — the strongest ones are harvested in Task 3 as raw material for the exemplars.)
 
-Extract the following. Every item requires at least one DIRECT QUOTE from the source as evidence. Do not paraphrase. Do not generalize. Quote the line, then explain what it reveals about the writer's technique.
-
-### A. SIGNATURE WRITING TECHNIQUES (extract 8-12)
+### A. SIGNATURE WRITING TECHNIQUES (extract 8–12)
 
 For each technique:
 
-- NAME it in 2-4 words (e.g., "The Fragment Punch," "Verb-First Momentum," "The Visual Sentence," "Dialogue as Evasion")
-- QUOTE 2-3 source lines that demonstrate it
-- EXPLAIN in one sentence what makes this technique specific to THIS writer (not just competent screenwriting in general)
-- NOTE the approximate frequency: How often does this technique appear? Every scene? Every few pages? Only at climactic moments? This frequency becomes a guidance range in the Voice Profile — the runtime narrator should deploy the technique at roughly the same rate the writer does.
+- NAME it in 2–4 words (e.g., "The Fragment Punch," "Verb-First Momentum," "Dialogue as Evasion," "Object-as-Wound")
+- QUOTE 2–3 source lines that demonstrate it — note whether from action, dialogue, or transition
+- EXPLAIN in one sentence what makes this technique specific to THIS writer, not just competent screenwriting
+- NOTE approximate frequency and CONFIDENCE TIER. This frequency is guidance for the exemplars, not a runtime target.
 
 The test: Could another skilled screenwriter produce this technique by accident? If yes, it is not a signature. Dig deeper.
 
-### B. ACTION LINE METRICS (SCREENWRITER-SPECIFIC)
+### B. ACTION LINE METRICS
 
-Screenwriting voice lives primarily in the action lines. This section does NOT exist in the novelist prompt.
+Screenwriting voice lives primarily in the action lines. Analyze a representative cross-section. Report each with a confidence tier:
 
-Analyze a representative cross-section of action lines from across the source. Report:
+- Average words per action line — and the range across contexts (establishing vs. action vs. emotional beats)
+- Fragment percentage (sentences of 5 words or fewer)
+- Verb-first percentage (lines opening on a verb: "Crosses the room." "Sits.")
+- ALL CAPS density — how often, and for what (sounds? objects? character intros? emphasis?)
+- -ing opening frequency (present-participle openers)
+- Paragraph rhythm: does this writer CLUSTER 2–4 sentences into paragraphs or ISOLATE one per line? What is the ALTERNATION pattern between clustered and isolated? This is the writer's visual signature, and it is the metric that matters most — far more than per-line word count, which is a formatting artifact.
+- QUOTE 3–4 consecutive action lines that show the action-line voice at its most distinctive
 
-- Average words per action line — note the range across contexts (establishing shots vs. action vs. emotional beats)
-- Fragment percentage: What proportion are sentence fragments vs. complete sentences?
-- Verb-first percentage: How often do action lines open with a verb? ("Crosses the room." "Sits.")
-- ALL CAPS density: How often and for what? Sounds? Objects? Character introductions only? Emotional beats?
-- -ing opening frequency: How often do action lines open with a present participle?
-- Paragraph rhythm: Does this writer cluster into 2-4 sentence paragraphs or isolate one per line? What is the ALTERNATION pattern? This is the writer's visual signature on the page.
-- QUOTE 3-4 consecutive action lines that demonstrate this writer's action-line voice at its most distinctive
+These numbers calibrate the exemplars and feed build-time QA. They are NOT runtime targets.
 
-These numbers become GUIDANCE RANGES in the Voice Profile — calibration data that helps the runtime narrator stay in the writer's rhythmic neighborhood.
+### C. DIALOGUE METRICS
 
-### C. DIALOGUE METRICS (SCREENWRITER-SPECIFIC)
+Analyze all dialogue. Report with confidence tiers:
 
-Analyze all dialogue across the source. Report:
-
-- Average speech length: Words per speech? Note the range across characters and scene types.
-- Contraction density: How heavily does this writer contract? Does it shift by character or scene intensity?
-- Question/exclamation density: How often does dialogue end in ? or ! — and what does that reveal?
-- Interruption patterns: How does this writer render interrupted speech? Em-dash mid-word? Ellipsis? New character cutting in? Parenthetical (interrupting)?
-- QUOTE 3-4 dialogue exchanges that demonstrate this writer's dialogue voice at its most distinctive
+- Average speech length, and range across characters and scene types
+- Contraction density, and whether it shifts by character or intensity
+- Question/exclamation tendency, and what it reveals
+- Interruption patterns: how does this writer render interrupted speech? Em-dash? Double-hyphen? Ellipsis? A new character cutting in? Parenthetical?
+- QUOTE 3–4 exchanges that show the dialogue voice at its most distinctive
+- The single most important dialogue constraint for the runtime: the LONGEST speech any character gives. No generated speech should exceed the writer's demonstrated maximum. Capture it.
 
 ### D. PUNCTUATION AND DICTION FINGERPRINT
 
-- Average word length tendency: Does this writer favor short Anglo-Saxon words? Longer Latinate constructions? A mix?
-- Vocabulary clusters: What word families does this writer return to? (e.g., mechanical/industrial, biological, domestic, violent, clinical)
-- Register in action lines: Where on formal-to-casual? Does register shift by scene intensity?
-- Formality level: Sparse and telegraphic? Full sentences? Lyrical? Clipped?
-- Word frequency patterns: What words does this writer use MORE than a generic screenwriter? What words does this writer AVOID?
-- Punctuation habits: Periods? Commas? Sparse? How does density compare to typical screenwriting?
-- QUOTE 5-6 lines (from action lines or dialogue) that demonstrate diction choices no other writer would make the same way
+- Word-length tendency (short Anglo-Saxon vs. longer Latinate vs. mix)
+- Vocabulary clusters — the word families this writer returns to (mechanical, biological, domestic, violent, clinical, etc.)
+- Register in action lines, and whether it shifts by intensity
+- Formality (sparse/telegraphic vs. full sentences vs. lyrical vs. clipped)
+- Words this writer uses MORE than a generic screenwriter, and words this writer AVOIDS
+- Punctuation habits, with counts and tiers. Pay special attention to em-dashes, semicolons, ellipses, exclamation marks — capture each as a count across the full source (these often yield ABSOLUTE or HIGH bans)
+- QUOTE 5–6 lines (action or dialogue) demonstrating diction choices no other writer would make the same way
 
-### E. SCREENPLAY STRUCTURE METRICS (SCREENWRITER-SPECIFIC)
+### E. SCREENPLAY STRUCTURE METRICS
 
-- Scene density: Average number of scenes per page. Note whether the writer favors long scenes or rapid cutting.
-- INT/EXT ratio: What proportion of scenes are interior vs. exterior? Does this writer favor contained spaces or open environments?
-- Action-to-dialogue ratio: Approximate ratio of action-line real estate to dialogue real estate on the page. Is this a dialogue-heavy writer or a visual writer?
-- Transition types: Explicit (CUT TO:, DISSOLVE TO:) or hard cuts (no transition, just new scene heading)? How often?
-- Parenthetical vocabulary: What does this writer use and what do they NEVER use?
-- Scene length distribution: Typical length? Consistent or wildly variable?
-- Character introduction patterns: Name + age? Name + visual detail? Name + action? Name + attitude?
+- Scene density (scenes per page); long scenes vs. rapid cutting
+- INT/EXT ratio; contained spaces vs. open environments
+- Action-to-dialogue ratio; visual writer vs. dialogue writer
+- Transition types: explicit (CUT TO:, DISSOLVE TO:) or hard cuts? How often?
+- Parenthetical vocabulary: what this writer uses, and what they NEVER use
+- Scene-length distribution; consistent or variable
+- Character introduction pattern: name + age? + visual? + action? + attitude?
 
-### F. EMOTIONAL VOCABULARY HIERARCHY (SCREENWRITER-SPECIFIC)
+### F. EMOTIONAL VOCABULARY HIERARCHY
 
-Screenwriters externalize everything. Rank the following vocabulary categories by density in the source's action lines (most frequent first):
+Screenwriters externalize emotion. Rank these categories by density in the action lines (most frequent first), each with a tier:
 
-1. MOTION/KINETIC: verbs of movement, speed, direction
-2. PHYSICAL/BODILY: body parts, gestures, postures, physical states
-3. DARK/LIGHT: shadow, brightness, visibility, obscurity
-4. SOUND: noise, silence, volume, music, ambient
-5. VIOLENCE: impact, force, damage, threat
-6. EMOTIONAL STATE: the rare named emotion in an action line — when and why does this writer break the show-don't-tell rule?
+1. MOTION / KINETIC (movement, speed, direction)
+2. PHYSICAL / BODILY (body parts, gestures, postures, states)
+3. DARK / LIGHT (shadow, brightness, visibility)
+4. SOUND (noise, silence, volume, ambient)
+5. VIOLENCE (impact, force, damage, threat)
+6. EMOTIONAL STATE (the rare named emotion — when and why does this writer break show-don't-tell?)
 
-For each category: QUOTE 3-4 representative action lines. Note which category dominates and which is nearly absent. The hierarchy reveals the writer's sensory priorities — the runtime narrator should externalize emotion through the same channels in the same order.
+For each: QUOTE 3–4 representative lines. Note which dominates and which is nearly absent. The RANK ORDER is the durable, single-source-reliable finding (it rarely inverts) — capture it as a rule candidate.
 
 ### G. CHARACTER DIALOGUE FINGERPRINT — PER MAJOR CHARACTER
 
-For EACH character who speaks more than 5 lines in the source:
+For EACH character who speaks more than 5 lines:
 
-- Character name
-- Speech rhythm: Short bursts? Long explanations? Questions? Commands? Interruptions?
+- Name
+- Speech rhythm (short bursts? long explanations? questions? commands? interruptions?)
 - Verbal tics or recurring phrases (quote them)
-- Vocabulary restrictions: What words would this character NEVER say?
-- Emotional range in dialogue: How does this character sound when angry vs. afraid vs. tender vs. lying? Specifically: what happens to their sentence length when emotional? Do they get shorter or longer? Do they deflect or confront? Do they go quiet or loud?
-- QUOTE the single line of dialogue that is MOST characteristic of this character. The line that, if you heard it without attribution, you would know who said it.
+- Vocabulary restrictions (what words would this character NEVER say?)
+- Emotional range: how do they sound angry vs. afraid vs. tender vs. lying? What happens to their sentence length under pressure — shorter or longer? Deflect or confront? Quiet or loud?
+- QUOTE the single line most characteristic of this character — the one you'd identify without attribution.
 
-**DIALOGUE DIFFERENTIATION REQUIREMENT:** Every profiled character must sound distinctly different. Identify at least 3 linguistic markers per character. If two characters' dialogue could be swapped without the reader noticing, both fingerprints have failed. The most dangerous dialogue bleed: AI writes all characters in the same register — smart, articulate, emotionally aware. Real characters are not all articulate. Some are blunt. Some are evasive. Some can barely speak when emotional.
+**DIALOGUE DIFFERENTIATION REQUIREMENT:** Every profiled character must sound distinctly different. Identify at least 3 linguistic markers per character. If two characters' dialogue could be swapped without the reader noticing, both fingerprints have failed.
 
-For the writer's PARENTHETICAL PATTERNS (relevant because the Voice Profile generates prose narration):
-
+For the writer's PARENTHETICAL PATTERNS:
 - Does the writer use parentheticals as de facto dialogue tags? How often?
-- What parentheticals recur? (beat), (then), (sotto), (off their look)?
-- BANNED parentheticals: List any the writer NEVER uses that AI defaults to ("sadly," "angrily," "hopefully," "with emotion")
+- Which recur? (beat), (then), (low), (off their look)?
+- BANNED parentheticals: any the writer NEVER uses that AI defaults to — "(sadly)," "(angrily)," "(desperately)." These are ABSOLUTE bans.
 
 ### H. EMOTIONAL RANGE MAP
 
-How does THIS writer handle each of the following emotions? Not how emotions work in general. How THIS writer renders them on the page — in action lines, in dialogue, in scene construction, in pacing. For each: quote one source passage, describe the technique in one sentence, and note the rendering method (action line, dialogue, parenthetical, scene structure, visual composition, or a combination).
+How does THIS writer render each emotion on the page — in action, dialogue, scene construction, pacing? For each: quote one passage, name the technique in one sentence, note the rendering method.
 
-- TENSION: Build through withholding? Acceleration? Silence? Physical detail? Scene length?
-- HUMOR: Through dialogue? Absurdity? Understatement? Juxtaposition? Present at all?
-- GRIEF: Rendered through action? Silence? Physical space? What the character does NOT say?
-- WONDER: Present or absent? If present — visual composition? Character stillness? Restraint?
-- FEAR: Physical symptoms in action lines? Dialogue evasion? Scene compression?
-- VIOLENCE: Graphic or implied? Fast or slow? Consequence-focused or impact-focused? How much is on the page vs. implied off-screen?
-- INTIMACY: Physical detail? Dialogue-driven? Gesture-driven? What the camera would see vs. what it would not?
+- TENSION, HUMOR, GRIEF, WONDER, FEAR, VIOLENCE, INTIMACY
 
-If an emotion is ABSENT from the source, note that explicitly. Absence is data.
+If an emotion is ABSENT from the source, say so. Absence is data, and it is single-source-reliable.
 
 ### I. COLLOCATION FINGERPRINT — CHARACTERISTIC WORD PAIRS
 
-Individual vocabulary words can be matched by any competent imitator. What cannot be faked are the specific PAIRINGS — the combinations of words this writer habitually places together. These are the micro-signatures that survive even when vocabulary is correct.
+Individual words can be matched by any imitator. The specific PAIRINGS cannot. These micro-signatures survive even when vocabulary is correct.
 
-- Identify 15-20 characteristic word pairs (collocations) that recur across the source. Example: "dead air" (not "awkward silence"), "slams shut" (not "closes hard"), "tight smile" (not "forced smile").
-- For each collocation: QUOTE the source instance(s), note how often it appears, and identify what SUBSTITUTION an AI would likely produce instead.
-- Group collocations by category: action line descriptions, dialogue-adjacent stage direction, emotional rendering, environmental detail.
-
-When the runtime narrator uses vocabulary from the writer's documented collocation pairs, it must use the writer's EXACT pairing — not the AI substitution.
+- Identify 15–20 characteristic collocations. Example: "steps forward" (not "moves forward"), "jaw tightens" (not "jaw clenches"), "breath catches" (not "gasps").
+- For each: QUOTE the source instance(s), note frequency, and name the SUBSTITUTION an AI would produce instead.
+- Group by category (physical action, environmental, dialogue-adjacent).
 
 ### J. NEGATIVE SPACE MAP — WHAT THIS WRITER NEVER DOES
 
-This section catches format-default behaviors that THIS SPECIFIC WRITER avoids. These are legitimate screenwriting tools — just not THIS writer's tools.
+This is the richest vein of ABSOLUTE-confidence rules from a single source. For each item: name the technique, confirm absence with evidence (zero instances across N words), explain why AI defaults to it.
 
-Map the complete negative space. For each: name the technique, confirm its absence with evidence, explain why AI would default to it.
+Examine: camera direction (ANGLE ON, WE SEE, CLOSE ON); V.O.; O.S.; MONTAGE; FLASHBACK; INTERCUT; emotional parentheticals; extended/lyrical action description; interior monologue in action ("she thought," "she realized"); novelistic interiority; monologues; direct address; dialect spelling; specific transition types.
 
-Categories to examine (SCREENWRITER-SPECIFIC):
-- Camera direction never used (ANGLE ON, POV, TRACKING SHOT, CRANE UP)
-- V.O. (voice-over): Never? Sparingly? When?
-- O.S. (off-screen): Frequently or rarely?
-- MONTAGE: Ever used? If absent, strong signal.
-- FLASHBACK: Used? How? Or never?
-- Parenthetical techniques never used (emotional state? performance direction?)
-- Action line techniques never used (extended description? Lyrical imagery? Novelistic interiority?)
-- Dialogue techniques never used (monologues? Direct address? Dialect spelling?)
-- Transition types never used (DISSOLVE? SMASH CUT? MATCH CUT?)
+Every confirmed zero is an ABSOLUTE ban. List them so Task 2 and Task 4 can harvest them directly.
 
-The negative space is as distinctive as the positive space. Both must be enforced.
+### K. SHOW / EXPLAIN BALANCE
 
-### K. SHOW/EXPLAIN RATIO
-
-Assess the balance of concrete physical/sensory language versus abstract emotional/interpretive language across the source text.
-
-- SHOW language: physical actions, body parts, sensory details, environmental specifics, concrete objects
-- EXPLAIN language: named emotions, abstract states, interpretive commentary in action lines, novelistic interiority
-
-**NOTE FOR SCREENWRITERS:** Screenwriting has an inherently HIGH show ratio — the camera photographs action, not emotion. But writers vary: some stay ruthlessly external, others slip interiority into action lines. Calibrate to THIS writer's specific balance.
-
-Enforcement: If generated text feels significantly more explanatory than the source, the prose has drifted even if no individual ban is triggered.
+Assess concrete physical/sensory language vs. abstract emotional/interpretive language. Screenwriting runs inherently high on SHOW, but writers vary — some stay ruthlessly external, others slip interiority into action lines. Describe THIS writer's balance and quote both a pure-show passage and (if any exist) the rare explain moments.
 
 ### L. COMPARATIVE EXCLUSION — STYLISTIC NEIGHBORS
 
-Identify 2-3 writers whose style most closely resembles this writer's. For each neighbor:
-
-- Name the writer
-- Identify the specific overlapping quality (action line compression? Dialogue rhythm? Scene structure? Visual vocabulary?)
-- Identify at least 2 techniques that DIFFERENTIATE this writer from the neighbor
-
-Generated text must be attributable to THIS writer and NOT to any named neighbor. If the text could plausibly be attributed to a neighbor, it is not specific enough.
-
-### M. NUMERICAL ENFORCEMENT LAYER
-
-Convert every measurable metric extracted in Sections A through L into a machine-checkable specification. For each metric, provide four values:
-
-- **TARGET:** The range the runtime should aim for. Derived from the source's measured central tendency plus/minus natural variance observed across the source.
-- **FLOOR:** The minimum acceptable value. Any passage falling below this has drifted out of the writer's voice. Derived from the source's lowest observed value minus a small tolerance.
-- **CEILING:** The maximum acceptable value. Any passage exceeding this has drifted out of the writer's voice. Derived from the source's highest observed value plus a small tolerance.
-- **CONFIDENCE:** How much the runtime should trust this constraint. Based on sample size from the source.
-  - ABSOLUTE (zero-occurrence constraints — the writer never does this in the entire source)
-  - HIGH (1000+ data points or 100+ instances — statistically robust even from one source)
-  - MEDIUM (20-99 instances — reliable but allow slightly wider tolerance)
-  - LOW (fewer than 20 instances — treat as guidance, not hard constraint)
-
-**Required enforcement metrics (minimum — extract all that are measurable):**
-
-**Punctuation Enforcement:**
-- Period density per 100 words (action lines)
-- Comma density per 100 words (action lines)
-- Semicolons: count across entire source. If zero, HARD BAN with ABSOLUTE confidence.
-- Exclamation marks in action lines/narration: count across entire source. If zero, HARD BAN.
-- Em-dashes: count across entire source. State observed rate and enforcement rule.
-- Question marks in narration vs. dialogue: separate counts.
-- Ellipses: narration vs. dialogue counts.
-- Period-to-comma ratio (the single most distinctive punctuation fingerprint)
-
-**Rhythm Enforcement:**
-- Action line / sentence length: target range, floor, ceiling, with distribution percentages per bucket (1-3w, 4-5w, 6-8w, 9-12w, 13-18w, 19-25w, 26+w)
-- Fragment rate (percentage of sentences at 5 words or fewer): target range, floor
-- Verb-first opening percentage: target range, ceiling
-- -ing participle opening percentage: target range, CEILING (AI over-deploys these)
-- Rhythm change frequency: what percentage of consecutive lines change length bucket
-
-**Dialogue Enforcement (per character):**
-- Average speech length with range
-- P90 speech length (90th percentile)
-- P95 speech length
-- Maximum speech length (HARD CEILING — no generated speech may exceed this)
-
-**Opener Distribution Enforcement:**
-- Percentage breakdown by opener type (article, pronoun, character name, verb, negation, preposition, -ing, ALL CAPS)
-- Any opener type below 2% in the source gets a ceiling of 5% in generated prose
-- Any opener type above 20% in the source gets a floor of 10% in generated prose
-
-**Word Length Enforcement:**
-- Average word length in characters
-- Distribution across buckets (1-3 chars, 4-5 chars, 6-8 chars, 9+ chars)
-
-**AGGREGATION INSTRUCTION (1C Chunk Metric Aggregation Contract):**
-1. Sum all chunk metric_counts fields across every chapter fragment.
-2. Derive all Numerical Enforcement Layer percentages, targets, floors, ceilings, and confidence tiers from the summed numerators/denominators — NOT by averaging percentages across chunks.
-3. For zero-occurrence bans (ABSOLUTE confidence): mark ABSOLUTE only if the summed count is zero across all chunks and the denominator covers the full source.
-4. For rhythm transition matrix: stitch inter-chapter transitions using each chunk's last_action_line_bucket → next chunk's first_action_line_bucket (ultra_short / short / medium / long), then add these to the respective matrix cells.
-5. For dialogue AVG/P90/P95/MAX: concatenate all speech_lengths_w arrays per character across chunks, then calculate AVG, P90, P95, and MAX from the combined list.
-
-### N. RHYTHM TRANSITION ARCHITECTURE
-
-Analyze the source's action lines as a sequence. For each line, categorize its length: ultra-short (1-3 words), short (4-6 words), medium (7-12 words), long (13+ words). Then build a transition matrix: after each category, what is the probability of each category following?
-
-This captures the writer's rhythm MOVEMENT — not just their average sentence length but their pattern of variation. A writer who alternates short-long-short-long has a fundamentally different rhythm from one who clusters shorts together then expands, even if their averages are identical.
-
-**Required outputs:**
-
-1. **Transition matrix** — 4x4 grid showing probability of each category following each category
-2. **Rhythm change frequency** — what percentage of consecutive lines change length category (vs. staying in the same category)
-3. **Signature rhythm moves** — identify 2-3 characteristic transitions. Example: "After a 1-3 word beat, this writer expands to medium or long 62% of the time. The runtime should replicate this punch-then-breathe pattern."
-4. **Anti-patterns** — transitions the writer never or rarely makes. Example: "This writer never stacks more than 3 ultra-short lines consecutively. If the runtime produces 4+ consecutive fragments, the rhythm has broken."
-
-### O. BEAT ARCHITECTURE PROTOCOL
-
-Identify all ultra-short lines (1-2 words) in the source's action lines. These are not descriptions — they are structural rhythm markers. A writer who uses "Silence." as a standalone line is doing something fundamentally different from a writer who writes "The room fell silent."
-
-**Required outputs:**
-
-1. **Beat frequency** — count of 1-2 word lines as percentage of total action lines
-2. **Beat vocabulary** — list the actual words/phrases used as beats. Group by function:
-   - Status beats: "Silence." "Still." "Gone." "Empty."
-   - Action beats: "Hold." "Move." "Run."
-   - Transition beats: "Later." "Morning." "Outside."
-   - Emphasis beats: "Not finished." "Eyes down." "Grip tight."
-3. **Beat placement** — where do beats appear? Before scene changes? After action sequences? At emotional peaks? After dialogue? Map the placement pattern.
-4. **Beat density by context** — do beats cluster more in action sequences, emotional scenes, or transitions?
-
-The runtime narrator should deploy beats at the documented frequency, using vocabulary from the documented beat lexicon, in the documented placement positions. Beats that use vocabulary not in the source's beat lexicon, or that appear at frequencies significantly above the documented rate, signal AI pattern-matching rather than authentic voice.
-
-### P. SCENE TRANSITION COMPRESSION PROTOCOL
-
-Analyze the last 1-3 action lines before each scene heading change. Scene boundaries reveal a writer's instinct for closure — how they punctuate a moment before cutting away.
-
-**Required outputs:**
-
-1. **Closing line length** — average word count of the last action line before a scene change. Compare against the overall action line average. If the closing lines are consistently shorter, this writer compresses at boundaries.
-2. **Closing line type** — categorize each closing line: image (visual freeze), action (movement), status (state description), dialogue-adjacent (reaction to last speech), or beat (ultra-short rhythm marker). Report the distribution.
-3. **Closing line examples** — quote 8-10 representative scene-closing action lines from across the source
-4. **Transition guidance** — the runtime narrator should end scenes using the documented closing type at the documented compression level. If the writer consistently closes on a single image compressed to 3-5 words, the runtime must not close on a 25-word reflective sentence.
+Identify 2–3 screenwriters whose style most resembles this writer's. For each: name them, name the overlapping quality, and name at least 2 techniques that DIFFERENTIATE this writer from the neighbor.
 
 ---
 
-### OUTPUT FORMAT FOR TASK 1:
+### TASK 1 OUTPUT FORMAT
 
 ```
 VOICE DNA PROFILE: [TITLE] by [WRITER]
 Profile Type: SCREENWRITER / TV WRITER
-Extracted by: Lorespinner Voice Lock Phase (Deliverable 1B v2 — Strengthened)
+Extracted by: Lorespinner Voice Lock Phase (Deliverable 1B v3)
+Source: [N] screenplay(s), [total] words
 
-SIGNATURE TECHNIQUES:
-1. [NAME]: [Quote] — [Explanation] — Frequency: [approximate rate]
-2. [NAME]: [Quote] — [Explanation] — Frequency: [approximate rate]
-... (8-12 total)
-
-ACTION LINE METRICS:
-Average words/line: ~[N] (range: [X]-[Y] across contexts)
-Fragment %: ~[N]%
-Verb-first %: ~[N]%
-ALL CAPS density: [Description — what gets capitalized and how often]
--ing opening frequency: ~[N]%
-Paragraph rhythm: [cluster/isolate pattern description]
-Representative action lines: [3-4 consecutive quotes]
-
-DIALOGUE METRICS:
-Average speech length: ~[N] words (range: [X]-[Y] across characters/contexts)
-Contraction density: [Description]
-Question/exclamation density: [Description]
-Interruption patterns: [Description]
-Representative exchanges: [3-4 quoted exchanges]
-
-DICTION FINGERPRINT:
-Word length tendency: [Description]
-Vocabulary clusters: [List]
-Register: [Description]
-Formality: [Description]
-Overused (signature): [Words/phrases]
-Avoided: [Words/phrases]
-Punctuation habits: [Description]
-Characteristic lines: [5-6 quotes]
-
-SCREENPLAY STRUCTURE METRICS:
-Scene density: ~[N] scenes/page
-INT/EXT ratio: ~[N]:[N]
-Action-to-dialogue ratio: ~[N]:[N]
-Transition types: [Description]
-Parenthetical vocabulary: [List of used / list of never-used]
-Scene length distribution: [Description]
-Character introduction patterns: [Description]
-
-EMOTIONAL VOCABULARY HIERARCHY:
-1. [Category]: [Density rank] — [3-4 quotes]
-2. [Category]: [Density rank] — [3-4 quotes]
-... (all 6 categories ranked)
-
-CHARACTER DIALOGUE FINGERPRINTS:
-[CHARACTER 1]:
-  Rhythm: [Description]
-  Tics: [Quotes]
-  Restrictions: [Words they never say]
-  Emotional range: [angry/afraid/tender/lying — with behavioral shifts]
-  Distinguishing markers: [3+ features unique to this character]
-  Signature line: [Quote]
-[CHARACTER 2]: ...
-(all speaking characters)
-
-PARENTHETICAL PATTERN:
-Used: [List with approximate frequencies]
-BANNED parentheticals: [List]
-
-EMOTIONAL RANGE:
-Tension: [Quote] — [Technique]
-Humor: [Quote] — [Technique] (or ABSENT)
-Grief: [Quote] — [Technique]
-Wonder: [Quote] — [Technique] (or ABSENT)
-Fear: [Quote] — [Technique]
-Violence: [Quote] — [Technique]
-Intimacy: [Quote] — [Technique]
-
-COLLOCATION FINGERPRINT:
-1. "[word pair]" — [frequency] — AI would substitute: "[alternative]"
-... (15-20 pairs)
-
-NEGATIVE SPACE MAP:
-1. [Technique]: absent from source — AI defaults to this because: [reason]
-... (comprehensive list)
-
-SHOW/EXPLAIN RATIO:
-Balance: [Description of the writer's show-to-explain tendency]
-Guidance: Generated text should maintain this writer's specific balance.
-
-COMPARATIVE EXCLUSION:
-Neighbors: [Writer 1], [Writer 2], [Writer 3]
-[Writer 1] overlap: [quality] — differentiated by: [technique 1], [technique 2]
-[Writer 2] overlap: [quality] — differentiated by: [technique 1], [technique 2]
-[Writer 3] overlap: [quality] — differentiated by: [technique 1], [technique 2]
-
-NUMERICAL ENFORCEMENT LAYER:
-
-PUNCTUATION:
-  [Metric]: TARGET [range] | FLOOR [n] | CEILING [n] | CONFIDENCE: [level] ([data points])
-  ...
-
-RHYTHM:
-  [Metric]: TARGET [range] | FLOOR [n] | CEILING [n] | CONFIDENCE: [level] ([data points])
-  ...
-
-DIALOGUE CEILINGS:
-  [Character]: AVG [n]w | P90 [n]w | P95 [n]w | MAX [n]w (HARD CEILING) | [n] speeches
-  ...
-
-OPENER DISTRIBUTION:
-  [Type]: TARGET [n]% | FLOOR [n]% | CEILING [n]% | CONFIDENCE: [level]
-  ...
-
-WORD LENGTH:
-  Average: [n] chars | TARGET [range] | CONFIDENCE: [level]
-  Distribution: [buckets with percentages]
-
-RHYTHM TRANSITION MATRIX:
-
-After ULTRA-SHORT (1-3w):  -> ultra-short [n]% | short [n]% | medium [n]% | long [n]%
-After SHORT (4-6w):        -> ultra-short [n]% | short [n]% | medium [n]% | long [n]%
-After MEDIUM (7-12w):      -> ultra-short [n]% | short [n]% | medium [n]% | long [n]%
-After LONG (13+w):         -> ultra-short [n]% | short [n]% | medium [n]% | long [n]%
-
-Rhythm change frequency: [n]%
-Max consecutive same-category: [n] (CEILING: [n+1])
-
-SIGNATURE MOVES:
-1. [Description with evidence]
-2. [Description with evidence]
-
-ANTI-PATTERNS:
-1. [Description — what to avoid]
-
-BEAT ARCHITECTURE:
-
-Beat frequency: [n]% of total action lines
-Beat vocabulary:
-  Status beats: [list]
-  Action beats: [list]
-  Transition beats: [list]
-  Emphasis beats: [list]
-Beat placement: [description of where beats appear]
-Beat density by context: [description]
-
-SCENE TRANSITION COMPRESSION:
-
-Closing line avg length: [n]w (vs. overall avg [n]w)
-Closing line type distribution:
-  Image: [n]%
-  Action: [n]%
-  Status: [n]%
-  Dialogue-adjacent: [n]%
-  Beat: [n]%
-Closing line examples:
-1. [quote]
-... (8-10 examples)
-Transition guidance: [description]
+SIGNATURE TECHNIQUES: 1–12, each: [Quote] — [why specific] — Freq + CONFIDENCE
+ACTION LINE METRICS: each metric with value + CONFIDENCE; paragraph-rhythm alternation described; 3–4 consecutive representative quotes
+DIALOGUE METRICS: each metric with CONFIDENCE; longest-speech ceiling captured; representative exchanges
+DICTION FINGERPRINT: clusters, register, overused/avoided, punctuation counts + CONFIDENCE; 5–6 quotes
+STRUCTURE METRICS: density, ratios, transitions, parenthetical vocabulary (used / never), intro pattern
+EMOTIONAL VOCAB HIERARCHY: ranked 1–6 with densities; rank-order rule stated
+CHARACTER FINGERPRINTS: per character — rhythm, tics, restrictions, pressure behavior, 3+ markers, signature line
+PARENTHETICALS: used / BANNED
+EMOTIONAL RANGE: 7 emotions, each quote + technique (or ABSENT)
+COLLOCATIONS: 15–20 pairs — writer's pairing vs. banned AI substitute
+NEGATIVE SPACE: comprehensive zero-list, each an ABSOLUTE ban
+SHOW/EXPLAIN: directional balance + quotes
+COMPARATIVE EXCLUSION: neighbors + differentiators
 ```
 
 ---
 
 ## TASK 2 — MASTER RULE 1: HARD BAN LIST
 
-This is the immune system. These patterns are BANNED from all generated prose across all Lorespinner IPs. The narrator must never produce them. Any occurrence is a hard fail.
+This is the immune system. Bans are the cleanest runtime tool because they are binary: a token or pattern is present or it is not. The narrator can search for and remove them. Any occurrence is a hard fail.
 
-### SECTION A: UNIVERSAL BANS (hardcoded — apply to ALL IPs, ALL formats)
+### SECTION A: UNIVERSAL BANS (hardcoded — identical for every IP, every format)
+
+These are the floor. They cannot be overridden by any IP-specific rule or voice profile.
 
 @include('ai.agents.adaptation.voice-lock._voice-lock-universal-bans')
 
 ### SECTION B: IP-SPECIFIC BANS (generated per writer from Task 1)
 
-Using the Voice DNA Profile from Task 1, identify and ban:
+From the Voice DNA Profile, generate bans in four categories. For each: STATE the ban, CITE the Task 1 evidence (with confidence tier), and give the positive replacement. Only ABSOLUTE and HIGH-confidence findings may become hard bans; MEDIUM/LOW become build-time cautions.
 
-1. ANTI-PATTERNS: Techniques this writer NEVER uses that AI defaults to when imitating their genre. Examples: interior monologue in action lines, decorative metaphors, compound sentences >25 words in action lines, emotional parentheticals ("sadly," "angrily"), expository dialogue, atmosphere without function.
-
-2. VOCABULARY THE WRITER AVOIDS: Words the source text conspicuously never uses despite opportunities.
-
-3. RHYTHM VIOLATIONS: Action line and dialogue patterns that contradict the writer's natural rhythm. (Example: if the writer uses 3-8 word action lines, ban action-line sentences over 15 words in narration.)
-
-4. EMOTIONAL TECHNIQUE VIOLATIONS: Ways of rendering emotion that contradict the writer's method. (Example: if the writer renders grief through what a character DOES, ban named-emotion grief. If the writer renders tension through scene compression, ban tension through interiority.)
-
-For each IP-specific ban: STATE the ban, CITE the evidence from Task 1 that proves this writer does not use this technique, EXPLAIN what the AI should do instead (the positive replacement).
-
-OUTPUT FORMAT FOR TASK 2:
+1. ANTI-PATTERNS — techniques this writer never uses that AI defaults to (interior monologue in action, decorative metaphor, compound 25+-word action lines, emotional parentheticals, expository dialogue, atmosphere without function)
+2. VOCABULARY THE WRITER AVOIDS — words conspicuously absent despite opportunity
+3. RHYTHM VIOLATIONS — patterns that contradict the writer's compression (expressed as a local rule wherever possible)
+4. STRUCTURAL VIOLATIONS — screenplay devices the writer never uses (WE SEE, V.O., O.S., MONTAGE, editorial transitions)
 
 ```
 MASTER RULE 1: HARD BAN LIST FOR [TITLE]
-
-UNIVERSAL BANS: [Paste complete Section A above — identical for every IP]
-
-IP-SPECIFIC BANS:
-1. [BAN]: [Evidence from source] -> INSTEAD: [What to do]
-2. [BAN]: [Evidence from source] -> INSTEAD: [What to do]
-... (as many as the source warrants, minimum 6)
+UNIVERSAL BANS: [Section A verbatim]
+IP-SPECIFIC BANS: 1..N — [BAN] | evidence + tier | INSTEAD: [replacement]   (minimum 6)
 ```
 
 ---
 
-## TASK 3 — 14-POINT CONTINUOUS AUDIT PROTOCOL
+## TASK 3 — THE VOICE ANCHOR (the centerpiece)
 
-Design a 14-point audit protocol tailored to this specific IP, based on the voice DNA extracted in Task 1 and the ban list built in Task 2. This protocol does NOT execute here in the pipeline. It becomes part of the Voice Profile output, saved to the database alongside the voice DNA and ban list. At runtime, the narrator LLM loads this protocol into its system prompt and uses it as a continuous self-audit while generating live player-facing narration.
+This is the output that prevents decay. Everything in Tasks 1 and 2 DESCRIBES the voice. The Voice Anchor SHOWS it — in the exact form the runtime must produce. The live narrator imitates a present example far more faithfully than it follows an abstract description, and a fixed example cannot drift. This is also where you close the screenplay-to-prose format gap: you do the hard translation ONCE, here, under full scrutiny, instead of asking the runtime to improvise it every turn.
 
-Your job in this task: architect the rules. Define the pass/fail criteria, detection methods, and repair instructions — calibrated to THIS writer's specific voice. The runtime narrator will execute them.
+**What you are producing:** 6–8 short PROSE passages, written in SECOND-PERSON PRESENT TENSE (the runtime's native mode), each one a faithful translation of the writer's voice from screenplay form into interactive-story narration. These are locked. They ship into the runtime prompt verbatim and are re-read by the narrator every turn.
 
-For each audit point: a PASS/FAIL DEFINITION specific to this IP, a DETECTION METHOD (what to look for in generated text), and a REPAIR INSTRUCTION (what to do when a violation is found).
+### How to build each exemplar
 
-RUNTIME PASS THRESHOLD: 14/14. Any failure requires the runtime narrator to revise before delivering the passage to the player.
+1. **Start from real source.** Choose a genuine moment from the screenplay — an action beat, a tense exchange, a quiet aftermath, an environmental establishing moment. Do not invent from nothing; translate something the writer actually wrote, so the voice is authentic, not your impression of it.
+2. **Translate, do not transcribe.** Convert screenplay form to prose using the Screenplay-to-Prose Translation Protocol. Preserve the writer's compression, fragment habit, paragraph-rhythm alternation (clustered vs. isolated), diction, collocations, emotional-rendering channel order, and dialogue ceilings. Shift the camera-eye to the player's body.
+3. **Obey every ban.** The exemplar must pass Task 2 cleanly. It is a model of correct output; a flaw here teaches the runtime the flaw.
+4. **Stay off-episode.** Each exemplar should draw on a DIFFERENT moment than any single episode will reuse heavily, and the set as a whole must carry this label: *match the rhythm, diction, and compression of these passages; never reuse their imagery, lines, or content.* This prevents the runtime from plagiarizing the anchor instead of imitating its texture.
 
-### THE 14 AUDIT POINTS:
+### Required coverage (the set must span the writer's range)
 
-**1. HARD BAN TOKEN SCAN**
+Produce at least one exemplar in each of these modes:
 
-Pass: Zero banned tokens, phrases, molds, motifs, or names from Master Rule 1 (universal + IP-specific) appear in any generated prose.
-Detection: Scan generated text against the complete ban list — vocabulary, sentence molds, motifs, names.
-Repair: Rewrite the sentence using the author's documented techniques. Do not just rephrase.
+- **Cold tension / forward pressure** (a moment pulling the player ahead)
+- **Physical action** (the writer's kinetic register, violence or movement)
+- **Quiet / aftermath** (the writer's stillness — earned silence, low emotion)
+- **Environmental establishing** (how the writer makes a space act)
+- **Dialogue-bearing narration** (prose carrying a short exchange — demonstrating the dialogue ceiling and at least one character's fingerprint)
+- **Emotional weight without naming emotion** (the writer's show-not-explain at its hardest)
 
-**2. HALLUCINATED SEPARATION SCAN**
+Two of the eight may double up on whichever modes the writer is most distinctive in.
 
-Pass: Zero instances of cognitive-verb separation between character and experience. SCREENWRITER DOUBLE-CHECK: Could this sentence be filmed? If the cognitive verb describes something invisible to a camera, it fails.
-Detection: Scan for "realized," "found herself," "became aware," "occurred to," "couldn't help but," "noticed that," "it dawned on" followed by the experience they separate the character from.
-Repair: Remove the cognitive verb. Render the experience directly.
+### Length and form
 
-**3. META-REFERENCE AND ESSAY LINE SCAN**
+- Each exemplar: 90–150 words. Long enough to establish rhythm, short enough to re-read cheaply every turn.
+- Write them as the narrator would actually deliver them — no commentary, no labels inside the prose itself.
+- Above each, in a header line, note: the mode, the source moment it was translated from, and the 2–3 signature techniques it demonstrates.
 
-Pass: Zero instances of narrator commenting on the story's significance, meaning, or structure. Zero instances of interpretive commentary following concrete images.
-Detection: Flag sentences containing "the kind of," "a reminder that," "a testament to," "it was clear that," "what she didn't know." Flag any sentence that follows a concrete image with an abstraction.
-Repair: Cut the commentary. Let the image or action stand alone.
+### Self-validation gate (run before locking)
 
-**4. PRONOUN VARIATION CHECK**
+- Read any one exemplar cold. Could a reader familiar with this writer attribute it to them? If it reads like any competent novel, it has failed — rebuild it with more signature technique.
+- Does the set obey every Universal and IP-Specific ban?
+- Does the set demonstrate the collocations, the paragraph-rhythm alternation, and the emotional-channel order from Task 1?
+- Do the dialogue-bearing exemplars respect the longest-speech ceiling?
 
-Pass: Sentence openers are varied. No conspicuous clusters of three or more consecutive sentences starting with the same pronoun.
-Detection: Flag any passage where the same pronoun opens three or more sentences in a row, or where excessive same-pronoun openers create monotonous rhythm.
-Repair: Apply the Repair Distribution Rule — cycle through character name, object-as-subject, environmental detail, dependent clause, action-first opening, sentence merge. Different technique for each consecutive fix.
+```
+THE VOICE ANCHOR: [TITLE] by [WRITER]
+[For each of 6–8 exemplars:]
+--- EXEMPLAR [n] | Mode: [mode] | Translated from: [source moment] | Demonstrates: [techniques] ---
+[90–150 words of second-person present-tense prose in the writer's voice]
 
-**5. FREQUENCY BALANCE CHECK**
-
-Pass: No single signature technique dominates. Techniques appear at roughly the frequencies observed in the source.
-Detection: Does any one technique call attention to itself through sheer repetition? If it is noticeable as a pattern rather than as individual moments, it is over-deployed.
-Repair: Remove excess instances. Keep those at natural stress points. Redistribute across the full technique range.
-
-**6. ACTION LINE COMPRESSION AUDIT** (SCREENWRITER-SPECIFIC)
-
-Pass: Action line prose matches the writer's documented compression. Sentence length is the PRIMARY metric. Paragraph rhythm (cluster vs. isolate alternation) matches the documented pattern. Per-line word count is guidance, not a hard ceiling.
-Detection: Flag passages where action-line sentences consistently exceed the documented average by 50%+. Flag uniform paragraph blocks.
-Repair: Compress. Cut adjectives. Cut adverbs. Favor the verb. Match documented fragment and verb-first percentages.
-
-**ANTI-FRAGMENTATION WARNING:** Do NOT put every sentence on its own line. Sentences CLUSTER into 2-4 sentence paragraphs, alternating with single-sentence paragraphs for emphasis. If every sentence sits alone, the rhythm has become staccato noise. Check the documented paragraph rhythm in Task 1 and match it.
-
-**7. DIALOGUE COMPRESSION AUDIT** (SCREENWRITER-SPECIFIC)
-
-Pass: Dialogue matches documented speech lengths, contraction density, and interruption patterns.
-Detection: Flag speeches exceeding documented average by 50%+. Flag dropped contractions. Flag unnaturally complete sentences where the character speaks in fragments.
-Repair: Compress to documented speech length. Restore contractions, fragments, and interruptions per the character's fingerprint.
-
-**8. TONE AND REGISTER AUDIT**
-
-Pass: Register stays consistent with the author's documented register. No drift toward formal/neutral/academic. No generic enthusiasm. No unearned tone shifts.
-Detection: Flag any passage where the prose suddenly sounds more formal, poetic, generic, or emotionally available than the author's documented voice.
-Repair: Rewrite in the author's documented register, matching formality, vocabulary cluster, and emotional temperature.
-
-**9. REPETITION CHECK**
-
-Pass: No content word echoes excessively in a short span. No sentence opener repeats within 3 consecutive sentences. No paragraph opener repeats the same construction within 5 consecutive paragraphs.
-Detection: Flag any word, phrase, or construction that echoes noticeably within a short passage.
-Repair: Vary using the author's documented vocabulary clusters and sentence patterns.
-
-**10. SPECIFICITY AUDIT**
-
-Pass: No vague abstractions ("something," "a feeling," "a sense of," "a kind of," "somehow") where the author would use concrete detail.
-Detection: Flag abstract emotional language in narration. Compare against the author's emotional range map.
-Repair: Replace with physical, sensory, or action-based rendering using the author's documented technique.
-
-**11. SCREENPLAY-TO-PROSE TRANSLATION COMPLIANCE** (SCREENWRITER-SPECIFIC)
-
-Pass: All prose follows the documented Screenplay-to-Prose Translation Protocol. No screenplay elements appear untranslated. No invented translation rules not in the profile.
-Detection: Scan for untranslated screenplay conventions. Check that prose compression, fragment rate, and verb-first rate fall within documented ranges.
-Repair: Apply documented translation rules. Compress to documented rhythm.
-
-**12. COLLOCATION FIDELITY CHECK**
-
-Pass: Wherever the author's documented collocations apply, the author's exact pairing is used — not an AI substitution.
-Detection: Identify passages involving the author's documented vocabulary domains. Verify exact pairings.
-Repair: Replace AI substitution with the author's documented collocation.
-
-**13. NUMERICAL ENFORCEMENT LAYER COMPLIANCE** (SCREENWRITER-SPECIFIC)
-
-Pass: Generated prose meets all ABSOLUTE and HIGH confidence constraints from the Numerical Enforcement Layer. Period density, comma density, fragment rate, verb-first rate, and hard bans are within specified ranges.
-Detection: Scan passage against the Numerical Enforcement Layer targets, floors, and ceilings. Flag any metric outside the specified range.
-Repair: Revise to bring metric into range. If hard ban is violated, regenerate.
-
-**14. CHARACTER VOICE DIFFERENTIATION CHECK**
-
-Pass: Each character's dialogue is immediately identifiable as belonging to that character. No cross-character voice bleed.
-Detection: Read each character's dialogue in isolation. Would you know who was speaking without attribution? If not, the fingerprint has failed.
-Repair: Rewrite the blander character's dialogue to match their documented fingerprint. If no fingerprint exists, FLAG — do not guess.
+USAGE LABEL (ships to runtime): "Match the rhythm, diction, and compression of these passages. Never reuse their imagery, lines, or content."
+```
 
 ---
 
-## SECTION 3B: VOICE DECAY PREVENTION PROTOCOL
+## TASK 4 — THE ANCHOR CARD (re-read every turn at runtime)
 
-Voice decay is the progressive drift of generated prose from the writer's documented voice toward the model's default prose tendencies. It is measurable, predictable, and preventable.
+The Voice Anchor shows the voice. The Anchor Card states the non-negotiable rules in the shortest possible form, so the runtime can re-read it every turn without burning the token budget. It is the distilled, binary/local core of Tasks 1–2.
 
-**Mechanism:** Every token the model generates shifts its running context slightly toward its own training distribution. Over 200-500 words, these micro-shifts compound. The generated prose starts recognizable and ends generic. This is not a model failure — it is a physics of autoregressive generation. It must be countered structurally.
+**Eligibility is strict.** A rule may go on the Anchor Card ONLY if it is BOTH:
+- ABSOLUTE or HIGH confidence (Task 1 tier), AND
+- expressible as a DISCRETE or LOCAL check — a token to search for, or a pattern visible within a few sentences.
 
-**The protocol has three components:**
+If a rule requires counting a rate over a passage, it does NOT go on the card. It goes to Build-Time QA (Task 6). This eligibility test is what keeps the runtime honest.
 
-**1. RE-ANCHORING TRIGGER**
+Produce 8–12 rules, each phrased as a direct command the narrator can act on in one read. Draw from: the writer's ABSOLUTE punctuation/structural bans, the collocation substitutions, the longest-speech ceiling, the emotional-channel rule, the pronoun-cluster rule, and the 1–2 most pervasive signature habits expressed locally.
 
-Every 300-400 words of generated prose (approximately every 2-3 interactive story passages), the runtime must re-inject the following into its active context:
+```
+THE ANCHOR CARD: [TITLE] by [WRITER]
+[8–12 binary/local commands, each ABSOLUTE/HIGH-confidence and discretely checkable]
+```
 
-- The Numerical Enforcement Layer (Section M) — all hard constraints with targets and ceilings
-- The Punctuation Enforcement profile — period density target, comma ceiling, hard bans
-- The top 5 signature techniques with frequency guidance
-- The Rhythm Transition Architecture summary — signature moves and anti-patterns
+---
 
-Re-anchoring is not optional. It is not a "check if needed." It fires on a word-count trigger regardless of whether the prose appears to be drifting. By the time drift is visible, it has already compounded past easy correction.
+## TASK 5 — RUNTIME SELF-CHECK PROTOCOL
 
-**2. PASSAGE-LEVEL ENFORCEMENT CHECK**
+This is the pre-delivery pass the live narrator runs on each passage BEFORE showing it to the player. It contains ONLY discrete/local checks — searches and local-pattern scans the narrator can actually perform. It deliberately contains no rate computations. It is short by design.
 
-Before delivering any generated passage to the player, the runtime must verify:
+Design the protocol as a tight, ordered sequence. Use this template, populated with the writer's specifics from the Anchor Card:
 
-- Period density within the prose target range from the Translation Tolerance Bands
-- Comma density below the prose ceiling
-- Zero banned punctuation (semicolons, exclamation marks, em-dashes — if specified as HARD BAN)
-- No speech exceeds the character's documented hard ceiling
-- No pronoun cluster of 3+ consecutive same-pronoun sentence starts
-- Fragment rate above the prose floor
-- No banned vocabulary or sentence molds from Master Rule 1
+```
+RUNTIME SELF-CHECK (run silently before delivering each passage):
+1. SEARCH for — and --. Delete every one; restructure the sentence.
+2. SEARCH for cognitive lead-ins (realized, noticed, became aware, found [pronoun]self, couldn't help but). Delete; render the experience directly.
+3. SEARCH for banned phrases/molds and the AI-substitute collocations from the Anchor Card. Replace with the writer's pairing or cut.
+4. SCAN the last three sentence openers: are any three consecutive the same word/pronoun? If so, vary one using a different Repair technique than last time.
+5. SCAN each sentence length: is any sentence runaway-long (well past the writer's ceiling)? Cut it down.
+6. SCAN dialogue: did any character exceed the speech ceiling? Compress.
+7. GLANCE at the nearest Voice Anchor exemplar: does this passage share its texture — compression, paragraph rhythm, externalized emotion? If it reads smoother, more generic, more explanatory than the exemplar, rewrite toward the exemplar.
+If any step triggers a fix, apply it, then deliver. Do not report the check to the player.
+```
 
-If ANY hard constraint is violated, the passage is REJECTED and REGENERATED from scratch. Not revised — regenerated. Revision attempts to fix specific sentences while preserving the surrounding context that caused the drift. Regeneration restarts from the Voice Profile specification. Regeneration is more expensive but produces cleaner output.
+---
 
-**3. DRIFT DETECTION METRICS**
+## TASK 6 — BUILD-TIME QA PROTOCOL (never runs at runtime)
 
-The runtime should track these metrics across consecutive passages. If any metric shows a consistent trend away from the target over 3+ consecutive passages, the system is drifting and must re-anchor immediately:
+This is the home for everything numeric. It runs ONCE per IP, on a batch of sample outputs generated from the assembled runtime prompt, BEFORE the IP ships. It is executed by a human reviewer, a batch evaluation, or the audit linter if and when one exists — never by the live narrator.
 
-- Fragment rate trending downward (most common drift direction — AI relaxes compression)
-- Period density trending downward (sentences getting longer)
-- Comma density trending upward (AI inserting commas for "readability")
-- -ing openings trending upward (AI defaulting to participle constructions)
-- Speech lengths trending upward (characters getting more verbose)
+Generate 8–12 sample passages from the candidate runtime prompt (mix of cold open, branch outcomes, freeform responses, a long sequence of 600+ continuous words to surface decay). Then assess:
+
+**Quantitative checks (judgment-assisted or linter):**
+- Fragment / sentence-length distribution vs. the Task 1 ranges (diagnostic — flag large divergence, not minor variance)
+- Punctuation densities, especially the ABSOLUTE bans (em-dash, semicolon) — these must be at or near zero
+- Longest generated speech vs. the captured ceiling
+- Signature-technique frequency (Frequency Drift) — is any technique over-deployed into a tic?
+- Decay test: compare the first 200 words and the last 200 words of the long continuous sample. If the tail is measurably smoother, longer-sentenced, or more explanatory than the head, decay is occurring — strengthen the Anchor re-assertion cadence in D8 or add the second-pass editor.
+
+**Judgment checks (model or human):**
+- Blind attribution: read a sample cold against a real source passage. Can a familiar reader tell which is which? If yes, fail.
+- Comparative exclusion: does any sample read as one of the named neighbor writers?
+- Character differentiation swap test across any dialogue-bearing samples.
+
+Record results. If the IP fails, the fix is upstream — richer exemplars, sharper Anchor Card, or tuning D8's re-assertion — not a runtime numeric gate, which cannot exist.
 
 ---
 
 ## SCREENPLAY-TO-PROSE TRANSLATION PROTOCOL
 
-When the Voice Profile generates prose narration for interactive stories, these mappings govern how screenplay elements translate. This is a mechanical protocol, not a creative decision.
+These mappings govern how screenplay elements become prose narration. The Voice Anchor (Task 3) then becomes the runtime's living translation reference — the runtime imitates the worked examples.
 
-| Screenplay Element | Prose Equivalent | Rule |
+| Screenplay Element | Prose Translation | Rule |
 |---|---|---|
-| ACTION LINE | Narrative sentence | Maintains the writer's compression and sensory priority hierarchy. Does NOT expand into novelistic description. |
-| SCENE HEADING (INT./EXT.) | Scene break or establishing sentence | Single establishing sentence or white-space break. Does NOT become a descriptive paragraph. |
-| CUT TO / SMASH CUT / transition | Paragraph break or scene break | SMASH CUT = hard break, no bridging. DISSOLVE = softer transition, brief bridging sentence permitted. |
-| PARENTHETICAL | Dialogue tag modification | "(beat)" = action between lines. "(sotto)" = volume indicator. "(re: object)" = glance/gesture. NOT narrator commentary on emotion. |
-| CHARACTER CUE | Dialogue attribution | First appearance follows documented introduction pattern. Subsequent = minimal attribution. |
-| ALL CAPS emphasis | Italic or bold (per house style) | Does NOT translate to exclamation marks or narrator excitement. |
-| (beat) | Action between dialogue | A physical action — gesture, look, movement. NOT "There was a moment of silence." The character DOES something. |
+| Action line | Narrative sentence (2nd-person present) | Preserve compression and the writer's sensory-channel priority. Do NOT expand into novelistic description. |
+| Scene heading (INT./EXT.) | Scene break or single establishing sentence | One sentence or a white-space break. Never a descriptive paragraph. Never "Chapter X." |
+| CUT TO / SMASH CUT | Paragraph or scene break | Hard break, no bridging, no "Meanwhile." DISSOLVE may take one brief bridging sentence. |
+| Parenthetical | Dialogue-tag modification | "(low)" → "she says, low." Never narrator commentary on emotion. |
+| Character cue | Dialogue attribution | Minimal tags. "Says" dominant. No "exclaimed / declared / mused." |
+| ALL CAPS emphasis | Italic/bold, sparingly | Never translates to exclamation marks or narrator excitement. |
+| (beat) | A physical action between lines | The pause is a body doing something — a hand closes, eyes drop. Never "There was a moment of silence." |
 
-**QUANTITATIVE TRANSLATION MAPPINGS**
-
-The writer's screenplay voice exists in a format (action lines, dialogue blocks, scene headings) that is structurally different from the prose narration the runtime generates. Raw screenplay numbers cannot be applied directly to prose — a very high fragment rate in action lines would be unreadable as continuous narrative. But the numbers cannot be abandoned either — that is how voice decays.
-
-For each measurable metric, the extraction must produce a TRANSLATION MAPPING with three components:
-
-1. **Source value** — the metric as measured in the screenplay
-2. **Prose target** — the adjusted range for narrative prose, accounting for format differences
-3. **Drift ceiling** — the maximum acceptable deviation from the prose target before the prose has left the writer's voice entirely
-
-The translation rationale must be stated: why is the prose target set where it is? What format difference justifies the adjustment?
-
-**Required translation mappings (minimum):**
-
-| Screenplay Metric | Source Value | Prose Target | Drift Ceiling | Rationale |
-|---|---|---|---|---|
-| Fragment rate | [n]% | [range]% | [n]% floor | Prose needs more connective tissue than action lines, but fragments are this writer's signature — the floor preserves them |
-| Period density per 100w | [n] | [range] | [n] floor | Prose sentences are slightly longer than action lines, reducing period density, but the ratio must stay far above typical prose writers |
-| Comma density per 100w | [n] | [range] | [n] ceiling | Prose may need slightly more commas for readability, but this writer's comma avoidance is signature — the ceiling prevents drift |
-| Avg sentence/line length | [n]w | [range]w | [n]w ceiling | Prose sentences run slightly longer than action lines but must stay compressed |
-| -ing openings | [n]% | [range]% | [n]% ceiling | If near-zero in source, ceiling stays very low in prose |
-| Max speech length per character | [n]w | [n]w | [n]w hard ceiling | No character speaks longer in prose than in the screenplay — the screenplay is the ceiling |
-
-The runtime enforces the prose target ranges. When a generated passage exceeds the drift ceiling, the passage is rejected and regenerated — not revised, regenerated. Revision softens; regeneration restarts from the specification.
+The camera-to-body shift is constant: the screenplay photographs the protagonist from outside; the prose places the player inside the protagonist's body. "Akira's hands shake" becomes "Your hands shake."
 
 ---
 
 ## FINAL OUTPUT — VOICE LOCK PHASE COMPLETE
 
-Assemble all sections into the structured JSON output matching the SCREENWRITER schema. Map sections to canonical JSON paths as follows:
+Assemble all six tasks into one VOICE PROFILE DOCUMENT. Then produce structured JSON matching the required SCREENWRITER schema. Map sections to canonical JSON paths:
 
-- Task 1 Sections A–P → `author_voice_dna_profile` (A–L → existing fields; M → `numerical_enforcement_layer`; N → `rhythm_transition_architecture`; O → `beat_architecture_protocol`; P → `scene_transition_compression_protocol`)
-- Screenplay-to-Prose Protocol element rules → `author_voice_dna_profile.screenplay_to_prose_protocol.element_rules`
-- Quantitative Translation Mappings → `author_voice_dna_profile.screenplay_to_prose_protocol.quantitative_translation_mappings` (minimum 6 entries)
+- Task 1 Sections A–L → `author_voice_dna_profile` (shared fields)
+- Task 1 Sections M–P + Screenplay-to-Prose Protocol → `author_voice_dna_profile` (screenwriter-only fields per 1B v2)
 - Task 2 → `master_rule_1_hard_bans`
-- Task 3 → `fourteen_point_audit_protocol` (exactly 14 entries)
-- Section 3B → TOP-LEVEL `voice_decay_prevention_protocol` (NOT inside `author_voice_dna_profile`)
+- Task 3 → `voice_anchor[]` (array of objects: `{mode, source, techniques, prose}`) ★ RUNTIME-CRITICAL
+- Task 4 → `anchor_card[]` (array of strings — the 8–12 binary/local commands) ★ RUNTIME-CRITICAL
+- Task 5 → `runtime_self_check[]` (array of strings — the ordered check steps) ★ RUNTIME-CRITICAL
+- Task 6 → `fourteen_point_audit_protocol` (QA protocol — does NOT ship to runtime)
+- TOP-LEVEL `voice_decay_prevention_protocol` (NOT inside `author_voice_dna_profile`)
 - Set `profile_type` to `SCREENWRITER`
 
 ---
 
 ## VERIFICATION GATE
 
-STOP. DO NOT PROCEED TO PHASE 2.
+STOP. DO NOT PROCEED TO PHASE 2 until all of the following pass.
 
-The Voice Profile is the most consequential output in the pipeline. Every word the narrator speaks to every player will be measured against it. Before continuing, execute this verification:
+**Blind test:** Generate one 200-word second-person passage using only this Voice Profile, and one 200-word passage of generic competent prose on the same subject. If you cannot instantly tell which is the writer, the profile is incomplete — revise.
 
-**TEST:** Generate a 200-word test passage in the writer's voice using only the Voice Profile you just produced. Then generate a 200-word passage of generic competent prose on the same subject. Read both. If you cannot immediately identify which is the writer and which is generic — if the Voice Profile does not make the difference OBVIOUS — the profile is incomplete. Revise before continuing.
+Then confirm:
+1. Does the Voice Anchor contain 6–8 exemplars spanning the required modes, each passing every ban? If not, the runtime has nothing faithful to imitate.
+2. Is every Anchor Card rule both ABSOLUTE/HIGH-confidence AND discretely checkable? Strike any rule that requires counting a rate — it does not belong at runtime.
+3. Does the Negative Space Map yield at least 5 ABSOLUTE bans? If not, the single-source immune system has gaps.
+4. Does the collocation fingerprint contain at least 15 pairs, each with its banned AI substitute?
+5. Can comparative exclusion name 2–3 writers this voice must not be confused with?
+6. Is the longest-speech ceiling captured and reflected in the Anchor Card?
 
-Then ask these six questions:
-
-1. Does the collocation fingerprint contain at least 15 word pairs? If not, the micro-signatures are missing.
-2. Does the negative space map identify at least 5 genre-default techniques this author never uses? If not, the immune system has gaps.
-3. Can the comparative exclusion test name 2-3 authors this voice must NOT be confused with? If not, the profile is genre-generic, not author-specific.
-4. Does the Numerical Enforcement Layer contain hard constraints for period density, comma density, and at least 3 ABSOLUTE-confidence bans? If not, the specification cannot be enforced.
-5. Does the Rhythm Transition Architecture include a complete 4x4 transition matrix? If not, the rhythm guidance is incomplete.
-6. Does the Voice Decay Prevention Protocol specify a re-anchoring word-count trigger? If not, voice drift will occur.
-
-If any answer is no, revise. The author's voice is the product. There is no "close enough." There is only the author's voice or a failure.
+If any answer is no, revise. The writer's voice is the product. There is no "close enough."
 
 **VERIFICATION GATE — INTERNAL SELF-CHECK ONLY.** Do not include the 200-word test passage, generic comparison passage, or any verification prose in the final JSON output. Return structured JSON matching the schema only.
 

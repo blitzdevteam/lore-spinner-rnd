@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Pipeline Upgrade V2.1 — Validation Runner.
+ * Pipeline Upgrade V2.1 / V2.2 / V2.3 — Validation Runner.
  *
  * Companion to: Adaptation layer/Chaos adaptation/v2-implementation/validation/pipeline-upgrade-v2-validation-runbook.md
- * Companion to: Adaptation layer/Chaos adaptation/v2-implementation/process-log/v2-process-log.md
+ * Companion to: Adaptation layer/Chaos adaptation/v2-implementation/process-log/v2-2-process-log.md
+ * Companion to: Adaptation layer/Chaos adaptation/V2.3 - JUNE 18, 2026/V2.3-PROCESS-LOG.md
  *
  * Each step is a self-contained probe runnable via:
  *
@@ -32,6 +33,8 @@
  *   step13  Un-adapted story 422 probe (no legacy fallback — endpoint returns 422).
  *   step14  Reconciliation probe (status transitions correctly on COMPLETE).
  *   step_v22 V2.2 probe — voice-lock 1A/1B blades, Paul Review markers, pipeline order comments.
+ *   step_v23 V2.3 probe — D8 v2 template, 1A v2/1B v3 blades, anchor fields, slice methods,
+ *            ChoiceDesign first_choice_spec guard, sec13 strip anchor, builder guards.
  */
 
 declare(strict_types=1);
@@ -182,10 +185,19 @@ function step_3(string $slug): void
             'ipTrimmingWorldRules' => null, 'ipTrimmingConversionNotes' => null,
         ],
         'ai.agents.adaptation.entry-point-diagnosis.prompt' => [
-            'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => [], 'master_rule_1_hard_bans' => []],
-            'voiceProfileLabel' => 'stub',
+            'voiceProfile' => [
+                'profile_type' => 'NOVELIST',
+                'author_voice_dna_profile' => [],
+                'master_rule_1_hard_bans' => [],
+                'voice_anchor' => [['mode' => 'stub', 'source' => 'ch1', 'techniques' => 'stub', 'prose' => 'Stub.']],
+                'anchor_card' => ['No em-dash.'],
+                'runtime_self_check' => ['Check em-dash.'],
+            ],
+            'voiceProfileLabel' => 'Sections 1+2+Voice Anchor',
             'storySessionMap' => [], 'ipAudit' => [], 'sessionNumber' => 1,
             'sessionSourcePages' => 'stub pages', 'sessionEvents' => [],
+            'protagonist' => 'Alice',   // V2.3 addition
+            'format' => 'NOVEL',        // V2.3 addition
         ],
         'ai.agents.adaptation.session-architecture.prompt' => [
             'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => []],
@@ -194,10 +206,16 @@ function step_3(string $slug): void
             'sessionSourcePages' => 'stub pages',
         ],
         'ai.agents.adaptation.choice-design.prompt' => [
-            'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => [], 'master_rule_1_hard_bans' => []],
-            'voiceProfileLabel' => 'stub',
+            'voiceProfile' => [
+                'profile_type' => 'NOVELIST',
+                'author_voice_dna_profile' => [],
+                'master_rule_1_hard_bans' => [],
+                'anchor_card' => ['No em-dash.'],  // V2.3: dnaBansAndAnchorCard slice includes anchor_card
+            ],
+            'voiceProfileLabel' => 'Sections 1+2+Anchor Card',
             'beatMap' => [], 'storySessionMap' => [], 'protagonistCoreTrait' => 'x',
             'emotionalPromise' => 'stub', 'sessionNumber' => 1, 'choiceMomentPages' => 'stub pages',
+            'firstChoiceSpec' => ['setup_prose' => 'stub spec', 'choice_question' => 'What now?'], // V2.3 D4 patch
         ],
         'ai.agents.adaptation.consequence-mapping.prompt' => [
             'voiceProfile' => ['profile_type' => 'NOVELIST', 'author_voice_dna_profile' => [], 'master_rule_1_hard_bans' => []],
@@ -235,6 +253,8 @@ function step_4(string $slug): void
     try {
         $rendered = view('ai.agents.chaos.runtime-narrator-template', $stub)->render();
         echo "ok   render (" . strlen($rendered) . " bytes)\n";
+
+        // D8 v2 — all four runtime injection points must be present in assembled template.
         foreach ([
             '[SYMBOLIC_MEMORY_INJECTION_POINT]',
             '[ALIGNMENT_TILT_INJECTION_POINT]',
@@ -243,15 +263,31 @@ function step_4(string $slug): void
         ] as $token) {
             echo (strpos($rendered, $token) !== false ? 'ok   ' : 'miss ') . $token . "\n";
         }
+
+        // D8 v2 section markers that must be present.
         foreach ([
-            'RUNTIME GENERATION RULES — CADENCE, ECONOMY, AND FORWARD PULL',
-            '300–350 words',
-            'RULE 7: CUSTOM INPUT PROTOCOL',
-            'FIRST-3-MINUTES OPENING PROTOCOL (turn 1 only',
-            'COLLLOCATION FINGERPRINT',
-            'Profile type:',
+            '**4A — THE VOICE ANCHOR (imitate these):**',
+            'MASTER RULE 1: HARD BANS',
+            '### SECTION 13: COLD OPEN',
+            '### SECTION 14: NARRATION RULES',
+            '### SECTION 15: FREEDOM CONTRACT',
+            '### SECTION 17: MISSION STATEMENT',
+            '### SECTION 18: VOICE RE-ANCHOR',
+            '**THE ANCHOR CARD (',
+            'SELF-CHECK — run silently on your draft',
+            '115-125 words',
         ] as $marker) {
             echo (str_contains($rendered, $marker) ? 'ok   ' : 'miss ') . "marker: {$marker}\n";
+        }
+
+        // D8 v2 — old V2.2 template markers must NOT appear (they were removed).
+        foreach ([
+            'RUNTIME GENERATION RULES — CADENCE, ECONOMY, AND FORWARD PULL',
+            'FIRST-3-MINUTES OPENING PROTOCOL',
+            'COLLLOCATION FINGERPRINT',
+            'Profile type:',
+        ] as $removed) {
+            echo (str_contains($rendered, $removed) ? 'FAIL (old V2.2 marker still present) ' : 'ok   ') . "removed: {$removed}\n";
         }
     } catch (\Throwable $e) {
         echo "FAIL " . $e->getMessage() . "\n";
@@ -578,7 +614,8 @@ function step_v22(string $slug): void
 
     echo "\nMechanical Section 13 strip (continuation turns) — ChaosEngineService:\n";
     $stripChecks = [
-        'sec13Anchor variable defined'         => "\$sec13Anchor = '=== SECTION 13 —'",
+        // V2.3: heading format changed from '=== SECTION 13 —' to '### SECTION 13:' (D8 v2 template)
+        'sec13Anchor matches D8v2 heading'     => "\$sec13Anchor = '### SECTION 13:'",
         'injToken variable defined'            => "\$injToken    = '[OPENING_SCENE_INJECTION_POINT]'",
         'strpos sec13 used'                    => 'strpos($prompt, $sec13Anchor)',
         'strpos injToken used'                 => 'strpos($prompt, $injToken)',
@@ -588,6 +625,10 @@ function step_v22(string $slug): void
     foreach ($stripChecks as $label => $needle) {
         echo (str_contains($engineSrc, $needle) ? 'ok   ' : 'FAIL ') . "{$label}\n";
     }
+
+    // Old V2.2 anchor must be gone (was replaced in V2.3 fix).
+    echo (str_contains($engineSrc, "\$sec13Anchor = '=== SECTION 13 —'") ? 'FAIL (old V2.2 anchor still present) ' : 'ok   ')
+        . "old V2.2 sec13Anchor '=== SECTION 13 —' removed\n";
 }
 
 // -----------------------------------------------------------------------------
@@ -824,12 +865,424 @@ function step_1b_v2(string $slug): void
 
 // -----------------------------------------------------------------------------
 
+/**
+ * step_v23 — V2.3 Chaos Pipeline Upgrade validation.
+ *
+ * Covers:
+ *   A. Static source checks (no DB): PHP class methods, Blade file markers,
+ *      ChaosEngineService sec13 anchor, Builder + Job guards.
+ *   B. Blade render checks: all updated V2.3 blades with stub data.
+ *   C. Runtime template: D8 v2 render with V2.3 stub + anchor-absent failure test.
+ *   D. DB-dependent: voice_profile anchor fields (skips gracefully when no DB).
+ *
+ * Run as:
+ *   php pipeline-upgrade-v2-validation-runner.php step_v23 [anima-machina]
+ */
+function step_v23(string $slug): void
+{
+    echo "=== V2.3 Chaos Pipeline Upgrade Validation ===\n\n";
+
+    // ── A. Static PHP source checks (no DB needed) ────────────────────────────
+    echo "--- A. Static PHP source checks ---\n";
+
+    // A1. VoiceProfilePromptSlice — new V2.3 slice methods
+    $slicePath = app_path('Ai/Adaptation/VoiceProfilePromptSlice.php');
+    $sliceSrc  = is_file($slicePath) ? file_get_contents($slicePath) : '';
+    $sliceChecks = [
+        'dnaBansAndAnchor() method exists'     => 'public static function dnaBansAndAnchor(',
+        'dnaBansAndAnchorCard() method exists' => 'public static function dnaBansAndAnchorCard(',
+        'dnaBansAndAnchor throws on missing voice_anchor'  => "RuntimeException",
+        'dnaBansAndAnchorCard throws on missing anchor_card' => "RuntimeException",
+        'dnaBansAndAnchor includes voice_anchor key'  => "\$base['voice_anchor'] = \$voiceProfile['voice_anchor']",
+        'dnaBansAndAnchorCard includes anchor_card key' => "\$base['anchor_card'] = \$voiceProfile['anchor_card']",
+        'dnaBansAndAnchorCard explicitly omits voice_anchor' => 'Deliberately omits full voice_anchor',
+    ];
+    foreach ($sliceChecks as $label => $needle) {
+        echo (str_contains($sliceSrc, $needle) ? 'ok   ' : 'FAIL ') . "VoiceProfilePromptSlice: {$label}\n";
+    }
+
+    // A2. RuntimeNarratorTemplateBuilder — D8 v2 guards
+    $builderPath = app_path('Ai/Adaptation/RuntimeNarratorTemplateBuilder.php');
+    $builderSrc  = is_file($builderPath) ? file_get_contents($builderPath) : '';
+    $builderChecks = [
+        'MAX_PROMPT_CHARS = 65_000'              => 'MAX_PROMPT_CHARS = 65_000',
+        'assertAnchorFieldsPresent() called in build()' => 'assertAnchorFieldsPresent(',
+        'assertRenderedPromptClean() called in build()' => 'assertRenderedPromptClean(',
+        'throws RuntimeException (not assert) on missing anchor' => 'throw new \RuntimeException',
+    ];
+    foreach ($builderChecks as $label => $needle) {
+        echo (str_contains($builderSrc, $needle) ? 'ok   ' : 'FAIL ') . "RuntimeNarratorTemplateBuilder: {$label}\n";
+    }
+
+    // A3. RuntimeNarratorAssemblyJob — post-render guards
+    $jobPath = app_path('Jobs/Adaptation/RuntimeNarratorAssemblyJob.php');
+    $jobSrc  = is_file($jobPath) ? file_get_contents($jobPath) : '';
+    $jobChecks = [
+        'post-render unmapped-token guard exists' => '{{',
+        'post-render char-count guard exists'     => 'MAX_PROMPT_CHARS',
+        'throws RuntimeException (not assert)'    => 'throw new RuntimeException',
+    ];
+    foreach ($jobChecks as $label => $needle) {
+        echo (str_contains($jobSrc, $needle) ? 'ok   ' : 'FAIL ') . "RuntimeNarratorAssemblyJob: {$label}\n";
+    }
+
+    // A4. ChaosEngineService — D8 v2 sec13 anchor
+    $enginePath = app_path('Services/ChaosEngineService.php');
+    $engineSrc  = is_file($enginePath) ? file_get_contents($enginePath) : '';
+    echo (str_contains($engineSrc, "\$sec13Anchor = '### SECTION 13:'") ? 'ok   ' : 'FAIL ')
+        . "ChaosEngineService: sec13Anchor updated to D8v2 format '### SECTION 13:'\n";
+    echo (str_contains($engineSrc, "\$sec13Anchor = '=== SECTION 13 —'") ? 'FAIL (old V2.2 anchor still present!) ' : 'ok   ')
+        . "ChaosEngineService: old '=== SECTION 13 —' anchor removed\n";
+
+    // A5. EntryPointDiagnosisJob — uses dnaBansAndAnchor, not dnaAndBans
+    $epdJobPath = app_path('Jobs/Adaptation/EntryPointDiagnosisJob.php');
+    $epdJobSrc  = is_file($epdJobPath) ? file_get_contents($epdJobPath) : '';
+    echo (str_contains($epdJobSrc, 'dnaBansAndAnchor(') ? 'ok   ' : 'FAIL ')
+        . "EntryPointDiagnosisJob: uses dnaBansAndAnchor() slice\n";
+
+    // A6. ChoiceDesignJob — uses dnaBansAndAnchorCard, throws on null first_choice_spec
+    $cdJobPath = app_path('Jobs/Adaptation/ChoiceDesignJob.php');
+    $cdJobSrc  = is_file($cdJobPath) ? file_get_contents($cdJobPath) : '';
+    echo (str_contains($cdJobSrc, 'dnaBansAndAnchorCard(') ? 'ok   ' : 'FAIL ')
+        . "ChoiceDesignJob: uses dnaBansAndAnchorCard() slice\n";
+    echo (str_contains($cdJobSrc, 'first_choice_spec') ? 'ok   ' : 'FAIL ')
+        . "ChoiceDesignJob: reads first_choice_spec from entry_point_diagnosis\n";
+    echo (str_contains($cdJobSrc, 'first_choice_spec missing') ? 'ok   ' : 'FAIL ')
+        . "ChoiceDesignJob: throws RuntimeException when first_choice_spec is null\n";
+
+    // A7. EntryPointDiagnosisAgent schema — first_choice_spec present
+    $epdAgentPath = app_path('Ai/Agents/Adaptation/EntryPointDiagnosisAgent.php');
+    $epdAgentSrc  = is_file($epdAgentPath) ? file_get_contents($epdAgentPath) : '';
+    echo (str_contains($epdAgentSrc, "'first_choice_spec'") ? 'ok   ' : 'FAIL ')
+        . "EntryPointDiagnosisAgent: first_choice_spec in schema\n";
+    echo (str_contains($epdAgentSrc, "'cold_open'") ? 'ok   ' : 'FAIL ')
+        . "EntryPointDiagnosisAgent: cold_open preserved (runtime key)\n";
+
+    // A8. VoiceLockSchema — V2.3 anchor fields
+    $vlSchemaPath = app_path('Ai/Agents/Adaptation/VoiceLockSchema.php');
+    $vlSchemaSrc  = is_file($vlSchemaPath) ? file_get_contents($vlSchemaPath) : '';
+    foreach (['voice_anchor', 'anchor_card', 'runtime_self_check', 'build_time_qa_protocol'] as $field) {
+        echo (str_contains($vlSchemaSrc, "'{$field}'") ? 'ok   ' : 'FAIL ')
+            . "VoiceLockSchema: {$field} defined\n";
+    }
+
+    // A9. VoiceLockChapterAgent — anchor candidate fields in both branches
+    $vlAgentPath = app_path('Ai/Agents/Adaptation/VoiceLockChapterAgent.php');
+    $vlAgentSrc  = is_file($vlAgentPath) ? file_get_contents($vlAgentPath) : '';
+    foreach (['voice_anchor_candidates', 'anchor_card_candidates', 'self_check_candidates'] as $field) {
+        echo (str_contains($vlAgentSrc, "'{$field}'") ? 'ok   ' : 'FAIL ')
+            . "VoiceLockChapterAgent: {$field} defined\n";
+    }
+
+    // ── B. Blade render checks ────────────────────────────────────────────────
+    echo "\n--- B. V2.3 Blade render checks ---\n";
+
+    $v23Blades = [
+        // Voice Lock — 1B v3 screenwriter
+        'ai.agents.adaptation.voice-lock.system-prompt-screenwriter' => [
+            'formatDetection' => ['detected_format' => 'SCREENPLAY'],
+            'formatDetectionOutput' => '{"detected_format":"SCREENPLAY"}',
+            'ipAudit' => ['scorecard' => 'stub'],
+            'currentPhase' => 'Voice Lock 1B v3',
+        ],
+        // Voice Lock — 1A v2 novelist
+        'ai.agents.adaptation.voice-lock.system-prompt-novelist' => [
+            'formatDetection' => ['detected_format' => 'NOVEL'],
+            'formatDetectionOutput' => '{"detected_format":"NOVEL"}',
+            'ipAudit' => ['scorecard' => 'stub'],
+            'currentPhase' => 'Voice Lock 1A v2',
+        ],
+        // Chapter prompts
+        'ai.agents.adaptation.voice-lock.chapter-system-prompt-screenwriter' => [],
+        'ai.agents.adaptation.voice-lock.chapter-system-prompt-novelist' => [],
+        // Merge prompt
+        'ai.agents.adaptation.voice-lock.merge-prompt' => [
+            'title' => 'X', 'author' => 'A', 'year' => '2026', 'format' => 'NOVEL',
+            'formatDetection' => [], 'ipAudit' => [],
+            'totalChapters' => 1, 'voiceFragments' => [['chapter_id' => 1, 'chapter_position' => 1]],
+        ],
+        // Entry point diagnosis — D10
+        'ai.agents.adaptation.entry-point-diagnosis.system-prompt' => [
+            'formatDetection' => '', 'formatDetectionOutput' => '', 'currentPhase' => 'Phase 3 D10',
+        ],
+        'ai.agents.adaptation.entry-point-diagnosis.prompt' => [
+            'voiceProfile' => [
+                'profile_type' => 'NOVELIST',
+                'author_voice_dna_profile' => [],
+                'master_rule_1_hard_bans' => [],
+                'voice_anchor' => [
+                    ['mode' => 'stub', 'source' => 'ch1', 'techniques' => 'stub', 'prose' => 'Stub prose.'],
+                ],
+                'anchor_card' => ['No em-dash.'],
+                'runtime_self_check' => ['Check em-dash.'],
+            ],
+            'voiceProfileLabel' => 'Sections 1+2+Voice Anchor',
+            'storySessionMap' => [], 'ipAudit' => [], 'sessionNumber' => 1,
+            'sessionSourcePages' => 'stub pages', 'sessionEvents' => [],
+            'protagonist' => 'Alice',
+            'format' => 'NOVEL',
+        ],
+        // Choice design — D4 patch
+        'ai.agents.adaptation.choice-design.system-prompt' => [
+            'formatDetection' => '', 'formatDetectionOutput' => '', 'currentPhase' => 'Phase 5 D4',
+        ],
+        'ai.agents.adaptation.choice-design.prompt' => [
+            'voiceProfile' => [
+                'profile_type' => 'NOVELIST',
+                'author_voice_dna_profile' => [],
+                'master_rule_1_hard_bans' => [],
+                'anchor_card' => ['No em-dash.'],
+            ],
+            'voiceProfileLabel' => 'Sections 1+2+Anchor Card',
+            'beatMap' => [], 'storySessionMap' => [], 'protagonistCoreTrait' => 'x',
+            'emotionalPromise' => 'stub', 'sessionNumber' => 1, 'choiceMomentPages' => 'stub pages',
+            'firstChoiceSpec' => ['setup_prose' => 'stub', 'choice_question' => 'stub?'],
+        ],
+    ];
+
+    foreach ($v23Blades as $view => $data) {
+        try {
+            $bytes = strlen(view($view, $data)->render());
+            echo "ok   {$view}  [{$bytes} bytes]\n";
+        } catch (\Throwable $e) {
+            echo "FAIL {$view}  [{$e->getMessage()}]\n";
+        }
+    }
+
+    // ── B2. Blade content markers ─────────────────────────────────────────────
+    echo "\n--- B2. V2.3 Blade content markers ---\n";
+
+    // 1B v3 screenwriter system prompt must contain V2.3 section headers
+    try {
+        $swData = [
+            'formatDetection' => ['detected_format' => 'SCREENPLAY'],
+            'formatDetectionOutput' => '{"detected_format":"SCREENPLAY"}',
+            'ipAudit' => ['scorecard' => 'stub'],
+            'currentPhase' => 'Voice Lock 1B v3',
+        ];
+        $swRendered = view('ai.agents.adaptation.voice-lock.system-prompt-screenwriter', $swData)->render();
+        foreach ([
+            'VOICE ANCHOR',
+            'ANCHOR CARD',
+            'RUNTIME SELF-CHECK PROTOCOL',
+            'BUILD-TIME QA PROTOCOL',
+        ] as $marker) {
+            echo (str_contains($swRendered, $marker) ? 'ok   ' : 'FAIL ')
+                . "screenwriter system-prompt 1B v3 contains: {$marker}\n";
+        }
+        // V2.3: VDPP is build-time only in 1B v3 — may or may not appear in the merge prompt
+        // depending on the deliverable. Its absence means the anchor system replaced it (expected).
+        echo (str_contains($swRendered, 'VOICE DECAY PREVENTION PROTOCOL') ? 'info (VDPP still present as concept) ' : 'ok   (VDPP absent — replaced by Voice Anchor system) ')
+            . "screenwriter 1B v3: VOICE DECAY PREVENTION PROTOCOL status\n";
+    } catch (\Throwable $e) {
+        echo "FAIL screenwriter 1B v3 render: {$e->getMessage()}\n";
+    }
+
+    // D10 entry-point-diagnosis system prompt must contain D10 section headers
+    try {
+        $d10Data = ['formatDetection' => '', 'formatDetectionOutput' => '', 'currentPhase' => 'Phase 3 D10'];
+        $d10Rendered = view('ai.agents.adaptation.entry-point-diagnosis.system-prompt', $d10Data)->render();
+        foreach ([
+            'FIRST CHOICE — SPEC',  // D10 Task 4 header (prompt uses em-dash in section title)
+            'COLD OPEN',
+        ] as $marker) {
+            echo (str_contains($d10Rendered, $marker) ? 'ok   ' : 'FAIL ')
+                . "entry-point-diagnosis D10 system-prompt contains: {$marker}\n";
+        }
+    } catch (\Throwable $e) {
+        echo "FAIL entry-point-diagnosis D10 render: {$e->getMessage()}\n";
+    }
+
+    // Choice design prompt must contain firstChoiceSpec + anchor_card, NOT voice_anchor exemplar prose
+    try {
+        $cdData = [
+            'voiceProfile' => [
+                'profile_type' => 'NOVELIST',
+                'author_voice_dna_profile' => [],
+                'master_rule_1_hard_bans' => [],
+                'anchor_card' => ['No em-dash.', 'Sentences under 20 words.'],
+            ],
+            'voiceProfileLabel' => 'Sections 1+2+Anchor Card',
+            'beatMap' => [], 'storySessionMap' => [], 'protagonistCoreTrait' => 'x',
+            'emotionalPromise' => 'stub', 'sessionNumber' => 1, 'choiceMomentPages' => 'stub pages',
+            'firstChoiceSpec' => ['setup_prose' => 'She stood at the fork.', 'choice_question' => 'Which road?'],
+        ];
+        $cdRendered = view('ai.agents.adaptation.choice-design.prompt', $cdData)->render();
+        echo (str_contains($cdRendered, 'She stood at the fork.') ? 'ok   ' : 'FAIL ')
+            . "choice-design prompt: firstChoiceSpec content rendered\n";
+        echo (str_contains($cdRendered, 'No em-dash.') ? 'ok   ' : 'FAIL ')
+            . "choice-design prompt: anchor_card rendered\n";
+        // voice_anchor exemplar prose must NOT appear — dnaBansAndAnchorCard omits it
+        echo (! str_contains($cdRendered, 'voice_anchor') ? 'ok   ' : 'FAIL ')
+            . "choice-design prompt: full voice_anchor exemplar prose NOT present (token budget)\n";
+    } catch (\Throwable $e) {
+        echo "FAIL choice-design prompt render: {$e->getMessage()}\n";
+    }
+
+    // ── C. Runtime template D8 v2 with V2.3 stub ─────────────────────────────
+    echo "\n--- C. Runtime template D8 v2 render ---\n";
+
+    $stub = stub_runtime_template_data();
+    try {
+        $rendered = view('ai.agents.chaos.runtime-narrator-template', $stub)->render();
+        echo "ok   D8 v2 render (" . strlen($rendered) . " bytes)\n";
+        foreach ([
+            '**4A — THE VOICE ANCHOR (imitate these):**',
+            'The door was open. She went in.',           // stub voice_anchor prose
+            '**THE ANCHOR CARD (',                       // anchor_card section
+            'No em-dash in any form',                   // stub anchor_card rule 1
+            'SELF-CHECK — run silently on your draft',
+            '### SECTION 13: COLD OPEN',
+            '### SECTION 18: VOICE RE-ANCHOR',
+            '[OPENING_SCENE_INJECTION_POINT]',
+            '[WORLD_STATE_TIERED_INJECTION_POINT]',
+            '115-125 words',
+        ] as $marker) {
+            echo (str_contains($rendered, $marker) ? 'ok   ' : 'FAIL ') . "D8v2 render contains: {$marker}\n";
+        }
+        // Old V2.2 markers must not appear
+        foreach ([
+            'RUNTIME GENERATION RULES — CADENCE, ECONOMY, AND FORWARD PULL',
+            'FIRST-3-MINUTES OPENING PROTOCOL',
+        ] as $removed) {
+            echo (str_contains($rendered, $removed) ? 'FAIL (V2.2 artefact present!) ' : 'ok   ')
+                . "D8v2 render does NOT contain old marker: {$removed}\n";
+        }
+    } catch (\Throwable $e) {
+        echo "FAIL D8 v2 render: {$e->getMessage()}\n";
+    }
+
+    // C2. Anchor-absent failure: stub WITHOUT voice_anchor must fail the builder guard.
+    echo "\n--- C2. Builder anchor-absent failure test ---\n";
+    $stubNoAnchor = stub_runtime_template_data();
+    unset($stubNoAnchor['voice']['voice_anchor']);
+    try {
+        // Direct builder call is not possible without DB, but we can test the
+        // Blade render path. The guard is in the builder, not the blade template
+        // itself — so the blade renders fine; the builder wraps it.
+        // Instead, verify the guard code is present in the builder source.
+        echo "(Builder guard is in RuntimeNarratorTemplateBuilder::assertAnchorFieldsPresent() — "
+            . "tested via source check in section A above. Full guard requires DB session object.)\n";
+        // What we CAN test: verify VoiceProfilePromptSlice throws on missing voice_anchor.
+        try {
+            \App\Ai\Adaptation\VoiceProfilePromptSlice::dnaBansAndAnchor([
+                'author_voice_dna_profile' => [],
+                'master_rule_1_hard_bans'  => [],
+                // voice_anchor intentionally absent
+            ]);
+            echo "FAIL dnaBansAndAnchor did NOT throw on missing voice_anchor\n";
+        } catch (\RuntimeException $e) {
+            echo "ok   dnaBansAndAnchor throws RuntimeException on missing voice_anchor: {$e->getMessage()}\n";
+        }
+
+        try {
+            \App\Ai\Adaptation\VoiceProfilePromptSlice::dnaBansAndAnchorCard([
+                'author_voice_dna_profile' => [],
+                'master_rule_1_hard_bans'  => [],
+                // anchor_card intentionally absent
+            ]);
+            echo "FAIL dnaBansAndAnchorCard did NOT throw on missing anchor_card\n";
+        } catch (\RuntimeException $e) {
+            echo "ok   dnaBansAndAnchorCard throws RuntimeException on missing anchor_card: {$e->getMessage()}\n";
+        }
+    } catch (\Throwable $e) {
+        echo "FAIL slice guard test: {$e->getMessage()}\n";
+    }
+
+    // ── D. DB-dependent: voice_profile anchor fields ──────────────────────────
+    echo "\n--- D. DB-dependent: voice_profile V2.3 anchor fields ---\n";
+
+    $story = null;
+    try {
+        $story = \App\Models\Story::query()->where('slug', $slug)->with('adaptation')->first();
+    } catch (\Throwable $e) {
+        echo "(DB unavailable — skipping: {$e->getMessage()})\n";
+        return;
+    }
+
+    if (! $story?->adaptation?->voice_profile) {
+        echo "(no voice_profile for '{$slug}' — run pipeline on Cloud after deploy)\n";
+        return;
+    }
+
+    $vp = (array) $story->adaptation->voice_profile;
+    echo "profile_type: " . ($vp['profile_type'] ?? 'MISSING') . "\n";
+
+    // V2.3 top-level anchor fields
+    foreach (['voice_anchor', 'anchor_card', 'runtime_self_check', 'build_time_qa_protocol'] as $field) {
+        $present = ! empty($vp[$field]);
+        echo ($present ? 'ok   ' : 'miss ') . "voice_profile.{$field} present\n";
+        if ($present && $field === 'voice_anchor') {
+            $count = count((array) $vp[$field]);
+            echo "  voice_anchor exemplar count: {$count} (expect >= 2)\n";
+        }
+        if ($present && in_array($field, ['anchor_card', 'runtime_self_check'], true)) {
+            $count = count((array) $vp[$field]);
+            echo "  {$field} rule count: {$count} (expect >= 3)\n";
+        }
+    }
+
+    // Ensure legacy fourteen_point_audit still present (backward-compat)
+    echo (! empty($vp['fourteen_point_audit_protocol']) ? 'ok   ' : 'miss (legacy field) ')
+        . "voice_profile.fourteen_point_audit_protocol still present\n";
+
+    // entry_point_diagnosis: first_choice_spec present for session 1
+    $session1 = $story->adaptation->sessionAdaptations?->firstWhere('session_number', 1);
+    if ($session1) {
+        $entry = (array) ($session1->entry_point_diagnosis ?? []);
+        echo (! empty($entry['cold_open']) ? 'ok   ' : 'miss ')
+            . "session_1.entry_point_diagnosis.cold_open present\n";
+        echo (! empty($entry['first_choice_spec']) ? 'ok   ' : 'miss ')
+            . "session_1.entry_point_diagnosis.first_choice_spec present\n";
+        if (! empty($entry['first_choice_spec'])) {
+            $spec = (array) $entry['first_choice_spec'];
+            foreach (['setup_prose', 'choice_question', 'option_1_text', 'option_1_alignment'] as $k) {
+                echo (isset($spec[$k]) ? 'ok   ' : 'miss ') . "  first_choice_spec.{$k}\n";
+            }
+        }
+        // choice_design: first branching_choice must be category=IDENTITY (from D4 patch)
+        $cd = (array) ($session1->session_choice_design ?? []);
+        $choices = (array) ($cd['branching_choices'] ?? []);
+        if (! empty($choices)) {
+            $first = (array) ($choices[0] ?? []);
+            $category = $first['category'] ?? 'MISSING';
+            echo ($category === 'IDENTITY' ? 'ok   ' : "FAIL (got {$category}) ")
+                . "session_1.branching_choices[0].category = IDENTITY\n";
+        } else {
+            echo "miss session_1.session_choice_design.branching_choices empty\n";
+        }
+    } else {
+        echo "miss session_number=1 not found for '{$slug}'\n";
+    }
+}
+
+// -----------------------------------------------------------------------------
+
 function stub_runtime_template_data_screenwriter(): array
 {
     $base = stub_runtime_template_data();
 
     $base['voice'] = [
         'profile_type' => 'SCREENWRITER',
+        // V2.3 D8 v2 required anchor fields.
+        'voice_anchor' => [
+            [
+                'mode'       => 'translated prose',
+                'source'     => 'Scene 1, action block',
+                'techniques' => 'fragment punch, verb-first, zero interiority',
+                'prose'      => 'The door swings open. She steps in. Stops.',
+            ],
+        ],
+        'anchor_card' => [
+            'No em-dash.',
+            'Fragments at 18-28% of sentences.',
+            'No interior monologue — camera logic only.',
+        ],
+        'runtime_self_check' => [
+            'Search draft for — and --. Delete every one.',
+            'Count fragments. Below 18%? Compress two consecutive short sentences into one fragment.',
+            'Any character speech past ceiling? Compress.',
+        ],
         'author_voice_dna_profile' => [
             'signature_writing_techniques' => [
                 ['name' => 'Fragment Punch', 'why_this_author' => 'Compresses impact into 1-3 words', 'frequency' => 'every emotional beat'],
@@ -984,6 +1437,25 @@ function stub_runtime_template_data(): array
         ],
         'voice' => [
             'profile_type' => 'NOVELIST',
+            // V2.3 D8 v2 required anchor fields — RuntimeNarratorTemplateBuilder throws without these.
+            'voice_anchor' => [
+                [
+                    'mode'       => 'translated prose',
+                    'source'     => 'Ch 1, opening paragraph',
+                    'techniques' => 'compression, externalized action, no interior monologue',
+                    'prose'      => 'The door was open. She went in. The cat sat on the table and watched her hands.',
+                ],
+            ],
+            'anchor_card' => [
+                'No em-dash in any form (— or --).',
+                'Sentences under 20 words.',
+                'No cognitive lead-ins (realized, noticed, found herself).',
+            ],
+            'runtime_self_check' => [
+                'Search draft for — and --. Delete every one; restructure.',
+                'Search for cognitive lead-ins and cut; render directly.',
+                'Check last three sentence openers — same word? Vary one.',
+            ],
             'author_voice_dna_profile' => [
                 'signature_writing_techniques' => [
                     ['name' => 'Stub Technique', 'why_this_author' => 'test', 'frequency' => 'every scene'],

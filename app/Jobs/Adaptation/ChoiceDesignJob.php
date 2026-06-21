@@ -41,6 +41,24 @@ final class ChoiceDesignJob implements ShouldQueue
             );
         }
 
+        // V2.3: Phase 5 requires anchor_card (binary/local rules ground all authored outcomes).
+        // dnaBansAndAnchorCard() throws RuntimeException if anchor_card is absent.
+        // Voice Anchor exemplar prose is intentionally excluded — token budget.
+        $voiceProfile = VoiceProfilePromptSlice::dnaBansAndAnchorCard((array) ($adaptation->voice_profile ?? []));
+
+        // D4 Patch: first_choice_spec is the Phase 3 output consumed by Task 1.
+        // Throw explicitly if Phase 3 has not produced a spec — no silent pass.
+        $firstChoiceSpec = $session->entry_point_diagnosis['first_choice_spec'] ?? null;
+
+        if ($firstChoiceSpec === null) {
+            throw new \RuntimeException(sprintf(
+                'first_choice_spec missing from entry_point_diagnosis (story %d, session %d). '
+                . 'Phase 3 (EntryPointDiagnosisJob) must complete before Phase 5 (ChoiceDesign).',
+                $this->story->id,
+                $this->sessionNumber,
+            ));
+        }
+
         try {
             $session->update(['session_status' => SessionAdaptationStatusEnum::CHOICE_DESIGN]);
 
@@ -51,13 +69,14 @@ final class ChoiceDesignJob implements ShouldQueue
 
             $response = (new ChoiceDesignAgent)->prompt(
                 view('ai.agents.adaptation.choice-design.prompt', [
-                    'beatMap' => $session->session_architecture,
-                    'storySessionMap' => $adaptation->story_session_map,
+                    'beatMap'              => $session->session_architecture,
+                    'storySessionMap'      => $adaptation->story_session_map,
                     'protagonistCoreTrait' => $ipAudit['bounded_agency']['evidence'] ?? '',
-                    'emotionalPromise' => $session->entry_point_diagnosis['emotional_promise'] ?? '',
-                    'sessionNumber' => $this->sessionNumber,
-                    'choiceMomentPages' => $choiceMomentPages,
-                    'voiceProfile' => VoiceProfilePromptSlice::dnaAndBans((array) ($adaptation->voice_profile ?? [])),
+                    'emotionalPromise'     => $session->entry_point_diagnosis['emotional_promise'] ?? '',
+                    'sessionNumber'        => $this->sessionNumber,
+                    'choiceMomentPages'    => $choiceMomentPages,
+                    'voiceProfile'         => $voiceProfile,
+                    'firstChoiceSpec'      => $firstChoiceSpec,
                 ])->render()
             );
 

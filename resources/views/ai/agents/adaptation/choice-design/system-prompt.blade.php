@@ -1,13 +1,17 @@
-{{-- Pipeline Upgrade V2 — Deliverable 4: Phase 5 Choice Design Upgrade.
+{{-- Pipeline Upgrade V2.3 — Deliverable 4 + D4 Patch (Phase 5 Choice Design Upgrade).
      Prompt text is verbatim from
-     "Adaptation layer/Chaos adaptation/#4 DOCS .../DELIVERABLE 4 - UPDATED PHASE 5 CHOICE DESIGN.md".
-     Mechanical adaptations only:
-       - master-context include (replaces the "[PASTE MASTER CONTEXT BLOCK HERE]" placeholder)
+     "Adaptation layer/Chaos adaptation/#4 DOCS .../DELIVERABLE 4 - UPDATED PHASE 5 CHOICE DESIGN.md"
+     with the D4 Patch applied to TASK 1 (June 2026 upgrade).
+     Mechanical adaptations:
+       - master-context include (replaces "[PASTE MASTER CONTEXT BLOCK HERE]")
        - dropped trailing "## END OF DELIVERABLE 4" footer line
-       - output shape adapter: `branching_choices` is a single array of four
-         entries (Identity / Methodology / Moral Weight / Session-End Hook)
-         with `options[]` instead of option_a/b/c keys, so the runtime
-         narrator template can iterate them directly. --}}
+       - output shape adapter: branching_choices is a single array of four
+         entries with options[] instead of option_a/b/c keys.
+     D4 Patch:
+       - TASK 1 block (BRANCHING CHOICE #1 — SETUP BEAT) is replaced with
+         the D4 Patch REPLACEMENT TEXT (stakes-tied, spec-consuming, anti-tutorial).
+       - CHOICE #1 bullet line in the four-choice list is updated accordingly.
+       - Input header note for FIRST-CHOICE SPEC added to prompt.blade.php. --}}
 @include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 5 — Choice Design (V2)'])
 
 === LORESPINNER — PHASE 5: CHOICE DESIGN ===
@@ -36,7 +40,7 @@ ALIGNMENT DEFINITIONS:
 - NEUTRAL: pragmatic, self-interested, observational. Neither rebels nor obeys. Adapts, watches, waits.
 
 The four branching choices are STRICTLY ordered and beat-locked:
-- CHOICE #1 — category=IDENTITY, beat=SETUP, must arrive within the first 300 words of player narration.
+- CHOICE #1 — category=IDENTITY, beat=SETUP — see TASK 1 below for full specification. Expands the Phase 3 First-Choice Spec. Must arrive within the first 300 words.
 - CHOICE #2 — category=METHODOLOGY, beat=ESCALATION.
 - CHOICE #3 — category=MORAL_WEIGHT, beat=TWIST. No objectively correct answer. The stickiness target.
 - CHOICE #4 — category=SESSION_END_HOOK, beat=RESOLUTION. Does NOT resolve within this session.
@@ -77,6 +81,54 @@ Choices are not menu items. They are character-defining moments.
 ═══════════════════════════════════════════════════════════════
 END — CHOICE DESIGN ADDITIONS
 ═══════════════════════════════════════════════════════════════
+
+---
+
+TASK 1 — BRANCHING CHOICE #1 (SETUP BEAT — the first agency moment)
+
+This is the player's first real decision. It sets the register they carry through the session and tells them what kind of person they are choosing to be. It is NOT a tutorial.
+
+INPUT: The Phase 3 First-Choice Spec (entry point, the threshold/stake it turns on, the question, and three option directions with alignment and tracked dimension). Your job is to EXPAND that spec into full outcomes in the author's voice — not to redesign it. Preserve the spec's threshold, stakes-tie, and the unexpected third option.
+
+If Phase 3 has not been run for this IP (fallback mode), Task 1 operates as before but must still apply the stakes-tied / no-tutorial gate below.
+
+HARD REQUIREMENTS (gate — verify before writing outcomes):
+- TIED TO CORE STAKES: the choice engages the protagonist's central want or threat established in the cold open — not a side encounter, not a passerby, not a moral exercise on a stranger.
+- NO SOFT TUTORIAL: if the choice is a low-stakes warm-up (help/ignore a random NPC, a tap-to-continue, a no-cost decision), it FAILS. Return to Phase 3 and raise the stakes or move the entry point. Do not ship a tutorial as Choice #1.
+- REAL FORK, NO CORRECT ANSWER: three options, each a legitimate human value; at least one is the unexpected third path from the spec.
+- ARRIVES WITHIN ~300 WORDS of the cold open's first word.
+
+Source moment: [from the Phase 3 spec / beat map]
+What this choice tracks: [branch dimension from Phase 2]
+Alignment order for this choice: [randomized]
+
+NARRATIVE SETUP (2-3 sentences of second-person prose in the author's voice — use the Phase 3 cold-open setup verbatim or lightly finished):
+[the passage immediately before the question — ends on the live moment, NOT a stakes summary]
+
+CHOICE QUESTION: [in second person, from the spec]
+
+  A. [OPTION — one sentence, from the spec]
+     Alignment: [internal only]
+     Outcome (115-125 words): [full outcome in the author's voice; ends on a live image/action, never an essay-line stakes recap]
+  B. [OPTION — one sentence]
+     Alignment: [internal only]
+     Outcome (115-125 words): [text]
+  C. [OPTION — the unexpected third path]
+     Alignment: [internal only]
+     Outcome (115-125 words): [text]
+
+PERSISTENT STATE CHANGES: [per option — inventory, NPC dispositions, environmental flags, emotional ledger, alignment shift — same format as before]
+WORLD NOTICED SIGNAL: [per option — in-world, in the author's voice, non-gamey]
+STORYGUARD MANIFEST: [canon boundaries, character truth, scene integrity, fold-back path, freeform alignment mapping — same format as before]
+
+FIRST-CHOICE GATE CONFIRMATION (all must be YES):
+- Tied to the protagonist's core stakes (not a side encounter): [YES/NO]
+- Not a soft tutorial / no-cost warm-up: [YES/NO]
+- No correct answer; three genuine values: [YES/NO]
+- Includes the unexpected third option: [YES/NO]
+- Arrives within ~300 words: [YES/NO]
+- Each outcome ends on a live moment, not a stakes summary: [YES/NO]
+If any answer is NO, revise — or return to Phase 3.
 
 ---
 

@@ -8,15 +8,23 @@ namespace App\Ai\Adaptation;
  * Produces doc-aligned slices of `story_adaptations.voice_profile` for injection
  * into adaptation phase prompts.
  *
- * Slice contract (mirrors V2.2 Deliverable headings):
- *   dna             → profile_type + author_voice_dna_profile only (D3 / Phase 4)
- *   dnaAndBans      → dna + master_rule_1_hard_bans (D4 / Phases 3, 5, 6, 7)
- *   alignmentContext → dna subset: diction, dialogue fingerprints, comparative
- *                      exclusion, negative space — no heavy quote arrays (Phase 2)
- *   full            → entire profile including fourteen_point_audit_protocol (Phase 8)
+ * Slice contract (mirrors V2.3 Deliverable headings):
+ *   dna                → profile_type + author_voice_dna_profile only (D3 / Phase 4)
+ *   dnaAndBans         → dna + master_rule_1_hard_bans (D4 / Phases 6, 7)
+ *   dnaBansAndAnchor   → dna + bans + full voice_anchor + anchor_card (Phase 3 / D10)
+ *                        Throws RuntimeException if voice_anchor or anchor_card absent.
+ *   dnaBansAndAnchorCard → dna + bans + anchor_card only (no exemplar prose) (Phase 5 / D4)
+ *                          Throws RuntimeException if anchor_card absent.
+ *   alignmentContext   → dna subset: diction, dialogue fingerprints, comparative
+ *                        exclusion, negative space — no heavy quote arrays (Phase 2)
+ *   full               → entire profile (Phase 8)
  *
  * All non-full slices strip quote arrays to keep pipeline prompt token budgets
  * manageable (mirrors RuntimeNarratorTemplateBuilder::dropVoiceQuotes()).
+ *
+ * V2.3 note: voice_anchor exemplar prose is NEVER stripped in dnaBansAndAnchor —
+ * it is load-bearing and must arrive verbatim. dnaBansAndAnchorCard deliberately
+ * omits the full exemplar prose to keep Phase 5 within token budget.
  */
 final class VoiceProfilePromptSlice
 {
@@ -78,6 +86,72 @@ final class VoiceProfilePromptSlice
             'author_voice_dna_profile' => $dna,
             'master_rule_1_hard_bans'  => $voiceProfile['master_rule_1_hard_bans'] ?? [],
         ];
+    }
+
+    /**
+     * Sections 1+2+3 (Voice Anchor) — DNA + bans + full voice_anchor exemplars + anchor_card.
+     * Used by EntryPointDiagnosisJob / Phase 3 (D10).
+     *
+     * voice_anchor exemplars are NEVER stripped — they are load-bearing prose the agent
+     * uses to ground cold_open tone and first_choice_spec quality.
+     * runtime_self_check is omitted (runtime-only; not needed at adaptation time).
+     *
+     * @param  array<string, mixed>  $voiceProfile
+     * @return array<string, mixed>
+     * @throws \RuntimeException if voice_anchor or anchor_card absent (V2.3 profile required)
+     */
+    public static function dnaBansAndAnchor(array $voiceProfile): array
+    {
+        if (empty($voiceProfile['voice_anchor'])) {
+            throw new \RuntimeException(
+                'dnaBansAndAnchor() requires a V2.3 voice_profile with voice_anchor populated. '
+                . 'Re-run Voice Lock for this story before running Phase 3.'
+            );
+        }
+
+        if (empty($voiceProfile['anchor_card'])) {
+            throw new \RuntimeException(
+                'dnaBansAndAnchor() requires a V2.3 voice_profile with anchor_card populated. '
+                . 'Re-run Voice Lock for this story before running Phase 3.'
+            );
+        }
+
+        $base = self::dnaAndBans($voiceProfile);
+
+        // voice_anchor prose is load-bearing — include verbatim, never stripped.
+        $base['voice_anchor'] = $voiceProfile['voice_anchor'];
+        $base['anchor_card']  = $voiceProfile['anchor_card'];
+
+        return $base;
+    }
+
+    /**
+     * Sections 1+2+anchor_card only — no voice_anchor exemplar prose.
+     * Used by ChoiceDesignAgent / Phase 5 (D4 patch).
+     *
+     * Deliberately omits full voice_anchor exemplar prose to keep Phase 5 within
+     * token budget. The Anchor Card (binary/local rules) is sufficient for authored
+     * choice prose; full exemplars are runtime-only via D8.
+     *
+     * @param  array<string, mixed>  $voiceProfile
+     * @return array<string, mixed>
+     * @throws \RuntimeException if anchor_card absent (V2.3 profile required)
+     */
+    public static function dnaBansAndAnchorCard(array $voiceProfile): array
+    {
+        if (empty($voiceProfile['anchor_card'])) {
+            throw new \RuntimeException(
+                'dnaBansAndAnchorCard() requires a V2.3 voice_profile with anchor_card populated. '
+                . 'Re-run Voice Lock for this story before running Phase 5.'
+            );
+        }
+
+        $base = self::dnaAndBans($voiceProfile);
+
+        // anchor_card only — voice_anchor exemplar prose intentionally excluded.
+        $base['anchor_card'] = $voiceProfile['anchor_card'];
+
+        return $base;
     }
 
     /**

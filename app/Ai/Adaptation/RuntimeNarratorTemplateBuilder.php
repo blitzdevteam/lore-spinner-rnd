@@ -11,67 +11,94 @@ use App\Models\Story;
 use Illuminate\Support\Facades\View;
 
 /**
- * Pipeline Upgrade V2 — Deliverable 8 assembler.
+ * D8 v2 assembler — 18-section runtime narrator template.
  *
  * Reads every pipeline output the runtime narrator needs and renders the
- * 17-section template at `ai.agents.chaos.runtime-narrator-template` into a
- * single string suitable for caching on `session_adaptations.runtime_narrator_prompt`.
+ * template at `ai.agents.chaos.runtime-narrator-template` into a single
+ * string cached on `session_adaptations.runtime_narrator_prompt`.
  *
- * Bounded to MAX_PROMPT_CHARS. Implements the compression
- * cascade described in the deliverable:
- *   1. Compress Section 12 (Full Source Script) — keep first/last event
- *      verbatim, summarize middle events to titles + objectives only.
- *   2. Drop Voice Profile direct quotes (keep technique names + IP-specific bans).
- *   3. Flag for editorial split (raise an exception caller can handle by
- *      splitting the story session in half).
+ * V2.3 requirements:
+ *   - voice_profile MUST contain voice_anchor, anchor_card, runtime_self_check.
+ *     If any are absent, a RuntimeException is thrown immediately — no silent
+ *     degradation, no fallback to old-profile behavior.
+ *   - Compression cascade (D8 v2 priority order):
+ *     1. Compress Section 12 (Full Source Script) — first/last event verbatim,
+ *        middle events to titles + objectives only.
+ *     2. Compress Section 12 further (titles only, all events).
+ *     3. Drop voice DNA quote arrays (see dropVoiceQuotes) — anchor fields
+ *        (voice_anchor, anchor_card, runtime_self_check) are NEVER touched.
+ *     4. Flag for editorial split (RuntimeException — caller should split session).
+ *   - After render: throws RuntimeException if any {{…}} token or
+ *     [OPENING_SCENE_INJECTION_POINT] is missing from the assembled prompt.
  *
- * The injection-point tokens left in the template
- * (`[SYMBOLIC_MEMORY_INJECTION_POINT]`, `[ALIGNMENT_TILT_INJECTION_POINT]`,
- * `[OPENING_SCENE_INJECTION_POINT]`, `[WORLD_STATE_TIERED_INJECTION_POINT]`)
- * are filled in by ChaosModeController at runtime, not here.
+ * Injection-point tokens filled at runtime by ChaosEngineService, not here:
+ *   [OPENING_SCENE_INJECTION_POINT], [SYMBOLIC_MEMORY_INJECTION_POINT],
+ *   [ALIGNMENT_TILT_INJECTION_POINT], [WORLD_STATE_TIERED_INJECTION_POINT]
  */
 final class RuntimeNarratorTemplateBuilder
 {
     /**
-     * Hard cap for the cached runtime narrator prompt.
+     * Hard cap for the cached runtime narrator prompt (D8 v2 — 65 k chars).
      */
-    public const MAX_PROMPT_CHARS = 128_000;
+    public const MAX_PROMPT_CHARS = 65_000;
 
     /**
      * Build the cached runtime narrator prompt for a given session adaptation.
      *
-     * @throws \RuntimeException if no compression strategy fits the prompt under
-     *                            MAX_PROMPT_CHARS — caller should mark the
-     *                            session as "needs editorial split".
+     * V2.3 contract:
+     *   - Throws immediately if voice_profile lacks voice_anchor, anchor_card,
+     *     or runtime_self_check — no silent degradation.
+     *   - Compression cascade protects anchor fields (they are NEVER touched by
+     *     dropVoiceQuotes; they are cut LAST).
+     *   - Throws after render if any {{…}} literal or missing
+     *     [OPENING_SCENE_INJECTION_POINT] is detected.
+     *
+     * @throws \RuntimeException if voice_profile is missing required V2.3 anchor
+     *                            fields, if the rendered prompt contains unmapped
+     *                            tokens, or if no compression strategy fits under
+     *                            MAX_PROMPT_CHARS (editorial split required).
      */
     public function build(Story $story, SessionAdaptation $session): string
     {
-        $adaptation = $session->storyAdaptation;
-        $totalSessions = $adaptation->sessionAdaptations()->count();
+        $adaptation   = $session->storyAdaptation;
+        $voiceProfile = (array) ($adaptation->voice_profile ?? []);
 
+        $this->assertAnchorFieldsPresent($voiceProfile, $story, $session);
+
+        $totalSessions      = $adaptation->sessionAdaptations()->count();
         $startEventPosition = (int) ($session->entry_point_diagnosis['start_event_position'] ?? 0);
-        $sessionEvents = $this->loadSessionEvents($story, $session->session_number);
+        $sessionEvents      = $this->loadSessionEvents($story, $session->session_number);
 
         if ($startEventPosition > 0 && ! empty($sessionEvents)) {
             $sessionEvents = $this->filterEventsByStoryPosition($story, $sessionEvents, $startEventPosition);
         }
 
+        // Compression cascade (D8 v2 priority):
+        // Source events are reduced first; anchor-field-safe voice compression comes last.
+        // dropVoiceQuotes never touches voice_anchor / anchor_card / runtime_self_check.
         $compressionAttempts = [
-            'full' => fn () => $sessionEvents,
-            'compressed_source' => fn () => $this->compressSourceEvents($sessionEvents),
+            'full'               => fn () => $sessionEvents,
+            'compressed_source'  => fn () => $this->compressSourceEvents($sessionEvents),
             'titles_only_source' => fn () => $this->titlesOnlySourceEvents($sessionEvents),
         ];
 
         $voiceCompression = [
-            'full' => fn (array $voice) => $voice,
-            'drop_quotes' => fn (array $voice) => $this->dropVoiceQuotes($voice),
+            'full'       => fn (array $v) => $v,
+            'drop_quotes' => fn (array $v) => $this->dropVoiceQuotes($v),
         ];
 
         foreach ($compressionAttempts as $sourceMode => $sourceFn) {
             foreach ($voiceCompression as $voiceMode => $voiceFn) {
-                $rendered = $this->render($story, $session, $totalSessions, $sourceFn(), $voiceFn((array) ($adaptation->voice_profile ?? [])));
+                $rendered = $this->render(
+                    $story,
+                    $session,
+                    $totalSessions,
+                    $sourceFn(),
+                    $voiceFn($voiceProfile),
+                );
 
                 if (mb_strlen($rendered) <= self::MAX_PROMPT_CHARS) {
+                    $this->assertRenderedPromptClean($rendered, $story, $session);
                     return $rendered;
                 }
             }
@@ -83,6 +110,64 @@ final class RuntimeNarratorTemplateBuilder
             $story->id,
             $session->session_number,
         ));
+    }
+
+    /**
+     * Assert that the voice_profile contains the three V2.3 anchor fields.
+     *
+     * @throws \RuntimeException with a clear re-adaptation instruction.
+     */
+    private function assertAnchorFieldsPresent(array $voiceProfile, Story $story, SessionAdaptation $session): void
+    {
+        $missing = [];
+
+        if (empty($voiceProfile['voice_anchor'])) {
+            $missing[] = 'voice_anchor';
+        }
+        if (empty($voiceProfile['anchor_card'])) {
+            $missing[] = 'anchor_card';
+        }
+        if (empty($voiceProfile['runtime_self_check'])) {
+            $missing[] = 'runtime_self_check';
+        }
+
+        if ($missing !== []) {
+            throw new \RuntimeException(sprintf(
+                'Runtime narrator assembly requires a V2.3 voice_profile with voice_anchor, anchor_card, and runtime_self_check. '
+                . 'Missing fields: %s (story %d, session %d). Re-run adaptation for this story.',
+                implode(', ', $missing),
+                $story->id,
+                $session->session_number,
+            ));
+        }
+    }
+
+    /**
+     * Assert the rendered prompt contains no unmapped {{…}} tokens and that
+     * the cold-open injection point is present.
+     *
+     * @throws \RuntimeException if the prompt contains literal {{…}} tokens or
+     *                            is missing [OPENING_SCENE_INJECTION_POINT].
+     */
+    private function assertRenderedPromptClean(string $rendered, Story $story, SessionAdaptation $session): void
+    {
+        if (preg_match('/\{\{[^}]+\}\}/', $rendered)) {
+            throw new \RuntimeException(sprintf(
+                'Assembled runtime narrator prompt contains unmapped {{…}} tokens (story %d, session %d). '
+                . 'Template slot wiring is incomplete.',
+                $story->id,
+                $session->session_number,
+            ));
+        }
+
+        if (! str_contains($rendered, '[OPENING_SCENE_INJECTION_POINT]')) {
+            throw new \RuntimeException(sprintf(
+                'Assembled runtime narrator prompt is missing [OPENING_SCENE_INJECTION_POINT] (story %d, session %d). '
+                . 'Section 13 must contain the injection point token.',
+                $story->id,
+                $session->session_number,
+            ));
+        }
     }
 
     /**
@@ -480,11 +565,12 @@ final class RuntimeNarratorTemplateBuilder
      * Voice compression: drop the source-quote arrays from the voice DNA
      * profile (keep technique names, ban list, sentence/diction summary).
      *
-     * 1B v2 additions: strip closing_line_examples, action_line demonstrative
-     * quotes, emotional_vocabulary_hierarchy quotes, and dialogue fingerprint
-     * evidence arrays. Numeric enforcement specs (numerical_enforcement_layer,
-     * rhythm_transition_architecture, voice_decay_prevention_protocol) are
-     * NEVER touched — they carry the enforcement data the runtime needs.
+     * D8 v2 ANCHOR PROTECTION: This method operates exclusively on
+     * author_voice_dna_profile and NEVER touches the top-level anchor fields:
+     *   - voice_anchor   (Section 4A — cut last, floor of 5 exemplars)
+     *   - anchor_card    (Section 18 — never cut)
+     *   - runtime_self_check (Section 18 — never cut)
+     * These are load-bearing and must survive every compression pass intact.
      *
      * @param  array<string, mixed>  $voice
      * @return array<string, mixed>

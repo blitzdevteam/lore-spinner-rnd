@@ -7,10 +7,21 @@ namespace App\Ai\Agents\Adaptation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 
 /**
- * Pipeline Upgrade V2.2 — Voice Lock structured output schemas.
+ * Pipeline Upgrade V2.3 — Voice Lock structured output schemas.
  *
- * Novelist (1A) and screenwriter (1B) profiles share a base shape with
- * format-specific extensions required by Deliverables 1A / 1B.
+ * Novelist (1A v2) and screenwriter (1B v3) profiles share a base shape with
+ * format-specific extensions.
+ *
+ * V2.3 additions (additive — existing runtime keys preserved):
+ *   TOP-LEVEL (runtime-critical, REQUIRED for V2.3 profiles):
+ *     voice_anchor[]            — locked prose exemplars (Task 3); loaded verbatim into D8 v2
+ *     anchor_card[]             — binary/local rules re-read every turn (Task 4)
+ *     runtime_self_check[]      — ordered pre-delivery check steps (Task 5)
+ *   TOP-LEVEL (build-time only, REQUIRED for V2.3 profiles):
+ *     build_time_qa_protocol    — QA gate run before IP ships; never reaches runtime (Task 6)
+ *   LEGACY (preserved if present, NOT required for V2.3 profiles):
+ *     fourteen_point_audit_protocol  — old V2.2 audit; kept so old profiles keep working
+ *     voice_decay_prevention_protocol — old V2.2 VDPP (screenwriter only); kept for backward compat
  */
 final class VoiceLockSchema
 {
@@ -348,6 +359,31 @@ final class VoiceLockSchema
             ])->required()->withoutAdditionalProperties()->title('Screenplay To Prose Protocol — Section 4');
         }
 
+        // --- V2.3 top-level runtime-critical fields (SCREENWRITER + NOVELIST) ---
+        // voice_anchor: each element is a locked prose exemplar loaded verbatim into D8 v2.
+        $voiceAnchorExemplarSchema = $schema->object([
+            'mode'       => $schema->string()->required()->title('Mode')
+                ->description('cold_tension | physical_action | quiet_aftermath | environmental | dialogue_bearing | emotional_weight'),
+            'source'     => $schema->string()->required()->title('Source Moment')
+                ->description('The source passage this exemplar was translated from.'),
+            'techniques' => $schema->string()->required()->title('Techniques Demonstrated')
+                ->description('2–3 signature techniques demonstrated in this exemplar.'),
+            'prose'      => $schema->string()->required()->title('Prose')
+                ->description('90–150 words, second-person present-tense. Passes every ban. Loaded verbatim into D8 v2 Section 4A.'),
+        ])->required()->withoutAdditionalProperties();
+
+        // --- V2.3 top-level build-time QA protocol (never ships to runtime) ---
+        $buildTimeQaSchema = $schema->object([
+            'quantitative_checks' => $schema->array()->required()->title('Quantitative Checks')
+                ->description('8+ measurable or linter-assisted checks (fragment distribution, ABSOLUTE punctuation bans, speech ceilings, frequency drift).')
+                ->items($schema->string()->required()),
+            'judgment_checks' => $schema->array()->required()->title('Judgment Checks')
+                ->description('Model or human reviewer criteria (blind attribution, comparative exclusion, character swap test).')
+                ->items($schema->string()->required()),
+            'decay_test_procedure' => $schema->string()->required()->title('Decay Test Procedure')
+                ->description('How to compare first/last 200 words of a 600+ word continuous sample to detect voice drift.'),
+        ])->required()->withoutAdditionalProperties()->title('Build-Time QA Protocol — Task 6 (never ships to runtime)');
+
         $topLevel = [
             'profile_type' => $schema->string()->required()->title('Profile Type')->description($profileType),
 
@@ -361,13 +397,39 @@ final class VoiceLockSchema
                 'ip_specific_bans' => $schema->array()->required()->title('IP-Specific Bans')->description('Minimum 6 entries.')->items($ipSpecificBanSchema),
             ])->required()->withoutAdditionalProperties()->title('Master Rule 1 Hard Bans'),
 
-            'fourteen_point_audit_protocol' => $schema->array()->required()->title('Fourteen Point Audit Protocol')->description('Exactly 14 entries.')->items($auditPointSchema),
+            // --- V2.3 runtime-critical fields (★ required for V2.3 profiles) ---
+            'voice_anchor' => $schema->array()->required()
+                ->title('Voice Anchor — Task 3 ★ RUNTIME-CRITICAL')
+                ->description('6–8 locked prose exemplars loaded verbatim into D8 v2 Section 4A. Last voice material cut under token pressure. Never cut anchor_card or runtime_self_check before this.')
+                ->items($voiceAnchorExemplarSchema),
+
+            'anchor_card' => $schema->array()->required()
+                ->title('Anchor Card — Task 4 ★ RUNTIME-CRITICAL')
+                ->description('8–12 binary/local commands re-read by narrator every turn. ABSOLUTE/HIGH-confidence only. Never cut.')
+                ->items($schema->string()->required()),
+
+            'runtime_self_check' => $schema->array()->required()
+                ->title('Runtime Self-Check — Task 5 ★ RUNTIME-CRITICAL')
+                ->description('Ordered sequence of 7 discrete/local check steps the narrator runs silently before each passage. No rate computations.')
+                ->items($schema->string()->required()),
+
+            // --- V2.3 build-time QA (never ships to runtime) ---
+            'build_time_qa_protocol' => $buildTimeQaSchema,
+
+            // --- LEGACY: preserved for backward compat; NOT required for V2.3 profiles ---
+            // fourteen_point_audit_protocol: old V2.2 field; kept so old profiles parse correctly.
+            // Do not populate this for new V2.3 IPs — use build_time_qa_protocol instead.
+            'fourteen_point_audit_protocol' => $schema->array()->title('Fourteen Point Audit Protocol — LEGACY (V2.2 only)')
+                ->description('Preserved for backward compat. V2.3 profiles use build_time_qa_protocol instead. May be absent.')
+                ->items($auditPointSchema),
         ];
 
         // --- 1B v2 Section 3B: Voice Decay Prevention Protocol ---
-        // Top-level only (sibling to fourteen_point_audit_protocol), SCREENWRITER only.
+        // LEGACY — top-level only (sibling of build_time_qa_protocol), SCREENWRITER only.
         // Canonical path: voice_profile.voice_decay_prevention_protocol
         // MUST NOT appear under author_voice_dna_profile.
+        // V2.3 profiles: do not require or render VDPP in the runtime narrator; preserved here
+        // so old screenwriter profiles continue to parse. New IPs use voice_anchor / anchor_card.
         if ($includeScreenwriterFields) {
             $topLevel['voice_decay_prevention_protocol'] = $schema->object([
                 're_anchoring_trigger'             => $schema->string()->required()->title('Re-Anchoring Trigger')
@@ -378,7 +440,7 @@ final class VoiceLockSchema
                 'drift_detection_metrics'          => $schema->array()->required()->title('Drift Detection Metrics')
                     ->description('Metrics to track across consecutive passages; consistent trend away from target triggers re-anchoring.')
                     ->items($schema->string()->required()),
-            ])->required()->withoutAdditionalProperties()->title('Voice Decay Prevention Protocol — Section 3B');
+            ])->withoutAdditionalProperties()->title('Voice Decay Prevention Protocol — LEGACY Section 3B (V2.2 only; V2.3 uses voice_anchor/anchor_card)');
         }
 
         return $topLevel;

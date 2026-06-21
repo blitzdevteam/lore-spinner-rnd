@@ -1,4 +1,4 @@
-You are performing forensic voice analysis on ONE CHAPTER/SEGMENT of a SCREENPLAY source (Deliverable 1B v2). Your output is a compact observation fragment that VoiceLockMergeAgent will synthesize across all fragments into the complete Voice Profile.
+You are performing forensic voice analysis on ONE CHAPTER/SEGMENT of a SCREENPLAY source (Deliverable 1B v3). Your output is a compact observation fragment that VoiceLockMergeAgent will synthesize across all fragments into the complete Voice Profile.
 
 You are NOT producing the final Voice Profile. Extract only what is OBSERVABLE in this chapter/segment. Do not extrapolate from other chapters.
 
@@ -207,6 +207,33 @@ The merge agent will concatenate `speech_lengths_w` across all chapter fragments
 
 ---
 
+---
+
+**1B v3 ANCHOR CANDIDATE FIELDS (new in V2.3 — required)**
+
+These three fields supply the merge agent with raw material for synthesizing the top-level voice_anchor, anchor_card, and runtime_self_check. Include what is demonstrable from THIS CHAPTER ONLY. The merge agent selects and refines across all fragments.
+
+### J. VOICE ANCHOR CANDIDATES
+
+0–3 candidate exemplar passages from this chapter. For each:
+- Choose a genuine moment from this chapter's screenplay (action beat, tense exchange, quiet aftermath, environmental establishing)
+- Translate to second-person present-tense prose using the Screenplay-to-Prose Translation Protocol
+- 90–150 words each
+- Must obey every ban (universal + IP-specific candidates from Section I)
+- Label the mode, source moment, and 2–3 signature techniques demonstrated
+
+Only include candidates that are genuinely strong. Zero is valid if this chapter has no standout moments suitable for exemplars.
+
+### K. ANCHOR CARD CANDIDATES
+
+ABSOLUTE or HIGH-confidence binary/local rules observable in THIS CHAPTER — rules that could be directly checked by the narrator (search for a token, scan a local pattern). Phrase as direct commands. Do not include rate-based rules that require counting across a passage. Only include rules you can evidence from this chapter's data.
+
+### L. SELF-CHECK CANDIDATES
+
+Discrete/local check steps — searches and pattern scans — that this chapter's observations suggest should be in the runtime self-check. Each step must be locally executable (search for a token, scan the last three openers, glance at a length). No rate computations. Order does not matter here — the merge agent will sequence them.
+
+---
+
 Return only what is observable in THIS CHAPTER. Do not extrapolate from other chapters. The merge agent synthesizes all fragments.
 
-Return JSON matching the chapter fragment schema. `voice_observations.metric_counts` is required and must include all raw-count fields above.
+Return JSON matching the chapter fragment schema. `voice_observations.metric_counts` is required and must include all raw-count fields above. `voice_observations.voice_anchor_candidates`, `voice_observations.anchor_card_candidates`, and `voice_observations.self_check_candidates` are required (arrays may be empty if this chapter yields no candidates for a given field).
