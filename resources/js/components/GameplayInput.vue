@@ -7,8 +7,8 @@ import { computed, onUnmounted, ref, watch } from 'vue';
 const props = withDefaults(
     defineProps<{
         disabled?: boolean;
-        /** 'sweep' = idle left↔right loop, 'orbit' = clockwork ring while waiting */
-        glowVariant?: 'sweep' | 'orbit';
+        /** 'sweep' = idle left↔right loop, 'orbit' = clockwork ring while waiting, 'twinkle' = one-shot nudge pulse */
+        glowVariant?: 'sweep' | 'orbit' | 'twinkle';
         /**
          * Optional placeholder text. When provided (cold-open first move), it dims
          * on focus and vanishes when the user types — native browser behaviour.
@@ -115,6 +115,7 @@ onUnmounted(() => {
                 !displayedVariant && 'gp-pill--breathe',
                 displayedVariant === 'sweep' && 'gp-pill--sweep',
                 displayedVariant === 'orbit' && 'gp-pill--orbit',
+                displayedVariant === 'twinkle' && 'gp-pill--twinkle',
                 isFading && 'gp-pill--fading',
             ]"
         >
@@ -227,7 +228,8 @@ onUnmounted(() => {
 /* Shared opacity transition so state switches feel smooth */
 .gp-pill--breathe,
 .gp-pill--sweep,
-.gp-pill--orbit {
+.gp-pill--orbit,
+.gp-pill--twinkle {
     transition: opacity 0.2s ease;
 }
 
@@ -277,6 +279,24 @@ onUnmounted(() => {
     50% {
         --gp-glow-pos: 82%;
     }
+}
+
+/* Nudge: single bright teal bloom — plays once, controlled by JS reset timer */
+.gp-pill--twinkle {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 198, 222, 0.72) 0%,
+        rgba(13, 112, 124, 0.62) 16%,
+        rgba(26, 26, 26, 0.18) 34%
+    );
+    animation: gp-glow-twinkle 1.4s cubic-bezier(0.22, 1, 0.36, 1) 1 forwards;
+}
+
+@keyframes gp-glow-twinkle {
+    0%   { opacity: 0; }
+    18%  { opacity: 1; }
+    70%  { opacity: 0.85; }
+    100% { opacity: 0; }
 }
 
 /* Sending: the glow travels clockwise around the pill perimeter */

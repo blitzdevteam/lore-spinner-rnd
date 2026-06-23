@@ -28,6 +28,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     'choice-selected': [promptId: string, choice: string];
     continue: [];
+    /** Fired once when the choice buttons first become visible on this (latest) card. */
+    'choices-ready': [];
 }>();
 
 const tts = useTextToSpeech();
@@ -153,6 +155,18 @@ watch(
         tts.play(props.gameId, props.prompt.id);
     },
 );
+
+// Nudge trigger: fire once when choice buttons first become visible on this card.
+// This is the single most reliable signal that the player can now act.
+const choicesVisible = computed(
+    () => !!props.isLatest && canInteract.value && showChoicesAndActions.value && hasChoices.value,
+);
+
+watch(choicesVisible, (visible, wasVisible) => {
+    if (visible && !wasVisible) {
+        emit('choices-ready');
+    }
+});
 </script>
 
 <template>

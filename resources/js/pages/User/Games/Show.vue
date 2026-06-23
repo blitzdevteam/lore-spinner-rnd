@@ -130,15 +130,25 @@ const canSubmitInput = computed(() => {
 // Once they act (typed or chose a button), the placeholder empties for the rest of the game.
 const hasPlayerActed = computed(() => prompts.value.some((p) => !!p.prompt));
 
-const inputPlaceholder = computed(() => {
-    const isFirstMove =
-        !hasPlayerActed.value &&
-        canSubmitInput.value &&
-        (props.game.current_session_number ?? 1) === 1;
+const isFirstChoiceMoment = computed(() =>
+    !hasPlayerActed.value &&
+    canSubmitInput.value &&
+    (props.game.current_session_number ?? 1) === 1,
+);
 
-    if (!isFirstMove) return '';
+const inputPlaceholder = computed(() => {
+    if (!isFirstChoiceMoment.value) return '';
     return props.game.first_input_hint ?? '';
 });
+
+// Input-bar nudge: increments each time choice buttons appear during the first move.
+// GameplayLayout watches this counter and starts the escalating twinkle loop.
+const nudgeTrigger = ref(0);
+
+function handleChoicesReady() {
+    if (!isFirstChoiceMoment.value) return;
+    nudgeTrigger.value++;
+}
 
 const handleBegin = () => {
     router.post(
@@ -299,6 +309,7 @@ onUnmounted(() => {
         v-else
         :input-disabled="!canSubmitInput"
         :input-placeholder="inputPlaceholder"
+        :nudge-trigger="nudgeTrigger"
         :game-id="game.id"
         :cover-url="game.story?.cover ?? null"
         :story-slug="game.story?.slug ?? null"
@@ -334,6 +345,7 @@ onUnmounted(() => {
                 :animate="shouldAnimate && prompt.id === prompts[prompts.length - 1]?.id"
                 @choice-selected="handleChoiceSelected"
                 @continue="handleContinue"
+                @choices-ready="handleChoicesReady"
             />
 
             <!-- Session complete — next chapter or end story -->

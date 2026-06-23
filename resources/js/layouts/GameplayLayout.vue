@@ -10,6 +10,7 @@ import GameplayMediaPlayer from '@/components/GameplayMediaPlayer.vue';
 import GameplaySettingsPanel from '@/components/GameplaySettingsPanel.vue';
 import { useFeedbackWidget } from '@/composables/useFeedbackWidget';
 import { useGameplaySettings } from '@/composables/useGameplaySettings';
+import { useInputNudge } from '@/composables/useInputNudge';
 import { useTextToSpeech } from '@/composables/useTextToSpeech';
 import { LucideAudioLines, LucideChevronLeft, LucideNotebookText, LucideSettings, LucideX, LucideZap } from 'lucide-vue-next';
 import Tab from 'primevue/tab';
@@ -29,19 +30,50 @@ const props = withDefaults(
         storySlug?: string | null;
         /** Forwarded to GameplayInput — used for the cold-open first-move hint. */
         inputPlaceholder?: string;
+        /**
+         * Incremented by Show.vue each time the choice buttons appear on the first move.
+         * Any change starts (or restarts) the escalating twinkle loop.
+         */
+        nudgeTrigger?: number;
     }>(),
-    { inputDisabled: false, gameId: undefined, coverUrl: undefined, journalMeta: undefined, storySlug: undefined, inputPlaceholder: '' },
+    { inputDisabled: false, gameId: undefined, coverUrl: undefined, journalMeta: undefined, storySlug: undefined, inputPlaceholder: '', nudgeTrigger: 0 },
 );
 
 const auroraProps = computed(() => buildAuroraProps(props.storySlug));
 
-// Glow: static while reading → orbit while AI works → sweep only when user engages the input.
-const inputGlowVariant = ref<'sweep' | 'orbit' | undefined>(undefined);
+// Glow: static while reading → orbit while AI works → sweep when user engages → twinkle nudge.
+const inputGlowVariant = ref<'sweep' | 'orbit' | 'twinkle' | undefined>(undefined);
+let twinkleResetTimer: ReturnType<typeof setTimeout> | null = null;
+
+function fireTwinkle() {
+    if (props.inputDisabled || inputFocused.value) return;
+    // Don't override sweep (user is already engaging) or orbit (AI working).
+    if (inputGlowVariant.value === 'sweep' || inputGlowVariant.value === 'orbit') return;
+    if (twinkleResetTimer) clearTimeout(twinkleResetTimer);
+    inputGlowVariant.value = 'twinkle';
+    // Single pulse lasts 1.4 s in CSS; revert to breathe (undefined) after.
+    twinkleResetTimer = setTimeout(() => {
+        if (inputGlowVariant.value === 'twinkle') {
+            inputGlowVariant.value = undefined;
+        }
+        twinkleResetTimer = null;
+    }, 1600);
+}
+
+const nudge = useInputNudge({ onTwinkle: fireTwinkle });
+
+watch(
+    () => props.nudgeTrigger,
+    (val, prev) => {
+        if (val !== prev) nudge.start();
+    },
+);
 
 watch(
     () => props.inputDisabled,
     (disabled) => {
         if (disabled) {
+            nudge.stop();
             inputGlowVariant.value = 'orbit';
         } else {
             inputGlowVariant.value = undefined;
@@ -51,6 +83,7 @@ watch(
 
 function onInputReadyToType() {
     if (!props.inputDisabled) {
+        nudge.stop();
         inputGlowVariant.value = 'sweep';
     }
 }
@@ -120,6 +153,10 @@ function openAudioSettings() {
     tts.collapseMediaPlayer();
 }
 
+watch(inputFocused, (focused) => {
+    if (focused) nudge.stop();
+});
+
 const closeMobilePanel = () => {
     const wasAudio = activePanel.value === 'audio';
     activePanel.value = null;
@@ -136,6 +173,7 @@ const emit = defineEmits<{
 }>();
 
 const handleInputSubmit = (prompt: string) => {
+    nudge.stop();
     tts.primeAudio();
     emit('submit', prompt);
 };
