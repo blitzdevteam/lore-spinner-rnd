@@ -58,7 +58,7 @@ final class GameController extends Controller
                     ->withCount('sessionAdaptations')
                     ->with(['sessionAdaptations' => fn ($sa) => $sa
                         ->where('session_number', 1)
-                        ->select(['id', 'adaptation_id', 'session_number', 'entry_point_diagnosis']),
+                        ->select(['id', 'story_adaptation_id', 'session_number', 'entry_point_diagnosis']),
                     ]),
             ]),
             'prompts' => fn ($q) => $q

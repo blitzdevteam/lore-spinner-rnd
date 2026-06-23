@@ -34,6 +34,8 @@ STORY OVERRIDE:
 
 If `prefer_literal_opening` is true (see user prompt STORY ENTRY OVERRIDE), and this is Session 1 of a SCREENPLAY source, you must strongly prefer the earliest available session moment that represents the literal source opening.
 
+**`prefer_literal_opening` governs entry-point selection, not prose transcription.** Keep the same event and beat. Rewrite every line via the Screenplay-to-Body rules in Task 5 — camera grammar is never copied verbatim into player-facing prose.
+
 Do not move forward from that moment merely because a later event is louder, cleaner, more spectacular, or closer to a trailer beat.
 
 Only move forward despite `prefer_literal_opening=true` if the earliest available session moment is genuinely non-playable (see playable-opening test below). If you still move forward, explicitly state why the earliest moment failed that test.
@@ -208,6 +210,19 @@ CONSTRAINTS: max 80 chars. Written in this story's world and voice — not gener
 
 Now write the actual cold-open prose. Second-person present tense. Begin at the entry point (Task 1), earn the identity (Task 2), establish stakes with economy (Task 3), and end exactly at the first agency moment (Task 4) — on the question, not past it.
 
+**SCREENPLAY-TO-BODY RULES** (SCREENPLAY sources only — apply even when `prefer_literal_opening=true`):
+
+When `prefer_literal_opening=true` you keep the **moment** (same event, same beat). You do **not** copy screenplay camera grammar into player-facing prose.
+
+- **First two sentences = body.** Sentences 1–2 must contain **you/your** and deliver physical sensation, reflex, breath, motion, or pressure. If those sentences could appear as a screenplay action line without the protagonist present, rewrite them.
+  - FAIL: two or more establishing lines describing the environment or third-party action, followed by `Your eyes open` or equivalent. The player arrives late to their own body.
+  - PASS: the player's body is present in sentence 1 — sensation, reflex, or physical situation — before anything else is described.
+- **No camera-only opener.** BANNED: 2+ consecutive sentences with no **you/your** before the protagonist is embodied.
+- **Witness beats stay agentive.** When the protagonist observes another character or a scene event, frame it through their own body while watching — breath, hands, position, reflex. The player is never a disembodied camera watching the event happen to someone else.
+- **Camera-to-body shift.** Exterior action lines (`She crosses the room`) become interior sensation + agency (`You cross the room — the floor still warm underfoot`). Keep the image; move it inside the body.
+
+Before finalizing: count consecutive sentences without **you/your** in the first 80 words. If 2 or more in a row, rewrite.
+
 Constraints:
 - Write in the author's voice using the VOICE ANCHOR as your texture model. Match its rhythm, compression, paragraph build, and emotional rendering.
 - Obey Master Rule 1 (all bans) and the Anchor Card.
@@ -241,6 +256,7 @@ STOP. Do not pass to Phase 4 until all are YES:
 
 0. **Agency gate?** Is the protagonist PRESENT in their own body at the entry point and able to act in the first beat — not a spectator to someone else's event? If the opening watches a striking thing happen TO the world while the player does nothing, it FAILS — return to Task 1.
 1. **Body first?** Does the player feel something physical in the first two sentences?
+1B. **Embodied from line 1?** (SCREENPLAY sources) Do the first two sentences contain **you/your** and physical sensation — not camera-only fragments? Are there zero consecutive 2+ non-you sentences in the first 80 words? Was the literal **moment** kept but the **shot list** rewritten per Task 5 Screenplay-to-Body rules? If any of these FAIL, revise Task 5 — do not adjust the entry point.
 1A. **Screenplay opening honored?** If this is a SCREENPLAY source, did you start at the earliest available session moment when it was already playable? If you moved forward, did you prove the earlier moment was genuinely non-playable? If `prefer_literal_opening=true`, did you strongly prefer the literal opening per the story-level override?
 2. **Identity earned, not dumped?** Is the name revealed at a moment of weight, with role conveyed through instinct/detail — and zero résumé-stack exposition?
 3. **Stakes as present pressure?** Are the stakes felt as live pressure, not explained?
