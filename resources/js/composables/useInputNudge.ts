@@ -1,17 +1,21 @@
 import { onUnmounted } from 'vue';
 
 /**
- * Escalating input-bar nudge loop.
+ * Escalating input-bar nudge — one twinkle (2 CSS pulses) per turn.
  *
- * Starts after choice buttons appear. Fires a twinkle glow pulse at an
- * increasing delay: 3 s → 4 s → 5 s … up to and including a final nudge at
- * the 10 s interval, then stops. The player never feels nagged — just gently
- * reminded that the text bar exists for custom input.
+ * Each time choices appear (choices-ready), start() is called:
+ *   - Waits `currentDelaySec` seconds
+ *   - Fires ONE twinkle, then stops for this turn
+ *   - Increments delay by 1 s for next turn
  *
- * Usage:
- *   const nudge = useInputNudge({ onTwinkle: () => { ... } });
- *   nudge.start();   // call on choices-ready (gated externally)
- *   nudge.stop();    // call on focus / submit / new turn / AI loading
+ * Turn 1 → wait 3 s → twinkle → stop
+ * Turn 2 → wait 4 s → twinkle → stop
+ * …
+ * Turn 8 → wait 10 s → twinkle → stop forever
+ *
+ * `currentDelaySec` persists across turns (never resets on start).
+ * Calling stop() (focus / submit / AI loading) cancels the pending twinkle
+ * for that turn but does NOT roll back the delay counter.
  */
 
 const DELAY_START = 3;
@@ -21,7 +25,7 @@ const DELAY_STEP  = 1;
 export function useInputNudge(options: { onTwinkle: () => void }) {
     let timer: ReturnType<typeof setTimeout> | null = null;
     let currentDelaySec = DELAY_START;
-    let running = false;
+    let exhausted = false;
 
     function clearTimer() {
         if (timer !== null) {
@@ -30,33 +34,26 @@ export function useInputNudge(options: { onTwinkle: () => void }) {
         }
     }
 
-    function schedule() {
-        if (!running) return;
+    /** Call each time choices-ready fires. Schedules one twinkle for this turn. */
+    function start() {
+        clearTimer();
+        if (exhausted) return;
 
         timer = setTimeout(() => {
-            if (!running) return;
-
+            timer = null;
             options.onTwinkle();
 
             if (currentDelaySec >= DELAY_MAX) {
-                running = false;
+                exhausted = true;
                 return;
             }
 
             currentDelaySec += DELAY_STEP;
-            schedule();
         }, currentDelaySec * 1000);
     }
 
-    function start() {
-        stop();
-        currentDelaySec = DELAY_START;
-        running = true;
-        schedule();
-    }
-
+    /** Cancel pending twinkle for the current turn (player acted / AI loading). */
     function stop() {
-        running = false;
         clearTimer();
     }
 
