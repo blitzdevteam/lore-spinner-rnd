@@ -21,9 +21,11 @@ namespace App\ChaosMode;
  *   - the `protagonist` first name (used by the AGENCY HANDOFF prompt so the
  *     narrator says "What does Watson do?" not "What does Alice do?")
  *   - a short `tagline` for the story selector UI
- *   - `tts_voice_id` — the ElevenLabs voice ID used for TTS in BOTH Chaos Mode
- *     and the main Story Guard mode. null = fall back to
- *     config('services.elevenlabs.voice_id').
+ *   - `tts_voice_id`       — the ElevenLabs voice ID (TTS_PROVIDER=elevenlabs).
+ *                            null = fall back to config('services.elevenlabs.voice_id').
+ *   - `speechify_voice_id` — the Speechify voice ID (TTS_PROVIDER=speechify).
+ *                            null = fall back to config('services.speechify.voice_id').
+ *                            See https://docs.speechify.ai/voices for the full list.
  */
 final class ChaosStoryConfig
 {
@@ -34,73 +36,82 @@ final class ChaosStoryConfig
     private const VOICE_DECLAN_SAGE = 'kqVT88a5QfII1HNAEPTJ';
 
     /**
-     * @return array<int, array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null}>
+     * @return array<int, array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null, speechify_voice_id:string|null}>
      */
     public static function all(): array
     {
         return [
             [
-                'slug'          => 'alices-adventures-in-wonderland',
-                'title'         => "Alice's Adventures in Wonderland",
-                'protagonist'   => 'Alice',
-                'tagline'       => 'Carroll — full agency through Wonderland.',
-                'tts_voice_id'  => null,
+                'slug'               => 'alices-adventures-in-wonderland',
+                'title'              => "Alice's Adventures in Wonderland",
+                'protagonist'        => 'Alice',
+                'tagline'            => 'Carroll — full agency through Wonderland.',
+                'tts_voice_id'       => null,
+                'speechify_voice_id' => null,
             ],
             [
-                'slug'          => 'the-adventure-of-the-speckled-band',
-                'title'         => 'Sherlock Holmes in The Speckled Band',
-                'protagonist'   => 'Watson',
-                'tagline'       => 'Doyle — investigate beside Holmes.',
-                'tts_voice_id'  => null,
+                'slug'               => 'the-adventure-of-the-speckled-band',
+                'title'              => 'Sherlock Holmes in The Speckled Band',
+                'protagonist'        => 'Watson',
+                'tagline'            => 'Doyle — investigate beside Holmes.',
+                'tts_voice_id'       => null,
+                'speechify_voice_id' => null,
             ],
             [
-                'slug'          => 'the-tell-tale-heart',
-                'title'         => 'The Tell-Tale Heart',
-                'protagonist'   => 'the Narrator',
-                'tagline'       => 'Poe — descend into the cracked mind.',
-                'tts_voice_id'  => null,
+                'slug'               => 'the-tell-tale-heart',
+                'title'              => 'The Tell-Tale Heart',
+                'protagonist'        => 'the Narrator',
+                'tagline'            => 'Poe — descend into the cracked mind.',
+                'tts_voice_id'       => null,
+                'speechify_voice_id' => null,
             ],
             [
-                'slug'          => 'nocturne',
-                'title'         => 'Nocturne',
-                'protagonist'   => 'Akira',
-                'tagline'       => 'Wittmer — vanish into Tokyo\'s shadow-house.',
-                'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
+                'slug'               => 'nocturne',
+                'title'              => 'Nocturne',
+                'protagonist'        => 'Akira',
+                'tagline'            => 'Wittmer — vanish into Tokyo\'s shadow-house.',
+                'tts_voice_id'       => self::VOICE_DECLAN_SAGE,
+                'speechify_voice_id' => null,
             ],
             [
-                'slug'          => 'anima-machina',
-                'title'         => 'Anima Machina',
-                'protagonist'   => 'Nora',
-                'tagline'       => 'Wittmer — dive grief in the neon archive.',
-                'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
+                'slug'               => 'anima-machina',
+                'title'              => 'Anima Machina',
+                'protagonist'        => 'Nora',
+                'tagline'            => 'Wittmer — dive grief in the neon archive.',
+                'tts_voice_id'       => self::VOICE_DECLAN_SAGE,
+                'speechify_voice_id' => null,
             ],
             [
-                'slug'          => 'driftheart',
-                'title'         => 'Driftheart',
-                'protagonist'   => 'Kataria',
-                'tagline'       => 'Wittmer — fall from the sky-villa into the Drift.',
-                'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
+                'slug'               => 'driftheart',
+                'title'              => 'Driftheart',
+                'protagonist'        => 'Kataria',
+                'tagline'            => 'Wittmer — fall from the sky-villa into the Drift.',
+                'tts_voice_id'       => self::VOICE_DECLAN_SAGE,
+                'speechify_voice_id' => null,
             ],
             [
-                'slug'          => 'the-snow-queen',
-                'title'         => 'The Snow Queen',
-                'protagonist'   => 'Gerda',
-                'tagline'       => 'Andersen — walk north through winter to find Kay.',
-                'tts_voice_id'  => null,
+                'slug'               => 'the-snow-queen',
+                'title'              => 'The Snow Queen',
+                'protagonist'        => 'Gerda',
+                'tagline'            => 'Andersen — walk north through winter to find Kay.',
+                'tts_voice_id'       => null,
+                'speechify_voice_id' => null,
             ],
             [
-                'slug'          => 'the-masque-of-the-red-death',
-                'title'         => 'The Masque of the Red Death',
-                'protagonist'   => 'Prospero',
-                'tagline'       => 'Poe — hide from the plague behind abbey walls.',
-                'tts_voice_id'  => null,
+                'slug'               => 'the-masque-of-the-red-death',
+                'title'              => 'The Masque of the Red Death',
+                'protagonist'        => 'Prospero',
+                'tagline'            => 'Poe — hide from the plague behind abbey walls.',
+                'tts_voice_id'       => null,
+                'speechify_voice_id' => null,
             ],
             [
-                'slug'          => 'the-wonderful-wizard-of-oz',
-                'title'         => 'The Wonderful Wizard of Oz',
-                'protagonist'   => 'Dorothy',
-                'tagline'       => 'Baum — follow the yellow brick road to the Emerald City.',
-                'tts_voice_id'  => null,
+                'slug'               => 'the-wonderful-wizard-of-oz',
+                'title'              => 'The Wonderful Wizard of Oz',
+                'protagonist'        => 'Dorothy',
+                'tagline'            => 'Baum — follow the yellow brick road to the Emerald City.',
+                'tts_voice_id'       => null,
+                'speechify_voice_id' => null,
             ],
         ];
     }
@@ -136,5 +147,17 @@ final class ChaosStoryConfig
         $row = self::find($slug);
 
         return $row['tts_voice_id'] ?? (string) config('services.elevenlabs.voice_id');
+    }
+
+    /**
+     * Resolve the Speechify voice ID for a story slug.
+     * Returns the story-specific ID when one is configured, otherwise the
+     * application-wide default from config('services.speechify.voice_id').
+     */
+    public static function speechifyVoiceId(string $slug): string
+    {
+        $row = self::find($slug);
+
+        return ($row['speechify_voice_id'] ?? null) ?? (string) config('services.speechify.voice_id', 'george');
     }
 }

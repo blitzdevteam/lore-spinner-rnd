@@ -50,7 +50,16 @@ return [
         'voice_model' => env('DEEPGRAM_VOICE_MODEL', 'aura-2-thalia-en'),
     ],
 
-    // Set TTS_PROVIDER to "deepgram" or "elevenlabs" (default: elevenlabs)
+    'speechify' => [
+        'api_key'  => env('SPEECHIFY_API_KEY'),
+        // Built-in voices — see https://docs.speechify.ai/voices
+        // e.g. george, henry, oliver, aria, jane, kristy, snoop, ...
+        'voice_id' => env('SPEECHIFY_VOICE_ID', 'george'),
+        // simba-english | simba-multilingual | simba-3.0 (low-latency)
+        'model'    => env('SPEECHIFY_MODEL', 'simba-english'),
+    ],
+
+    // Set TTS_PROVIDER to "deepgram", "speechify", or "elevenlabs" (default: elevenlabs)
     'tts_provider' => env('TTS_PROVIDER', 'elevenlabs'),
 
 ];

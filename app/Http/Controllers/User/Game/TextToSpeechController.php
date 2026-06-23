@@ -26,8 +26,9 @@ final class TextToSpeechController extends Controller
             $storySlug = $game->story?->slug ?? '';
 
             match ($provider) {
-                'deepgram' => $this->generateDeepgram($prompt, $path),
-                default    => $this->generateElevenLabs($prompt, $path, ChaosStoryConfig::ttsVoiceId($storySlug)),
+                'deepgram'  => $this->generateDeepgram($prompt, $path),
+                'speechify' => $this->generateSpeechify($prompt, $path, ChaosStoryConfig::speechifyVoiceId($storySlug)),
+                default     => $this->generateElevenLabs($prompt, $path, ChaosStoryConfig::ttsVoiceId($storySlug)),
             };
         }
 
@@ -91,6 +92,37 @@ final class TextToSpeechController extends Controller
         if (! $response->successful()) {
             logger()->warning('Deepgram TTS failed', [
                 'status' => $response->status(),
+                'prompt_id' => $prompt->id,
+            ]);
+
+            abort($response->status() === 403 ? 502 : $response->status(), 'Voice generation unavailable.');
+        }
+
+        Storage::disk('local')->put($path, $response->body());
+    }
+
+    private function generateSpeechify(Prompt $prompt, string $path, string $voiceId = ''): void
+    {
+        $text    = strip_tags($prompt->response);
+        $apiKey  = (string) config('services.speechify.api_key');
+        $voiceId = $voiceId !== '' ? $voiceId : (string) config('services.speechify.voice_id', 'george');
+        $model   = (string) config('services.speechify.model', 'simba-english');
+
+        abort_unless(filled($apiKey), 503, 'Speechify voice generation is not configured.');
+
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$apiKey}",
+            'Content-Type'  => 'application/json',
+        ])->timeout(120)->post('https://api.speechify.ai/v1/audio/speech', [
+            'input'        => $text,
+            'voice_id'     => $voiceId,
+            'audio_format' => 'mp3',
+            'model'        => $model,
+        ]);
+
+        if (! $response->successful()) {
+            logger()->warning('Speechify TTS failed', [
+                'status'    => $response->status(),
                 'prompt_id' => $prompt->id,
             ]);
 

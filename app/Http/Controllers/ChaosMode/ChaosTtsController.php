@@ -17,19 +17,17 @@ final class ChaosTtsController extends Controller
     private const ELEVENLABS_URL = 'https://api.elevenlabs.io/v1/text-to-speech/%s/stream';
 
     /**
-     * Serve ElevenLabs TTS audio for a narrator turn in a chaos session.
+     * Serve TTS audio for a narrator turn in a chaos session.
+     * Provider is controlled by the TTS_PROVIDER env var (elevenlabs | speechify | deepgram).
      *
      * Cache hit  → instant BinaryFileResponse from disk (full byte-range support).
-     * Cache miss → download from ElevenLabs (blocking), save to disk, then serve.
+     * Cache miss → download from provider (blocking), save to disk, then serve.
      *
      * StreamedResponse was tried but browsers' <audio> elements always initiate
      * with a Range request (Range: bytes=0-). StreamedResponse has no Range
      * handling, causing nginx to return 416 Range Not Satisfiable. BinaryFileResponse
      * handles Accept-Ranges / Content-Range / 206 automatically and works on all
      * browsers including iOS Safari.
-     *
-     * eleven_v3 is the default model (set via ELEVENLABS_MODEL_ID in .env).
-     * optimize_streaming_latency is not used — eleven_v3 returns 400 with it.
      */
     public function __invoke(ChaosSession $chaosSession, int $turnIndex): BinaryFileResponse
     {
@@ -45,18 +43,22 @@ final class ChaosTtsController extends Controller
 
         abort_if(blank($text), 404, 'Turn has no text content.');
 
-        $path = "tts/chaos/{$chaosSession->id}/{$turnIndex}.mp3";
+        $provider = (string) config('services.tts_provider', 'elevenlabs');
+        $path     = "tts/chaos/{$provider}/{$chaosSession->id}/{$turnIndex}.mp3";
 
         if (! Storage::disk('local')->exists($path)) {
-            $slug    = Story::find($chaosSession->story_id)?->slug ?? '';
-            $voiceId = ChaosStoryConfig::ttsVoiceId($slug);
-            $this->generate($text, $path, $voiceId);
+            $slug = Story::find($chaosSession->story_id)?->slug ?? '';
+
+            match ($provider) {
+                'speechify' => $this->generateSpeechify($text, $path, ChaosStoryConfig::speechifyVoiceId($slug)),
+                default     => $this->generateElevenLabs($text, $path, ChaosStoryConfig::ttsVoiceId($slug)),
+            };
         }
 
         return $this->serve($path);
     }
 
-    private function generate(string $text, string $path, string $voiceId): void
+    private function generateElevenLabs(string $text, string $path, string $voiceId): void
     {
         $apiKey  = config('services.elevenlabs.api_key');
         $voiceId = $voiceId !== '' ? $voiceId : (string) config('services.elevenlabs.voice_id');
@@ -81,6 +83,36 @@ final class ChaosTtsController extends Controller
 
         if (! $response->successful()) {
             logger()->warning('ElevenLabs chaos TTS failed', [
+                'status' => $response->status(),
+                'path'   => $path,
+            ]);
+
+            abort($response->status() === 403 ? 502 : $response->status(), 'Voice generation unavailable.');
+        }
+
+        Storage::disk('local')->put($path, $response->body());
+    }
+
+    private function generateSpeechify(string $text, string $path, string $voiceId): void
+    {
+        $apiKey  = (string) config('services.speechify.api_key');
+        $voiceId = $voiceId !== '' ? $voiceId : (string) config('services.speechify.voice_id', 'george');
+        $model   = (string) config('services.speechify.model', 'simba-english');
+
+        abort_unless(filled($apiKey), 503, 'Speechify voice generation is not configured.');
+
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$apiKey}",
+            'Content-Type'  => 'application/json',
+        ])->timeout(90)->post('https://api.speechify.ai/v1/audio/speech', [
+            'input'        => $text,
+            'voice_id'     => $voiceId,
+            'audio_format' => 'mp3',
+            'model'        => $model,
+        ]);
+
+        if (! $response->successful()) {
+            logger()->warning('Speechify chaos TTS failed', [
                 'status' => $response->status(),
                 'path'   => $path,
             ]);
