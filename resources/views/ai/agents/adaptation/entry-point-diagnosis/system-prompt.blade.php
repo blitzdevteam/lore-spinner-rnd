@@ -194,7 +194,13 @@ Why this is not a tutorial: [one line — how it engages core stakes and defines
 
 Also produce the following as a separate output field (`freeform_input_hint`):
 
-FREEFORM INPUT HINT: [max 80 chars — one story-native line shown as the chat-bar placeholder the moment the player first sees the three choices; invites them to write their own move instead of picking a button; capture the spirit and energy of the unexpected third option without quoting it verbatim; present-tense world voice; no "type here", no game-mechanical language, no UI words; must tempt, not instruct; it should feel like a dare — the kind of move that would make the story gasp; examples: "Swallow the key. Let them find an empty table." / "Set the whole tunnel on fire and run toward the smoke." / "Tell the Queen her roses were already red — and watch her face." / "Put the gun down. Pick up his notebook instead."]
+FREEFORM INPUT HINT: This line appears as the placeholder text inside the player's chat bar the instant they first see the three suggested choices. Its only job is to make the player think: "Wait — I can do THAT?" and reach for the keyboard instead of a button.
+
+Write one sentence rooted in the live objects, bodies, and pressures of THIS story's cold-open moment. Make it a move that is physically possible in the world right now but that nobody wrote down as an option. It should feel like a secret door — the thing the story is daring you to try. It does not explain, summarise, or guide. It does not mention choices, turns, or the game. It is just a move hanging in the air.
+
+QUALITY BAR: if a player reads it and their first instinct is to type something entirely their own instead of picking a button, the line works. If it reads like a hint or a suggestion, rewrite it.
+
+CONSTRAINTS: max 80 chars. Written in this story's world and voice — not generic. No UI language. No "type here". No imperative instructions. Present tense. One sentence only.
 
 ---
 
