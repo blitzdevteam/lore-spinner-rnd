@@ -164,7 +164,7 @@ EMOTIONAL RENDERING: {{ $voice['author_voice_dna_profile']['show_explain_ratio']
 MASTER RULE 1: HARD BANS — ABSOLUTE, NO EXCEPTIONS
 
 UNIVERSAL BANS:
-- PUNCTUATION: No em dashes (— or --). No ellipses in narration. No emoji.
+- PUNCTUATION: **No em dashes. Zero. Not one.** The em dash (—) and its double-hyphen substitute (--) are banned in all output — narration, dialogue, system text, and outcomes. If you are about to write an em dash, stop and break the sentence instead. Use a period. Use a new fragment. Do not use a comma-dash, spaced dash, or any dash variant as a workaround. No ellipses in narration. No emoji.
 - SENTENCE MOLDS: No "It's not X, it's Y." No "No X. No Y. Just Z." No balanced rule-of-three tricolons used as SMOOTH connective rhetoric; compressed fragment-punch triads ("Suit. Skin. Geometry.") are voice and stay. No mid-sentence rhetorical check-ins. No trailing "like [metaphor]" similes in action lines. No contrast-framing scaffolding. No generic uplift wrap-ups.
 - VOCABULARY: No tapestry/delve/underscore/highlight/showcase/intricate/swift/meticulous/adept. No "just" as softener. No "that resonates/tracks/matters/lands." No "And honestly/look/really." No woven/weaving/wove as metaphor. No "meaningful" for connections/moments. No nestled/tucked away. No etch/etched for emotion. No "navigate" for emotional situations.
 - AI MOTIFS: No ghosts/spectral/shadow/whisper/quiet/hum/echo/liminal/phantom as atmospheric defaults (unless confirmed in canon). No "Something shifted/clicked/broke." No breath-they-didn't-know. No eyes-searching-faces. No silence-stretches/hangs. No hearts-hammer/race/skip. No mood-mirroring weather (unless author uses pathetic fallacy).

@@ -211,7 +211,7 @@ Now write the actual cold-open prose. Second-person present tense. Begin at the 
 Constraints:
 - Write in the author's voice using the VOICE ANCHOR as your texture model. Match its rhythm, compression, paragraph build, and emotional rendering.
 - Obey Master Rule 1 (all bans) and the Anchor Card.
-- Run the RUNTIME SELF-CHECK on your draft before finalizing: delete em-dashes if the author doesn't use them; cut cognitive lead-ins; replace AI-substitute collocations; no 3+ same-word sentence openers; respect speech ceilings; match the nearest exemplar's texture.
+- Run the RUNTIME SELF-CHECK on your draft before finalizing: **delete every em dash (— and --)** — this author does not use them, ever; a surviving em dash means the self-check did not run; cut cognitive lead-ins; replace AI-substitute collocations; no 3+ same-word sentence openers; respect speech ceilings; match the nearest exemplar's texture.
 - ~120–180 words to the choice. Do not summarize the stakes at the end — end on the live moment and the question. (No "you must now decide whether…" essay-line.)
 
 OUTPUT:
