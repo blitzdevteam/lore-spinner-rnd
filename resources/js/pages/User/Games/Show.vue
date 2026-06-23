@@ -146,7 +146,6 @@ const inputPlaceholder = computed(() => {
 const nudgeTrigger = ref(0);
 
 function handleChoicesReady() {
-    if (!isFirstChoiceMoment.value) return;
     nudgeTrigger.value++;
 }
 
