@@ -287,6 +287,12 @@ final class ChaosEngineService
             $lines[] = $coldOpen;
         }
 
+        // FIRST-3-MINUTES OPENING PROTOCOL — injected on session-start turn 1 only.
+        // Present in V2.2 Section 13 as static template text; restored here as a runtime
+        // injection so no re-assembly is needed and the clock never leaks to later turns.
+        $lines[] = '';
+        $lines[] = 'FIRST-3-MINUTES OPENING PROTOCOL (turn 1 only — not every turn): On this opening turn and the first few tiered responses at session start, deliver the beat-map opening sequence: location and situation in under 30 words, first meaningful choice or custom input opportunity within 90 seconds of play, first visible consequence within 120 seconds. After the opening sequence lands, do not re-apply this clock on later turns.';
+
         // Emotional promise — the engagement hook for this session.
         if ($emotionalPromise !== '') {
             $lines[] = '';

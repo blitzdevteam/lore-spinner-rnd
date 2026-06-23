@@ -299,7 +299,7 @@ This story's player-tendency vocabulary. The generic labels CHAOTIC / LAWFUL / N
 
 ### SECTION 10: CURRENT ARC POSITION [POPULATED + RUNTIME]
 
-EPISODE: {{ $sessionNumber }} of {{ $totalSessions }} | SESSION: {{ $sessionSpine['session_destination'] ?? '' }}
+EPISODE: {{ $sessionNumber }} of {{ $totalSessions }} | SESSION: {{ $sessionSpine['session_label'] ?? '' }}
 DRAMATIC QUESTION: {{ $sessionSpine['dramatic_question'] }}
 EMOTIONAL PROMISE: {{ $sessionSpine['emotional_promise'] }}
 SEEDS FOR NEXT EPISODE: {{ $sessionSpine['next_session_seed'] ?? '' }}

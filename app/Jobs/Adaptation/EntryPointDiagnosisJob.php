@@ -6,6 +6,7 @@ namespace App\Jobs\Adaptation;
 
 use App\Ai\Adaptation\VoiceProfilePromptSlice;
 use App\Ai\Agents\Adaptation\EntryPointDiagnosisAgent;
+use App\ChaosMode\ChaosStoryConfig;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Models\Event;
 use App\Models\SessionAdaptation;
@@ -89,9 +90,10 @@ final class EntryPointDiagnosisJob implements ShouldQueue
                         'title'            => $ev->title,
                         'objectives'       => $ev->objectives,
                     ])->all(),
-                    'voiceProfile'       => $voiceProfile,
-                    'protagonist'        => $protagonist,
-                    'format'             => $format,
+                    'voiceProfile'          => $voiceProfile,
+                    'protagonist'           => $protagonist,
+                    'format'                => $format,
+                    'preferLiteralOpening'  => (bool) (ChaosStoryConfig::find($this->story->slug)['prefer_literal_opening'] ?? false),
                 ])->render()
             );
 

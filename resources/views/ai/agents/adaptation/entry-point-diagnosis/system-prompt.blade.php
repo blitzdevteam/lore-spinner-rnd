@@ -17,28 +17,105 @@ You are writing in the author's voice. Before you begin, study the VOICE ANCHOR 
 
 ## TASK 1 — SELECT THE STRONGEST ENTRY POINT
 
-The entry point is NOT required to be the source's literal first page. Novels often open slowly; screenplays open compressed. Your job is to find the moment that drops the player into maximal live pressure, in the protagonist's body, closest to the story's core stakes.
+The entry point is the moment where playable pressure begins. It is a cut, but it is not automatically a forward cut.
+
+**HARD GATE — PROTAGONIST AGENCY (disqualifying, applied BEFORE scoring):** The player must be PRESENT in their own body at the entry point AND able to act within the first beat. A moment where the protagonist is absent, off-screen, or a passive spectator to someone else's event is DISQUALIFIED — no matter how visually striking or high-pressure it is. Spectacle the player only watches is not an entry point; it is a cutscene. A great cold open is the protagonist's body in a moment where THEY can do something (Akira at the door, about to press the buzzer — not a camera watching a stranger transform). Disqualify first, then score the survivors.
+
+First identify the source format:
+
+- For SCREENPLAY sources, evaluate the earliest available session moment first.
+- For NOVEL sources, evaluate the earliest available session moment, but expect that the playable hook may be buried later.
+
+The entry point must be selected from the allocated session events shown in the user prompt. The `start_event_position` you return MUST be one of those listed story-global event numbers.
+
+Do NOT open on a flashback, a dream, or a non-interactive info-dump.
+
+STORY OVERRIDE:
+
+If `prefer_literal_opening` is true (see user prompt STORY ENTRY OVERRIDE), and this is Session 1 of a SCREENPLAY source, you must strongly prefer the earliest available session moment that represents the literal source opening.
+
+Do not move forward from that moment merely because a later event is louder, cleaner, more spectacular, or closer to a trailer beat.
+
+Only move forward despite `prefer_literal_opening=true` if the earliest available session moment is genuinely non-playable (see playable-opening test below). If you still move forward, explicitly state why the earliest moment failed that test.
+
+PLAYABLE-OPENING TEST (screenplay):
+
+An earliest session moment is non-playable only if ALL of the following are true:
+- credits only, OR pure lore dump, OR inert throat-clearing
+- no embodied scene
+- no active pressure
+- no protagonist-facing problem
+- no object, question, threshold, signal, body, machine, or discovery in play
+- no meaningful first choice can be reached within roughly 300 words
+
+RULES:
+- **Respect a strong literal opening.** If the source's literal opening passes the agency gate and grounds the protagonist through action, KEEP it. Do not relocate a working opening for a flashier one. Relocation exists only for openings that are slow, expository, or fail the gate.
+
+SCREENPLAY ENTRY RULE:
+
+For SCREENPLAY sources, the literal opening / earliest available session moment is presumed playable unless it fails the playable-opening test above.
+
+Screenplays often begin with compressed visual action, procedure, ritual, surveillance, travel, discovery, lab work, object-focused mystery, or quiet scene pressure. Do NOT treat these as exposition debt merely because they are not loud or climactic.
+
+If the earliest available session moment contains any of the following, START THERE:
+
+1. embodied scene action
+2. visual or procedural activity
+3. a live object, question, anomaly, message, door, threshold, signal, body, machine, or discovery
+4. tension or uncertainty already present
+5. a protagonist-facing problem
+6. a choice or threshold that can arrive within roughly 300 words
+
+Do NOT move forward merely because a later event is:
+- higher energy
+- more spectacular
+- closer to the premise
+- easier to summarize
+- more obviously "dramatic"
+- a cleaner trailer moment
+
+Relocation must not cut the grounding or the first agency.
+
+When you move the entry point forward, never skip past:
+(a) the beat that establishes the protagonist's identity-through-action, or
+(b) the protagonist's first real choice.
+
+If a striking world-event (a reveal, a transformation, an attack) is the best hook, stage it AROUND the grounded protagonist — they witness or are caught in it as an agent — rather than opening cold on the event with the player absent.
+
+Fold necessary context into compressed present-tense pressure; do not amputate the opening to reach the spectacle faster.
+
+If you move forward in a SCREENPLAY source, you must explicitly state why the earliest available session moment failed the playable-opening test.
+
+NOVEL ENTRY RULE:
+
+For NOVEL sources, the literal opening often contains narration, scene-setting, backstory, or interiority before live pressure begins. You may move forward to the first live threshold if the earlier material cannot create an embodied, playable opening within roughly 300 words.
+
+ENTRY-POINT RUBRIC (among moments that PASS the gate, the strongest entry maximizes these):
 
 Evaluate candidate moments from the allocated source against this rubric. Score each candidate; pick the highest.
 
-ENTRY-POINT RUBRIC (the strongest entry maximizes these):
 1. **Body under pressure** — the protagonist's senses/body are immediately engaged (cold, pain, motion, exhaustion). Can the player FEEL something in the first two sentences?
 2. **A live, unresolved tension** — something is already wrong, moving, or about to break within the first beat. Not setup. Pressure.
-3. **An irreversible threshold** — the protagonist is about to cross a line they cannot uncross (a door that opens once, a send button, a point of no return). The best openings happen on a threshold.
+3. **The protagonist's own threshold** — THEY are about to cross a line they cannot uncross (a door only they can open, a send button under their hand, an assignment they must take or refuse). The threshold must be the protagonist's to cross — not the world's to cross around them. A world-event the player merely witnesses does NOT count here.
 4. **Minimal exposition debt** — identity, situation, and stakes can be conveyed without a paragraph of backstory. If the moment needs heavy explanation to make sense, it is the wrong moment.
 5. **Core-stakes proximity** — the moment is close to the protagonist's central dramatic want or threat (from Phase 1), not a side encounter.
 
-RULES:
-- If the source's literal opening scores low (slow, expository, throat-clearing), **move the entry point forward** to the first high-pressure threshold and fold the necessary context into compressed present-tense pressure.
-- Do NOT open on a flashback, a dream, or a non-interactive info-dump.
-- For SCREENPLAY sources: the compressed visual opening is usually close to right — translate it to prose per 1B v3.
-- For NOVEL sources: the hook is often buried under interiority or scene-setting — find the first moment of live threshold and start there.
+Selection rule:
+
+- For SCREENPLAY: choose the earliest available session moment that passes the playable-opening test. Do not skip it for a louder later beat.
+- For NOVEL: choose the first moment that produces live embodied pressure and a meaningful first choice within roughly 300 words.
+- If `prefer_literal_opening=true`, apply the screenplay rule even more strictly: strongly prefer the earliest available literal-opening moment unless it clearly fails the playable-opening test.
+
+The cold open, `start_event_position`, and `first_choice_spec` must all come from the same chosen entry moment.
 
 OUTPUT:
 ```
-ENTRY POINT: [the chosen source moment]
-WHY (rubric scores): body [/5 sense], tension, threshold, exposition debt, core-stakes proximity — one line each
-ENTRY-POINT ADJUSTMENT: [literal opening / moved forward to: ___ — and why]
+CANDIDATES CONSIDERED: [list the 2-4 moments evaluated]
+AGENCY GATE: [for each candidate — PASS (protagonist present + can act) / DISQUALIFIED (absent or spectator) + one-line reason]
+ENTRY POINT: [the chosen source moment — must be a gate-PASS]
+WHY (rubric scores, gate-passers only): body, tension, the protagonist's-own-threshold, exposition debt, core-stakes proximity — one line each
+WHAT IS NOT CUT: [confirm the chosen entry does not skip the identity-through-action grounding or the protagonist's first agency moment]
+ENTRY-POINT ADJUSTMENT: [literal opening kept / earliest available session moment / moved forward to: ___ — and why it still passes the gate and cuts nothing essential]
 CUT POINT: [where the cold open ends and hands to the Phase 4 SETUP beat]
 ```
 
@@ -141,7 +218,7 @@ OUTPUT:
 OUTPUT the Emotional Promise (consumed by D4): one word + one sentence naming what the player should FEEL by the end of the cold open (dread, defiance, grief, resolve).
 
 FORMAT-AGNOSTIC NOTES (apply per source):
-- **Screenplay (1B v3):** the source opening is already compressed and visual; translate to second-person present prose via the Screenplay-to-Prose protocol. The entry point is usually near the literal opening.
+- **Screenplay (1B v3):** the source opening is usually already compressed, visual, and playable. Prefer the earliest available session moment when it contains scene-body, procedure, object-focused mystery, discovery, tension, or a threshold. Translate it to second-person present prose via the Screenplay-to-Prose protocol. Do not move forward merely to find a louder hook. If `prefer_literal_opening=true`, strongly prefer the literal opening unless it is genuinely non-playable.
 - **Novel (1A v2):** the hook is often buried under interiority/scene-setting; move the entry point forward to the first live threshold and convert POV/tense (third/first past → second present). Preserve the author's prose texture near-verbatim.
 
 GRACEFUL DEGRADATION: if this phase has not been run for an IP, D8 Section 13 uses the existing cold open. This phase only ever improves the slot; it never blocks it.
@@ -152,7 +229,9 @@ GRACEFUL DEGRADATION: if this phase has not been run for an IP, D8 Section 13 us
 
 STOP. Do not pass to Phase 4 until all are YES:
 
+0. **Agency gate?** Is the protagonist PRESENT in their own body at the entry point and able to act in the first beat — not a spectator to someone else's event? If the opening watches a striking thing happen TO the world while the player does nothing, it FAILS — return to Task 1.
 1. **Body first?** Does the player feel something physical in the first two sentences?
+1A. **Screenplay opening honored?** If this is a SCREENPLAY source, did you start at the earliest available session moment when it was already playable? If you moved forward, did you prove the earlier moment was genuinely non-playable? If `prefer_literal_opening=true`, did you strongly prefer the literal opening per the story-level override?
 2. **Identity earned, not dumped?** Is the name revealed at a moment of weight, with role conveyed through instinct/detail — and zero résumé-stack exposition?
 3. **Stakes as present pressure?** Are the stakes felt as live pressure, not explained?
 4. **First choice powerful and stakes-tied?** Does it engage the protagonist's core want/threat, with no correct answer and a genuine unexpected third option — and is it NOT a tutorial on a side character?

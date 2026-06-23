@@ -11,6 +11,11 @@ STORY SESSION MAP (this session's allocation):
 PROTAGONIST: {{ $protagonist }}
 FORMAT: {{ $format }}
 
+STORY ENTRY OVERRIDE:
+prefer_literal_opening: {{ $preferLiteralOpening ? 'true' : 'false' }}
+
+If prefer_literal_opening is true, and this is Session 1 of a SCREENPLAY source, strongly prefer the earliest available session event that represents the literal source opening, unless it is genuinely non-playable. Do not move forward to a louder later beat.
+
 SESSION NUMBER: {{ $sessionNumber }}
 
 EVENT NUMBERING CONVENTION:

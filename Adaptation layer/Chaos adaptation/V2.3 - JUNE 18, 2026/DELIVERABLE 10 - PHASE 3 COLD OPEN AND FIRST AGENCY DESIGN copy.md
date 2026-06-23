@@ -65,24 +65,30 @@ The entry point is NOT required to be the source's literal first page. Novels of
 
 Evaluate candidate moments from the allocated source against this rubric. Score each candidate; pick the highest.
 
-ENTRY-POINT RUBRIC (the strongest entry maximizes these):
+**HARD GATE — PROTAGONIST AGENCY (disqualifying, applied BEFORE scoring):** The player must be PRESENT in their own body at the entry point AND able to act within the first beat. A moment where the protagonist is absent, off-screen, or a passive spectator to someone else's event is DISQUALIFIED — no matter how visually striking or high-pressure it is. Spectacle the player only watches is not an entry point; it is a cutscene. A great cold open is the protagonist's body in a moment where THEY can do something (Akira at the door, about to press the buzzer — not a camera watching a stranger transform). Disqualify first, then score the survivors.
+
+ENTRY-POINT RUBRIC (among moments that PASS the gate, the strongest entry maximizes these):
 1. **Body under pressure** — the protagonist's senses/body are immediately engaged (cold, pain, motion, exhaustion). Can the player FEEL something in the first two sentences?
 2. **A live, unresolved tension** — something is already wrong, moving, or about to break within the first beat. Not setup. Pressure.
-3. **An irreversible threshold** — the protagonist is about to cross a line they cannot uncross (a door that opens once, a send button, a point of no return). The best openings happen on a threshold.
+3. **The protagonist's own threshold** — THEY are about to cross a line they cannot uncross (a door only they can open, a send button under their hand, an assignment they must take or refuse). The threshold must be the protagonist's to cross — not the world's to cross around them. A world-event the player merely witnesses does NOT count here.
 4. **Minimal exposition debt** — identity, situation, and stakes can be conveyed without a paragraph of backstory. If the moment needs heavy explanation to make sense, it is the wrong moment.
 5. **Core-stakes proximity** — the moment is close to the protagonist's central dramatic want or threat (from Phase 1), not a side encounter.
 
 RULES:
-- If the source's literal opening scores low (slow, expository, throat-clearing), **move the entry point forward** to the first high-pressure threshold and fold the necessary context into compressed present-tense pressure.
+- **Respect a strong literal opening.** If the source's literal opening passes the agency gate and grounds the protagonist through action, KEEP it. Do not relocate a working opening for a flashier one. Relocation exists only for openings that are slow, expository, or fail the gate.
+- **Relocation must not cut the grounding or the first agency.** When you do move the entry point forward, never skip past (a) the beat that establishes the protagonist's identity-through-action, or (b) the protagonist's first real choice. If a striking world-event (a reveal, a transformation, an attack) is the best hook, stage it AROUND the grounded protagonist — they witness or are caught in it as an agent — rather than opening cold on the event with the player absent. Fold necessary context into compressed present-tense pressure; do not amputate the opening to reach the spectacle faster.
 - Do NOT open on a flashback, a dream, or a non-interactive info-dump.
 - For SCREENPLAY sources: the compressed visual opening is usually close to right — translate it to prose per 1B v3.
 - For NOVEL sources: the hook is often buried under interiority or scene-setting — find the first moment of live threshold and start there.
 
 OUTPUT:
 ```
-ENTRY POINT: [the chosen source moment]
-WHY (rubric scores): body [/5 sense], tension, threshold, exposition debt, core-stakes proximity — one line each
-ENTRY-POINT ADJUSTMENT: [literal opening / moved forward to: ___ — and why]
+CANDIDATES CONSIDERED: [list the 2-4 moments evaluated]
+AGENCY GATE: [for each candidate — PASS (protagonist present + can act) / DISQUALIFIED (absent or spectator) + one-line reason]
+ENTRY POINT: [the chosen source moment — must be a gate-PASS]
+WHY (rubric scores, gate-passers only): body, tension, the protagonist's-own-threshold, exposition debt, core-stakes proximity — one line each
+WHAT IS NOT CUT: [confirm the chosen entry does not skip the identity-through-action grounding or the protagonist's first agency moment]
+ENTRY-POINT ADJUSTMENT: [literal opening kept / moved forward to: ___ — and why it still passes the gate and cuts nothing essential]
 CUT POINT: [where the cold open ends and hands to the Phase 4 SETUP beat]
 ```
 
@@ -211,6 +217,7 @@ GRACEFUL DEGRADATION: if this phase has not been run for an IP, D8 Section 13 us
 
 STOP. Do not pass to Phase 4 until all are YES:
 
+0. **Agency gate?** Is the protagonist PRESENT in their own body at the entry point and able to act in the first beat — not a spectator to someone else's event? If the opening watches a striking thing happen TO the world while the player does nothing, it FAILS — return to Task 1.
 1. **Body first?** Does the player feel something physical in the first two sentences?
 2. **Identity earned, not dumped?** Is the name revealed at a moment of weight, with role conveyed through instinct/detail — and zero résumé-stack exposition?
 3. **Stakes as present pressure?** Are the stakes felt as live pressure, not explained?

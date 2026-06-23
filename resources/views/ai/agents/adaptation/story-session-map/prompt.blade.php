@@ -11,6 +11,11 @@ FORMAT DETECTION:
 
 ESTIMATED SESSION COUNT FROM FORMAT DETECTION: {{ $estimatedSessionCount }}
 
+STORY ENTRY OVERRIDE:
+prefer_literal_opening: {{ $preferLiteralOpening ? 'true' : 'false' }}
+
+If prefer_literal_opening is true, Session 1 must preserve the literal source opening beats when Session 1 covers the beginning of the story. Do not allocate Session 1 in a way that excludes the authored opening and starts at a later louder beat.
+
 @if(!empty($ipTrimmingWorldRules))
 IP TRIMMING — WORLD RULES (feed these into StoryGuard Canon Extraction — every rule here is source-confirmed):
 {{ json_encode($ipTrimmingWorldRules, JSON_PRETTY_PRINT) }}

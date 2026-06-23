@@ -6,6 +6,7 @@ namespace App\Jobs\Adaptation;
 
 use App\Ai\Adaptation\VoiceProfilePromptSlice;
 use App\Ai\Agents\Adaptation\StorySessionMapAgent;
+use App\ChaosMode\ChaosStoryConfig;
 use App\Enums\Adaptation\AdaptationStatusEnum;
 use App\Enums\Adaptation\SessionAdaptationStatusEnum;
 use App\Models\Event;
@@ -93,6 +94,7 @@ final class StorySessionMapJob implements ShouldQueue
                     'ipTrimmingWorldRules' => $ipTrimming['world_rules'] ?? null,
                     'ipTrimmingConversionNotes' => $ipTrimming['interactive_conversion_notes'] ?? null,
                     'voiceProfile' => VoiceProfilePromptSlice::alignmentContext((array) ($adaptation->voice_profile ?? [])),
+                    'preferLiteralOpening' => (bool) (ChaosStoryConfig::find($this->story->slug)['prefer_literal_opening'] ?? false),
                 ])->render()
             );
 

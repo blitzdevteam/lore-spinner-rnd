@@ -34,7 +34,7 @@ final class ChaosStoryConfig
     private const VOICE_DECLAN_SAGE = 'kqVT88a5QfII1HNAEPTJ';
 
     /**
-     * @return array<int, array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null}>
+     * @return array<int, array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null, prefer_literal_opening?: bool}>
      */
     public static function all(): array
     {
@@ -68,11 +68,12 @@ final class ChaosStoryConfig
                 'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
             [
-                'slug'          => 'anima-machina',
-                'title'         => 'Anima Machina',
-                'protagonist'   => 'Nora',
-                'tagline'       => 'Wittmer — dive grief in the neon archive.',
-                'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
+                'slug'                  => 'anima-machina',
+                'title'                 => 'Anima Machina',
+                'protagonist'           => 'Nora',
+                'tagline'               => 'Wittmer — dive grief in the neon archive.',
+                'tts_voice_id'          => self::VOICE_DECLAN_SAGE,
+                'prefer_literal_opening' => true,
             ],
             [
                 'slug'          => 'driftheart',
@@ -114,7 +115,7 @@ final class ChaosStoryConfig
     }
 
     /**
-     * @return array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null}|null
+     * @return array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null, prefer_literal_opening?: bool}|null
      */
     public static function find(string $slug): ?array
     {

@@ -40,7 +40,7 @@ final class RuntimeNarratorTemplateBuilder
      * Target cap for the cached runtime narrator prompt (D8 v2 — 65 k chars).
      * Prompts over this cap are logged as warnings but still persisted.
      */
-    public const MAX_PROMPT_CHARS = 65_000;
+    public const MAX_PROMPT_CHARS = 128_000;
 
     /**
      * Early-warning threshold — ~15k below the cap.
@@ -79,13 +79,11 @@ final class RuntimeNarratorTemplateBuilder
             $sessionEvents = $this->filterEventsByStoryPosition($story, $sessionEvents, $startEventPosition);
         }
 
-        // Compression cascade (D8 v2 priority):
-        // Source events are reduced first; anchor-field-safe voice compression comes last.
+        // Compression cascade — event bodies are NEVER compressed.
+        // Only voice example-quote arrays are eligible for stripping (drop_quotes).
         // dropVoiceQuotes never touches voice_anchor / anchor_card / runtime_self_check.
         $compressionAttempts = [
-            'full'               => fn () => $sessionEvents,
-            'compressed_source'  => fn () => $this->compressSourceEvents($sessionEvents),
-            'titles_only_source' => fn () => $this->titlesOnlySourceEvents($sessionEvents),
+            'full' => fn () => $sessionEvents,
         ];
 
         $voiceCompression = [
@@ -202,17 +200,25 @@ final class RuntimeNarratorTemplateBuilder
         $architecture = (array) ($session->session_architecture ?? []);
         $choiceDesign = (array) ($session->session_choice_design ?? []);
         $consequenceMap = (array) ($session->choice_consequence_map ?? []);
+        $chaptersCovered = (string) ($allocation['chapters_covered'] ?? '');
         $sessionSpine = [
-            'dramatic_question' => (string) ($allocation['primary_dramatic_question'] ?? ''),
-            'emotional_promise' => (string) (($session->entry_point_diagnosis['emotional_promise'] ?? '')),
+            'dramatic_question'  => (string) ($allocation['primary_dramatic_question'] ?? ''),
+            'emotional_promise'  => (string) (($session->entry_point_diagnosis['emotional_promise'] ?? '')),
             'emotional_register' => (string) ($allocation['emotional_register'] ?? ''),
-            'chapters_covered' => (string) ($allocation['chapters_covered'] ?? ''),
+            'chapters_covered'   => $chaptersCovered,
+            // Section 10 arc-position label — identifies the session by its chapter scope.
+            'session_label'      => sprintf(
+                'Session %d%s',
+                $session->session_number,
+                $chaptersCovered !== '' ? ': ' . $chaptersCovered : '',
+            ),
+            // Section 11 SESSION DESTINATION — the narrative close hook for this session.
             'session_destination' => (string) (
                 $session->session_close_design['hook_transition']
                 ?? $session->session_close_design['session_end_choice']['choice_question']
                 ?? ''
             ),
-            'next_session_seed' => (string) ($architecture['next_session_awareness']['seed_for_next_session'] ?? ''),
+            'next_session_seed'  => (string) ($architecture['next_session_awareness']['seed_for_next_session'] ?? ''),
         ];
         $persistentState = $this->scopePersistentState(
             (array) ($sessionMap['persistent_state_schema'] ?? []),
