@@ -8,6 +8,7 @@ use App\ChaosMode\ChaosStoryConfig;
 use App\Http\Controllers\Controller;
 use App\Models\ChaosSession;
 use App\Models\Story;
+use App\Services\SpeechifyTtsService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -15,6 +16,8 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 final class ChaosTtsController extends Controller
 {
     private const ELEVENLABS_URL = 'https://api.elevenlabs.io/v1/text-to-speech/%s/stream';
+
+    public function __construct(private readonly SpeechifyTtsService $speechify) {}
 
     /**
      * Serve TTS audio for a narrator turn in a chaos session.
@@ -45,6 +48,10 @@ final class ChaosTtsController extends Controller
 
         $provider = (string) config('services.tts_provider', 'elevenlabs');
         $path     = "tts/chaos/{$provider}/{$chaosSession->id}/{$turnIndex}.mp3";
+
+        if (Storage::disk('local')->exists($path) && ! $this->cachedAudioIsValid($path)) {
+            Storage::disk('local')->delete($path);
+        }
 
         if (! Storage::disk('local')->exists($path)) {
             $slug = Story::find($chaosSession->story_id)?->slug ?? '';
@@ -95,32 +102,21 @@ final class ChaosTtsController extends Controller
 
     private function generateSpeechify(string $text, string $path, string $voiceId): void
     {
-        $apiKey  = (string) config('services.speechify.api_key');
-        $voiceId = $voiceId !== '' ? $voiceId : (string) config('services.speechify.voice_id', 'george');
-        $model   = (string) config('services.speechify.model', 'simba-english');
-
-        abort_unless(filled($apiKey), 503, 'Speechify voice generation is not configured.');
-
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$apiKey}",
-            'Content-Type'  => 'application/json',
-        ])->timeout(90)->post('https://api.speechify.ai/v1/audio/speech', [
-            'input'        => $text,
-            'voice_id'     => $voiceId,
-            'audio_format' => 'mp3',
-            'model'        => $model,
-        ]);
-
-        if (! $response->successful()) {
-            logger()->warning('Speechify chaos TTS failed', [
-                'status' => $response->status(),
-                'path'   => $path,
-            ]);
-
-            abort($response->status() === 403 ? 502 : $response->status(), 'Voice generation unavailable.');
+        try {
+            Storage::disk('local')->put(
+                $path,
+                $this->speechify->synthesize($text, $voiceId),
+            );
+        } catch (\RuntimeException $e) {
+            abort(503, $e->getMessage());
         }
+    }
 
-        Storage::disk('local')->put($path, $response->body());
+    private function cachedAudioIsValid(string $path): bool
+    {
+        $bytes = Storage::disk('local')->get($path);
+
+        return is_string($bytes) && $this->speechify->cachedBytesLookLikeAudio($bytes);
     }
 
     /**

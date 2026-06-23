@@ -8,12 +8,15 @@ use App\ChaosMode\ChaosStoryConfig;
 use App\Http\Controllers\Controller;
 use App\Models\Game;
 use App\Models\Prompt;
+use App\Services\SpeechifyTtsService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 final class TextToSpeechController extends Controller
 {
+    public function __construct(private readonly SpeechifyTtsService $speechify) {}
+
     public function __invoke(Game $game, Prompt $prompt): BinaryFileResponse
     {
         abort_unless($prompt->game_id === $game->id, 404);
@@ -21,6 +24,10 @@ final class TextToSpeechController extends Controller
 
         $provider = (string) config('services.tts_provider', 'elevenlabs');
         $path = "tts/{$provider}/{$prompt->id}.mp3";
+
+        if (Storage::disk('local')->exists($path) && ! $this->cachedAudioIsValid($path)) {
+            Storage::disk('local')->delete($path);
+        }
 
         if (! Storage::disk('local')->exists($path)) {
             $storySlug = $game->story?->slug ?? '';
@@ -103,32 +110,22 @@ final class TextToSpeechController extends Controller
 
     private function generateSpeechify(Prompt $prompt, string $path, string $voiceId = ''): void
     {
-        $text    = strip_tags($prompt->response);
-        $apiKey  = (string) config('services.speechify.api_key');
-        $voiceId = $voiceId !== '' ? $voiceId : (string) config('services.speechify.voice_id', 'george');
-        $model   = (string) config('services.speechify.model', 'simba-english');
+        $text = strip_tags($prompt->response);
 
-        abort_unless(filled($apiKey), 503, 'Speechify voice generation is not configured.');
-
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$apiKey}",
-            'Content-Type'  => 'application/json',
-        ])->timeout(120)->post('https://api.speechify.ai/v1/audio/speech', [
-            'input'        => $text,
-            'voice_id'     => $voiceId,
-            'audio_format' => 'mp3',
-            'model'        => $model,
-        ]);
-
-        if (! $response->successful()) {
-            logger()->warning('Speechify TTS failed', [
-                'status'    => $response->status(),
-                'prompt_id' => $prompt->id,
-            ]);
-
-            abort($response->status() === 403 ? 502 : $response->status(), 'Voice generation unavailable.');
+        try {
+            Storage::disk('local')->put(
+                $path,
+                $this->speechify->synthesize($text, $voiceId),
+            );
+        } catch (\RuntimeException $e) {
+            abort(503, $e->getMessage());
         }
+    }
 
-        Storage::disk('local')->put($path, $response->body());
+    private function cachedAudioIsValid(string $path): bool
+    {
+        $bytes = Storage::disk('local')->get($path);
+
+        return is_string($bytes) && $this->speechify->cachedBytesLookLikeAudio($bytes);
     }
 }
