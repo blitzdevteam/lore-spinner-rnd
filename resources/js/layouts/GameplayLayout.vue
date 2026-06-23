@@ -51,13 +51,13 @@ function fireTwinkle() {
     if (inputGlowVariant.value === 'sweep' || inputGlowVariant.value === 'orbit') return;
     if (twinkleResetTimer) clearTimeout(twinkleResetTimer);
     inputGlowVariant.value = 'twinkle';
-    // Single pulse lasts 1.4 s in CSS; revert to breathe (undefined) after.
+    // 2 pulses × 1.4 s = 2.8 s; revert to breathe (undefined) after both complete.
     twinkleResetTimer = setTimeout(() => {
         if (inputGlowVariant.value === 'twinkle') {
             inputGlowVariant.value = undefined;
         }
         twinkleResetTimer = null;
-    }, 1600);
+    }, 3000);
 }
 
 const nudge = useInputNudge({ onTwinkle: fireTwinkle });

@@ -281,22 +281,26 @@ onUnmounted(() => {
     }
 }
 
-/* Nudge: single bright teal bloom — plays once, controlled by JS reset timer */
+/* Nudge: full-width glow pulse — same teal as breathe but spread across the whole bar.
+   Animates alpha only (never opacity), so the pill border stays visible at all times.
+   Two pulses: bright → dim → bright → back to breathe level. */
 .gp-pill--twinkle {
     background: linear-gradient(
         90deg,
-        rgba(0, 198, 222, 0.72) 0%,
-        rgba(13, 112, 124, 0.62) 16%,
-        rgba(26, 26, 26, 0.18) 34%
+        rgba(0, 198, 222, var(--gp-breathe-alpha)) 0%,
+        rgba(13, 112, 124, var(--gp-breathe-alpha)) 30%,
+        rgba(0, 198, 222, var(--gp-breathe-alpha)) 60%,
+        rgba(13, 112, 124, var(--gp-breathe-alpha)) 80%,
+        rgba(0, 198, 222, var(--gp-breathe-alpha)) 100%
     );
-    animation: gp-glow-twinkle 1.4s cubic-bezier(0.22, 1, 0.36, 1) 1 forwards;
+    animation: gp-glow-twinkle-pulse 1.4s ease-in-out 2;
 }
 
-@keyframes gp-glow-twinkle {
-    0%   { opacity: 0; }
-    18%  { opacity: 1; }
-    70%  { opacity: 0.85; }
-    100% { opacity: 0; }
+@keyframes gp-glow-twinkle-pulse {
+    0%   { --gp-breathe-alpha: 0.22; }
+    35%  { --gp-breathe-alpha: 0.78; }
+    65%  { --gp-breathe-alpha: 0.78; }
+    100% { --gp-breathe-alpha: 0.22; }
 }
 
 /* Sending: the glow travels clockwise around the pill perimeter */
