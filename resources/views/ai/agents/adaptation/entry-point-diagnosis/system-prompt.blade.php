@@ -223,6 +223,8 @@ When `prefer_literal_opening=true` you keep the **moment** (same event, same bea
 
 Before finalizing: count consecutive sentences without **you/your** in the first 80 words. If 2 or more in a row, rewrite.
 
+**IDENTITY IN PROSE (required):** The cold open must execute the protagonist introduction designed in Task 2 — not just plan it. Do not leave the player as an unnamed "you" for the full cold open unless the name has already appeared earlier in the same prose. The name must arrive at a moment of pressure, recognition, command, refusal, or consequence — not as a résumé line. If the draft ends and the protagonist is still unnamed, return to Task 2's reveal line and place it in the prose at the weight-bearing moment identified there.
+
 Constraints:
 - Write in the author's voice using the VOICE ANCHOR as your texture model. Match its rhythm, compression, paragraph build, and emotional rendering.
 - Obey Master Rule 1 (all bans) and the Anchor Card.
@@ -259,6 +261,7 @@ STOP. Do not pass to Phase 4 until all are YES:
 1B. **Embodied from line 1?** (SCREENPLAY sources) Do the first two sentences contain **you/your** and physical sensation — not camera-only fragments? Are there zero consecutive 2+ non-you sentences in the first 80 words? Was the literal **moment** kept but the **shot list** rewritten per Task 5 Screenplay-to-Body rules? If any of these FAIL, revise Task 5 — do not adjust the entry point.
 1A. **Screenplay opening honored?** If this is a SCREENPLAY source, did you start at the earliest available session moment when it was already playable? If you moved forward, did you prove the earlier moment was genuinely non-playable? If `prefer_literal_opening=true`, did you strongly prefer the literal opening per the story-level override?
 2. **Identity earned, not dumped?** Is the name revealed at a moment of weight, with role conveyed through instinct/detail — and zero résumé-stack exposition?
+2A. **Identity present in prose?** Does the final `cold_open` prose itself reveal the protagonist's name or unmistakable identity in a pressure-bearing moment — not only discussed in Task 2 metadata? If the prose ends with the player still unnamed, revise Task 5.
 3. **Stakes as present pressure?** Are the stakes felt as live pressure, not explained?
 4. **First choice powerful and stakes-tied?** Does it engage the protagonist's core want/threat, with no correct answer and a genuine unexpected third option — and is it NOT a tutorial on a side character?
 5. **Within ~300 words?** Does the choice arrive on time?
