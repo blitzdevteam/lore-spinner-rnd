@@ -9,8 +9,14 @@ const props = withDefaults(
         disabled?: boolean;
         /** 'sweep' = idle left↔right loop, 'orbit' = clockwork ring while waiting */
         glowVariant?: 'sweep' | 'orbit';
+        /**
+         * Optional placeholder text. When provided (cold-open first move), it dims
+         * on focus and vanishes when the user types — native browser behaviour.
+         * Falls back to '' so the bar stays clean after the first move.
+         */
+        placeholder?: string;
     }>(),
-    { disabled: false },
+    { disabled: false, placeholder: '' },
 );
 
 const emit = defineEmits<{
@@ -124,7 +130,7 @@ onUnmounted(() => {
                     ref="inputEl"
                     v-model="inputText"
                     class="flex-1 border-none! bg-transparent! px-2! py-0! text-base! text-white! shadow-none! ring-0! outline-none! placeholder:text-gray-500!"
-                    :placeholder="stt.isRecording.value ? 'Listening...' : stt.isTranscribing.value ? 'Transcribing...' : 'What Do You Do?'"
+                    :placeholder="stt.isRecording.value ? 'Listening...' : stt.isTranscribing.value ? 'Transcribing...' : props.placeholder"
                     :disabled="props.disabled || stt.isRecording.value || stt.isTranscribing.value"
                     autocomplete="off"
                     autocorrect="off"
@@ -159,6 +165,15 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* ── Cold-open placeholder fade — dims on focus, gone when typing (native) ── */
+:deep(input)::placeholder {
+    transition: opacity 0.3s ease;
+}
+
+:deep(input:focus)::placeholder {
+    opacity: 0.3;
+}
+
 .gp-send-btn {
     color: #0a1a1c;
     background: linear-gradient(180deg, #8fcbd3 0%, #6fafba 100%);

@@ -54,7 +54,12 @@ final class GameController extends Controller
     {
         $game->load([
             'story' => fn ($q) => $q->with([
-                'adaptation' => fn ($a) => $a->withCount('sessionAdaptations'),
+                'adaptation' => fn ($a) => $a
+                    ->withCount('sessionAdaptations')
+                    ->with(['sessionAdaptations' => fn ($sa) => $sa
+                        ->where('session_number', 1)
+                        ->select(['id', 'adaptation_id', 'session_number', 'entry_point_diagnosis']),
+                    ]),
             ]),
             'prompts' => fn ($q) => $q
                 ->select(['id', 'game_id', 'session_number', 'response', 'choices', 'prompt'])

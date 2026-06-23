@@ -126,6 +126,20 @@ const canSubmitInput = computed(() => {
     return latest && !latest.prompt;
 });
 
+// Show the story-native freeform hint on the player's very first move ever.
+// Once they act (typed or chose a button), the placeholder empties for the rest of the game.
+const hasPlayerActed = computed(() => prompts.value.some((p) => !!p.prompt));
+
+const inputPlaceholder = computed(() => {
+    const isFirstMove =
+        !hasPlayerActed.value &&
+        canSubmitInput.value &&
+        (props.game.current_session_number ?? 1) === 1;
+
+    if (!isFirstMove) return '';
+    return props.game.first_input_hint ?? '';
+});
+
 const handleBegin = () => {
     router.post(
         `/user/games/${props.game.id}/begin`,
@@ -284,6 +298,7 @@ onUnmounted(() => {
     <GameplayLayout
         v-else
         :input-disabled="!canSubmitInput"
+        :input-placeholder="inputPlaceholder"
         :game-id="game.id"
         :cover-url="game.story?.cover ?? null"
         :story-slug="game.story?.slug ?? null"

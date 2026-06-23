@@ -27,8 +27,10 @@ const props = withDefaults(
         coverUrl?: string | null;
         journalMeta?: JournalMeta;
         storySlug?: string | null;
+        /** Forwarded to GameplayInput — used for the cold-open first-move hint. */
+        inputPlaceholder?: string;
     }>(),
-    { inputDisabled: false, gameId: undefined, coverUrl: undefined, journalMeta: undefined, storySlug: undefined },
+    { inputDisabled: false, gameId: undefined, coverUrl: undefined, journalMeta: undefined, storySlug: undefined, inputPlaceholder: '' },
 );
 
 const auroraProps = computed(() => buildAuroraProps(props.storySlug));
@@ -278,6 +280,7 @@ const handleInputSubmit = (prompt: string) => {
                             <GameplayInput
                                 :disabled="props.inputDisabled"
                                 :glow-variant="inputGlowVariant"
+                                :placeholder="props.inputPlaceholder"
                                 @submit="handleInputSubmit"
                                 @ready-to-type="onInputReadyToType"
                                 @focus="inputFocused = true"

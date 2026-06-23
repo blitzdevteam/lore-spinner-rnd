@@ -192,6 +192,10 @@ Option 3 (the unexpected one): [one sentence] — Alignment: [ ] — Tracks: [ ]
 Why this is not a tutorial: [one line — how it engages core stakes and defines identity]
 ```
 
+Also produce the following as a separate output field (`freeform_input_hint`):
+
+FREEFORM INPUT HINT: [max 80 chars — one story-native line shown as the chat-bar placeholder the moment the player first sees the three choices; invites them to write their own move instead of picking a button; capture the spirit and energy of the unexpected third option without quoting it verbatim; present-tense world voice; no "type here", no game-mechanical language, no UI words; must tempt, not instruct; examples: "Or grab the watch and run the other way." / "Or tell Toto what you are really going to do."]
+
 ---
 
 ## TASK 5 — WRITE THE COLD OPEN (the artifact for D8 Section 13)

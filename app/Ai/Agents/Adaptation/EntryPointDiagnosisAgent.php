@@ -126,6 +126,13 @@ class EntryPointDiagnosisAgent implements Agent, HasStructuredOutput
                 ->title('Emotional Promise')
                 ->description('One sentence: "The emotional promise of this cold open is: [NOUN]. A user arrives feeling [ADJECTIVE] and wanting to [VERB]."'),
 
+            // --- Freeform input hint (→ chat-bar placeholder, session 1 first move only) ---
+            'freeform_input_hint' => $schema
+                ->string()
+                ->required()
+                ->title('Freeform Input Hint')
+                ->description('Max 80 chars. A story-native, present-tense line that appears as the chat-bar placeholder when the player first faces the three choices. Invites a custom move beyond the buttons. Captures the spirit of the unexpected third option without quoting it verbatim. No UI language ("Type here", "Enter text"). No game-mechanical words. Must tempt, not instruct. Written in the world\'s tone.'),
+
             // --- Preserved runtime keys (backward compat) ---
             'editorial_diagnosis' => $schema
                 ->string()

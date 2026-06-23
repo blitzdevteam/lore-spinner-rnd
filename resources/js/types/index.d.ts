@@ -145,5 +145,9 @@ export interface GameInterface {
 
     // Counts
     prompts_count?: number;
+
+    // Cold-open UX: story-native chat-bar placeholder for the player's very first move.
+    // Null when D10 has not been run for this story (graceful degradation → empty bar).
+    first_input_hint?: string | null;
 }
 

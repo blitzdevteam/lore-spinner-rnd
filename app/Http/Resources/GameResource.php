@@ -38,6 +38,14 @@ class GameResource extends BaseResource
 
             // Counts
             'prompts_count' => $this->whenCounted('prompts'),
+
+            // Cold-open UX: chat-bar placeholder for the player's very first move.
+            // Sourced from session 1 entry_point_diagnosis.freeform_input_hint (pipeline D10).
+            // Null when adaptation has not been run or hint is absent (graceful degradation).
+            'first_input_hint' => $this->whenLoaded('story', function () {
+                $diag = $this->story?->adaptation?->sessionAdaptations?->first()?->entry_point_diagnosis;
+                return is_array($diag) ? ($diag['freeform_input_hint'] ?? null) : null;
+            }),
         ];
     }
 }
