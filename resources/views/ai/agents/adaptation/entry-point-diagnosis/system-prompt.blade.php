@@ -194,7 +194,7 @@ Why this is not a tutorial: [one line — how it engages core stakes and defines
 
 Also produce the following as a separate output field (`freeform_input_hint`):
 
-FREEFORM INPUT HINT: [max 80 chars — one story-native line shown as the chat-bar placeholder the moment the player first sees the three choices; invites them to write their own move instead of picking a button; capture the spirit and energy of the unexpected third option without quoting it verbatim; present-tense world voice; no "type here", no game-mechanical language, no UI words; must tempt, not instruct; examples: "Or grab the watch and run the other way." / "Or tell Toto what you are really going to do."]
+FREEFORM INPUT HINT: [max 80 chars — one story-native line shown as the chat-bar placeholder the moment the player first sees the three choices; invites them to write their own move instead of picking a button; capture the spirit and energy of the unexpected third option without quoting it verbatim; present-tense world voice; no "type here", no game-mechanical language, no UI words; must tempt, not instruct; it should feel like a dare — the kind of move that would make the story gasp; examples: "Swallow the key. Let them find an empty table." / "Set the whole tunnel on fire and run toward the smoke." / "Tell the Queen her roses were already red — and watch her face." / "Put the gun down. Pick up his notebook instead."]
 
 ---
 
