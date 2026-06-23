@@ -87,8 +87,19 @@ let fadeTimer: ReturnType<typeof setTimeout> | null = null;
 
 watch(
     () => props.glowVariant,
-    (next) => {
+    (next, prev) => {
         if (fadeTimer) clearTimeout(fadeTimer);
+
+        // Twinkle transitions skip the fade-out dip entirely — the animation's
+        // own alpha surge handles the visual entry/exit smoothly. A fade-out
+        // here would make the bar disappear on every nudge.
+        if (next === 'twinkle' || prev === 'twinkle') {
+            isFading.value = false;
+            displayedVariant.value = next;
+            fadeTimer = null;
+            return;
+        }
+
         isFading.value = true;
         // Wait for fade-out, then swap gradient, then fade back in
         fadeTimer = setTimeout(() => {
