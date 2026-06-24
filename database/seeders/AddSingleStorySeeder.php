@@ -252,6 +252,7 @@ class AddSingleStorySeeder extends Seeder
      *   SEED_STORY=anima-machina          php artisan db:seed --class=AddSingleStorySeeder --force
      *   SEED_STORY=job-switching          php artisan db:seed --class=AddSingleStorySeeder --force
      *   SEED_STORY=the-matrix             php artisan db:seed --class=AddSingleStorySeeder --force
+     *   SEED_STORY=nocturne                php artisan db:seed --class=AddSingleStorySeeder --force
      *
      * Defaults to Masque of the Red Death when SEED_STORY is not set.
      */
@@ -263,6 +264,7 @@ class AddSingleStorySeeder extends Seeder
             'anima-machina', 'anima'                                           => $this->configAnimaMachina(),
             'the-matrix', 'matrix', 'the-matrix-1999'                          => $this->configTheMatrix(),
             'job-switching', 'i-love-lucy-job-switching', 'job-switching-final' => $this->configJobSwitching(),
+            'nocturne', 'nocturne-final'                                       => $this->configNocturne(),
             'wizard-of-oz', 'oz', 'the-wonderful-wizard-of-oz'                 => $this->configWizardOfOz(),
             default                                                              => $this->configMasque(),
         };
@@ -339,6 +341,21 @@ class AddSingleStorySeeder extends Seeder
             'rating'     => StoryRatingEnum::EVERYONE->value,
             'opening'    => null,
             'creator'    => $this->classicsCreator(),
+        ];
+    }
+
+    private function configNocturne(): array
+    {
+        return [
+            'title'      => 'Nocturne',
+            'slug'       => 'nocturne',
+            'category'   => 'Thriller',
+            'script'     => 'NOCTURNE_FINAL_script.txt',
+            'source_pdf' => 'RnD/MORE R&D TITLES - JUNE 15/NOCTURNE_FINAL.pdf',
+            'teaser'     => 'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten and nothing is quite as voluntary as it seems.',
+            'rating'     => StoryRatingEnum::MATURE->value,
+            'opening'    => 'A sparse, modern Tokyo high-rise. Concrete, teak, and tension. A single table set for two. You are Akira, 26. Your lipstick is too dark for the room. Across from you sits Professor Shin — married, respected, calm in the way men are when they\'ve never been truly cornered. He refills your sake without asking. "You should learn to keep secrets if you want to stay important," he says with a smile like advice, not a blade. But you\'ve already sent the files. There\'s no going back. What do you do?',
+            'creator'    => $this->thomasWittmerCreator(),
         ];
     }
 
