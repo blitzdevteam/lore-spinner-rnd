@@ -8,6 +8,7 @@ export const PLAYABLE_STORY_SLUGS = [
     'wasteland',
     'pjs',
     'anima-machina',
+    'nocturne',
     'i-love-lucy-job-switching',
     'the-matrix',
 ] as const;

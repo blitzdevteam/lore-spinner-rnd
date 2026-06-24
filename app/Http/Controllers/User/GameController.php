@@ -39,6 +39,7 @@ final class GameController extends Controller
         'wasteland',
         'pjs',
         'anima-machina',
+        'nocturne',
         'i-love-lucy-job-switching',
         'the-matrix',
     ];

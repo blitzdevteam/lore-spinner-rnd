@@ -133,7 +133,6 @@ const heroSlideConfigs: HeroSlideConfig[] = [
             'Beyond the rain-soaked glass walls of Nocturne, Akira finds herself trapped inside a system where identities are rewritten and nothing is quite as voluntary as it seems.',
         fallbackAuthor: 'Thomas Wittmer',
         seriesLabel: LORE_SPINNER_ORIGINAL,
-        comingSoon: true,
     },
     {
         slug: 'jane-eyre',
