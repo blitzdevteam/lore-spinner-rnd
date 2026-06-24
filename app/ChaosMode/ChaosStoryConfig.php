@@ -61,11 +61,12 @@ final class ChaosStoryConfig
                 'tts_voice_id'  => null,
             ],
             [
-                'slug'          => 'nocturne',
-                'title'         => 'Nocturne',
-                'protagonist'   => 'Akira',
-                'tagline'       => 'Wittmer — vanish into Tokyo\'s shadow-house.',
-                'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
+                'slug'                   => 'nocturne',
+                'title'                  => 'Nocturne',
+                'protagonist'            => 'Akira',
+                'tagline'                => 'Wittmer — vanish into Tokyo\'s shadow-house.',
+                'tts_voice_id'           => self::VOICE_DECLAN_SAGE,
+                'prefer_literal_opening' => true,
             ],
             [
                 'slug'                  => 'anima-machina',
