@@ -50,10 +50,14 @@ final class ChaosEngineService
         'claude-haiku-4-5'  => ['provider' => 'anthropic', 'temperature' => 0.95, 'reasoning_effort' => null],
     ];
 
-    public const DEFAULT_MODEL = 'claude-haiku-4-5';
+    // public const DEFAULT_MODEL = 'claude-haiku-4-5';
+    // /** Production /user/games narration — tighter than chaos-mode lab defaults. */
+    // public const GAME_TEMPERATURE = 0.4;
+
+    public const DEFAULT_MODEL = 'claude-sonnet-4-6';
 
     /** Production /user/games narration — tighter than chaos-mode lab defaults. */
-    public const GAME_TEMPERATURE = 0.4;
+    public const GAME_TEMPERATURE = 0.6;
 
     // -------------------------------------------------------------------------
     // Public API
