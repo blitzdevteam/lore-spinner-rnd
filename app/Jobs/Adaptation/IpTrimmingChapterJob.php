@@ -55,10 +55,11 @@ final class IpTrimmingChapterJob implements ShouldQueue
      * Hard cap on chapter content passed to the model.
      * Verbatim trimmed_chapter_text in the structured output mirrors input length,
      * so an unbounded chapter can push the response past any model's output token
-     * ceiling. Content beyond this cap is noted with a TRUNCATED marker.
-     * Raw chapter text is always preserved in chapters.content.
+     * ceiling. 5 k chars → worst-case ~10 k chars of structured JSON output, well
+     * within the real ceiling observed in testing. Content beyond this cap is noted
+     * with a TRUNCATED marker; raw chapter text is always preserved in chapters.content.
      */
-    private const int MAX_CHAPTER_INPUT_CHARS = 12_000;
+    private const int MAX_CHAPTER_INPUT_CHARS = 5_000;
 
     /**
      * @throws Throwable

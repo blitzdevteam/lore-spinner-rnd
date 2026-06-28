@@ -82,13 +82,12 @@ final class IpTrimmingMergeJob implements ShouldQueue
         }
 
         if (! $this->continuePipeline && count($fragments) < $chapters->count()) {
-            Log::error('ip_trimming.repair_merge_incomplete', [
+            Log::warning('ip_trimming.repair_merge_partial', [
                 'story_id' => $this->story->id,
                 'fragments_collected' => count($fragments),
                 'chapters_total' => $chapters->count(),
+                'note' => 'Proceeding with partial merge — missing chapters will be re-attempted on next repair run.',
             ]);
-
-            return;
         }
 
         // Sort fragments by chapter_position to ensure correct order.
