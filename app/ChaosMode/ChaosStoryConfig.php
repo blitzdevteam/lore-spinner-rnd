@@ -28,10 +28,14 @@ namespace App\ChaosMode;
 final class ChaosStoryConfig
 {
     /**
-     * Declan Sage voice (kqVT88a5QfII1HNAEPTJ) — used for the three
-     * contemporary Thomas Wittmer stories: Nocturne, Anima Machina, Driftheart.
+     * Declan Sage voice (kqVT88a5QfII1HNAEPTJ) — used for Driftheart.
      */
     private const VOICE_DECLAN_SAGE = 'kqVT88a5QfII1HNAEPTJ';
+
+    /**
+     * David voice (cCYjmrGZaI86GUJ7F2Nn) — used for Nocturne and Anima Machina.
+     */
+    private const VOICE_DAVID = 'cCYjmrGZaI86GUJ7F2Nn';
 
     /**
      * @return array<int, array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null, prefer_literal_opening?: bool}>
@@ -65,7 +69,7 @@ final class ChaosStoryConfig
                 'title'                  => 'Nocturne',
                 'protagonist'            => 'Akira',
                 'tagline'                => 'Wittmer — vanish into Tokyo\'s shadow-house.',
-                'tts_voice_id'           => self::VOICE_DECLAN_SAGE,
+                'tts_voice_id'           => self::VOICE_DAVID,
                 'prefer_literal_opening' => true,
             ],
             [
@@ -73,7 +77,7 @@ final class ChaosStoryConfig
                 'title'                 => 'Anima Machina',
                 'protagonist'           => 'Nora',
                 'tagline'               => 'Wittmer — dive grief in the neon archive.',
-                'tts_voice_id'          => self::VOICE_DECLAN_SAGE,
+                'tts_voice_id'          => self::VOICE_DAVID,
                 'prefer_literal_opening' => true,
             ],
             [
