@@ -33,9 +33,9 @@ final class ChaosStoryConfig
     private const VOICE_DECLAN_SAGE = 'kqVT88a5QfII1HNAEPTJ';
 
     /**
-     * David voice (cCYjmrGZaI86GUJ7F2Nn) — used for Nocturne and Anima Machina.
+     * Davidof voice (TWutjvRaJqAX89preB4e) — used for Nocturne and Anima Machina.
      */
-    private const VOICE_DAVID = 'cCYjmrGZaI86GUJ7F2Nn';
+    private const VOICE_DAVIDOF = 'TWutjvRaJqAX89preB4e';
 
     /**
      * @return array<int, array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null, prefer_literal_opening?: bool}>
@@ -69,7 +69,7 @@ final class ChaosStoryConfig
                 'title'                  => 'Nocturne',
                 'protagonist'            => 'Akira',
                 'tagline'                => 'Wittmer — vanish into Tokyo\'s shadow-house.',
-                'tts_voice_id'           => self::VOICE_DAVID,
+                'tts_voice_id'           => self::VOICE_DAVIDOF,
                 'prefer_literal_opening' => true,
             ],
             [
@@ -77,7 +77,7 @@ final class ChaosStoryConfig
                 'title'                 => 'Anima Machina',
                 'protagonist'           => 'Nora',
                 'tagline'               => 'Wittmer — dive grief in the neon archive.',
-                'tts_voice_id'          => self::VOICE_DAVID,
+                'tts_voice_id'          => self::VOICE_DAVIDOF,
                 'prefer_literal_opening' => true,
             ],
             [
