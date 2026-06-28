@@ -20,6 +20,10 @@ CONTEXT ONLY — DO NOT OUTPUT content from this. The next chapter is:
 Chapter {{ $chapterPosition + 1 }}: "{{ $nextChapterTitle }}"
 @endif
 
+@isset($chunkContext)
+NOTE: You are processing {{ $chunkContext }} of this chapter's content. Process ONLY the excerpt between the BEGIN/END markers below. Output story_spine_fragment, world_rules_fragments, content_triage_log, interactive_conversion_notes, and trimmed_chapter_text for THIS EXCERPT ONLY. Leave climax_fragment and resolution_fragment empty unless the story's climax or resolution explicitly occurs within this excerpt.
+@endisset
+
 ----- BEGIN CHAPTER {{ $chapterPosition }} CONTENT -----
 {!! $chapterContent !!}
 ----- END CHAPTER {{ $chapterPosition }} CONTENT -----

@@ -20,6 +20,12 @@ use Throwable;
  * Processes one chapter at a time and stores its fragment in the Laravel cache
  * under the key `ip_trimming_fragment:{story_id}:{chapter_id}`.
  *
+ * For chapters whose content exceeds CHUNK_SIZE characters the text is split
+ * at line boundaries into overlapping chunks. Each chunk is run through the
+ * agent independently (using gpt-5.4 for safety), and the resulting fragments
+ * are PHP-merged into a single chapter fragment before being stored. This
+ * ensures no screenplay content is lost regardless of chapter length.
+ *
  * IpTrimmingMergeJob collects all fragments, PHP-merges world_rules /
  * triage_log / conversion_notes / trimmed_text, makes a single small synthesis
  * call for the story_spine, and writes the final package to
@@ -33,7 +39,12 @@ final class IpTrimmingChapterJob implements ShouldQueue
 
     public int $tries = 3;
 
-    public int $timeout = 300;
+    /**
+     * Generous timeout: a heavily-chunked chapter can require many sequential
+     * agent calls. 10 chunks × 60 s each = 600 s worst-case, so 900 s gives
+     * comfortable headroom for retries and slow API responses.
+     */
+    public int $timeout = 900;
 
     public int $backoff = 60;
 
@@ -45,21 +56,26 @@ final class IpTrimmingChapterJob implements ShouldQueue
     }
 
     /**
-     * Chapters above this character count get gpt-5.4 instead of gpt-5.4-mini.
-     * Mini hits its output token ceiling on long screenplay chapters, producing
-     * incomplete JSON and a "max tokens exceeded" failure.
+     * Maximum characters to send to the model in a single call.
+     * Structured output for a 4 k-char chunk peaks around 8 k chars of JSON
+     * (~2 k tokens), well within every model's real output ceiling.
+     * Chapters shorter than this threshold are processed in a single pass.
      */
-    private const int LARGE_CHAPTER_CHAR_THRESHOLD = 8_000;
+    private const int CHUNK_SIZE = 4_000;
 
     /**
-     * Hard cap on chapter content passed to the model.
-     * Verbatim trimmed_chapter_text in the structured output mirrors input length,
-     * so an unbounded chapter can push the response past any model's output token
-     * ceiling. 5 k chars → worst-case ~10 k chars of structured JSON output, well
-     * within the real ceiling observed in testing. Content beyond this cap is noted
-     * with a TRUNCATED marker; raw chapter text is always preserved in chapters.content.
+     * Overlap between consecutive chunks, in characters.
+     * Keeps scenes that straddle a split boundary visible to both chunks so
+     * triage entries are not dropped at the seam.
      */
-    private const int MAX_CHAPTER_INPUT_CHARS = 5_000;
+    private const int CHUNK_OVERLAP = 300;
+
+    /**
+     * Chapters whose full content exceeds this threshold use gpt-5.4 instead
+     * of gpt-5.4-mini for every chunk call, trading speed for reliability on
+     * complex schema output.
+     */
+    private const int LARGE_CHAPTER_CHAR_THRESHOLD = 8_000;
 
     /**
      * @throws Throwable
@@ -76,51 +92,31 @@ final class IpTrimmingChapterJob implements ShouldQueue
 
         $rawContent = $this->chapter->content ?? '';
         $chapterLength = mb_strlen($rawContent);
-        $model = $chapterLength > self::LARGE_CHAPTER_CHAR_THRESHOLD ? 'gpt-5.4' : null;
-
-        $truncated = $chapterLength > self::MAX_CHAPTER_INPUT_CHARS;
-        $chapterContent = $truncated
-            ? mb_substr($rawContent, 0, self::MAX_CHAPTER_INPUT_CHARS)
-              . "\n\n[TRUNCATED: " . ($chapterLength - self::MAX_CHAPTER_INPUT_CHARS) . " chars omitted — raw text preserved in DB]"
-            : $rawContent;
 
         Log::info('ip_trimming.chapter_start', [
-            'story_id' => $this->story->id,
-            'chapter_id' => $this->chapter->id,
+            'story_id'         => $this->story->id,
+            'chapter_id'       => $this->chapter->id,
             'chapter_position' => $this->chapter->position,
-            'chapter_title' => $this->chapter->title,
-            'chapter_chars' => $chapterLength,
-            'truncated' => $truncated,
-            'model' => $model ?? 'gpt-5.4-mini (default)',
+            'chapter_title'    => $this->chapter->title,
+            'chapter_chars'    => $chapterLength,
+            'mode'             => $chapterLength > self::CHUNK_SIZE ? 'chunked' : 'single-pass',
         ]);
 
-        if ($truncated) {
-            Log::warning('ip_trimming.chapter_truncated', [
-                'story_id' => $this->story->id,
-                'chapter_id' => $this->chapter->id,
-                'chapter_position' => $this->chapter->position,
-                'original_chars' => $chapterLength,
-                'sent_chars' => self::MAX_CHAPTER_INPUT_CHARS,
-            ]);
-        }
+        $baseViewData = [
+            'title'                => $this->story->title,
+            'author'               => $this->story->creator?->full_name ?? 'Unknown Author',
+            'format'               => $this->story->adaptation?->format_detection['detected_format'] ?? 'UNKNOWN',
+            'chapterId'            => $this->chapter->id,
+            'chapterPosition'      => $this->chapter->position,
+            'chapterTitle'         => $this->chapter->title,
+            'totalChapters'        => $totalChapters,
+            'previousChapterTitle' => $prevChapter?->title ?? '',
+            'nextChapterTitle'     => $nextChapter?->title ?? '',
+        ];
 
-        $response = (new IpTrimmingChapterAgent)->prompt(
-            view('ai.agents.adaptation.ip-trimming.chapter-prompt', [
-                'title' => $this->story->title,
-                'author' => $this->story->creator?->full_name ?? 'Unknown Author',
-                'format' => $this->story->adaptation?->format_detection['detected_format'] ?? 'UNKNOWN',
-                'chapterId' => $this->chapter->id,
-                'chapterPosition' => $this->chapter->position,
-                'chapterTitle' => $this->chapter->title,
-                'totalChapters' => $totalChapters,
-                'previousChapterTitle' => $prevChapter?->title ?? '',
-                'nextChapterTitle' => $nextChapter?->title ?? '',
-                'chapterContent' => $chapterContent,
-            ])->render(),
-            model: $model,
-        );
-
-        $fragment = $response->toArray();
+        $fragment = $chapterLength > self::CHUNK_SIZE
+            ? $this->processInChunks($rawContent, $chapterLength, $baseViewData)
+            : $this->processSinglePass($rawContent, $chapterLength, $baseViewData);
 
         Cache::put(
             "ip_trimming_fragment:{$this->story->id}:{$this->chapter->id}",
@@ -129,13 +125,230 @@ final class IpTrimmingChapterJob implements ShouldQueue
         );
 
         Log::info('ip_trimming.chapter_complete', [
-            'story_id' => $this->story->id,
-            'chapter_id' => $this->chapter->id,
+            'story_id'         => $this->story->id,
+            'chapter_id'       => $this->chapter->id,
             'chapter_position' => $this->chapter->position,
-            'chapter_chars' => $chapterLength,
-            'model_used' => $model ?? 'gpt-5.4-mini (default)',
-            'triage_entries' => count($fragment['content_triage_log'] ?? []),
-            'trimmed_chars' => mb_strlen($fragment['trimmed_chapter_text'] ?? ''),
+            'chapter_chars'    => $chapterLength,
+            'triage_entries'   => count($fragment['content_triage_log'] ?? []),
+            'trimmed_chars'    => mb_strlen($fragment['trimmed_chapter_text'] ?? ''),
         ]);
+    }
+
+    // -------------------------------------------------------------------------
+    // Processing paths
+    // -------------------------------------------------------------------------
+
+    /** @throws Throwable */
+    private function processSinglePass(string $content, int $chapterLength, array $baseViewData): array
+    {
+        $model = $chapterLength > self::LARGE_CHAPTER_CHAR_THRESHOLD ? 'gpt-5.4' : null;
+
+        $response = (new IpTrimmingChapterAgent)->prompt(
+            view('ai.agents.adaptation.ip-trimming.chapter-prompt', array_merge($baseViewData, [
+                'chapterContent' => $content,
+            ]))->render(),
+            model: $model,
+        );
+
+        return $response->toArray();
+    }
+
+    /** @throws Throwable */
+    private function processInChunks(string $rawContent, int $chapterLength, array $baseViewData): array
+    {
+        $chunks = $this->splitIntoChunks($rawContent);
+        $totalChunks = count($chunks);
+
+        Log::info('ip_trimming.chapter_chunked', [
+            'story_id'         => $this->story->id,
+            'chapter_id'       => $this->chapter->id,
+            'chapter_position' => $this->chapter->position,
+            'chapter_chars'    => $chapterLength,
+            'total_chunks'     => $totalChunks,
+            'chunk_size'       => self::CHUNK_SIZE,
+        ]);
+
+        $parts = [];
+
+        foreach ($chunks as $i => $chunk) {
+            $chunkNum = $i + 1;
+
+            $response = (new IpTrimmingChapterAgent)->prompt(
+                view('ai.agents.adaptation.ip-trimming.chapter-prompt', array_merge($baseViewData, [
+                    'chapterContent' => $chunk,
+                    'chunkContext'   => "PART {$chunkNum} OF {$totalChunks}",
+                ]))->render(),
+                model: 'gpt-5.4',
+            );
+
+            $parts[] = $response->toArray();
+
+            Log::info('ip_trimming.chapter_chunk_complete', [
+                'story_id'         => $this->story->id,
+                'chapter_id'       => $this->chapter->id,
+                'chunk'            => "{$chunkNum}/{$totalChunks}",
+            ]);
+        }
+
+        return $this->mergeChunkParts($parts, $baseViewData);
+    }
+
+    // -------------------------------------------------------------------------
+    // Chunking helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Split a chapter into overlapping chunks at line boundaries.
+     * Splitting on newlines keeps scene headers and dialogue blocks intact so
+     * the model never sees a mid-line boundary.
+     *
+     * @return string[]
+     */
+    private function splitIntoChunks(string $content): array
+    {
+        $lines   = explode("\n", $content);
+        $chunks  = [];
+        $current = '';
+
+        foreach ($lines as $line) {
+            $candidate = $current === '' ? $line : ($current . "\n" . $line);
+
+            if (mb_strlen($candidate) > self::CHUNK_SIZE && $current !== '') {
+                $chunks[] = $current;
+                // Start next chunk with the tail of the current one for context overlap.
+                $overlap = mb_substr($current, -self::CHUNK_OVERLAP);
+                $current = $overlap . "\n" . $line;
+            } else {
+                $current = $candidate;
+            }
+        }
+
+        if ($current !== '') {
+            $chunks[] = $current;
+        }
+
+        return $chunks;
+    }
+
+    /**
+     * PHP-merge all per-chunk fragments into a single chapter fragment.
+     *
+     *   - chapter_id / chapter_position : taken from $baseViewData (authoritative)
+     *   - story_spine_fragment.protagonist : first non-empty value across chunks
+     *   - story_spine_fragment.dramatic_question : last non-empty value (later
+     *     chunks have the most complete picture)
+     *   - story_spine_fragment.major_turning_points / irreversible_events :
+     *     concatenated across all chunks
+     *   - story_spine_fragment.climax_fragment / resolution_fragment : last
+     *     non-empty value
+     *   - world_rules_fragments.* : union de-duplicated by rule/thing text
+     *   - content_triage_log : concatenated in chunk order
+     *   - interactive_conversion_notes : concatenated in chunk order
+     *   - trimmed_chapter_text : concatenated with a blank-line separator
+     */
+    private function mergeChunkParts(array $parts, array $baseViewData): array
+    {
+        $merged = [
+            'chapter_id'       => $baseViewData['chapterId'],
+            'chapter_position' => $baseViewData['chapterPosition'],
+
+            'story_spine_fragment' => [
+                'protagonist'          => '',
+                'dramatic_question'    => '',
+                'major_turning_points' => [],
+                'irreversible_events'  => [],
+                'climax_fragment'      => '',
+                'resolution_fragment'  => '',
+            ],
+
+            'world_rules_fragments' => [
+                'physics_technology' => [],
+                'creatures_entities' => [],
+                'geography_locations' => [],
+                'social_systems'      => [],
+                'what_cannot_exist'   => [],
+            ],
+
+            'content_triage_log'          => [],
+            'interactive_conversion_notes' => [],
+            'trimmed_chapter_text'         => '',
+        ];
+
+        foreach ($parts as $part) {
+            $spine = $part['story_spine_fragment'] ?? [];
+
+            // Protagonist: first non-empty wins
+            if ($merged['story_spine_fragment']['protagonist'] === '' && !empty($spine['protagonist'])) {
+                $merged['story_spine_fragment']['protagonist'] = $spine['protagonist'];
+            }
+
+            // Dramatic question: later chunks have more context, so last non-empty wins
+            if (!empty($spine['dramatic_question'])) {
+                $merged['story_spine_fragment']['dramatic_question'] = $spine['dramatic_question'];
+            }
+
+            // Lists: concatenate
+            foreach (['major_turning_points', 'irreversible_events'] as $listKey) {
+                $merged['story_spine_fragment'][$listKey] = array_merge(
+                    $merged['story_spine_fragment'][$listKey],
+                    (array) ($spine[$listKey] ?? [])
+                );
+            }
+
+            // Climax / resolution: last non-empty wins
+            if (!empty($spine['climax_fragment'])) {
+                $merged['story_spine_fragment']['climax_fragment'] = $spine['climax_fragment'];
+            }
+            if (!empty($spine['resolution_fragment'])) {
+                $merged['story_spine_fragment']['resolution_fragment'] = $spine['resolution_fragment'];
+            }
+
+            // World rules: union de-duplicated by lowercase rule/thing text
+            $rules = $part['world_rules_fragments'] ?? [];
+
+            foreach (['physics_technology', 'creatures_entities', 'geography_locations', 'social_systems'] as $cat) {
+                $existingKeys = array_map(
+                    fn ($r) => mb_strtolower(trim((string) ($r['rule'] ?? ''))),
+                    $merged['world_rules_fragments'][$cat]
+                );
+                foreach ((array) ($rules[$cat] ?? []) as $rule) {
+                    $key = mb_strtolower(trim((string) ($rule['rule'] ?? '')));
+                    if ($key !== '' && !in_array($key, $existingKeys, true)) {
+                        $merged['world_rules_fragments'][$cat][] = $rule;
+                        $existingKeys[] = $key;
+                    }
+                }
+            }
+
+            $existingThings = array_map(
+                fn ($r) => mb_strtolower(trim((string) ($r['thing'] ?? ''))),
+                $merged['world_rules_fragments']['what_cannot_exist']
+            );
+            foreach ((array) ($rules['what_cannot_exist'] ?? []) as $item) {
+                $thing = mb_strtolower(trim((string) ($item['thing'] ?? '')));
+                if ($thing !== '' && !in_array($thing, $existingThings, true)) {
+                    $merged['world_rules_fragments']['what_cannot_exist'][] = $item;
+                    $existingThings[] = $thing;
+                }
+            }
+
+            // Triage log and conversion notes: concatenate in chunk order
+            $merged['content_triage_log'] = array_merge(
+                $merged['content_triage_log'],
+                (array) ($part['content_triage_log'] ?? [])
+            );
+            $merged['interactive_conversion_notes'] = array_merge(
+                $merged['interactive_conversion_notes'],
+                (array) ($part['interactive_conversion_notes'] ?? [])
+            );
+
+            // Trimmed text: concatenate with blank-line separator
+            $trimmed = (string) ($part['trimmed_chapter_text'] ?? '');
+            if ($trimmed !== '') {
+                $merged['trimmed_chapter_text'] .= ($merged['trimmed_chapter_text'] !== '' ? "\n\n" : '') . $trimmed;
+            }
+        }
+
+        return $merged;
     }
 }
