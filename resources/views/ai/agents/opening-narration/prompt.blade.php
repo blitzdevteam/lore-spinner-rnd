@@ -13,7 +13,7 @@ TONE & STYLE: {{ $toneAndStyle }}
 @endif
 
 @if(!empty($worldRules))
-KEY WORLD RULES (for atmospheric hints only — do NOT list these directly):
+KEY WORLD RULES (for atmospheric hints only: do NOT list these directly):
 @foreach($worldRules as $rule)
 - {{ $rule }}
 @endforeach

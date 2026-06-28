@@ -1,13 +1,13 @@
 @include('ai.agents.adaptation._voice-profile-context', [
     'voiceProfile' => $voiceProfile,
-    'voiceProfileLabel' => 'Sections 1+2+Anchor Card — Voice DNA + Master Rule 1 bans + Anchor Card (all 115-125 word outcomes must embody this profile; Anchor Card binary rules apply to every authored line)',
+    'voiceProfileLabel' => 'Sections 1+2+Anchor Card: Voice DNA + Master Rule 1 bans + Anchor Card (all 115-125 word outcomes must embody this profile; Anchor Card binary rules apply to every authored line)',
 ])
 
 FIRST-CHOICE SPEC (from Phase 3 / Deliverable 10):
 @if(!empty($firstChoiceSpec))
 {{ json_encode($firstChoiceSpec, JSON_PRETTY_PRINT) }}
 @else
-[Phase 3 has not been run for this IP — Task 1 operates in fallback mode but must still apply the stakes-tied / no-tutorial gate.]
+[Phase 3 has not been run for this IP: Task 1 operates in fallback mode but must still apply the stakes-tied / no-tutorial gate.]
 @endif
 
 PHASE 4 BEAT MAP:

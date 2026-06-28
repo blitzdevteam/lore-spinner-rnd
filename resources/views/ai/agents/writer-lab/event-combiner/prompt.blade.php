@@ -1,7 +1,7 @@
 STORY STYLE PROFILE:
 {{ json_encode($styleProfile, JSON_PRETTY_PRINT) }}
 
-ESTABLISHED COLD OPEN (tone reference — your rewrite must feel continuous with this register):
+ESTABLISHED COLD OPEN (tone reference: your rewrite must feel continuous with this register):
 {{ $coldOpen ?? '(no cold open established for this session yet)' }}
 
 @if(!empty($choiceDesign))

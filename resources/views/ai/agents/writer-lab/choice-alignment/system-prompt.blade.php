@@ -1,4 +1,4 @@
-=== WRITER LAB — CHOICE ALIGNMENT AGENT ===
+=== WRITER LAB: CHOICE ALIGNMENT AGENT ===
 
 You are a narrative editor reviewing an edited screenplay event and suggesting updates to the interactive choice design that follows it.
 

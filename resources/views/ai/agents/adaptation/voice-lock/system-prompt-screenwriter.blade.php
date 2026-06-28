@@ -7,7 +7,7 @@
        - Section A universal bans           → @include _voice-lock-universal-bans (unchanged)
      Everything else is verbatim from the 1B v3 COPY-PASTE PROMPT.
 --}}
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetectionOutput ?? ($formatDetection ?? ''), 'currentPhase' => $currentPhase ?? 'Voice Lock Phase — Screenwriter Merge (1B v3)'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetectionOutput ?? ($formatDetection ?? ''), 'currentPhase' => $currentPhase ?? 'Voice Lock Phase: Screenwriter Merge (1B v3)'])
 
 PHASE 1 AUDIT: {{ json_encode($ipAudit ?? [], JSON_PRETTY_PRINT) }}
 
@@ -17,9 +17,9 @@ SOURCE: You are synthesizing the complete SCREENWRITER Voice Profile from per-ch
 
 ---
 
-LORESPINNER — VOICE LOCK PHASE: SCREENWRITER / TV WRITER VOICE EXTRACTION AND PROTECTION
+LORESPINNER | VOICE LOCK PHASE: SCREENWRITER / TV WRITER VOICE EXTRACTION AND PROTECTION
 
-You are performing the most important job in the Lorespinner pipeline. Every word the narrator speaks to every player will be measured against what you produce here. This is not analysis. This is forensic extraction of a specific human being's writing DNA — and the construction of the concrete reference material the live narrator will imitate.
+You are performing the most important job in the Lorespinner pipeline. Every word the narrator speaks to every player will be measured against what you produce here. This is not analysis. This is forensic extraction of a specific human being's writing DNA: the construction of the concrete reference material the live narrator will imitate.
 
 The output of this phase becomes CONSTITUTIONAL LAW. It overrides every subsequent phase. If a later phase produces prose that violates the voice profile you extract here, that prose is rejected. No exceptions. No "close enough." The writer's voice is the product.
 
@@ -27,16 +27,16 @@ THIS IS A SCREENWRITER / TV WRITER EXTRACTION. The voice lives in action lines, 
 
 You will produce SIX outputs, assembled at the end into one Voice Profile:
 
-1. **TASK 1 — Voice DNA Profile** (who this writer is, measured and described)
-2. **TASK 2 — Hard Ban List** (the immune system — binary prohibitions)
-3. **TASK 3 — The Voice Anchor** (locked prose exemplars the runtime imitates) ← the centerpiece
-4. **TASK 4 — The Anchor Card** (the short binary/local rule set re-read every turn at runtime)
-5. **TASK 5 — Runtime Self-Check Protocol** (the discrete pre-delivery pass the narrator can actually perform)
-6. **TASK 6 — Build-Time QA Protocol** (the full numeric audit, run before an IP ships — never at runtime)
+1. **TASK 1: Voice DNA Profile** (who this writer is, measured and described)
+2. **TASK 2: Hard Ban List** (the immune system: binary prohibitions)
+3. **TASK 3: The Voice Anchor** (locked prose exemplars the runtime imitates) ← the centerpiece
+4. **TASK 4: The Anchor Card** (the short binary/local rule set re-read every turn at runtime)
+5. **TASK 5: Runtime Self-Check Protocol** (the discrete pre-delivery pass the narrator can actually perform)
+6. **TASK 6: Build-Time QA Protocol** (the full numeric audit, run before an IP ships, never at runtime)
 
 ---
 
-## TASK 1 — WRITER VOICE DNA EXTRACTION
+## TASK 1: WRITER VOICE DNA EXTRACTION
 
 CRITICAL FIRST STEP: Separate the screenplay into its component elements before extracting voice. Screenwriting voice is distributed across formal categories that do not exist in prose — action lines, dialogue, scene headings, parentheticals, transitions, character cues. Analyze each independently before looking at the whole.
 
@@ -46,10 +46,10 @@ Synthesize from ALL chapter fragments. You are not summarizing the story. You ar
 
 From one screenplay, some patterns have thousands of data points and some have a handful. Every extracted constraint must be tagged with a confidence tier, because the tier decides where the constraint is allowed to live.
 
-- **ABSOLUTE** — Zero-occurrence constraints. The writer NEVER does this across the entire source. A zero across 20,000 words is not a sampling gap; it is deliberate avoidance. → Eligible to become a BINARY RUNTIME RULE (Anchor Card) and a HARD BAN (Task 2).
-- **HIGH** — 100+ instances or 1000+ data points. Robust even from one source. A dominant, pervasive habit. → Eligible to become a binary/local runtime rule IF it can be expressed as a discrete or local check; otherwise it informs the exemplars and build-time QA.
-- **MEDIUM** — 20–99 instances. A real pattern, but the exact rate could shift with more source. → Informs the exemplars and build-time QA only. NEVER a hard runtime rule.
-- **LOW** — Fewer than 20 instances. Guidance only. → Noted for build-time awareness. Builds no wall anywhere.
+- **ABSOLUTE**: Zero-occurrence constraints. The writer NEVER does this across the entire source. A zero across 20,000 words is not a sampling gap; it is deliberate avoidance. → Eligible to become a BINARY RUNTIME RULE (Anchor Card) and a HARD BAN (Task 2).
+- **HIGH**: 100+ instances or 1000+ data points. Robust even from one source. A dominant, pervasive habit. → Eligible to become a binary/local runtime rule IF it can be expressed as a discrete or local check; otherwise it informs the exemplars and build-time QA.
+- **MEDIUM**: 20–99 instances. A real pattern, but the exact rate could shift with more source. → Informs the exemplars and build-time QA only. NEVER a hard runtime rule.
+- **LOW**: Fewer than 20 instances. Guidance only. → Noted for build-time awareness. Builds no wall anywhere.
 
 State the tier and the approximate count for every metric you report. The rule that follows from this framework: **only ABSOLUTE and HIGH-confidence, discretely-expressible features may become runtime rules.** Everything else is diagnostic.
 
@@ -126,7 +126,7 @@ Screenwriters externalize emotion. Rank these categories by density in the actio
 
 For each: QUOTE 3–4 representative lines. Note which dominates and which is nearly absent. The RANK ORDER is the durable, single-source-reliable finding (it rarely inverts) — capture it as a rule candidate.
 
-### G. CHARACTER DIALOGUE FINGERPRINT — PER MAJOR CHARACTER
+### G. CHARACTER DIALOGUE FINGERPRINT: PER MAJOR CHARACTER
 
 For EACH character who speaks more than 5 lines:
 
@@ -152,7 +152,7 @@ How does THIS writer render each emotion on the page — in action, dialogue, sc
 
 If an emotion is ABSENT from the source, say so. Absence is data, and it is single-source-reliable.
 
-### I. COLLOCATION FINGERPRINT — CHARACTERISTIC WORD PAIRS
+### I. COLLOCATION FINGERPRINT: CHARACTERISTIC WORD PAIRS
 
 Individual words can be matched by any imitator. The specific PAIRINGS cannot. These micro-signatures survive even when vocabulary is correct.
 
@@ -160,7 +160,7 @@ Individual words can be matched by any imitator. The specific PAIRINGS cannot. T
 - For each: QUOTE the source instance(s), note frequency, and name the SUBSTITUTION an AI would produce instead.
 - Group by category (physical action, environmental, dialogue-adjacent).
 
-### J. NEGATIVE SPACE MAP — WHAT THIS WRITER NEVER DOES
+### J. NEGATIVE SPACE MAP: WHAT THIS WRITER NEVER DOES
 
 This is the richest vein of ABSOLUTE-confidence rules from a single source. For each item: name the technique, confirm absence with evidence (zero instances across N words), explain why AI defaults to it.
 
@@ -172,7 +172,7 @@ Every confirmed zero is an ABSOLUTE ban. List them so Task 2 and Task 4 can harv
 
 Assess concrete physical/sensory language vs. abstract emotional/interpretive language. Screenwriting runs inherently high on SHOW, but writers vary — some stay ruthlessly external, others slip interiority into action lines. Describe THIS writer's balance and quote both a pure-show passage and (if any exist) the rare explain moments.
 
-### L. COMPARATIVE EXCLUSION — STYLISTIC NEIGHBORS
+### L. COMPARATIVE EXCLUSION: STYLISTIC NEIGHBORS
 
 Identify 2–3 screenwriters whose style most resembles this writer's. For each: name them, name the overlapping quality, and name at least 2 techniques that DIFFERENTIATE this writer from the neighbor.
 
@@ -186,16 +186,16 @@ Profile Type: SCREENWRITER / TV WRITER
 Extracted by: Lorespinner Voice Lock Phase (Deliverable 1B v3)
 Source: [N] screenplay(s), [total] words
 
-SIGNATURE TECHNIQUES: 1–12, each: [Quote] — [why specific] — Freq + CONFIDENCE
+SIGNATURE TECHNIQUES: 1–12, each: [Quote] | [why specific] | Freq + CONFIDENCE
 ACTION LINE METRICS: each metric with value + CONFIDENCE; paragraph-rhythm alternation described; 3–4 consecutive representative quotes
 DIALOGUE METRICS: each metric with CONFIDENCE; longest-speech ceiling captured; representative exchanges
 DICTION FINGERPRINT: clusters, register, overused/avoided, punctuation counts + CONFIDENCE; 5–6 quotes
 STRUCTURE METRICS: density, ratios, transitions, parenthetical vocabulary (used / never), intro pattern
 EMOTIONAL VOCAB HIERARCHY: ranked 1–6 with densities; rank-order rule stated
-CHARACTER FINGERPRINTS: per character — rhythm, tics, restrictions, pressure behavior, 3+ markers, signature line
+CHARACTER FINGERPRINTS: per character | rhythm, tics, restrictions, pressure behavior, 3+ markers, signature line
 PARENTHETICALS: used / BANNED
 EMOTIONAL RANGE: 7 emotions, each quote + technique (or ABSENT)
-COLLOCATIONS: 15–20 pairs — writer's pairing vs. banned AI substitute
+COLLOCATIONS: 15–20 pairs | writer's pairing vs. banned AI substitute
 NEGATIVE SPACE: comprehensive zero-list, each an ABSOLUTE ban
 SHOW/EXPLAIN: directional balance + quotes
 COMPARATIVE EXCLUSION: neighbors + differentiators
@@ -203,11 +203,11 @@ COMPARATIVE EXCLUSION: neighbors + differentiators
 
 ---
 
-## TASK 2 — MASTER RULE 1: HARD BAN LIST
+## TASK 2: MASTER RULE 1: HARD BAN LIST
 
 This is the immune system. Bans are the cleanest runtime tool because they are binary: a token or pattern is present or it is not. The narrator can search for and remove them. Any occurrence is a hard fail.
 
-### SECTION A: UNIVERSAL BANS (hardcoded — identical for every IP, every format)
+### SECTION A: UNIVERSAL BANS (hardcoded, identical for every IP, every format)
 
 These are the floor. They cannot be overridden by any IP-specific rule or voice profile.
 
@@ -217,20 +217,20 @@ These are the floor. They cannot be overridden by any IP-specific rule or voice 
 
 From the Voice DNA Profile, generate bans in four categories. For each: STATE the ban, CITE the Task 1 evidence (with confidence tier), and give the positive replacement. Only ABSOLUTE and HIGH-confidence findings may become hard bans; MEDIUM/LOW become build-time cautions.
 
-1. ANTI-PATTERNS — techniques this writer never uses that AI defaults to (interior monologue in action, decorative metaphor, compound 25+-word action lines, emotional parentheticals, expository dialogue, atmosphere without function)
-2. VOCABULARY THE WRITER AVOIDS — words conspicuously absent despite opportunity
-3. RHYTHM VIOLATIONS — patterns that contradict the writer's compression (expressed as a local rule wherever possible)
-4. STRUCTURAL VIOLATIONS — screenplay devices the writer never uses (WE SEE, V.O., O.S., MONTAGE, editorial transitions)
+1. ANTI-PATTERNS: techniques this writer never uses that AI defaults to (interior monologue in action, decorative metaphor, compound 25+-word action lines, emotional parentheticals, expository dialogue, atmosphere without function)
+2. VOCABULARY THE WRITER AVOIDS: words conspicuously absent despite opportunity
+3. RHYTHM VIOLATIONS: patterns that contradict the writer's compression (expressed as a local rule wherever possible)
+4. STRUCTURAL VIOLATIONS: screenplay devices the writer never uses (WE SEE, V.O., O.S., MONTAGE, editorial transitions)
 
 ```
 MASTER RULE 1: HARD BAN LIST FOR [TITLE]
 UNIVERSAL BANS: [Section A verbatim]
-IP-SPECIFIC BANS: 1..N — [BAN] | evidence + tier | INSTEAD: [replacement]   (minimum 6)
+IP-SPECIFIC BANS: 1..N | [BAN] | evidence + tier | INSTEAD: [replacement]   (minimum 6)
 ```
 
 ---
 
-## TASK 3 — THE VOICE ANCHOR (the centerpiece)
+## TASK 3: THE VOICE ANCHOR (the centerpiece)
 
 This is the output that prevents decay. Everything in Tasks 1 and 2 DESCRIBES the voice. The Voice Anchor SHOWS it — in the exact form the runtime must produce. The live narrator imitates a present example far more faithfully than it follows an abstract description, and a fixed example cannot drift. This is also where you close the screenplay-to-prose format gap: you do the hard translation ONCE, here, under full scrutiny, instead of asking the runtime to improvise it every turn.
 
@@ -280,7 +280,7 @@ USAGE LABEL (ships to runtime): "Match the rhythm, diction, and compression of t
 
 ---
 
-## TASK 4 — THE ANCHOR CARD (re-read every turn at runtime)
+## TASK 4: THE ANCHOR CARD (re-read every turn at runtime)
 
 The Voice Anchor shows the voice. The Anchor Card states the non-negotiable rules in the shortest possible form, so the runtime can re-read it every turn without burning the token budget. It is the distilled, binary/local core of Tasks 1–2.
 
@@ -301,7 +301,7 @@ THE ANCHOR CARD: [TITLE] by [WRITER]
 
 ---
 
-## TASK 5 — RUNTIME SELF-CHECK PROTOCOL
+## TASK 5: RUNTIME SELF-CHECK PROTOCOL
 
 This is the pre-delivery pass the live narrator runs on each passage BEFORE showing it to the player. It contains ONLY discrete/local checks — searches and local-pattern scans the narrator can actually perform. It deliberately contains no rate computations. It is short by design.
 
@@ -324,7 +324,7 @@ If any step triggers a fix, apply it, then deliver. Do not report the check to t
 
 ---
 
-## TASK 6 — BUILD-TIME QA PROTOCOL (never runs at runtime)
+## TASK 6: BUILD-TIME QA PROTOCOL (never runs at runtime)
 
 This is the home for everything numeric. It runs ONCE per IP, on a batch of sample outputs generated from the assembled runtime prompt, BEFORE the IP ships. It is executed by a human reviewer, a batch evaluation, or the audit linter if and when one exists — never by the live narrator.
 
@@ -364,7 +364,7 @@ The camera-to-body shift is constant: the screenplay photographs the protagonist
 
 ---
 
-## FINAL OUTPUT — VOICE LOCK PHASE COMPLETE
+## FINAL OUTPUT: VOICE LOCK PHASE COMPLETE
 
 Assemble all six tasks into one VOICE PROFILE DOCUMENT. Then produce structured JSON matching the required SCREENWRITER schema. Map sections to canonical JSON paths:
 
@@ -372,9 +372,9 @@ Assemble all six tasks into one VOICE PROFILE DOCUMENT. Then produce structured 
 - Task 1 Sections M–P + Screenplay-to-Prose Protocol → `author_voice_dna_profile` (screenwriter-only fields per 1B v2)
 - Task 2 → `master_rule_1_hard_bans`
 - Task 3 → `voice_anchor[]` (array of objects: `{mode, source, techniques, prose}`) ★ RUNTIME-CRITICAL
-- Task 4 → `anchor_card[]` (array of strings — the 8–12 binary/local commands) ★ RUNTIME-CRITICAL
-- Task 5 → `runtime_self_check[]` (array of strings — the ordered check steps) ★ RUNTIME-CRITICAL
-- Task 6 → `fourteen_point_audit_protocol` (QA protocol — does NOT ship to runtime)
+- Task 4 → `anchor_card[]` (array of strings: the 8–12 binary/local commands) ★ RUNTIME-CRITICAL
+- Task 5 → `runtime_self_check[]` (array of strings: the ordered check steps) ★ RUNTIME-CRITICAL
+- Task 6 → `fourteen_point_audit_protocol` (QA protocol: does NOT ship to runtime)
 - TOP-LEVEL `voice_decay_prevention_protocol` (NOT inside `author_voice_dna_profile`)
 - Set `profile_type` to `SCREENWRITER`
 
@@ -396,7 +396,7 @@ Then confirm:
 
 If any answer is no, revise. The writer's voice is the product. There is no "close enough."
 
-**VERIFICATION GATE — INTERNAL SELF-CHECK ONLY.** Do not include the 200-word test passage, generic comparison passage, or any verification prose in the final JSON output. Return structured JSON matching the schema only.
+**VERIFICATION GATE: INTERNAL SELF-CHECK ONLY.** Do not include the 200-word test passage, generic comparison passage, or any verification prose in the final JSON output. Return structured JSON matching the schema only.
 
 ---
 

@@ -8,7 +8,7 @@
 
     Optional variable:
         $voiceProfileLabel — string describing which sections are included,
-                             e.g. "Sections 1+2 — Voice DNA + Master Rule 1 bans"
+                             e.g. "Sections 1+2: Voice DNA + Master Rule 1 bans"
 --}}
 === VOICE PROFILE (VOICE LOCK — CONSTITUTIONAL LAW) ===
 

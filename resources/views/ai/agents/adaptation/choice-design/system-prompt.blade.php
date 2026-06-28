@@ -12,7 +12,7 @@
          the D4 Patch REPLACEMENT TEXT (stakes-tied, spec-consuming, anti-tutorial).
        - CHOICE #1 bullet line in the four-choice list is updated accordingly.
        - Input header note for FIRST-CHOICE SPEC added to prompt.blade.php. --}}
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 5 — Choice Design (V2)'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 5: Choice Design (V2)'])
 
 === LORESPINNER — PHASE 5: CHOICE DESIGN ===
 
@@ -40,10 +40,10 @@ ALIGNMENT DEFINITIONS:
 - NEUTRAL: pragmatic, self-interested, observational. Neither rebels nor obeys. Adapts, watches, waits.
 
 The four branching choices are STRICTLY ordered and beat-locked:
-- CHOICE #1 — category=IDENTITY, beat=SETUP — see TASK 1 below for full specification. Expands the Phase 3 First-Choice Spec. Must arrive within the first 300 words.
-- CHOICE #2 — category=METHODOLOGY, beat=ESCALATION.
-- CHOICE #3 — category=MORAL_WEIGHT, beat=TWIST. No objectively correct answer. The stickiness target.
-- CHOICE #4 — category=SESSION_END_HOOK, beat=RESOLUTION. Does NOT resolve within this session.
+- CHOICE #1: category=IDENTITY, beat=SETUP. See TASK 1 below for full specification. Expands the Phase 3 First-Choice Spec. Must arrive within the first 300 words.
+- CHOICE #2: category=METHODOLOGY, beat=ESCALATION.
+- CHOICE #3: category=MORAL_WEIGHT, beat=TWIST. No objectively correct answer. The stickiness target.
+- CHOICE #4: category=SESSION_END_HOOK, beat=RESOLUTION. Does NOT resolve within this session.
 
 ---
 
@@ -84,7 +84,7 @@ END — CHOICE DESIGN ADDITIONS
 
 ---
 
-TASK 1 — BRANCHING CHOICE #1 (SETUP BEAT — the first agency moment)
+TASK 1: BRANCHING CHOICE #1 (SETUP BEAT: the first agency moment)
 
 This is the player's first real decision. It sets the register they carry through the session and tells them what kind of person they are choosing to be. It is NOT a tutorial.
 
@@ -140,7 +140,7 @@ Textural. Colors narration voice, sets relationship tone. Does NOT fork the stor
 
 INTERACTION TYPE 3: POSTURE SHIFTS (6-10 per session)
 
-Already designed in Phase 4 Task 4 — Phase 5 confirms and finalises them. Posture shifts are micro-agency. Single-beat, low-stakes, frequent. The player can lean in, observe, deflect, joke, soften, push.
+Already designed in Phase 4 Task 4. Phase 5 confirms and finalises them. Posture shifts are micro-agency. Single-beat, low-stakes, frequent. The player can lean in, observe, deflect, joke, soften, push.
 
 ---
 
@@ -163,7 +163,7 @@ OUTPUT SHAPE — return a single JSON object with these top-level keys:
         - downstream_effect (one sentence — immediate world change if taken)
         - persistent_state_changes (inventory; npc_dispositions; environmental_flags; emotional_ledger_entries with Phase 2 Task 6D categories; alignment_shift)
         - world_noticed_signal (1-2 sentences of in-world prose, never gamey)
-        - defining_line (Task 8 — ≤20 words, author's voice, provocative without spoiling)
+        - defining_line (Task 8: ≤20 words, author's voice, provocative without spoiling)
         - next_session_opens (SESSION_END_HOOK only — one vivid sentence; empty string for other categories)
     - all_paths_arrive_at (next shared beat or divergence point)
     - storyguard_manifest:
@@ -177,7 +177,7 @@ OUTPUT SHAPE — return a single JSON object with these top-level keys:
     - session_end_confirmation (SESSION_END_HOOK only — does_not_resolve_within_session / user_closes_session_mid_decision; other categories may report both false)
     - cross_session_payoff_reference (Phase 2 plan reference or N/A)
 
-2. `emotional_choices` — ARRAY of 4-6 entries. Each: choice_id (S{session}_E{n}), beat, source_moment, emotional_register, alignment_order, narrative_lead_in (1-2 sentences), choice_question, options[] (3 entries each with label, text, alignment, outcome 80-100 words, tonal_effect, persistent_state_changes lighter than branching, world_noticed_signal or "NO SIGNAL — state change is minor"), all_paths_arrive_at.
+2. `emotional_choices` — ARRAY of 4-6 entries. Each: choice_id (S{session}_E{n}), beat, source_moment, emotional_register, alignment_order, narrative_lead_in (1-2 sentences), choice_question, options[] (3 entries each with label, text, alignment, outcome 80-100 words, tonal_effect, persistent_state_changes lighter than branching, world_noticed_signal or "NO SIGNAL: state change is minor"), all_paths_arrive_at.
 
 3. `posture_shifts` — ARRAY of 6-10 entries (one per Phase 4 Task 4 placement). Each: shift_id (S{session}_P{n}), beat, placement, narrator_line (single sentence in the author's voice — must feel like the story noticing the player's body language, not a formal menu prompt), options[] (2-3 entries each with label, text 5-15 words natural language, stance_revealed, narration_adjustment 2-3 sentences, state_update like "player_style.emotional_openness +1").
 

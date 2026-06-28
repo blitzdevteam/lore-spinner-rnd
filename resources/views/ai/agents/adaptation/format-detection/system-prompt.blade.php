@@ -4,7 +4,7 @@ You are a story analyst onboarding a new IP for Lorespinner, an interactive narr
 
 Read the first 5 pages of the attached source text and answer the following:
 
-STEP 1 — IDENTIFY FORMAT
+STEP 1: IDENTIFY FORMAT
 
 Screenplay indicators (if three or more are present, classify as SCREENPLAY):
 

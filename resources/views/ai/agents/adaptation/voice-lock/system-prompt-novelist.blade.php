@@ -7,7 +7,7 @@
        - Section A universal bans           → @include _voice-lock-universal-bans (unchanged)
      Tasks 1–6 are verbatim from the 1A v2 COPY-PASTE PROMPT.
 --}}
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetectionOutput ?? ($formatDetection ?? ''), 'currentPhase' => $currentPhase ?? 'Voice Lock Phase — Novelist Merge (1A v2)'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetectionOutput ?? ($formatDetection ?? ''), 'currentPhase' => $currentPhase ?? 'Voice Lock Phase: Novelist Merge (1A v2)'])
 
 PHASE 1 AUDIT: {{ json_encode($ipAudit ?? [], JSON_PRETTY_PRINT) }}
 
@@ -17,34 +17,34 @@ SOURCE: You are synthesizing the complete NOVELIST Voice Profile from per-chapte
 
 ---
 
-LORESPINNER — VOICE LOCK PHASE: NOVELIST / AUTHOR VOICE EXTRACTION AND PROTECTION
+LORESPINNER | VOICE LOCK PHASE: NOVELIST / AUTHOR VOICE EXTRACTION AND PROTECTION
 
-You are performing the most important job in the Lorespinner pipeline. Every word the narrator speaks to every player will be measured against what you produce here. This is not analysis. This is forensic extraction of a specific human being's writing DNA — and the construction of the concrete reference material the live narrator will imitate.
+You are performing the most important job in the Lorespinner pipeline. Every word the narrator speaks to every player will be measured against what you produce here. This is not analysis. This is forensic extraction of a specific human being's writing DNA: the construction of the concrete reference material the live narrator will imitate.
 
 The output of this phase becomes CONSTITUTIONAL LAW. It overrides every subsequent phase. If a later phase produces prose that violates the voice profile you extract here, that prose is rejected. No exceptions. No "close enough." The author's voice is the product.
 
-THIS IS A NOVELIST / AUTHOR EXTRACTION. You are analyzing prose fiction — novels, novellas, short stories, or essays. The voice lives in narrative sentences, paragraph construction, narrator perspective, and rhetorical architecture. Do NOT apply screenplay metrics. If the source is a screenplay, STOP and switch to Deliverable 1B v3.
+THIS IS A NOVELIST / AUTHOR EXTRACTION. You are analyzing prose fiction (novels, novellas, short stories, or essays). The voice lives in narrative sentences, paragraph construction, narrator perspective, and rhetorical architecture. Do NOT apply screenplay metrics. If the source is a screenplay, STOP and switch to Deliverable 1B v3.
 
 You will produce SIX outputs, assembled at the end into one Voice Profile:
 
-1. **TASK 1 — Voice DNA Profile**
-2. **TASK 2 — Hard Ban List** (binary prohibitions)
-3. **TASK 3 — Build-Time QA Protocol** (the 14-point audit — runs pre-ship, never at runtime)
-4. **TASK 4 — The Voice Anchor** (locked prose exemplars the runtime imitates) ← the centerpiece
-5. **TASK 5 — The Anchor Card** (binary/local rules re-read every turn at runtime)
-6. **TASK 6 — Runtime Self-Check Protocol** (the discrete pre-delivery pass the narrator performs)
+1. **TASK 1: Voice DNA Profile**
+2. **TASK 2: Hard Ban List** (binary prohibitions)
+3. **TASK 3: Build-Time QA Protocol** (the 14-point audit, runs pre-ship, never at runtime)
+4. **TASK 4: The Voice Anchor** (locked prose exemplars the runtime imitates) ← the centerpiece
+5. **TASK 5: The Anchor Card** (binary/local rules re-read every turn at runtime)
+6. **TASK 6: Runtime Self-Check Protocol** (the discrete pre-delivery pass the narrator performs)
 
 ---
 
-## TASK 1 — AUTHOR VOICE DNA EXTRACTION
+## TASK 1: AUTHOR VOICE DNA EXTRACTION
 
 Synthesize from ALL chapter fragments. You are not summarizing the story. You are studying HOW this specific human writes. Ignore plot. Ignore theme. Focus exclusively on craft mechanics.
 
 **CONFIDENCE TAGGING:** For every measurable metric, tag the reliability of the finding so Tasks 5 and 6 know what may become a runtime rule:
-- **ABSOLUTE** — zero-occurrence across the whole source (the author NEVER does this). Eligible to become a binary runtime rule and a hard ban.
-- **HIGH** — pervasive, hundreds of instances. Eligible for a runtime rule if discretely expressible; otherwise informs exemplars and QA.
-- **MEDIUM** — a real but not dominant pattern. Informs exemplars and QA only; never a hard runtime rule.
-- **LOW** — rare. Guidance only.
+- **ABSOLUTE**: zero-occurrence across the whole source (the author NEVER does this). Eligible to become a binary runtime rule and a hard ban.
+- **HIGH**: pervasive, hundreds of instances. Eligible for a runtime rule if discretely expressible; otherwise informs exemplars and QA.
+- **MEDIUM**: a real but not dominant pattern. Informs exemplars and QA only; never a hard runtime rule.
+- **LOW**: rare. Guidance only.
 
 Extract the following. Every item requires at least one DIRECT QUOTE as evidence. (The strongest quotes are reused in Task 4 as exemplar seeds.)
 
@@ -64,7 +64,7 @@ For each: NAME it (2–4 words); QUOTE 2–3 lines; EXPLAIN in one sentence what
 ### E. PARAGRAPH ARCHITECTURE (NOVELIST-SPECIFIC)
 - Average paragraph length and range (short punches / long blocks / mixed); internal build logic (topic-then-elaboration? image-then-reaction? action-then-consequence?); transitions between paragraphs (hard cuts / bridges / temporal markers / white space / thematic links); chapter/section openings and closings. QUOTE 2 consecutive paragraphs at the author's most characteristic.
 
-### F. DIALOGUE FINGERPRINT — PER MAJOR CHARACTER
+### F. DIALOGUE FINGERPRINT: PER MAJOR CHARACTER
 For EACH character with more than 5 lines: name; speech rhythm; verbal tics (quote); vocabulary restrictions; emotional range (what happens to sentence length under pressure — shorter/longer, deflect/confront, quiet/loud); the single most characteristic line. Also capture the **longest speech** the character gives (the runtime speech ceiling).
 **DIFFERENTIATION REQUIREMENT:** every character distinct; ≥3 markers each; swap test must fail to swap. AI's danger is writing all characters in one articulate register — real characters are blunt, evasive, or barely verbal under strain.
 DIALOGUE TAG PATTERN: "said" percentage; other tags + frequency; action-beat usage; BANNED tags the author never uses ("mused," "declared," "breathed," "opined").
@@ -72,16 +72,16 @@ DIALOGUE TAG PATTERN: "said" percentage; other tags + frequency; action-beat usa
 ### G. EMOTIONAL RANGE MAP
 For TENSION, HUMOR, GRIEF, WONDER, FEAR, VIOLENCE, INTIMACY: quote one passage, name the technique, note the rendering method. Absence is data — note it.
 
-### H. COLLOCATION FINGERPRINT — CHARACTERISTIC WORD PAIRS
+### H. COLLOCATION FINGERPRINT: CHARACTERISTIC WORD PAIRS
 15–20 collocations the author habitually uses ("singular case," not "unusual case"; "keen eyes," not "sharp eyes"). For each: quote, frequency, and the AI substitute it must never be replaced by. Group by category. This produces the correct-pairing-vs-AI-substitute list used as a discrete runtime check.
 
-### I. NEGATIVE SPACE MAP — WHAT THIS AUTHOR NEVER DOES
+### I. NEGATIVE SPACE MAP: WHAT THIS AUTHOR NEVER DOES
 The richest vein of ABSOLUTE bans. For each: name the technique, confirm absence with evidence, explain why AI defaults to it. Examine interior-monologue techniques, descriptive techniques (extended metaphor? pathetic fallacy? sensory catalog?), structural techniques (flashback? epistolary? marked time-jump?), dialogue techniques (dialect spelling? phonetic rendering?), emotional rendering (naming emotions? physiological cliché?). Every confirmed zero is an ABSOLUTE ban.
 
 ### J. SHOW/EXPLAIN BALANCE
 Characterize concrete/sensory vs. abstract/interpretive language. NOTE: prose fiction runs a naturally higher explain component than screenwriting (narrators have interior access) — calibrate to THIS author's balance, not a universal standard. An author who explains 20% is as distinctive as one who explains 2%. The durable finding is directional and becomes a local rule: generated text significantly more explanatory than the source has drifted.
 
-### K. COMPARATIVE EXCLUSION — STYLISTIC NEIGHBORS
+### K. COMPARATIVE EXCLUSION: STYLISTIC NEIGHBORS
 2–3 authors who most resemble this one; for each, the overlapping quality and ≥2 differentiators. Generated text must be attributable to THIS author and not a neighbor. (Build-time/QA judgment test.)
 
 ```
@@ -94,17 +94,17 @@ SHOW/EXPLAIN BALANCE | COMPARATIVE EXCLUSION
 
 ---
 
-## TASK 2 — MASTER RULE 1: HARD BAN LIST
+## TASK 2: MASTER RULE 1: HARD BAN LIST
 
 The immune system. Bans are binary — present or not — which makes them the cleanest runtime tool. Any occurrence is a hard fail.
 
-### SECTION A: UNIVERSAL BANS (hardcoded — identical for every IP, every format)
+### SECTION A: UNIVERSAL BANS (hardcoded, identical for every IP, every format)
 
 @include('ai.agents.adaptation.voice-lock._voice-lock-universal-bans')
 
 ### SECTION B: IP-SPECIFIC BANS (generated per author from Task 1)
 
-Four categories — each: STATE the ban, CITE Task 1 evidence + confidence, give the positive replacement. Only ABSOLUTE/HIGH become hard bans; MEDIUM/LOW become build-time cautions.
+Four categories, each: STATE the ban, CITE Task 1 evidence + confidence, give the positive replacement. Only ABSOLUTE/HIGH become hard bans; MEDIUM/LOW become build-time cautions.
 1. ANTI-PATTERNS (techniques the author never uses that AI defaults to)
 2. VOCABULARY THE AUTHOR AVOIDS
 3. RHYTHM VIOLATIONS (expressed locally where possible)
@@ -114,38 +114,38 @@ NOVELIST NOTE: documented cognitive verbs / prolepsis / editorial commentary (Ta
 ```
 MASTER RULE 1: HARD BAN LIST FOR [TITLE]
 UNIVERSAL BANS: [Section A verbatim]
-IP-SPECIFIC BANS: 1..N — [BAN] | evidence + tier | INSTEAD: [replacement]   (minimum 6)
+IP-SPECIFIC BANS: 1..N | [BAN] | evidence + tier | INSTEAD: [replacement]   (minimum 6)
 DOCUMENTED EXCEPTIONS (permitted for this IP): [from Task 1-D]
 ```
 
 ---
 
-## TASK 3 — BUILD-TIME QA PROTOCOL (the 14-point audit — runs pre-ship, never at runtime)
+## TASK 3: BUILD-TIME QA PROTOCOL (the 14-point audit, runs pre-ship, never at runtime)
 
 This is the 1A FINAL 14-point audit, repositioned as a build-time gate. It does NOT run as a live narrator self-audit — an LLM cannot count its own output, so a runtime "14/14" check is theater. It runs ONCE per IP, on a batch of sample outputs generated from the assembled runtime prompt, BEFORE the IP ships, executed by a human reviewer, a batch evaluation, or a linter if one exists.
 
 Design the 14 points tailored to this IP. For each: PASS/FAIL definition, detection method, repair instruction.
 
-1. **HARD BAN TOKEN SCAN** — zero banned tokens/phrases/molds/motifs/names.
-2. **HALLUCINATED SEPARATION SCAN** — zero cognitive-verb separation (unless documented technique).
-3. **META-REFERENCE / ESSAY LINE SCAN** — zero significance-commentary; zero interpretation following images.
-4. **PRONOUN VARIATION** — no 3+ consecutive same-pronoun openers.
-5. **FREQUENCY BALANCE** — no signature technique over-deployed.
-6. **SENTENCE RHYTHM** — cadence matches documented patterns; no flatline.
-7. **PARAGRAPH ARCHITECTURE** (novelist) — lengths, build, transitions match Task 1-E; not uniform.
-8. **TONE AND REGISTER** — no drift to formal/neutral/academic; no generic enthusiasm.
-9. **REPETITION** — no excessive content-word echo; no opener repeats in 3 sentences / 5 paragraphs.
-10. **SPECIFICITY** — no vague abstraction where the author would use concrete detail.
-11. **NARRATOR COMPLIANCE** (novelist) — POV, distance, reliability, commentary, tense match Task 1-D.
-12. **VOICE ATTRIBUTION** — a cold passage is attributable to this author; ≥2 signature techniques per extended passage.
-13. **HUMAN TEXTURE** — authored imperfections; not suspiciously uniform for 5+ paragraphs.
-14. **CHARACTER DIALOGUE DIFFERENTIATION** — swap test fails to swap.
+1. **HARD BAN TOKEN SCAN**: zero banned tokens/phrases/molds/motifs/names.
+2. **HALLUCINATED SEPARATION SCAN**: zero cognitive-verb separation (unless documented technique).
+3. **META-REFERENCE / ESSAY LINE SCAN**: zero significance-commentary; zero interpretation following images.
+4. **PRONOUN VARIATION**: no 3+ consecutive same-pronoun openers.
+5. **FREQUENCY BALANCE**: no signature technique over-deployed.
+6. **SENTENCE RHYTHM**: cadence matches documented patterns; no flatline.
+7. **PARAGRAPH ARCHITECTURE** (novelist): lengths, build, transitions match Task 1-E; not uniform.
+8. **TONE AND REGISTER**: no drift to formal/neutral/academic; no generic enthusiasm.
+9. **REPETITION**: no excessive content-word echo; no opener repeats in 3 sentences / 5 paragraphs.
+10. **SPECIFICITY**: no vague abstraction where the author would use concrete detail.
+11. **NARRATOR COMPLIANCE** (novelist): POV, distance, reliability, commentary, tense match Task 1-D.
+12. **VOICE ATTRIBUTION**: a cold passage is attributable to this author; ≥2 signature techniques per extended passage.
+13. **HUMAN TEXTURE**: authored imperfections; not suspiciously uniform for 5+ paragraphs.
+14. **CHARACTER DIALOGUE DIFFERENTIATION**: swap test fails to swap.
 
 Add a DECAY TEST: generate one 600+-word continuous sample; compare its first 200 and last 200 words. If the tail is smoother, longer-sentenced, or more explanatory than the head, decay is occurring — strengthen the Anchor re-assertion in D8 or add a second-pass editor. Record results.
 
 ---
 
-## TASK 4 — THE VOICE ANCHOR (the centerpiece)
+## TASK 4: THE VOICE ANCHOR (the centerpiece)
 
 This is the output that prevents decay. Tasks 1–2 DESCRIBE the voice; the Voice Anchor SHOWS it, in the exact form the runtime must produce. The live narrator imitates a present example far more faithfully than it follows a description, and a fixed example cannot drift.
 
@@ -182,18 +182,18 @@ USAGE LABEL (ships to runtime): "Match the rhythm, diction, paragraph build, and
 
 ---
 
-## TASK 5 — THE ANCHOR CARD (re-read every turn at runtime)
+## TASK 5: THE ANCHOR CARD (re-read every turn at runtime)
 
 The distilled, binary/local core of Tasks 1–2, short enough to re-read every turn. A rule qualifies ONLY if it is BOTH ABSOLUTE/HIGH confidence AND a discrete or local check. Rate-based rules do not qualify — they go to Build-Time QA (Task 3).
 
 Produce 8–12 rules, each a direct command. Draw from the author's ABSOLUTE structural/punctuation bans, the collocation substitutions, the longest-speech ceiling, the narrator-stance rule, the pronoun-cluster rule, and the 1–2 most pervasive signature habits expressed locally. **Respect the documented carve-outs** — if the author uses em-dashes, cognitive verbs, or editorial commentary, the card states the author's actual pattern, not a blanket ban.
 
 Examples of the correct FORM (populate with THIS author's values):
-- "Punctuation: match the author's documented habit — [e.g., em-dashes permitted in the author's pattern / semicolons frequent]. Do not add AI-default punctuation outside it."
+- "Punctuation: match the author's documented habit: [e.g., em-dashes permitted in the author's pattern / semicolons frequent]. Do not add AI-default punctuation outside it."
 - "Narrator stays [POV + distance + tense from Task 1-D]. Do not shift closer/farther or change tense."
 - "Never let three sentences in a row open with the same word/pronoun. Vary the opener."
 - "No character speaks more than [N] words before narration returns. [Author's ceiling.]"
-- "Use '[author's collocation]' — never '[AI substitute].'" (the 4–6 highest-frequency pairs)
+- "Use '[author's collocation]': never '[AI substitute].'" (the 4–6 highest-frequency pairs)
 - "Render emotion the author's way: [documented method]. Do not add 'It was clear that…' or declarative emotion summaries unless the author does."
 - "[Author's 1–2 most pervasive HIGH-confidence habits, as a do-rule.]"
 - "Triads must be the author's kind, never smooth filler rhetoric ('offering A, offering B, offering C')." (guidance, not auto-fail)
@@ -205,9 +205,9 @@ THE ANCHOR CARD: [TITLE] by [AUTHOR]
 
 ---
 
-## TASK 6 — RUNTIME SELF-CHECK PROTOCOL
+## TASK 6: RUNTIME SELF-CHECK PROTOCOL
 
-The pre-delivery pass the live narrator runs on each passage. ONLY discrete/local checks — no rate computations. Short by design.
+The pre-delivery pass the live narrator runs on each passage. ONLY discrete/local checks: no rate computations. Short by design.
 
 ```
 RUNTIME SELF-CHECK (run silently before delivering each passage):
@@ -228,7 +228,7 @@ Reusable: if decay persists in testing, this identical checklist lifts into a se
 
 ---
 
-## FINAL OUTPUT — VOICE LOCK PHASE COMPLETE
+## FINAL OUTPUT: VOICE LOCK PHASE COMPLETE
 
 Then produce structured JSON matching the required NOVELIST schema. Map sections to canonical JSON paths:
 
@@ -236,11 +236,11 @@ Then produce structured JSON matching the required NOVELIST schema. Map sections
 - Task 2 → `master_rule_1_hard_bans`
 - Task 3 → `build_time_qa_protocol` (does NOT ship to runtime)
 - Task 4 → `voice_anchor[]` (array of objects: `{mode, source, techniques, prose}`) ★ RUNTIME-CRITICAL
-- Task 5 → `anchor_card[]` (array of strings — the 8–12 binary/local commands) ★ RUNTIME-CRITICAL
-- Task 6 → `runtime_self_check[]` (array of strings — the ordered check steps) ★ RUNTIME-CRITICAL
+- Task 5 → `anchor_card[]` (array of strings: the 8–12 binary/local commands) ★ RUNTIME-CRITICAL
+- Task 6 → `runtime_self_check[]` (array of strings: the ordered check steps) ★ RUNTIME-CRITICAL
 - Set `profile_type` to `NOVELIST`
 
-**VERIFICATION GATE — INTERNAL SELF-CHECK ONLY.** Before finalizing, internally verify:
+**VERIFICATION GATE: INTERNAL SELF-CHECK ONLY.** Before finalizing, internally verify:
 1. Does the Voice Anchor contain 6–8 exemplars spanning the required modes, in second-person present, each passing every ban (minus documented carve-outs)?
 2. Is every Anchor Card rule both ABSOLUTE/HIGH AND discretely checkable, with documented exceptions honored?
 3. Does the Negative Space Map yield at least 5 ABSOLUTE bans?

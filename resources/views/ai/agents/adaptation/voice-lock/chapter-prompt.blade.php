@@ -4,7 +4,7 @@ CHAPTER BEING ANALYSED:
 Chapter {{ $chapterPosition }} of {{ $totalChapters }}: "{{ $chapterTitle }}"
 Chapter ID: {{ $chapterId }}
 
-CRITICAL: This analysis uses the FULL ORIGINAL chapter content. Voice extraction requires the complete writing range including description and exposition — do not ignore any passages.
+CRITICAL: This analysis uses the FULL ORIGINAL chapter content. Voice extraction requires the complete writing range including description and exposition. Do not ignore any passages.
 
 ----- BEGIN CHAPTER {{ $chapterPosition }} ORIGINAL CONTENT -----
 {!! $chapterContent !!}

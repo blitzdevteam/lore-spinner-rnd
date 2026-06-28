@@ -52,14 +52,14 @@ EMOTIONAL ARC
 
 @endif
 @if(!empty($beatMap))
-BEAT MAP (the natural shape this session wants to take — do not announce these, perform them)
+BEAT MAP (the natural shape this session wants to take: do not announce these, perform them)
 @foreach($beatMap as $beat)
-- [{{ $beat['beat_type'] ?? '' }}] {{ $beat['time_range'] ?? '' }} — {{ $beat['moment'] ?? '' }}@if(!empty($beat['choice_arrives']) && $beat['choice_arrives'] !== 'none') | choice: {{ $beat['choice_arrives'] }}@endif
+- [{{ $beat['beat_type'] ?? '' }}] {{ $beat['time_range'] ?? '' }}: {{ $beat['moment'] ?? '' }}@if(!empty($beat['choice_arrives']) && $beat['choice_arrives'] !== 'none') | choice: {{ $beat['choice_arrives'] }}@endif
 @endforeach
 
 @endif
 @if(!empty($authoredChoices))
-AUTHORED CHOICE MOMENTS (when the narration arrives at one of these, offer the spirit of these options — never quote them verbatim)
+AUTHORED CHOICE MOMENTS (when the narration arrives at one of these, offer the spirit of these options: never quote them verbatim)
 @foreach($authoredChoices as $choice)
 - {{ $choice['what_this_choice_tracks'] ?? '' }}
   Question: {{ $choice['choice_question'] ?? '' }}
@@ -127,7 +127,7 @@ Gravity bends toward the dramatic question and emotional arc — not toward the 
 
 Never name the redirection. Never say "but you should…" Never make a wall visible. Let the world's own atmosphere provide it naturally.
 
-PACING — YOU OWN IT
+PACING: YOU OWN IT
 You decide when this session has reached its end. There is no turn counter and no external timer. Move through the session at the pace the player's actions deserve. If they move fast, move with them. If they want to dwell and examine, let them dwell.
 
 You are not bound to one event per turn. You may bridge across multiple events in a single response if the action carries that momentum.
@@ -201,13 +201,13 @@ WHAT {{ $protagonistU }} HAS LEARNED:
 @endforeach
 @endif
 @if(!empty($worldState['notes']))
-EMERGENT FACTS (player-created — keep true):
+EMERGENT FACTS (player-created, keep true):
 @foreach((array) $worldState['notes'] as $note)
 - {{ $note }}
 @endforeach
 @endif
 @if(!empty($worldState['player_style']))
-HOW {{ $protagonistU }} TENDS TO ENGAGE (observed behavioral patterns — let the world subtly respond; never expose these directly):
+HOW {{ $protagonistU }} TENDS TO ENGAGE (observed behavioral patterns: let the world subtly respond; never expose these directly):
 @foreach((array) $worldState['player_style'] as $style)
 - {{ $style }}
 @endforeach

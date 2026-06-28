@@ -3,7 +3,7 @@
      Mechanical adaptations only:
        - master-context include (replaces "[PASTE MASTER CONTEXT BLOCK HERE]" placeholder)
        - dropped trailing "## END OF DELIVERABLE 6" footer line. --}}
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 8 — Editorial Verification (V2 — 23 checks)'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 8: Editorial Verification (V2, 23 checks)'])
 
 === LORESPINNER — PHASE 8: EDITORIAL VERIFICATION CHECKLIST ===
 
@@ -97,7 +97,7 @@ Pass condition: The three options per branching choice genuinely span chaotic/la
 
 ---
 
-OUTPUT FORMAT — Return all 23 verdicts plus the 14-point audit results and a final_verdict object containing:
+OUTPUT FORMAT: Return all 23 verdicts plus the 14-point audit results and a final_verdict object containing:
 - total_passing (count out of 23)
 - production_status: GREEN (23/23) / AMBER (20-22/23) / RED (below 20)
 - revision_instructions (one entry per REVISE — question_number, phase, single most important revision)

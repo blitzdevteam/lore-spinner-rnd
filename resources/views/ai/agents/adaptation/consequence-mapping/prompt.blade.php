@@ -1,9 +1,9 @@
 @include('ai.agents.adaptation._voice-profile-context', [
     'voiceProfile' => $voiceProfile,
-    'voiceProfileLabel' => 'Sections 1+2 — Voice DNA + Master Rule 1 bans (narrative_execution instructions must be written in the author\'s voice, not generic game prose)',
+    'voiceProfileLabel' => 'Sections 1+2: Voice DNA + Master Rule 1 bans (narrative_execution instructions must be written in the author\'s voice, not generic game prose)',
 ])
 
-PHASE 5 CHOICE DESIGNS — ALL FOUR BRANCHING CHOICES:
+PHASE 5 CHOICE DESIGNS: ALL FOUR BRANCHING CHOICES:
 {{ json_encode($branchingChoices, JSON_PRETTY_PRINT) }}
 
 PHASE 2 PERSISTENT STATE SCHEMA (named NPCs, world flags, archive categories you must reference verbatim):

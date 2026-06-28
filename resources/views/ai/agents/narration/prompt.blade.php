@@ -16,7 +16,7 @@ This is the OPENING of the event. Narrate the scene cinematically and present th
 @endif
 @if(!empty($deterministicMatch))
 
-DETERMINISTIC AUTHORED-CHOICE MATCH: option {{ $deterministicMatch['option'] }}@if(!empty($deterministicMatch['choice_id'])) (choice_id: {{ $deterministicMatch['choice_id'] }})@endif — "{{ $deterministicMatch['text'] }}"
+DETERMINISTIC AUTHORED-CHOICE MATCH: option {{ $deterministicMatch['option'] }}@if(!empty($deterministicMatch['choice_id'])) (choice_id: {{ $deterministicMatch['choice_id'] }})@endif | "{{ $deterministicMatch['text'] }}"
 The runtime has high-confidence matched the player's input to this authored branching option. You MUST set:
 - input_classification = "authored_choice"
 - mapped_option = "{{ $deterministicMatch['option'] }}"

@@ -1,4 +1,4 @@
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => '', 'currentPhase' => 'Pre-Phase — IP Trimming Agent (Per-Chapter Pass)'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => '', 'currentPhase' => 'Pre-Phase: IP Trimming Agent (Per-Chapter Pass)'])
 
 === IP TRIMMING AGENT: PER-CHAPTER SOURCE OPTIMIZATION ===
 
@@ -15,7 +15,7 @@ IMPORTANT CONSTRAINTS:
 
 ---
 
-TASK 1 — STORY SPINE FRAGMENT (THIS CHAPTER ONLY)
+TASK 1: STORY SPINE FRAGMENT (THIS CHAPTER ONLY)
 
 From this chapter's content, extract:
 - Any MAJOR TURNING POINTS that occur in this chapter (moments where the story's direction fundamentally shifts).
@@ -28,7 +28,7 @@ If an element is not present in this chapter, return an empty string or empty ar
 
 ---
 
-TASK 2 — WORLD RULES FRAGMENT (THIS CHAPTER ONLY)
+TASK 2: WORLD RULES FRAGMENT (THIS CHAPTER ONLY)
 
 Extract every rule about what CAN and CANNOT exist in this world that is established or confirmed in THIS CHAPTER's text. Include:
 - Physics/technology rules
@@ -41,7 +41,7 @@ Only report rules with direct evidence from this chapter's text.
 
 ---
 
-TASK 3 — CONTENT TRIAGE (THIS CHAPTER ONLY)
+TASK 3: CONTENT TRIAGE (THIS CHAPTER ONLY)
 
 For every scene, passage, or sequence in this chapter, classify it as:
 
@@ -53,16 +53,16 @@ Every section of this chapter must be classified. No section may be skipped.
 
 ---
 
-TASK 4 — INTERACTIVE CONVERSION NOTES (THIS CHAPTER ONLY)
+TASK 4: INTERACTIVE CONVERSION NOTES (THIS CHAPTER ONLY)
 
 For every TRIM entry from Task 3, provide a conversion note explaining how this content should appear in the interactive version (EXPLORABLE ENVIRONMENT / NPC DIALOGUE / DISCOVERABLE LORE / WORLD-EXPLORATION REWARD / EMOTIONAL DISCOVERY).
 
 ---
 
-TASK 5 — TRIMMED CHAPTER TEXT
+TASK 5: TRIMMED CHAPTER TEXT
 
 Produce the trimmed text for this chapter:
 - Include ALL preserved content in original order.
-- At each trim point, insert a TRIM MARKER: [TRIMMED: N words of [type] — See Conversion Notes, [reference].]
+- At each trim point, insert a TRIM MARKER: [TRIMMED: N words of [type]. See Conversion Notes, [reference].]
 - Preserve all original formatting, dialogue attribution, and paragraph structure.
 - Do NOT rewrite, paraphrase, or "improve" preserved content. The author's exact words stay.

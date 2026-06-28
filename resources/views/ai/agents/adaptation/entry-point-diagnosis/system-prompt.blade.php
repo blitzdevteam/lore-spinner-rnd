@@ -5,7 +5,7 @@
          SOURCE PAGES, PROTAGONIST, FORMAT, EVENT LIST) → prompt.blade.php
      Task 1–6 instruction prose is verbatim from Deliverable 10 COPY-PASTE PROMPT.
 --}}
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 3 — Cold Open & First Agency Design (D10)'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 3: Cold Open & First Agency Design (D10)'])
 
 ---
 
@@ -15,7 +15,7 @@ You are writing in the author's voice. Before you begin, study the VOICE ANCHOR 
 
 ---
 
-## TASK 1 — SELECT THE STRONGEST ENTRY POINT
+## TASK 1: SELECT THE STRONGEST ENTRY POINT
 
 The entry point is the moment where playable pressure begins. It is a cut, but it is not automatically a forward cut.
 
@@ -96,11 +96,11 @@ ENTRY-POINT RUBRIC (among moments that PASS the gate, the strongest entry maximi
 
 Evaluate candidate moments from the allocated source against this rubric. Score each candidate; pick the highest.
 
-1. **Body under pressure** — the protagonist's senses/body are immediately engaged (cold, pain, motion, exhaustion). Can the player FEEL something in the first two sentences?
-2. **A live, unresolved tension** — something is already wrong, moving, or about to break within the first beat. Not setup. Pressure.
-3. **The protagonist's own threshold** — THEY are about to cross a line they cannot uncross (a door only they can open, a send button under their hand, an assignment they must take or refuse). The threshold must be the protagonist's to cross — not the world's to cross around them. A world-event the player merely witnesses does NOT count here.
-4. **Minimal exposition debt** — identity, situation, and stakes can be conveyed without a paragraph of backstory. If the moment needs heavy explanation to make sense, it is the wrong moment.
-5. **Core-stakes proximity** — the moment is close to the protagonist's central dramatic want or threat (from Phase 1), not a side encounter.
+1. **Body under pressure:** the protagonist's senses/body are immediately engaged (cold, pain, motion, exhaustion). Can the player FEEL something in the first two sentences?
+2. **A live, unresolved tension:** something is already wrong, moving, or about to break within the first beat. Not setup. Pressure.
+3. **The protagonist's own threshold:** THEY are about to cross a line they cannot uncross (a door only they can open, a send button under their hand, an assignment they must take or refuse). The threshold must be the protagonist's to cross, not the world's to cross around them. A world-event the player merely witnesses does NOT count here.
+4. **Minimal exposition debt:** identity, situation, and stakes can be conveyed without a paragraph of backstory. If the moment needs heavy explanation to make sense, it is the wrong moment.
+5. **Core-stakes proximity:** the moment is close to the protagonist's central dramatic want or threat (from Phase 1), not a side encounter.
 
 Selection rule:
 
@@ -113,17 +113,17 @@ The cold open, `start_event_position`, and `first_choice_spec` must all come fro
 OUTPUT:
 ```
 CANDIDATES CONSIDERED: [list the 2-4 moments evaluated]
-AGENCY GATE: [for each candidate — PASS (protagonist present + can act) / DISQUALIFIED (absent or spectator) + one-line reason]
-ENTRY POINT: [the chosen source moment — must be a gate-PASS]
-WHY (rubric scores, gate-passers only): body, tension, the protagonist's-own-threshold, exposition debt, core-stakes proximity — one line each
+AGENCY GATE: [for each candidate: PASS (protagonist present + can act) / DISQUALIFIED (absent or spectator) + one-line reason]
+ENTRY POINT: [the chosen source moment: must be a gate-PASS]
+WHY (rubric scores, gate-passers only): body, tension, the protagonist's-own-threshold, exposition debt, core-stakes proximity: one line each
 WHAT IS NOT CUT: [confirm the chosen entry does not skip the identity-through-action grounding or the protagonist's first agency moment]
-ENTRY-POINT ADJUSTMENT: [literal opening kept / earliest available session moment / moved forward to: ___ — and why it still passes the gate and cuts nothing essential]
+ENTRY-POINT ADJUSTMENT: [literal opening kept / earliest available session moment / moved forward to: ___ | why it still passes the gate and cuts nothing essential]
 CUT POINT: [where the cold open ends and hands to the Phase 4 SETUP beat]
 ```
 
 ---
 
-## TASK 2 — EARN THE PROTAGONIST INTRODUCTION
+## TASK 2: EARN THE PROTAGONIST INTRODUCTION
 
 The player must learn WHO they are without being told like a database record. The banned anti-pattern is the résumé dump:
 
@@ -145,7 +145,7 @@ RÉSUMÉ-DUMP CHECK: [confirm no stacked-label exposition; if backstory is essen
 
 ---
 
-## TASK 3 — ESTABLISH SITUATION, STAKES, AND WORLD (ECONOMY)
+## TASK 3: ESTABLISH SITUATION, STAKES, AND WORLD (ECONOMY)
 
 In minimal words, the player must grasp: where/when they are, what is pressing right now, the one or two world rules that matter in this moment, and what is at stake. Everything load-bearing; nothing decorative.
 
@@ -163,7 +163,7 @@ DEFERRED: [what is intentionally withheld for later beats]
 
 ---
 
-## TASK 4 — DESIGN THE FIRST AGENCY MOMENT (powerful, stakes-tied)
+## TASK 4: DESIGN THE FIRST AGENCY MOMENT (powerful, stakes-tied)
 
 This is the choice the entire opening builds to. It must make the player feel immediate, meaningful agency — and it must be tied to the protagonist's CORE stakes, not a generic moral exercise on a passerby.
 
@@ -188,9 +188,9 @@ FIRST CHOICE — SPEC
 Setup (the 2-3 sentences of cold-open prose immediately before the question): [in voice]
 The threshold/stake it turns on: [tie to core stakes — name it]
 Question (second person): [text]
-Option 1: [one sentence] — Alignment: [chaotic/lawful/neutral] — Tracks: [branch dimension] — Value: [the human value]
-Option 2: [one sentence] — Alignment: [ ] — Tracks: [ ] — Value: [ ]
-Option 3 (the unexpected one): [one sentence] — Alignment: [ ] — Tracks: [ ] — Value: [ ]
+Option 1: [one sentence] | Alignment: [chaotic/lawful/neutral] | Tracks: [branch dimension] | Value: [the human value]
+Option 2: [one sentence] | Alignment: [ ] | Tracks: [ ] | Value: [ ]
+Option 3 (the unexpected one): [one sentence] | Alignment: [ ] | Tracks: [ ] | Value: [ ]
 Why this is not a tutorial: [one line — how it engages core stakes and defines identity]
 ```
 
@@ -206,7 +206,7 @@ CONSTRAINTS: max 80 chars. Written in this story's world and voice — not gener
 
 ---
 
-## TASK 5 — WRITE THE COLD OPEN (the artifact for D8 Section 13)
+## TASK 5: WRITE THE COLD OPEN (the artifact for D8 Section 13)
 
 Now write the actual cold-open prose. Second-person present tense. Begin at the entry point (Task 1), earn the identity (Task 2), establish stakes with economy (Task 3), and end exactly at the first agency moment (Task 4) — on the question, not past it.
 
@@ -223,24 +223,24 @@ When `prefer_literal_opening=true` you keep the **moment** (same event, same bea
 
 Before finalizing: count consecutive sentences without **you/your** in the first 80 words. If 2 or more in a row, rewrite.
 
-**IDENTITY IN PROSE (required):** The cold open must execute the protagonist introduction designed in Task 2 — not just plan it. Do not leave the player as an unnamed "you" for the full cold open unless the name has already appeared earlier in the same prose. The name must arrive at a moment of pressure, recognition, command, refusal, or consequence — not as a résumé line. If the draft ends and the protagonist is still unnamed, return to Task 2's reveal line and place it in the prose at the weight-bearing moment identified there.
+**IDENTITY IN PROSE (required):** The cold open must execute the protagonist introduction designed in Task 2. Not just plan it. Do not leave the player as an unnamed "you" for the full cold open unless the name has already appeared earlier in the same prose. The name must arrive at a moment of pressure, recognition, command, refusal, or consequence — not as a résumé line. If the draft ends and the protagonist is still unnamed, return to Task 2's reveal line and place it in the prose at the weight-bearing moment identified there.
 
 Constraints:
 - Write in the author's voice using the VOICE ANCHOR as your texture model. Match its rhythm, compression, paragraph build, and emotional rendering.
 - Obey Master Rule 1 (all bans) and the Anchor Card.
-- Run the RUNTIME SELF-CHECK on your draft before finalizing: scan for em dashes (— and --) — if the Voice Anchor exemplars contain none, delete every one; if the author uses them, verify each surviving em dash appears in a construction the exemplars actually model and at near the author's documented frequency, not as a default connector; cut cognitive lead-ins; replace AI-substitute collocations; no 3+ same-word sentence openers; respect speech ceilings; match the nearest exemplar's texture.
+- Run the RUNTIME SELF-CHECK on your draft before finalizing: scan for em dashes (the em dash character and --): if the Voice Anchor exemplars contain none, delete every one; if the author uses them, verify each surviving em dash appears in a construction the exemplars actually model and at near the author's documented frequency, not as a default connector; cut cognitive lead-ins; replace AI-substitute collocations; no 3+ same-word sentence openers; respect speech ceilings; match the nearest exemplar's texture.
 - ~120–180 words to the choice. Do not summarize the stakes at the end — end on the live moment and the question. (No "you must now decide whether…" essay-line.)
 
 OUTPUT:
 ```
-=== COLD OPEN: [TITLE] — Session [N] ===
+=== COLD OPEN: [TITLE] | Session [N] ===
 [The cold-open prose, second-person present, ending at the first choice question.]
 === CUT POINT === [hands to Phase 4 SETUP beat]
 ```
 
 ---
 
-## TASK 6 — EMOTIONAL PROMISE & FORMAT NOTES
+## TASK 6: EMOTIONAL PROMISE & FORMAT NOTES
 
 OUTPUT the Emotional Promise (consumed by D4): one word + one sentence naming what the player should FEEL by the end of the cold open (dread, defiance, grief, resolve).
 

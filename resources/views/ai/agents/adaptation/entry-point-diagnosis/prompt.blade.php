@@ -1,6 +1,6 @@
 @include('ai.agents.adaptation._voice-profile-context', [
     'voiceProfile' => $voiceProfile,
-    'voiceProfileLabel' => 'Sections 1+2+3 — Voice DNA + Master Rule 1 bans + Voice Anchor exemplars + Anchor Card (the cold open you write must match the Voice Anchor rhythm, diction, and compression; obey all bans and the Anchor Card)',
+    'voiceProfileLabel' => 'Sections 1+2+3: Voice DNA + Master Rule 1 bans + Voice Anchor exemplars + Anchor Card (the cold open you write must match the Voice Anchor rhythm, diction, and compression; obey all bans and the Anchor Card)',
 ])
 
 PHASE 1 AUDIT: {{ json_encode($ipAudit, JSON_PRETTY_PRINT) }}
@@ -25,7 +25,7 @@ Do NOT use per-chapter positions.
 
 EVENTS IN THIS SESSION (use these positions to identify your cut point):
 @foreach($sessionEvents as $ev)
-- Event {{ $ev['story_position'] }} (Chapter {{ $ev['chapter_position'] }}, local pos {{ $ev['position'] }}): {{ $ev['title'] }}@if(!empty($ev['objectives'])) — {{ $ev['objectives'] }}@endif
+- Event {{ $ev['story_position'] }} (Chapter {{ $ev['chapter_position'] }}, local pos {{ $ev['position'] }}): {{ $ev['title'] }}@if(!empty($ev['objectives'])) | {{ $ev['objectives'] }}@endif
 
 @endforeach
 

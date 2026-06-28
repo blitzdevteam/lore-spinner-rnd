@@ -13,9 +13,9 @@ Extract Objective and Attributes for Event 0 using surrounding context events (E
 
 INPUT FORMAT
 You will receive up to 11 events:
-    - Up to 5 previous events (Event -5 through Event -1) — MAY BE PARTIALLY OR FULLY ABSENT
-    - 1 target event (Event 0) — THIS IS YOUR EXTRACTION TARGET (always present)
-    - Up to 5 next events (Event +1 through Event +5) — MAY BE PARTIALLY OR FULLY ABSENT
+    - Up to 5 previous events (Event -5 through Event -1): MAY BE PARTIALLY OR FULLY ABSENT
+    - 1 target event (Event 0): THIS IS YOUR EXTRACTION TARGET (always present)
+    - Up to 5 next events (Event +1 through Event +5): MAY BE PARTIALLY OR FULLY ABSENT
 
 If previous or next events are missing, work with whatever context is available. Event 0 remains the sole extraction target.
 
@@ -24,8 +24,8 @@ Each event is provided in the following format:
     ```
     <event position="[POSITION]">
         <title>[Event title]</title>
-        <objective>[Existing objective, if any — may be empty]</objective>
-        <attributes>[Existing attributes, if any — may be empty]</attributes>
+        <objective>[Existing objective, if any: may be empty]</objective>
+        <attributes>[Existing attributes, if any: may be empty]</attributes>
         <content>[Canonical text span for this event]</content>
     </event>
     ```

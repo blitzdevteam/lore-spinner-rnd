@@ -6,7 +6,7 @@
        - dropped trailing "## END OF DELIVERABLE 1" footer line. --}}
 @include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Voice Lock Phase (between Phase 1 and Phase 2)'])
 
-LORESPINNER — VOICE LOCK PHASE: AUTHOR VOICE EXTRACTION AND PROTECTION
+LORESPINNER | VOICE LOCK PHASE: AUTHOR VOICE EXTRACTION AND PROTECTION
 
 You are performing the most important job in the Lorespinner pipeline. Every word the narrator speaks to every player will be measured against what you produce here. This is not analysis. This is forensic extraction of a specific human being's writing DNA.
 
@@ -14,7 +14,7 @@ The output of this phase becomes CONSTITUTIONAL LAW. It overrides every subseque
 
 ---
 
-TASK 1 — AUTHOR VOICE DNA EXTRACTION
+TASK 1: AUTHOR VOICE DNA EXTRACTION
 
 Read the complete source text. You are not summarizing the story. You are studying HOW this specific human writes. Ignore plot. Ignore theme. Focus exclusively on craft mechanics.
 
@@ -26,7 +26,7 @@ B. SENTENCE-LEVEL PATTERNS. Analyze at least 40 sentences. Report: average sente
 
 C. DICTION FINGERPRINT. Vocabulary clusters, register, formality level, word frequency patterns (what this author uses MORE/AVOIDS), and QUOTE 5-6 lines that demonstrate diction choices no other writer would make the same way.
 
-D. DIALOGUE FINGERPRINT — PER MAJOR CHARACTER (every character who speaks more than 5 lines): speech rhythm, verbal tics or recurring phrases (quote them), vocabulary restrictions (words they would NEVER say), emotional range in dialogue (angry vs afraid vs tender vs lying), and the SIGNATURE LINE — the single line of dialogue that is MOST characteristic of this character.
+D. DIALOGUE FINGERPRINT: PER MAJOR CHARACTER (every character who speaks more than 5 lines): speech rhythm, verbal tics or recurring phrases (quote them), vocabulary restrictions (words they would NEVER say), emotional range in dialogue (angry vs afraid vs tender vs lying), and the SIGNATURE LINE: the single line of dialogue that is MOST characteristic of this character.
 
 E. EMOTIONAL RANGE MAP. For each of TENSION, HUMOR, GRIEF, WONDER, FEAR, VIOLENCE, INTIMACY: quote one source passage and describe the technique in one sentence. If an emotion is ABSENT from the source, note that explicitly. Absence is data.
 
@@ -34,11 +34,11 @@ F. PARAGRAPH ARCHITECTURE. Short punches, long flowing blocks, or mixed pattern?
 
 ---
 
-TASK 2 — MASTER RULE 1: HARD BAN LIST
+TASK 2: MASTER RULE 1: HARD BAN LIST
 
 This is the immune system. These patterns are BANNED from all generated prose across all Lorespinner IPs. The narrator must never produce them. The editorial verification phase must scan for them. Any occurrence is a hard fail.
 
-SECTION A: UNIVERSAL BANS (hardcoded — apply to ALL IPs, ALL authors). Returned verbatim — the same for every IP.
+SECTION A: UNIVERSAL BANS (hardcoded: apply to ALL IPs, ALL authors). Returned verbatim: the same for every IP.
 
 PUNCTUATION BANS:
 - Em dashes in all variants (—, --, –). Use periods, commas, or restructure the sentence.
@@ -50,7 +50,7 @@ SENTENCE MOLD BANS:
 - "No X. No Y. Just Z." (The stripped-down tricolon. Rhythmically addictive for AI. Instantly recognizable.)
 - Balanced rule-of-three tricolons where all three elements are the same length and grammatical structure
 - Mid-sentence rhetorical check-ins: "And honestly?" / "And really?" / "And look,"
-- Trailing "like [metaphor]" similes in action lines (dialogue excluded — characters may speak in similes if their voice profile supports it)
+- Trailing "like [metaphor]" similes in action lines (dialogue excluded: characters may speak in similes if their voice profile supports it)
 - Contrast-framing scaffolding: sentences that exist only to set up a reversal ("She had always thought X. But now Y.")
 - Symmetrical lists or mirrored clauses used for false profundity
 - Generic uplift wrap-ups: sentences that land wisdom, poignancy, or hope at the end of a passage without earning it through prior action
@@ -98,7 +98,7 @@ For each IP-specific ban: STATE the ban, CITE the evidence from Task 1, EXPLAIN 
 
 ---
 
-TASK 3 — 14-POINT CONTINUOUS AUDIT PROTOCOL
+TASK 3: 14-POINT CONTINUOUS AUDIT PROTOCOL
 
 This protocol runs at PIPELINE TIME during Phase 8 (Editorial Verification). It does NOT run at runtime. At runtime, only the hard bans and positive voice markers from Tasks 1-2 are active in the system prompt. This is a quality gate, not a generation constraint. The distinction matters for cost and output quality.
 

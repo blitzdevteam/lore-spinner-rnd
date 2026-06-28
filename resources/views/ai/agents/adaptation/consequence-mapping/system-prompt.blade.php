@@ -3,7 +3,7 @@
      Mechanical adaptations only:
        - master-context include (replaces "[PASTE MASTER CONTEXT BLOCK HERE]" placeholder)
        - dropped trailing "## END OF DELIVERABLE 5" footer line. --}}
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 6 — Downstream Consequence Mapping (V2)'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 6: Downstream Consequence Mapping (V2)'])
 
 === LORESPINNER — PHASE 6: DOWNSTREAM CONSEQUENCE MAPPING ===
 
@@ -11,7 +11,7 @@ A choice without a planned consequence is an expressive choice pretending to be 
 
 ---
 
-TASK 1 — BRANCHING CHOICE CONSEQUENCE MAPS
+TASK 1: BRANCHING CHOICE CONSEQUENCE MAPS
 
 For each of the FOUR branching choices from Phase 5, complete the full consequence map. Every cell must contain a specific, named moment. Vague language fails automatically.
 
@@ -48,7 +48,7 @@ The player does not need to change the entire plot. The player
 needs to SEE that the scene changed because of them.
 
 ═══════════════════════════════════════════════════════════════
-END — CONSEQUENCE MAPPING ADDITIONS
+END: CONSEQUENCE MAPPING ADDITIONS
 ═══════════════════════════════════════════════════════════════
 
 Populate consequence_visibility on every path: what_changes, when_visible_target_responses (2), when_visible_max_responses (3), how_player_sees_it.
@@ -60,7 +60,7 @@ Return `branching_consequences` as an ARRAY of EXACTLY 4 entries (one per Phase 
 - paths — ARRAY of EXACTLY 3 entries, labels A / B / C. Each path:
     - label (A / B / C)
     - alignment (CHAOTIC / LAWFUL / NEUTRAL — must match Phase 5 alignment_order)
-    - immediate_effect (this session, within 2 minutes of choice — specific moment the player sees, hears, or receives differently). For Branching Choice #4 (session-end hook), use the literal string "N/A — session ends on this choice".
+    - immediate_effect (this session, within 2 minutes of choice: specific moment the player sees, hears, or receives differently). For Branching Choice #4 (session-end hook), use the literal string "N/A: session ends on this choice".
     - current_session_echo (specific — name the scene and the difference)
     - next_session_payoff (specific — name the character, the line, the event, or object in the next session)
     - next_session_opening (SESSION_END_HOOK only — tone, first image, first character, immediate stakes; empty string otherwise)
@@ -80,7 +80,7 @@ Return `branching_consequences` as an ARRAY of EXACTLY 4 entries (one per Phase 
 
 ---
 
-TASK 2 — EMOTIONAL CHOICE CONSEQUENCE MAPS
+TASK 2: EMOTIONAL CHOICE CONSEQUENCE MAPS
 
 Emotional choices converge — all paths arrive at the same next moment. But they DO update persistent state. Return `emotional_consequences` as an ARRAY (one entry per Phase 5 emotional choice). Each entry:
 - choice_id (reference Phase 5)
@@ -96,7 +96,7 @@ Emotional choices converge — all paths arrive at the same next moment. But the
 
 ---
 
-TASK 3 — REACTIVITY TRIGGER SPECIFICATIONS
+TASK 3: REACTIVITY TRIGGER SPECIFICATIONS
 
 For each reactivity trigger referenced in Task 1, provide the full specification. Return a `reactivity_trigger_specs` array. For each trigger:
 - trigger_id
@@ -112,7 +112,7 @@ For each reactivity trigger referenced in Task 1, provide the full specification
 
 ---
 
-TASK 4 — CROSS-EPISODE STATE PROPAGATION RULES
+TASK 4: CROSS-EPISODE STATE PROPAGATION RULES
 
 Return `cross_episode_propagation_rules` with three buckets:
 
@@ -126,7 +126,7 @@ ESCALATION IS THE REPLAY DRIVER. A player who keeps betraying NPCs faces escalat
 
 ---
 
-TASK 5 — FREEFORM CONSEQUENCE GUIDELINES
+TASK 5: FREEFORM CONSEQUENCE GUIDELINES
 
 Return `freeform_guidelines` as a FLAT array of EXACTLY 12 entries (4 branching choices × 3 paths). Each entry is the runtime instruction the narrator iterates when surfacing past choices.
 
@@ -143,7 +143,7 @@ Each entry:
 
 ---
 
-TASK 6 — VALIDATION
+TASK 6: VALIDATION
 
 Run the following checks and return `validation_results`:
 - specificity: PASS / list cells to revise
@@ -154,6 +154,6 @@ Run the following checks and return `validation_results`:
 
 ---
 
-OUTPUT FORMAT — Return all six tasks as structured JSON matching the required schema.
+OUTPUT FORMAT: Return all six tasks as structured JSON matching the required schema.
 
 STOP. Do not finalize any session prose until Phase 6 passes. Consequences that are vague, symmetric, or non-payable produce a flat experience. State inconsistencies between Phase 5 and Phase 6 will crash the runtime state manager. Fix everything before continuing.

@@ -4,9 +4,9 @@
      Mechanical adaptations:
        - master-context include
        - dropped trailing "## END OF DELIVERABLE 3" footer line. --}}
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 4 — Session Beat Architecture (V2)'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 4: Session Beat Architecture (V2)'])
 
-=== PHASE 4: SESSION BEAT ARCHITECTURE — V2 ===
+=== PHASE 4: SESSION BEAT ARCHITECTURE V2 ===
 
 Your task is to map this session's source material onto the Lorespinner five-beat arc AND specify the choice density that will produce the texture, expression, and momentum the player experiences in real-time.
 
@@ -14,20 +14,20 @@ This phase determines HOW MANY decision moments the player has, WHERE they fall 
 
 ---
 
-TASK 1 — IDENTIFY THE FIVE BEATS IN THE SOURCE
+TASK 1: IDENTIFY THE FIVE BEATS IN THE SOURCE
 
 For each beat, cite the specific source moment, explain why it qualifies, and note editorial intervention level (Minimal / Moderate / Heavy / INVENTION REQUIRED).
 
 Beats to identify:
 * SETUP (0-3 minutes)
-* ESCALATION (3-10 minutes) — what is the visible goal, what is the clear obstacle?
-* BREATH (10-13 minutes — Schell Rule) — what provides humor, absurdity, or wonder? If none exists, flag INVENTION REQUIRED.
-* TWIST (10-17 minutes) — what makes this a moral-weight moment? Why is there no correct answer?
-* RESOLUTION (17-22 minutes) — what goal appears resolved? What seed is planted for the next session?
+* ESCALATION (3-10 minutes): what is the visible goal, what is the clear obstacle?
+* BREATH (10-13 minutes, Schell Rule): what provides humor, absurdity, or wonder? If none exists, flag INVENTION REQUIRED.
+* TWIST (10-17 minutes): what makes this a moral-weight moment? Why is there no correct answer?
+* RESOLUTION (17-22 minutes): what goal appears resolved? What seed is planted for the next session?
 
 ---
 
-TASK 2 — INTERACTION COUNT VERIFICATION
+TASK 2: INTERACTION COUNT VERIFICATION
 
 This is the new architectural responsibility of Phase 4: declare the exact choice density for this session before writing any of them in Phase 5.
 
@@ -38,7 +38,7 @@ A session must contain:
 
 Total interaction density per session: 14-20 player decision moments across 20-25 minutes of play.
 
-For each of the four branching choices: declare its target beat (Setup / Escalation / Breath / Twist / Resolution), its dramatic function (Identity / Methodology / Moral Weight / Future Commitment / etc. — must reference a Phase 2 branch dimension), the approximate minute it should arrive, and the dramatic question it asks.
+For each of the four branching choices: declare its target beat (Setup / Escalation / Breath / Twist / Resolution), its dramatic function (Identity / Methodology / Moral Weight / Future Commitment / etc., must reference a Phase 2 branch dimension), the approximate minute it should arrive, and the dramatic question it asks.
 
 For the four to six emotional choices: declare for each which beat it falls in (Escalation or Breath), what emotional register it explores (curiosity, defiance, tenderness, restraint, etc.), and the moment in the source it attaches to.
 
@@ -46,7 +46,7 @@ For the six to ten posture shifts: declare the approximate placement (early Setu
 
 ---
 
-TASK 3 — CONTENT BUDGET DECLARATION
+TASK 3: CONTENT BUDGET DECLARATION
 
 The choice density forces honest content scoping. Declare:
 * Approximate token budget for narration prose across the full session (target 3,000-5,000 words of narrator output across all turns)
@@ -58,7 +58,7 @@ This budget is a forecast, not a contract. Phase 5 may adjust. But the forecast 
 
 ---
 
-TASK 4 — BUILD THE SESSION BEAT MAP
+TASK 4: BUILD THE SESSION BEAT MAP
 
 Complete a timetable with time ranges, moments, beat types, choice slots (BRANCHING / EMOTIONAL / POSTURE / none), and the dramatic function of each interaction slot. The beat map is the runtime's primary structural guide.
 
@@ -71,7 +71,7 @@ Constraints:
 
 ---
 
-TASK 5 — POSTURE SHIFT PLACEMENT STRATEGY
+TASK 5: POSTURE SHIFT PLACEMENT STRATEGY
 
 Posture shifts are NOT placed evenly. They cluster around moments where the player would naturally want to react. Identify the 3-4 emotional pressure points in this session where posture shifts cluster most densely.
 
@@ -79,7 +79,7 @@ For each pressure point: cite the source moment, declare how many posture shifts
 
 ---
 
-TASK 6 — NEXT SESSION AWARENESS
+TASK 6: NEXT SESSION AWARENESS
 
 Using the Story Session Map, confirm:
 * What seed must this session plant for the next session?
@@ -148,5 +148,5 @@ The player is not reading a book. They are stepping into a story.
 Prove that within 3 minutes.
 
 ═══════════════════════════════════════════════════════════════
-END — BEAT ARCHITECTURE ADDITIONS
+END: BEAT ARCHITECTURE ADDITIONS
 ═══════════════════════════════════════════════════════════════

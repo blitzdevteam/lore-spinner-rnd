@@ -1,35 +1,35 @@
-@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 2 — Story Session Map'])
+@include('ai.agents.adaptation._master-context', ['formatDetectionOutput' => $formatDetection ?? '', 'currentPhase' => 'Phase 2: Story Session Map'])
 
 === PHASE 2: STORY SESSION MAP ===
 
 You have the full structural extraction of the source IP. Your job is to convert these canonical chunks into a story-wide session roadmap before any single session is designed in detail.
 
-TASK 1 — SESSION COUNT AND ALLOCATION
+TASK 1: SESSION COUNT AND ALLOCATION
 
 Using the estimated session count from Format Detection as a starting point, confirm or revise the session count based on the actual event structure. Then allocate events to sessions.
 
 Rules:
 * Each session covers a natural dramatic arc (rising tension, climax/choice, resolution)
-* Session boundaries should fall at natural breaks — chapter boundaries, location shifts, or time jumps
+* Session boundaries should fall at natural breaks: chapter boundaries, location shifts, or time jumps
 * Most sessions should contain 5–20 events. A session may exceed 20 only when preserving a coherent opening arc or natural dramatic unit requires it. Do not cut off the authored opening context merely to satisfy the event-count target.
 * Session 1 must preserve the story's playable opening context. If Session 1 covers the source beginning, its `event_range` should include the opening beats that establish the first playable situation. Do not skip the authored opening merely to chase a louder or more spectacular later beat.
 * "Highest-energy material" means the strongest playable pressure within the correct opening arc — not automatically the loudest later event.
 * A later Session 1 start is allowed only when the adaptation is intentionally beginning in medias res, or when the source opening is genuinely non-playable context: credits, pure lore dump, inert throat-clearing, or material with no embodied scene, pressure, threshold, object/question/problem, or meaningful first choice.
 * If `prefer_literal_opening` is true (see user prompt STORY ENTRY OVERRIDE), Session 1 must include the literal source opening beats in its `event_range` unless those beats were removed by IP trimming or are not present in the extracted events.
 
-TASK 2 — ARC PROGRESSION
+TASK 2: ARC PROGRESSION
 
 For each session, name the primary dramatic question, the emotional register shift from the previous session, and the key transition moment.
 
-TASK 3 — MAJOR BRANCH OPPORTUNITIES
+TASK 3: MAJOR BRANCH OPPORTUNITIES
 
 Identify the 2-3 strongest branching choice opportunities per session. Reference specific event positions. For each, name the event position and title, what dimension it would track, and whether it has natural downstream payoff in a later session.
 
-TASK 4 — CROSS-SESSION PAYOFF PLAN
+TASK 4: CROSS-SESSION PAYOFF PLAN
 
 Map the highest-value branching choices from early sessions to their payoff moments in later sessions.
 
-TASK 5 — BRANCH DIMENSION DEFINITIONS (STORY-LEVEL)
+TASK 5: BRANCH DIMENSION DEFINITIONS (STORY-LEVEL)
 
 Using the branch opportunities identified in Task 3, define the core branch dimensions of the story. A branch dimension is a reusable narrative axis that multiple choices across sessions may reference and evolve.
 
@@ -43,7 +43,7 @@ Rules:
      Only mechanical adaptations: removed the "[PASTE PHASE 1 OUTPUT]" / "[PASTE FORMAT DETECTION OUTPUT]" placeholders
      (those values are already passed via the master-context include and the prompt.blade.php). --}}
 
-TASK 6 — PERSISTENT STATE SCHEMA EXTRACTION
+TASK 6: PERSISTENT STATE SCHEMA EXTRACTION
 
 The Lorespinner runtime will track and update this state through every player turn. Each piece of state must be specific, measurable (qualitatively or quantitatively), and narratively relevant to this IP.
 
@@ -98,7 +98,7 @@ For each category: definition (what qualifies as an entry in this category), exa
 
 ---
 
-TASK 7 — WORLD REACTIVITY RULES
+TASK 7: WORLD REACTIVITY RULES
 
 Define HOW the world responds to player history. This produces the rules engine.
 
@@ -111,36 +111,36 @@ Define HOW the world responds to player history. This produces the rules engine.
 
 For each category present in this IP, return: how it triggers, when it triggers, how it manifests.
 
-7B — REACTIVITY TIMING RULES:
+7B: REACTIVITY TIMING RULES:
 * Some reactions are IMMEDIATE (same scene). Others are DELAYED (later scene, next session, climax). Specify timing rules for each reactivity type.
 
-7C — REACTIVITY ESCALATION:
+7C: REACTIVITY ESCALATION:
 * Some reactions COMPOUND (each related player action makes the next reaction stronger). Specify which reactivity categories compound.
 
-7D — REACTIVITY VISIBILITY:
+7D: REACTIVITY VISIBILITY:
 * Some reactions are EXPLICIT (NPC says "I remember when you..."). Others are IMPLICIT (NPC's body language changes, world shifts subtly). Define when to use each.
 
 ---
 
-TASK 8 — STORYGUARD CANON EXTRACTION
+TASK 8: STORYGUARD CANON EXTRACTION
 
 LoreSpinner's StoryGuard system prevents player improvisation from breaking the source IP's internal logic. Extract the four layers of canon for this IP:
 
-LAYER 1 — PHYSICAL/RULE CANON (Inviolable):
+LAYER 1: PHYSICAL/RULE CANON (Inviolable):
 What physical, magical, technological, or biological laws govern this world that CANNOT be broken regardless of player creativity? Each rule must be specific and enforceable.
 
-LAYER 2 — CHARACTER CANON (Truth-of-Self):
+LAYER 2: CHARACTER CANON (Truth-of-Self):
 For each major character: their immutable core identity — the traits, beliefs, fears, or capabilities that define WHO they are. List 2-3 character truths per major character. Player creativity cannot violate these.
 
-LAYER 3 — NARRATIVE CANON (Required Story Beats):
+LAYER 3: NARRATIVE CANON (Required Story Beats):
 What plot events MUST occur for the source IP to retain its meaning? List 3-7 narrative anchor points. Player choices can change HOW these happen, but not WHETHER they happen.
 
-LAYER 4 — VOICE/TONAL CANON (Atmospheric Truth):
+LAYER 4: VOICE/TONAL CANON (Atmospheric Truth):
 What atmospheric, tonal, or aesthetic qualities define this IP's experience? Tone restrictions (this story can't suddenly become comedic / horror / etc.), language restrictions (formality level, period appropriateness), thematic restrictions (themes the story refuses to engage with).
 
 ---
 
-TASK 9 — STORY-NATIVE ALIGNMENT LABELS
+TASK 9: STORY-NATIVE ALIGNMENT LABELS
 
 Generic alignment labels (Chaotic, Lawful, Neutral) violate IP voice. Generate story-native equivalents.
 

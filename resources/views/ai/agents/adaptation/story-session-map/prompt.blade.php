@@ -1,6 +1,6 @@
 @include('ai.agents.adaptation._voice-profile-context', [
     'voiceProfile' => $voiceProfile,
-    'voiceProfileLabel' => 'Alignment context subset — diction, dialogue fingerprints, comparative exclusion, negative space (ground alignment voice_signature and NPC tonal registers in the real author voice)',
+    'voiceProfileLabel' => 'Alignment context subset: diction, dialogue fingerprints, comparative exclusion, negative space (ground alignment voice_signature and NPC tonal registers in the real author voice)',
 ])
 
 PHASE 1 AUDIT:
@@ -17,12 +17,12 @@ prefer_literal_opening: {{ $preferLiteralOpening ? 'true' : 'false' }}
 If prefer_literal_opening is true, Session 1 must preserve the literal source opening beats when Session 1 covers the beginning of the story. Do not allocate Session 1 in a way that excludes the authored opening and starts at a later louder beat.
 
 @if(!empty($ipTrimmingWorldRules))
-IP TRIMMING — WORLD RULES (feed these into StoryGuard Canon Extraction — every rule here is source-confirmed):
+IP TRIMMING: WORLD RULES (feed these into StoryGuard Canon Extraction: every rule here is source-confirmed):
 {{ json_encode($ipTrimmingWorldRules, JSON_PRETTY_PRINT) }}
 
 @endif
 @if(!empty($ipTrimmingConversionNotes))
-IP TRIMMING — INTERACTIVE CONVERSION NOTES (use these for session content allocation — each trimmed section has an explicit conversion instruction):
+IP TRIMMING: INTERACTIVE CONVERSION NOTES (use these for session content allocation: each trimmed section has an explicit conversion instruction):
 {{ json_encode($ipTrimmingConversionNotes, JSON_PRETTY_PRINT) }}
 
 @endif
