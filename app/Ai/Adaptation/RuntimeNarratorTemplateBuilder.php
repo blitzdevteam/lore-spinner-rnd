@@ -231,7 +231,7 @@ final class RuntimeNarratorTemplateBuilder
 
         $rendered = View::make('ai.agents.chaos.runtime-narrator-template', [
             'storyTitle' => $story->title,
-            'authorName' => $story->creator?->name ?? 'the author',
+            'authorName' => $story->creator?->full_name ?? 'the author',
             'sessionNumber' => $session->session_number,
             'totalSessions' => $totalSessions,
             'protagonist' => $this->protagonistName($story, $adaptation),

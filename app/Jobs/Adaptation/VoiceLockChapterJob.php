@@ -68,7 +68,7 @@ final class VoiceLockChapterJob implements ShouldQueue
         $response = (new VoiceLockChapterAgent($detectedFormat))->prompt(
             view('ai.agents.adaptation.voice-lock.chapter-prompt', [
                 'title' => $this->story->title,
-                'author' => $this->story->creator?->name ?? 'Unknown Author',
+                'author' => $this->story->creator?->full_name ?? 'Unknown Author',
                 'year' => optional($this->story->published_at)->year ?? 'Unknown Year',
                 'format' => $adaptation?->format_detection['detected_format'] ?? 'UNKNOWN',
                 'chapterId' => $this->chapter->id,

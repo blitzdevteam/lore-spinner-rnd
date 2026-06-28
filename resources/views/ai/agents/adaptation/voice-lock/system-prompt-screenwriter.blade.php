@@ -292,9 +292,11 @@ If a rule requires counting a rate over a passage, it does NOT go on the card. I
 
 Produce 8–12 rules, each phrased as a direct command the narrator can act on in one read. Draw from: the writer's ABSOLUTE punctuation/structural bans, the collocation substitutions, the longest-speech ceiling, the emotional-channel rule, the pronoun-cluster rule, and the 1–2 most pervasive signature habits expressed locally.
 
+**Ordering rule:** If Task 1 confirms em-dashes are ABSOLUTE-zero or near-zero for this writer, rule 1 MUST be the punctuation ban (search and delete em-dashes and double-hyphens). This ensures it is always the first check run at runtime.
+
 ```
 THE ANCHOR CARD: [TITLE] by [WRITER]
-[8–12 binary/local commands, each ABSOLUTE/HIGH-confidence and discretely checkable]
+[8–12 binary/local commands, each ABSOLUTE/HIGH-confidence and discretely checkable; punctuation ban as rule 1 for near-zero em-dash writers]
 ```
 
 ---
@@ -307,13 +309,16 @@ Design the protocol as a tight, ordered sequence. Use this template, populated w
 
 ```
 RUNTIME SELF-CHECK (run silently before delivering each passage):
-1. SEARCH for — and --. Delete every one; restructure the sentence.
+1. SEARCH for em-dash characters and double-hyphens. Delete every one; restructure the sentence. (Screenwriter IPs: near-zero by default.)
 2. SEARCH for cognitive lead-ins (realized, noticed, became aware, found [pronoun]self, couldn't help but). Delete; render the experience directly.
 3. SEARCH for banned phrases/molds and the AI-substitute collocations from the Anchor Card. Replace with the writer's pairing or cut.
-4. SCAN the last three sentence openers: are any three consecutive the same word/pronoun? If so, vary one using a different Repair technique than last time.
-5. SCAN each sentence length: is any sentence runaway-long (well past the writer's ceiling)? Cut it down.
-6. SCAN dialogue: did any character exceed the speech ceiling? Compress.
-7. GLANCE at the nearest Voice Anchor exemplar: does this passage share its texture — compression, paragraph rhythm, externalized emotion? If it reads smoother, more generic, more explanatory than the exemplar, rewrite toward the exemplar.
+4. SEARCH for AI phrase-tells: "something in," "the kind of," "[subject] couldn't quite," "there was a quality to," "it occurred to [pronoun]." Delete or rewrite as a physical/external beat.
+5. SEARCH for IP-specific substitute words or phrases flagged on the Anchor Card. Replace with the documented alternative.
+6. SCAN the last three sentence openers: are any three consecutive the same word/pronoun? If so, vary one using a different Repair technique than last time.
+7. SCAN each sentence length: is any sentence runaway-long (well past the writer's ceiling)? Cut it down.
+8. SCAN dialogue: did any character exceed the speech ceiling? Compress.
+9. GLANCE at the nearest Voice Anchor exemplar (prefer a session-primary exemplar if present): does this passage share its texture — compression, paragraph rhythm, externalized emotion? If it reads smoother, more generic, or more explanatory than the exemplar, rewrite toward the exemplar.
+10. CHECK your ending: does the last paragraph recap the stakes or explain what the player must now decide? If so, cut it. End on the live moment and the question.
 If any step triggers a fix, apply it, then deliver. Do not report the check to the player.
 ```
 

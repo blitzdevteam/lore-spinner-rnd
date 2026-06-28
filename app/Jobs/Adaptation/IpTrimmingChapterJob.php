@@ -67,7 +67,7 @@ final class IpTrimmingChapterJob implements ShouldQueue
         $response = (new IpTrimmingChapterAgent)->prompt(
             view('ai.agents.adaptation.ip-trimming.chapter-prompt', [
                 'title' => $this->story->title,
-                'author' => $this->story->creator?->name ?? 'Unknown Author',
+                'author' => $this->story->creator?->full_name ?? 'Unknown Author',
                 'format' => $this->story->adaptation?->format_detection['detected_format'] ?? 'UNKNOWN',
                 'chapterId' => $this->chapter->id,
                 'chapterPosition' => $this->chapter->position,

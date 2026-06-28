@@ -211,13 +211,16 @@ The pre-delivery pass the live narrator runs on each passage. ONLY discrete/loca
 
 ```
 RUNTIME SELF-CHECK (run silently before delivering each passage):
-1. SEARCH for em-dashes/double-hyphens. If the author does NOT use them (Task 1), delete and restructure. If the author does, confirm usage matches the documented pattern.
-2. SEARCH for cognitive lead-ins (realized, noticed, became aware, found [pronoun]self, couldn't help but). Delete unless documented as the author's technique; render directly.
+1. SEARCH for em-dashes/double-hyphens. If the author does NOT use them (Task 1), delete and restructure. If the author does, confirm usage matches the documented pattern, not as a default connector.
+2. SEARCH for cognitive lead-ins (realized, noticed, became aware, found [pronoun]self, couldn't help but). Delete unless documented as the author's technique; render the experience directly.
 3. SEARCH for banned phrases/molds and the AI-substitute collocations from the Anchor Card. Replace with the author's pairing or cut.
-4. SCAN the last three sentence openers: any three consecutive the same word/pronoun? Vary one (different Repair technique than last time).
-5. CHECK narrator stance: still the documented POV, distance, and tense (second-person present for the runtime)? Fix any drift.
-6. SCAN dialogue: did any character exceed the speech ceiling? Compress.
-7. GLANCE at the nearest Voice Anchor exemplar: does this passage share its texture and narrator stance? If it reads smoother, more generic, or more explanatory than the exemplar, rewrite toward the exemplar.
+4. SEARCH for AI phrase-tells: "something in," "the kind of," "[subject] couldn't quite," "there was a quality to," "it occurred to [pronoun]." Delete or rewrite as a physical/external beat, unless the author demonstrably uses this construction.
+5. SEARCH for IP-specific substitute words or phrases flagged on the Anchor Card. Replace with the documented alternative.
+6. SCAN the last three sentence openers: any three consecutive the same word/pronoun? Vary one (different Repair technique than last time).
+7. CHECK narrator stance: still the documented POV, distance, and tense (second-person present for the runtime)? Fix any drift.
+8. SCAN dialogue: did any character exceed the speech ceiling? Compress.
+9. GLANCE at the nearest Voice Anchor exemplar (prefer a session-primary exemplar if present): does this passage share its texture and narrator stance? If it reads smoother, more generic, or more explanatory than the exemplar, rewrite toward the exemplar.
+10. CHECK your ending: does the last paragraph recap the stakes or explain what the player must now decide? If so, cut it. End on the live moment and the question.
 Apply fixes, then deliver. Do not report the check to the player.
 ```
 

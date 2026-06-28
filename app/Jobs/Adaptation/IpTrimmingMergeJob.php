@@ -152,7 +152,7 @@ final class IpTrimmingMergeJob implements ShouldQueue
         $spineResponse = (new IpTrimmingMergeAgent)->prompt(
             view('ai.agents.adaptation.ip-trimming.merge-prompt', [
                 'title'               => $this->story->title,
-                'author'              => $this->story->creator?->name ?? 'Unknown Author',
+                'author'              => $this->story->creator?->full_name ?? 'Unknown Author',
                 'totalChapters'       => count($fragments),
                 'spineFragments'      => $spineFragments,
                 'playableProtagonist' => $chaosConfig['protagonist'] ?? null,

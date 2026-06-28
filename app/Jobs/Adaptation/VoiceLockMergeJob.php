@@ -86,7 +86,7 @@ final class VoiceLockMergeJob implements ShouldQueue
         ))->prompt(
             view('ai.agents.adaptation.voice-lock.merge-prompt', [
                 'title' => $this->story->title,
-                'author' => $this->story->creator?->name ?? 'Unknown Author',
+                'author' => $this->story->creator?->full_name ?? 'Unknown Author',
                 'year' => optional($this->story->published_at)->year ?? 'Unknown Year',
                 'format' => $formatDetection['detected_format'] ?? 'UNKNOWN',
                 'formatDetection' => $formatDetection,
