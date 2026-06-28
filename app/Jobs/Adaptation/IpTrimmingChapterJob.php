@@ -52,6 +52,15 @@ final class IpTrimmingChapterJob implements ShouldQueue
     private const int LARGE_CHAPTER_CHAR_THRESHOLD = 8_000;
 
     /**
+     * Hard cap on chapter content passed to the model.
+     * Verbatim trimmed_chapter_text in the structured output mirrors input length,
+     * so an unbounded chapter can push the response past any model's output token
+     * ceiling. Content beyond this cap is noted with a TRUNCATED marker.
+     * Raw chapter text is always preserved in chapters.content.
+     */
+    private const int MAX_CHAPTER_INPUT_CHARS = 12_000;
+
+    /**
      * @throws Throwable
      */
     public function handle(): void
@@ -64,8 +73,15 @@ final class IpTrimmingChapterJob implements ShouldQueue
         $prevChapter = $this->story->chapters()->where('position', $this->chapter->position - 1)->first();
         $nextChapter = $this->story->chapters()->where('position', $this->chapter->position + 1)->first();
 
-        $chapterLength = mb_strlen($this->chapter->content ?? '');
+        $rawContent = $this->chapter->content ?? '';
+        $chapterLength = mb_strlen($rawContent);
         $model = $chapterLength > self::LARGE_CHAPTER_CHAR_THRESHOLD ? 'gpt-5.4' : null;
+
+        $truncated = $chapterLength > self::MAX_CHAPTER_INPUT_CHARS;
+        $chapterContent = $truncated
+            ? mb_substr($rawContent, 0, self::MAX_CHAPTER_INPUT_CHARS)
+              . "\n\n[TRUNCATED: " . ($chapterLength - self::MAX_CHAPTER_INPUT_CHARS) . " chars omitted — raw text preserved in DB]"
+            : $rawContent;
 
         Log::info('ip_trimming.chapter_start', [
             'story_id' => $this->story->id,
@@ -73,8 +89,19 @@ final class IpTrimmingChapterJob implements ShouldQueue
             'chapter_position' => $this->chapter->position,
             'chapter_title' => $this->chapter->title,
             'chapter_chars' => $chapterLength,
+            'truncated' => $truncated,
             'model' => $model ?? 'gpt-5.4-mini (default)',
         ]);
+
+        if ($truncated) {
+            Log::warning('ip_trimming.chapter_truncated', [
+                'story_id' => $this->story->id,
+                'chapter_id' => $this->chapter->id,
+                'chapter_position' => $this->chapter->position,
+                'original_chars' => $chapterLength,
+                'sent_chars' => self::MAX_CHAPTER_INPUT_CHARS,
+            ]);
+        }
 
         $response = (new IpTrimmingChapterAgent)->prompt(
             view('ai.agents.adaptation.ip-trimming.chapter-prompt', [
@@ -87,7 +114,7 @@ final class IpTrimmingChapterJob implements ShouldQueue
                 'totalChapters' => $totalChapters,
                 'previousChapterTitle' => $prevChapter?->title ?? '',
                 'nextChapterTitle' => $nextChapter?->title ?? '',
-                'chapterContent' => $this->chapter->content ?? '',
+                'chapterContent' => $chapterContent,
             ])->render(),
             model: $model,
         );
