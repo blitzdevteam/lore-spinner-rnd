@@ -28,14 +28,14 @@ namespace App\ChaosMode;
 final class ChaosStoryConfig
 {
     /**
-     * Declan Sage voice (kqVT88a5QfII1HNAEPTJ) — used for Driftheart.
+     * Declan Sage voice (kqVT88a5QfII1HNAEPTJ) — used for Anima Machina, Driftheart, and The Matrix.
      */
     private const VOICE_DECLAN_SAGE = 'kqVT88a5QfII1HNAEPTJ';
 
     /**
-     * Davidof voice (TWutjvRaJqAX89preB4e) — used for Nocturne and Anima Machina.
+     * Ethan voice (eCGXfCpGinKGrwYNoBuo) — used for Nocturne.
      */
-    private const VOICE_DAVIDOF = 'TWutjvRaJqAX89preB4e';
+    private const VOICE_ETHAN = 'eCGXfCpGinKGrwYNoBuo';
 
     /**
      * @return array<int, array{slug:string, title:string, protagonist:string, tagline:string, tts_voice_id:string|null, prefer_literal_opening?: bool}>
@@ -69,7 +69,7 @@ final class ChaosStoryConfig
                 'title'                  => 'Nocturne',
                 'protagonist'            => 'Akira',
                 'tagline'                => 'Wittmer — vanish into Tokyo\'s shadow-house.',
-                'tts_voice_id'           => self::VOICE_DAVIDOF,
+                'tts_voice_id'           => self::VOICE_ETHAN,
                 'prefer_literal_opening' => true,
             ],
             [
@@ -77,7 +77,7 @@ final class ChaosStoryConfig
                 'title'                 => 'Anima Machina',
                 'protagonist'           => 'Nora',
                 'tagline'               => 'Wittmer — dive grief in the neon archive.',
-                'tts_voice_id'          => self::VOICE_DAVIDOF,
+                'tts_voice_id'          => self::VOICE_DECLAN_SAGE,
                 'prefer_literal_opening' => true,
             ],
             [
@@ -85,6 +85,13 @@ final class ChaosStoryConfig
                 'title'         => 'Driftheart',
                 'protagonist'   => 'Kataria',
                 'tagline'       => 'Wittmer — fall from the sky-villa into the Drift.',
+                'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
+            ],
+            [
+                'slug'          => 'the-matrix',
+                'title'         => 'The Matrix',
+                'protagonist'   => 'Neo',
+                'tagline'       => 'Wachowski — wake up and choose the real world.',
                 'tts_voice_id'  => self::VOICE_DECLAN_SAGE,
             ],
             [
