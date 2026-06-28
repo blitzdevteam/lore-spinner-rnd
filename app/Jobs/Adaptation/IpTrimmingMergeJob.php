@@ -8,6 +8,7 @@ use App\Ai\Agents\Adaptation\IpTrimmingMergeAgent;
 use App\ChaosMode\ChaosStoryConfig;
 use App\Enums\Adaptation\AdaptationStatusEnum;
 use App\Models\Story;
+use App\Support\Adaptation\SessionAdaptationChain;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Bus;
@@ -42,6 +43,9 @@ final class IpTrimmingMergeJob implements ShouldQueue
 
     public function __construct(
         private Story $story,
+        private bool $continuePipeline = true,
+        /** @var array<int, int> */
+        private array $rerunSessionNumbers = [],
     ) {
         $this->onQueue('adaptation');
     }
@@ -73,6 +77,17 @@ final class IpTrimmingMergeJob implements ShouldQueue
         if (empty($fragments)) {
             Log::error('ip_trimming.merge_failed: no fragments in cache', ['story_id' => $this->story->id]);
             $adaptation->update(['adaptation_status' => AdaptationStatusEnum::FAILED]);
+
+            return;
+        }
+
+        if (! $this->continuePipeline && count($fragments) < $chapters->count()) {
+            Log::error('ip_trimming.repair_merge_incomplete', [
+                'story_id' => $this->story->id,
+                'fragments_collected' => count($fragments),
+                'chapters_total' => $chapters->count(),
+            ]);
+
             return;
         }
 
@@ -191,9 +206,27 @@ final class IpTrimmingMergeJob implements ShouldQueue
             'triage_entries' => count($triageLog),
             'conversion_notes' => count($conversionNotes),
             'chapter_segments' => count($chapterSegments),
+            'repair_mode' => ! $this->continuePipeline,
         ]);
 
-        // --- Continue pipeline: FormatDetection → IpAudit → VoiceLock (V2.2 order) ---
-        FormatDetectionJob::dispatch($this->story)->onQueue('adaptation');
+        if ($this->continuePipeline) {
+            FormatDetectionJob::dispatch($this->story)->onQueue('adaptation');
+
+            return;
+        }
+
+        if ($this->rerunSessionNumbers !== []) {
+            $storyId = $this->story->id;
+
+            SessionAdaptationChain::dispatchBatch(
+                $this->story,
+                $this->rerunSessionNumbers,
+                fn () => AdaptationStatusReconciliationJob::dispatch(Story::findOrFail($storyId))->onQueue('adaptation'),
+            );
+
+            return;
+        }
+
+        AdaptationStatusReconciliationJob::dispatch($this->story)->onQueue('adaptation');
     }
 }

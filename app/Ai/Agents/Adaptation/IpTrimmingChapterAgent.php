@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Ai\Agents\Adaptation;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Laravel\Ai\Attributes\MaxTokens;
 use Laravel\Ai\Attributes\Model;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Attributes\Timeout;
@@ -32,7 +33,8 @@ use Throwable;
  */
 #[Model('gpt-5.4-mini')]
 #[Temperature(0.3)]
-#[Timeout(180)]
+#[Timeout(300)]
+#[MaxTokens(65_536)]
 class IpTrimmingChapterAgent implements Agent, HasStructuredOutput
 {
     use Promptable;
