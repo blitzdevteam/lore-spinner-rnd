@@ -45,6 +45,13 @@ final class IpTrimmingChapterJob implements ShouldQueue
     }
 
     /**
+     * Chapters above this character count get gpt-5.4 instead of gpt-5.4-mini.
+     * Mini hits its output token ceiling on long screenplay chapters, producing
+     * incomplete JSON and a "max tokens exceeded" failure.
+     */
+    private const int LARGE_CHAPTER_CHAR_THRESHOLD = 8_000;
+
+    /**
      * @throws Throwable
      */
     public function handle(): void
@@ -57,11 +64,16 @@ final class IpTrimmingChapterJob implements ShouldQueue
         $prevChapter = $this->story->chapters()->where('position', $this->chapter->position - 1)->first();
         $nextChapter = $this->story->chapters()->where('position', $this->chapter->position + 1)->first();
 
+        $chapterLength = mb_strlen($this->chapter->content ?? '');
+        $model = $chapterLength > self::LARGE_CHAPTER_CHAR_THRESHOLD ? 'gpt-5.4' : null;
+
         Log::info('ip_trimming.chapter_start', [
             'story_id' => $this->story->id,
             'chapter_id' => $this->chapter->id,
             'chapter_position' => $this->chapter->position,
             'chapter_title' => $this->chapter->title,
+            'chapter_chars' => $chapterLength,
+            'model' => $model ?? 'gpt-5.4-mini (default)',
         ]);
 
         $response = (new IpTrimmingChapterAgent)->prompt(
@@ -76,7 +88,8 @@ final class IpTrimmingChapterJob implements ShouldQueue
                 'previousChapterTitle' => $prevChapter?->title ?? '',
                 'nextChapterTitle' => $nextChapter?->title ?? '',
                 'chapterContent' => $this->chapter->content ?? '',
-            ])->render()
+            ])->render(),
+            model: $model,
         );
 
         $fragment = $response->toArray();
@@ -91,6 +104,8 @@ final class IpTrimmingChapterJob implements ShouldQueue
             'story_id' => $this->story->id,
             'chapter_id' => $this->chapter->id,
             'chapter_position' => $this->chapter->position,
+            'chapter_chars' => $chapterLength,
+            'model_used' => $model ?? 'gpt-5.4-mini (default)',
             'triage_entries' => count($fragment['content_triage_log'] ?? []),
             'trimmed_chars' => mb_strlen($fragment['trimmed_chapter_text'] ?? ''),
         ]);
