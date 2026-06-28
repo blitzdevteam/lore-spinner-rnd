@@ -71,13 +71,6 @@ final class IpTrimmingChapterJob implements ShouldQueue
     private const int CHUNK_OVERLAP = 300;
 
     /**
-     * Chapters whose full content exceeds this threshold use gpt-5.4 instead
-     * of gpt-5.4-mini for every chunk call, trading speed for reliability on
-     * complex schema output.
-     */
-    private const int LARGE_CHAPTER_CHAR_THRESHOLD = 8_000;
-
-    /**
      * @throws Throwable
      */
     public function handle(): void
@@ -116,7 +109,7 @@ final class IpTrimmingChapterJob implements ShouldQueue
 
         $fragment = $chapterLength > self::CHUNK_SIZE
             ? $this->processInChunks($rawContent, $chapterLength, $baseViewData)
-            : $this->processSinglePass($rawContent, $chapterLength, $baseViewData);
+            : $this->processSinglePass($rawContent, $baseViewData);
 
         Cache::put(
             "ip_trimming_fragment:{$this->story->id}:{$this->chapter->id}",
@@ -139,15 +132,12 @@ final class IpTrimmingChapterJob implements ShouldQueue
     // -------------------------------------------------------------------------
 
     /** @throws Throwable */
-    private function processSinglePass(string $content, int $chapterLength, array $baseViewData): array
+    private function processSinglePass(string $content, array $baseViewData): array
     {
-        $model = $chapterLength > self::LARGE_CHAPTER_CHAR_THRESHOLD ? 'gpt-5.4' : null;
-
         $response = (new IpTrimmingChapterAgent)->prompt(
             view('ai.agents.adaptation.ip-trimming.chapter-prompt', array_merge($baseViewData, [
                 'chapterContent' => $content,
             ]))->render(),
-            model: $model,
         );
 
         return $response->toArray();
@@ -178,7 +168,6 @@ final class IpTrimmingChapterJob implements ShouldQueue
                     'chapterContent' => $chunk,
                     'chunkContext'   => "PART {$chunkNum} OF {$totalChunks}",
                 ]))->render(),
-                model: 'gpt-5.4',
             );
 
             $parts[] = $response->toArray();
