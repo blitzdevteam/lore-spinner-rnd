@@ -14,9 +14,15 @@ use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
- * Re-runs IP trimming for every chapter, merges into ip_trimming without
- * restarting FormatDetection / Voice Lock, then optionally re-runs the
- * per-session adaptation chain for sessions mapped to previously missing chapters.
+ * Re-runs IP trimming only for chapters that are missing from ip_trimming,
+ * then additively merges the new fragments into the existing DB record without
+ * restarting FormatDetection / Voice Lock, and optionally re-runs the
+ * per-session adaptation chain for sessions mapped to the previously missing chapters.
+ *
+ * Only missing chapters are dispatched (not all chapters) so that:
+ *   (a) already-complete chapters do not consume additional API budget, and
+ *   (b) the batch finishes with a much smaller footprint, reducing the window
+ *       in which a deploy-restart can cause "attempted too many times" failures.
  */
 final class RepairIpTrimmingJob implements ShouldQueue
 {
@@ -62,11 +68,13 @@ final class RepairIpTrimmingJob implements ShouldQueue
             'rerun_sessions' => $rerunSessionNumbers,
         ]);
 
-        $chapters = $this->story->chapters()->orderBy('position')->get();
         $storyId = $this->story->id;
 
+        // Only dispatch jobs for the chapters that are actually missing.
+        // Already-complete chapters are preserved in the DB; IpTrimmingMergeJob
+        // (repair mode) will merge the new fragments additively into the existing record.
         Bus::batch(
-            $chapters->map(fn ($chapter) => new IpTrimmingChapterJob($this->story, $chapter))->all()
+            $missingChapters->map(fn ($chapter) => new IpTrimmingChapterJob($this->story, $chapter))->all()
         )->onQueue('adaptation')
             ->finally(function () use ($storyId, $rerunSessionNumbers): void {
                 $story = Story::findOrFail($storyId);
