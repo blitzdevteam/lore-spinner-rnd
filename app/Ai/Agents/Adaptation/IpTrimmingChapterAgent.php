@@ -7,7 +7,6 @@ namespace App\Ai\Agents\Adaptation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\Model;
 use Laravel\Ai\Attributes\Provider;
-use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Attributes\Timeout;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\HasStructuredOutput;
@@ -39,7 +38,6 @@ use Throwable;
  */
 #[Provider('anthropic')]
 #[Model('claude-opus-4-8')]
-#[Temperature(0.3)]
 #[Timeout(300)]
 class IpTrimmingChapterAgent implements Agent, HasStructuredOutput
 {
