@@ -352,54 +352,45 @@ final class ChaosEngineService
         $schemaArray     = ChaosNarrationSchema::definition(new JsonSchemaTypeFactory);
         $providerOptions = $this->providerOptionsFor($config);
 
+        // 55s keeps the full round-trip (Cloudflare→Laravel→Anthropic→Laravel→Cloudflare)
+        // safely below Cloudflare's 100s upstream timeout. Server-side retries are
+        // removed: if the call times out, the controller catches the exception and
+        // shows the player a retry prompt, which fires a fresh HTTP request and
+        // resets Cloudflare's timer — no 504s.
         $request = Prism::structured()
             ->using($config['provider'], $model)
             ->withSchema(new NativeObjectSchema($schemaArray))
             ->withSystemPrompt($systemPrompt)
             ->withPrompt($promptText)
             ->usingTemperature($temperature)
-            ->withClientOptions(['timeout' => 90])
+            ->withClientOptions(['timeout' => 55])
             ->withProviderOptions($providerOptions);
 
         if ($config['provider'] === 'anthropic') {
             $request = $request->withMaxTokens(64_000);
         }
 
-        $lastException = null;
+        $response   = $request->asStructured();
+        $structured = $response->structured ?? [];
 
-        for ($attempt = 1; $attempt <= 2; $attempt++) {
-            try {
-                $response   = $request->asStructured();
-                $structured = $response->structured ?? [];
+        $alignment = (array) ($structured['alignment_tally_delta'] ?? []);
 
-                $alignment = (array) ($structured['alignment_tally_delta'] ?? []);
-
-                return [
-                    'response'               => (string) ($structured['response'] ?? ''),
-                    'choices'                => (array)  ($structured['choices'] ?? []),
-                    'session_complete'       => (bool)   ($structured['session_complete'] ?? false),
-                    'state_delta'            => (array)  ($structured['state_delta'] ?? []),
-                    'alignment_tally_delta'  => [
-                        'chaotic' => (int) ($alignment['chaotic'] ?? 0),
-                        'lawful'  => (int) ($alignment['lawful'] ?? 0),
-                        'neutral' => (int) ($alignment['neutral'] ?? 0),
-                    ],
-                    'is_climactic_choice'    => (bool)   ($structured['is_climactic_choice'] ?? false),
-                    'defining_choice_id'     => (string) ($structured['defining_choice_id'] ?? ''),
-                    'defining_choice_line'   => (string) ($structured['defining_choice_line'] ?? ''),
-                    'symbolic_memory_update' => (string) ($structured['symbolic_memory_update'] ?? ''),
-                    'session_memory_update'  => (string) ($structured['session_memory_update'] ?? ''),
-                ];
-            } catch (Throwable $e) {
-                $lastException = $e;
-
-                if ($attempt < 2) {
-                    usleep(300_000);
-                }
-            }
-        }
-
-        throw $lastException ?? new \RuntimeException('Agent call failed with no captured exception.');
+        return [
+            'response'               => (string) ($structured['response'] ?? ''),
+            'choices'                => (array)  ($structured['choices'] ?? []),
+            'session_complete'       => (bool)   ($structured['session_complete'] ?? false),
+            'state_delta'            => (array)  ($structured['state_delta'] ?? []),
+            'alignment_tally_delta'  => [
+                'chaotic' => (int) ($alignment['chaotic'] ?? 0),
+                'lawful'  => (int) ($alignment['lawful'] ?? 0),
+                'neutral' => (int) ($alignment['neutral'] ?? 0),
+            ],
+            'is_climactic_choice'    => (bool)   ($structured['is_climactic_choice'] ?? false),
+            'defining_choice_id'     => (string) ($structured['defining_choice_id'] ?? ''),
+            'defining_choice_line'   => (string) ($structured['defining_choice_line'] ?? ''),
+            'symbolic_memory_update' => (string) ($structured['symbolic_memory_update'] ?? ''),
+            'session_memory_update'  => (string) ($structured['session_memory_update'] ?? ''),
+        ];
     }
 
     /**
