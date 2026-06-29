@@ -6,6 +6,7 @@ namespace App\Ai\Agents\Adaptation;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\Model;
+use Laravel\Ai\Attributes\Provider;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Attributes\Timeout;
 use Laravel\Ai\Contracts\Agent;
@@ -27,10 +28,13 @@ use Throwable;
  *      the unified story_spine from all chapter spine fragments.
  *   3. Writes the final Deliverable 7 package to story_adaptations.ip_trimming.
  *
- * gpt-4.1-mini is used here: the task is triage/extraction (conservative,
- * mechanical) and the context window is bounded to one chapter at a time.
+ * claude-opus-4-8 via Anthropic: precise editorial triage requiring nuanced
+ * PRESERVE/TRIM judgment and verbatim prose reconstruction. Anthropic's
+ * structured handler defaults to 64k max_tokens and handles output gracefully
+ * without the reasoning-token ceiling issues of OpenAI reasoning models.
  */
-#[Model('gpt-4.1-mini')]
+#[Provider('anthropic')]
+#[Model('claude-opus-4-8')]
 #[Temperature(0.3)]
 #[Timeout(300)]
 class IpTrimmingChapterAgent implements Agent, HasStructuredOutput
