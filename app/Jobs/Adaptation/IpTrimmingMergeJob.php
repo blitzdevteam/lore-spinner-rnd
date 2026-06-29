@@ -209,6 +209,18 @@ final class IpTrimmingMergeJob implements ShouldQueue
         ]);
 
         if ($this->continuePipeline) {
+            if (count($fragments) < $chapters->count()) {
+                Log::error('ip_trimming.pipeline_blocked', [
+                    'story_id'           => $this->story->id,
+                    'fragments_collected' => count($fragments),
+                    'chapters_total'      => $chapters->count(),
+                    'note'               => 'IP trimming incomplete — pipeline halted. Run repair to retry missing chapters.',
+                ]);
+                $adaptation->update(['adaptation_status' => AdaptationStatusEnum::FAILED]);
+
+                return;
+            }
+
             FormatDetectionJob::dispatch($this->story)->onQueue('adaptation');
 
             return;

@@ -18,14 +18,16 @@ return [
             'version' => env('ANTHROPIC_API_VERSION', '2023-06-01'),
             'url' => env('ANTHROPIC_URL', 'https://api.anthropic.com/v1'),
             'default_thinking_budget' => env('ANTHROPIC_DEFAULT_THINKING_BUDGET', 1024),
-            // structured-outputs-2025-11-13 makes Prism 0.99.x select its
-            // NativeOutputFormatStructuredStrategy (sends the transition-period `output_format`
-            // json_schema param, which Anthropic still honours for current models incl. Opus 4.8).
-            // This returns guaranteed schema-compliant JSON in content[0].text instead of the
-            // tool-calling path, which breaks on Opus 4.8+ (it leaks <parameter ...> XML).
-            // NOTE: when upgrading to Prism 0.100+ (native is the default and uses the GA
-            // `output_config.format`), this header is no longer required and can be removed.
-            'anthropic_beta' => env('ANTHROPIC_BETA', 'structured-outputs-2025-11-13'),
+            // Null here so Prism 0.99.x hasNativeStructuredOutputSupport() returns false.
+            // laravel/ai always passes use_tool_calling:true for Anthropic schema requests,
+            // so Prism falls through to ToolStructuredStrategy, which builds
+            // tools[].input_schema (permissive schema validator — tolerates title, ignores
+            // the top-level `name` key added by Schema::toSchema()).
+            // NativeOutputFormatStructuredStrategy is NOT used here because it sends
+            // output_config.format.schema verbatim and Anthropic rejects the `name` key.
+            // The `<parameter> XML` leak from old Claude tool-calling is not present in
+            // claude-opus-4-8 with forced tool_choice — tool_use blocks are returned cleanly.
+            'anthropic_beta' => env('ANTHROPIC_BETA', null),
         ],
         'ollama' => [
             'url' => env('OLLAMA_URL', 'http://localhost:11434'),
