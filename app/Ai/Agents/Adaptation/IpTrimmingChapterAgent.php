@@ -27,10 +27,10 @@ use Throwable;
  *      the unified story_spine from all chapter spine fragments.
  *   3. Writes the final Deliverable 7 package to story_adaptations.ip_trimming.
  *
- * gpt-5.4-mini is used here: the task is triage/extraction (conservative,
+ * gpt-4.1-mini is used here: the task is triage/extraction (conservative,
  * mechanical) and the context window is bounded to one chapter at a time.
  */
-#[Model('gpt-5.4-mini')]
+#[Model('gpt-4.1-mini')]
 #[Temperature(0.3)]
 #[Timeout(300)]
 class IpTrimmingChapterAgent implements Agent, HasStructuredOutput
