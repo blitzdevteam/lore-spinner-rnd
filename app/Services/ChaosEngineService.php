@@ -367,7 +367,12 @@ final class ChaosEngineService
             ->withProviderOptions($providerOptions);
 
         if ($config['provider'] === 'anthropic') {
-            $request = $request->withMaxTokens(64_000);
+            // Calculated ceiling for the ChaosNarrationSchema worst case:
+            //   response prose (4 HTML paragraphs) ~900 + state_delta all fields ~835
+            //   + choices/booleans/strings/JSON overhead ~315 = ~2050 tokens peak.
+            // 2500 covers even the densest climactic session-close turn with a 20% buffer.
+            // Previously 64_000 — a 96% over-reservation that delays Anthropic job scheduling.
+            $request = $request->withMaxTokens(2_500);
         }
 
         $response   = $request->asStructured();
