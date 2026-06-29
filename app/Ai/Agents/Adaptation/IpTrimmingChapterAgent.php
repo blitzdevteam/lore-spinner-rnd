@@ -6,7 +6,6 @@ namespace App\Ai\Agents\Adaptation;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\Model;
-use Laravel\Ai\Attributes\Provider;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Attributes\Timeout;
 use Laravel\Ai\Contracts\Agent;
@@ -28,13 +27,13 @@ use Throwable;
  *      the unified story_spine from all chapter spine fragments.
  *   3. Writes the final Deliverable 7 package to story_adaptations.ip_trimming.
  *
- * claude-opus-4-8 via Anthropic: precise editorial triage requiring nuanced
- * PRESERVE/TRIM judgment and verbatim prose reconstruction. Anthropic's
- * structured handler defaults to 64k max_tokens and handles output gracefully
- * without the reasoning-token ceiling issues of OpenAI reasoning models.
+ * gpt-5.2 is used here: it is in Prism's supportsStructuredMode list, so
+ * Prism sends a formal json_schema constraint (not a text description).
+ * This eliminates the reasoning-token overhead that caused "max tokens exceeded"
+ * with gpt-5.4-mini/gpt-5.4 in JSON-object mode, while still being the most
+ * capable model available in the structured-output-supported list.
  */
-#[Provider('anthropic')]
-#[Model('claude-opus-4-8')]
+#[Model('gpt-5.2')]
 #[Temperature(0.3)]
 #[Timeout(300)]
 class IpTrimmingChapterAgent implements Agent, HasStructuredOutput
