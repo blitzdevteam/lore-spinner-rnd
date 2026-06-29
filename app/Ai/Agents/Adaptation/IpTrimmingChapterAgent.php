@@ -6,6 +6,7 @@ namespace App\Ai\Agents\Adaptation;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\Model;
+use Laravel\Ai\Attributes\Provider;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Attributes\Timeout;
 use Laravel\Ai\Contracts\Agent;
@@ -27,13 +28,17 @@ use Throwable;
  *      the unified story_spine from all chapter spine fragments.
  *   3. Writes the final Deliverable 7 package to story_adaptations.ip_trimming.
  *
- * gpt-5.2 is used here: it is in Prism's supportsStructuredMode list, so
- * Prism sends a formal json_schema constraint (not a text description).
- * This eliminates the reasoning-token overhead that caused "max tokens exceeded"
- * with gpt-5.4-mini/gpt-5.4 in JSON-object mode, while still being the most
- * capable model available in the structured-output-supported list.
+ * claude-opus-4-8 via Anthropic: precise editorial triage requiring nuanced
+ * PRESERVE/TRIM judgment and verbatim prose reconstruction.
+ *
+ * Prism v0.99.21+ (composer.lock updated) fixes the HTTP 400 that was caused by
+ * the old NativeOutputFormatStructuredStrategy sending the deprecated `output_format`
+ * field. v0.99.22 sends `output_config.format` per the GA Anthropic API.
+ * No beta header (structured-outputs-2025-11-13) is needed — GA structured output
+ * is now the default in v0.100.0+.
  */
-#[Model('gpt-5.2')]
+#[Provider('anthropic')]
+#[Model('claude-opus-4-8')]
 #[Temperature(0.3)]
 #[Timeout(300)]
 class IpTrimmingChapterAgent implements Agent, HasStructuredOutput
