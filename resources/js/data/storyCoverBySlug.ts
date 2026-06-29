@@ -1,4 +1,5 @@
 import iLoveLucyCover from '@/assets/featured/i-love-lucy.png';
+import theMatrixCover from '@/assets/featured/the-matrix.png';
 import janeEyreCover from '@/assets/featured/janeEyre.png';
 import frankensteinComingCover from '@/assets/commingSoon/frankstein-comming.png';
 import drjComingCover from '@/assets/commingSoon/drj-comming.png';
@@ -35,6 +36,7 @@ export const STORY_COVER_BY_SLUG: Record<string, string> = {
     'the-wonderful-wizard-of-oz': wizardOzCover,
     'the-tell-tale-heart': tellTaleCover,
     'i-love-lucy-job-switching': iLoveLucyCover,
+    'the-matrix': theMatrixCover,
     // Explore by Mood / mood library picks
     'jekyll-and-hyde': jekyllCover,
     'the-strange-case-of-dr-jekyll-and-mr-hyde': drjComingCover,
